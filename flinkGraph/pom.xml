@@ -27,7 +27,7 @@ under the License.
     </parent>
 
     <artifactId>flinkGraph</artifactId>
-    <name>Flink Quickstart Job</name>
+    <name>flinkGraph</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

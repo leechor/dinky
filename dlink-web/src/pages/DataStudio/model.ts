@@ -133,6 +133,8 @@ export type TabsItemType = {
   metaStore?: MetaStoreCatalogType[]
 }
 
+
+
 export type TabsType = {
   activeKey: number;
   panes?: TabsItemType[];
@@ -488,12 +490,12 @@ const Model: ModelType = {
     saveTaskData(state, {payload}) {
       const newTabs = state.tabs;
       let newCurrent = state.current;
-      for (let i = 0; i < newTabs.panes.length; i++) {
-        if (newTabs.panes[i].key == payload.key) {
-          newTabs.panes[i].task = payload;
-          newTabs.panes[i].isModified = false;
+      for (const element of newTabs.panes) {
+        if (element.key == payload.key) {
+          element.task = payload;
+          element.isModified = false;
           if (newCurrent.key == payload.key) {
-            newCurrent = newTabs.panes[i];
+            newCurrent = element;
           }
         }
       }

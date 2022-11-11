@@ -29,6 +29,7 @@ import StudioHome from "@/components/Studio/StudioHome";
 import {Dispatch} from "@@/plugin-dva/connect";
 import StudioKubernetes from "@/components/Studio/StudioKubernetes";
 import {l} from "@/utils/intl";
+import StudioGraphEdit from "@/components/Studio/StudioGraphEdit";
 
 const {TabPane} = Tabs;
 
@@ -120,6 +121,12 @@ const EditorTabs = (props: any) => {
           />
         </TabPane>
       )
+    } else if (pane.task.dialect == DIALECT.GRAPH_SQL) {
+      return (
+          <StudioGraphEdit>
+
+          </StudioGraphEdit>
+      )
     } else {
       return (<TabPane tab={Tab(pane)} key={pane.key} closable={pane.closable}>
         <StudioEdit
@@ -142,6 +149,8 @@ const EditorTabs = (props: any) => {
         return DIALECT.SCALA.toLowerCase()
       case DIALECT.PYTHON:
         return DIALECT.PYTHON.toLowerCase()
+      case DIALECT.GRAPH_SQL:
+        return DIALECT.GRAPH_SQL.toLowerCase();
       default:
         return DIALECT.SQL.toLowerCase()
     }
