@@ -1,7 +1,12 @@
 import React from 'react';
 import LogicFlow from "@logicflow/core";
 import {Button} from 'antd';
-import {Control, Menu, SelectionSelect, Snapshot} from "@logicflow/extension";
+import {BpmnElement, BpmnXmlAdapter, Control, Menu, SelectionSelect, Snapshot} from "@logicflow/extension";
+import BpmnPattern from "./pattern";
+import BpmnIo from "./io";
+import './index.css';
+import 'antd/lib/button/style/index.css';
+import '@logicflow/extension/lib/style/index.css';
 
 const config = {
     stopScrollGraph: true,
@@ -25,7 +30,7 @@ type IState = {
 type IProps = {}
 
 export default class GraphEditor extends React.Component<IProps, IState> {
-    lf!: LogicFlow;
+    lf: LogicFlow;
 
     constructor(props: {} | Readonly<{}>) {
         super(props);
@@ -35,13 +40,17 @@ export default class GraphEditor extends React.Component<IProps, IState> {
     }
 
     componentDidMount() {
+        LogicFlow.use(BpmnElement);
+        LogicFlow.use(BpmnXmlAdapter);
         LogicFlow.use(Snapshot);
         LogicFlow.use(Control);
         LogicFlow.use(Menu);
         LogicFlow.use(SelectionSelect);
         const lf = new LogicFlow({
             ...config,
-            container: document.querySelector('#graph') as HTMLElement
+            container: document.querySelector('#graph') as HTMLElement,
+            width: 1000,
+            height : 1000,
         });
         lf.render()
         this.lf = lf;
@@ -56,17 +65,13 @@ export default class GraphEditor extends React.Component<IProps, IState> {
         if (rendered) {
             tools = (
                 <div>
+                    <BpmnPattern lf={this.lf}/>
+                    <BpmnIo lf={this.lf}/>
                 </div>
             );
         }
         return (
             <>
-                <div>
-                    点击左下角下载 XML，将文件上传到
-                    <Button type="link" href="https://demo.bpmn.io/" target="_blank">BPMN Demo</Button>
-                    即可使用
-                </div>
-
                 <div className="bpmn-example-container">
                     <div id="graph" className="viewport"></div>
                     {tools}

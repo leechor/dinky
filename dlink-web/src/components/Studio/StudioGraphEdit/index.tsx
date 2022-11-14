@@ -29,8 +29,8 @@ const FlinkGraphEditor = (props: any) => {
         <>
             <GraphEditor
                 ref={monaco}
-                width={width}
-                height={height}
+                width = {width}
+                height = {height}
                 language={language}
                 value={code}
                 options={options}
