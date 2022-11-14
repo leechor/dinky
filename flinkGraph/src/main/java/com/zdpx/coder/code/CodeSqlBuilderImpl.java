@@ -25,7 +25,7 @@ public class CodeSqlBuilderImpl implements CodeBuilder {
     }
 
     @Override
-    public void lastBuild() {
-        System.out.println(result);
+    public String lastBuild() {
+        return result.toString();
     }
 }

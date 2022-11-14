@@ -19,6 +19,7 @@
 
 package com.dlink;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
@@ -31,7 +32,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * @since 2021/5/28
  */
 @EnableTransactionManagement
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.dlink", "com.zdpx"})
+@MapperScan({"com.dlink.*.mapper", "com.zdpx.*.mapper"})
 @EnableCaching
 public class Dlink {
 

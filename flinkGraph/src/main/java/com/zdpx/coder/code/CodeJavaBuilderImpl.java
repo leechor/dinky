@@ -63,7 +63,7 @@ public class CodeJavaBuilderImpl implements CodeJavaBuilder {
     }
 
     @Override
-    public void lastBuild() {
+    public String lastBuild() {
         codeContext.getMain().addStatement("$N.execute()", Specifications.ENV);
         final var classBody =
             TypeSpec.classBuilder(codeContext.getScene().getEnvironment().getName())
@@ -74,13 +74,14 @@ public class CodeJavaBuilderImpl implements CodeJavaBuilder {
         var javaFile = JavaFile.builder(Specifications.COM_ZDPX_CJPG, classBody).build();
 
         try {
-            javaFile.writeTo(directory);
-            reformat();
+            var source = javaFile.toString();
+            return reformat(source);
         } catch (IOException e) {
             log.error(String.format("write file %s error!Error: %s", directory, e.getMessage()));
         } catch (FormatterException e) {
             log.error(String.format("reformat file %s error! Error: %s", directory, e.getMessage()));
         }
+        return null;
     }
 
     /**
@@ -99,6 +100,11 @@ public class CodeJavaBuilderImpl implements CodeJavaBuilder {
                 Files.writeString(file, formatted);
             }
         }
+    }
+
+    public static String reformat(String source) throws FormatterException, IOException {
+        var formatter = new Formatter();
+        return formatter.formatSourceAndFixImports(source);
     }
 
 }

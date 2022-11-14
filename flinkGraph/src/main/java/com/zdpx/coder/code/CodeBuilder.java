@@ -11,5 +11,5 @@ public interface CodeBuilder {
 
     void generate(String sql);
 
-    void lastBuild();
+    String lastBuild();
 }

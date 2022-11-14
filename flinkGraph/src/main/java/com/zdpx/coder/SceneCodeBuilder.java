@@ -15,6 +15,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zdpx.coder.code.CodeBuilder;
 import com.zdpx.coder.code.CodeJavaBuilderImpl;
 import com.zdpx.coder.code.CodeSqlBuilderImpl;
 import com.zdpx.coder.graph.OperatorWrapper;
@@ -26,7 +27,6 @@ import com.zdpx.coder.operator.Operator;
 import com.zdpx.coder.utils.InstantiationUtil;
 
 import lombok.extern.slf4j.Slf4j;
-import com.zdpx.coder.code.CodeBuilder;
 
 /**
  * 配置场景生成操作类
@@ -73,14 +73,14 @@ public class SceneCodeBuilder {
      *
      * @throws IOException ignore
      */
-    public void build() throws IOException {
+    public String build() {
         if (codeBuilder == null) {
             throw new IllegalStateException(String.format("Code Builder %s empty!", codeBuilder));
         }
 
         codeBuilder.firstBuild();
         createOperatorsCode();
-        codeBuilder.lastBuild();
+        return codeBuilder.lastBuild();
     }
 
     /**
@@ -162,7 +162,7 @@ public class SceneCodeBuilder {
      * @param filePath 配置文件路径
      * @return 场景节点
      */
-    public static SceneNode readScene(String filePath) {
+    public static SceneNode readSceneFromFile(String filePath) {
         FileInputStream fis;
         try {
             fis = new FileInputStream(filePath);
@@ -180,10 +180,31 @@ public class SceneCodeBuilder {
      * @return 场景节点
      */
     public static SceneNode readScene(InputStream in) {
+        return readSceneInternal(in);
+    }
+
+    /**
+     * 根据输入流, 生成场景节点(对应于配置)
+     *
+     * @param in 配置文件输入流
+     * @return 场景节点
+     */
+    public static SceneNode readScene(String in) {
+        return readSceneInternal(in);
+    }
+
+    private static SceneNode readSceneInternal(Object in) {
         final var objectMapper = new ObjectMapper();
-        final SceneNode scene;
+        SceneNode scene = null;
         try {
-            scene = objectMapper.readValue(in, SceneNode.class);
+            if (in instanceof String) {
+                scene = objectMapper.readValue((String) in, SceneNode.class);
+            } else if (in instanceof InputStream) {
+                scene = objectMapper.readValue((InputStream) in, SceneNode.class);
+            } else {
+                return null;
+            }
+
             scene.initialize();
             return scene;
         } catch (IOException e) {

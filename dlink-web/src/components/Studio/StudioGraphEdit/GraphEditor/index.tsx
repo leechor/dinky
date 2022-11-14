@@ -73,7 +73,7 @@ export default class GraphEditor extends React.Component<IProps, IState> {
         return (
             <>
                 <div className="bpmn-example-container">
-                    <div id="graph" className="viewport"></div>
+                    <div id="graph" className="viewport" style={{width: this.props.width, height: this.props.height}}></div>
                     {tools}
                 </div>
             </>

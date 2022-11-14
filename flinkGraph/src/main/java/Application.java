@@ -12,7 +12,7 @@ import com.zdpx.coder.SceneCodeBuilder;
 public class Application {
     public static void main(String[] args) throws IOException, FormatterException {
         var configuration = "D:\\project\\dlink\\flinkGraph\\src\\main\\resources\\general.scene.json";
-        var scene = SceneCodeBuilder.readScene(configuration);
+        var scene = SceneCodeBuilder.readSceneFromFile(configuration);
         if (scene == null) {
             log.error("cannot find configure file: {}", configuration);
         }
