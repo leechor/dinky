@@ -36,13 +36,14 @@ public class TaskTaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScri
         String flowGraphScript = task.getStatement();
         String sql = convertConfigToSource(flowGraphScript);
         task.setStatement(sql);
-        taskService.saveOrUpdateTask(task);
+        boolean result = true;
+        result &= taskService.saveOrUpdateTask(task);
 
         FlowGraph flowGraph = new FlowGraph();
         flowGraph.setTaskId(task.getId());
         flowGraph.setScript(flowGraphScript);
-        this.saveOrUpdate(flowGraph);
-        return true;
+        result &= this.saveOrUpdate(flowGraph);
+        return result;
     }
 
     private String convertConfigToSource(String flowGraphScript) {
