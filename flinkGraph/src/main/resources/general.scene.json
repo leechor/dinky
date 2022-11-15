@@ -10,7 +10,7 @@
       {
         "activated": true,
         "id": "addSource_1",
-        "code": "zdpx.coder.operator.mysql.MysqlSourceOperator",
+        "code": "com.zdpx.coder.operator.mysql.MysqlSourceOperator",
         "parallelism": 1,
         "compatibility": 1.0,
         "expanded": true,
@@ -49,7 +49,7 @@
       {
         "activated": true,
         "id": "addSource_2",
-        "code": "zdpx.coder.operator.mysql.MysqlSourceOperator",
+        "code": "com.zdpx.coder.operator.mysql.MysqlSourceOperator",
         "parallelism": 1,
         "compatibility": 1.0,
         "expanded": true,
@@ -82,7 +82,7 @@
               {
                 "activated": true,
                 "id": "duplicateOperator_3",
-                "code": "zdpx.coder.operator.DuplicateOperator",
+                "code": "com.zdpx.coder.operator.DuplicateOperator",
                 "parallelism": 1,
                 "compatibility": 1.0,
                 "expanded": true,
@@ -104,7 +104,7 @@
               {
                 "activated": true,
                 "id": "joinOperator",
-                "code": "zdpx.coder.operator.JoinOperator",
+                "code": "com.zdpx.coder.operator.JoinOperator",
                 "parallelism": 1,
                 "compatibility": 1.0,
                 "expanded": true,
@@ -158,7 +158,7 @@
               {
                 "activated": true,
                 "id": "commSelectFunctionOperator_gbu",
-                "code": "zdpx.coder.operator.CommSelectFunctionOperator",
+                "code": "com.zdpx.coder.operator.CommSelectFunctionOperator",
                 "parallelism": 1,
                 "compatibility": 1.0,
                 "expanded": true,
@@ -228,7 +228,7 @@
               {
                 "activated": true,
                 "id": "commSelectFunctionOperator_add",
-                "code": "zdpx.coder.operator.CommSelectFunctionOperator",
+                "code": "com.zdpx.coder.operator.CommSelectFunctionOperator",
                 "parallelism": 1,
                 "compatibility": 1.0,
                 "expanded": true,
@@ -256,7 +256,7 @@
               {
                 "activated": true,
                 "id": "commSelectFunctionOperator",
-                "code": "zdpx.coder.operator.CommSelectFunctionOperator",
+                "code": "com.zdpx.coder.operator.CommSelectFunctionOperator",
                 "parallelism": 1,
                 "compatibility": 1.0,
                 "expanded": true,
@@ -317,7 +317,7 @@
               {
                 "activated": true,
                 "id": "cepOperator",
-                "code": "zdpx.coder.operator.CepOperator",
+                "code": "com.zdpx.coder.operator.CepOperator",
                 "parallelism": 1,
                 "compatibility": 1.0,
                 "expanded": true,
@@ -369,7 +369,7 @@
               {
                 "activated": true,
                 "id": "mysqlSink_1",
-                "code": "zdpx.coder.operator.mysql.MysqlSinkOperator",
+                "code": "com.zdpx.coder.operator.mysql.MysqlSinkOperator",
                 "parallelism": 1,
                 "compatibility": 1.0,
                 "expanded": true,
@@ -426,7 +426,7 @@
               {
                 "activated": true,
                 "id": "mysqlSink_2",
-                "code": "zdpx.coder.operator.mysql.MysqlSinkOperator",
+                "code": "com.zdpx.coder.operator.mysql.MysqlSinkOperator",
                 "parallelism": 1,
                 "compatibility": 1.0,
                 "expanded": true,

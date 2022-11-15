@@ -33,7 +33,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @EnableTransactionManagement
 @SpringBootApplication(scanBasePackages = {"com.dlink", "com.zdpx"})
-@MapperScan({"com.dlink.*.mapper", "com.zdpx.*.mapper"})
 @EnableCaching
 public class Dlink {
 

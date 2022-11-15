@@ -41,7 +41,7 @@ import net.sf.jsqlparser.expression.NullValue;
  * mybatisPlus config class
  */
 @Configuration
-@MapperScan("com.dlink.mapper")
+@MapperScan({"com.dlink.mapper", "com.zdpx.mapper"})
 @Slf4j
 public class MybatisPlusConfig {
 
