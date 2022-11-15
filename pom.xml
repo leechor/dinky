@@ -43,12 +43,13 @@
         <module>dlink-scheduler</module>
         <module>dlink-core</module>
         <module>dlink-app</module>
+        <module>flinkGraph</module>
         <module>dlink-admin</module>
         <module>dlink-assembly</module>
     </modules>
 
     <properties>
-        <target.java.version>8</target.java.version>
+        <target.java.version>11</target.java.version>
         <maven.compiler.source>${target.java.version}</maven.compiler.source>
         <maven.compiler.target>${target.java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -498,6 +499,11 @@
                 <groupId>javax.activation</groupId>
                 <artifactId>activation</artifactId>
                 <version>1.1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.dlink</groupId>
+                <artifactId>flinkGraph</artifactId>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
