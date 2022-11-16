@@ -1,22 +1,23 @@
 package com.zdpx.source;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import com.github.javafaker.Faker;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
 import org.apache.flink.table.data.GenericRowData;
 import org.apache.flink.table.data.RowData;
 import org.apache.flink.table.data.StringData;
 
 import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.github.javafaker.Faker;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  *
@@ -48,63 +49,67 @@ public class GbuZlDataSource implements SourceFunction<RowData> {
         isRunning = false;
     }
 
-    /** GBU 数据格式 */
+    /**
+     * GBU 数据格式
+     */
     @Builder
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     public static class GBU {
-      private static Faker faker = new Faker();
+        private static Faker faker = new Faker();
 
-      private String id;
-      private double longitude;
-      private double latitude;
+        private String id;
+        private double longitude;
+        private double latitude;
 
-      @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-      @JsonSerialize(using = LocalDateTimeSerializer.class)
-      private LocalDateTime dt;
+        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+        @JsonSerialize(using = LocalDateTimeSerializer.class)
+        private LocalDateTime dt;
 
-      private double value;
+        private double value;
 
-      public static GBU generate() {
-        return GBU.builder()
-            .id(faker.idNumber().validSvSeSsn())
-            .longitude(faker.number().numberBetween(0, 180))
-            .latitude(faker.number().numberBetween(0, 90))
-            .dt(LocalDateTime.now())
-            .value(faker.number().randomDouble(2, 0, 1000))
-            .build();
-      }
+        public static GBU generate() {
+            return GBU.builder()
+                .id(faker.idNumber().validSvSeSsn())
+                .longitude(faker.number().numberBetween(0, 180))
+                .latitude(faker.number().numberBetween(0, 90))
+                .dt(LocalDateTime.now())
+                .value(faker.number().randomDouble(2, 0, 1000))
+                .build();
+        }
     }
 
-    /** ZL数据格式 */
+    /**
+     * ZL数据格式
+     */
     @Builder
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ZL {
-      private static Faker faker = new Faker();
+        private static Faker faker = new Faker();
 
-      private String id;
-      private double longitude;
-      private double latitude;
+        private String id;
+        private double longitude;
+        private double latitude;
 
-      @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-      @JsonSerialize(using = LocalDateTimeSerializer.class)
-      private LocalDateTime dt;
+        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+        @JsonSerialize(using = LocalDateTimeSerializer.class)
+        private LocalDateTime dt;
 
-      private int number;
-      private double value;
+        private int number;
+        private double value;
 
-      public static ZL generate() {
-        return ZL.builder()
-            .id(faker.idNumber().ssnValid())
-            .longitude(faker.number().numberBetween(0, 180))
-            .latitude(faker.number().numberBetween(0, 90))
-            .number(faker.number().numberBetween(0, 100))
-            .value(faker.number().randomDouble(2, 0, 1000))
-            .build();
-      }
+        public static ZL generate() {
+            return ZL.builder()
+                .id(faker.idNumber().ssnValid())
+                .longitude(faker.number().numberBetween(0, 180))
+                .latitude(faker.number().numberBetween(0, 90))
+                .number(faker.number().numberBetween(0, 100))
+                .value(faker.number().randomDouble(2, 0, 1000))
+                .build();
+        }
     }
 }
 

@@ -1,11 +1,12 @@
 package com.zdpx.coder.operator;
 
 import org.apache.flink.table.functions.UserDefinedFunction;
-import com.zdpx.coder.graph.InputPortObject;
-import com.zdpx.coder.graph.OutputPortObject;
 
 import java.util.Collections;
 import java.util.Set;
+
+import com.zdpx.coder.graph.InputPortObject;
+import com.zdpx.coder.graph.OutputPortObject;
 
 /**
  * 用于端口数据复制, 转为多路输出
@@ -45,9 +46,9 @@ public class DuplicateOperator extends Operator {
     protected void execute() {
 
         var pseudoData = inputPorts.stream()
-                .map(t -> t.getConnection().getFromPort().getPseudoData())
-                .findAny()
-                .orElse(null);
+            .map(t -> t.getConnection().getFromPort().getPseudoData())
+            .findAny()
+            .orElse(null);
         outputPorts.forEach(t -> t.setPseudoData(pseudoData));
     }
 }

@@ -9,16 +9,22 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
-import lombok.extern.slf4j.Slf4j;
+import com.zdpx.coder.Specifications;
 import com.zdpx.coder.graph.InputPortObject;
 import com.zdpx.coder.graph.OutputPortObject;
 import com.zdpx.coder.utils.NameHelper;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  */
 @Slf4j
 public class JoinOperator extends Operator {
+    public static final String TEMPLATE =
+        String.format("<#import \"%s\" as e>CREATE VIEW ${tableName} AS SELECT <@e.fieldsProcess fieldFunctions/> FROM ${inputTableName} <#if where??>WHERE ${where}</#if>",
+            Specifications.TEMPLATE_FILE);
+
     private InputPortObject<TableInfo> primaryInput;
     private InputPortObject<TableInfo> secondInput;
     private OutputPortObject<TableInfo> outputPort;
@@ -43,7 +49,7 @@ public class JoinOperator extends Operator {
     @Override
     protected void execute() {
         if (outputPorts.isEmpty() || this.operatorWrapper == null) {
-            log.error("BroadcastOperator information err.");
+            log.error("JoinOperator information err.");
             return;
         }
 
