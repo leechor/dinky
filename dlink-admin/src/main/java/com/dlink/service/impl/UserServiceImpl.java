@@ -220,6 +220,9 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
             if (result) {
                 return Result.succeed("用户授权角色成功");
             } else {
+                if (userRoleList.size() == 0) {
+                    return Result.succeed("该用户绑定的角色已被全部删除");
+                }
                 return Result.failed("用户授权角色失败");
             }
         } else {
@@ -242,7 +245,7 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
         Set<Integer> tenantIds = new HashSet<>();
         userTenants.forEach(userTenant -> tenantIds.add(userTenant.getTenantId()));
         List<Tenant> tenants = tenantService.getTenantByIds(tenantIds);
-        return Result.succeed(tenants, MessageResolverUtils.getMessage("response.get.successfully"));
+        return Result.succeed(tenants, MessageResolverUtils.getMessage("response.get.success"));
     }
 
 }

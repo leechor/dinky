@@ -20,6 +20,7 @@
 package com.dlink.executor;
 
 import com.dlink.assertion.Asserts;
+import com.dlink.executor.custom.AbstractCustomTableEnvironment;
 
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -37,15 +38,17 @@ public class RemoteStreamExecutor extends Executor {
         this.executorSetting = executorSetting;
         if (Asserts.isNotNull(executorSetting.getConfig())) {
             Configuration configuration = Configuration.fromMap(executorSetting.getConfig());
-            this.environment = StreamExecutionEnvironment.createRemoteEnvironment(environmentSetting.getHost(), environmentSetting.getPort(), configuration, environmentSetting.getJarFiles());
+            this.environment = StreamExecutionEnvironment.createRemoteEnvironment(environmentSetting.getHost(),
+                    environmentSetting.getPort(), configuration, environmentSetting.getJarFiles());
         } else {
-            this.environment = StreamExecutionEnvironment.createRemoteEnvironment(environmentSetting.getHost(), environmentSetting.getPort(), environmentSetting.getJarFiles());
+            this.environment = StreamExecutionEnvironment.createRemoteEnvironment(environmentSetting.getHost(),
+                    environmentSetting.getPort(), environmentSetting.getJarFiles());
         }
         init();
     }
 
     @Override
     CustomTableEnvironment createCustomTableEnvironment() {
-        return CustomTableEnvironmentImpl.create(environment);
+        return AbstractCustomTableEnvironment.create(environment);
     }
 }
