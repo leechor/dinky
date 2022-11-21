@@ -48,6 +48,7 @@ under the License.
         <jackson>2.13.3</jackson>
         <google-java-forma.version>1.15.0</google-java-forma.version>
         <checker.version>3.25.0</checker.version>
+        <reflections.version>0.10.2</reflections.version>
     </properties>
 
     <repositories>
@@ -65,6 +66,11 @@ under the License.
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>${reflections.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.checkerframework</groupId>
             <artifactId>checker-qual</artifactId>
