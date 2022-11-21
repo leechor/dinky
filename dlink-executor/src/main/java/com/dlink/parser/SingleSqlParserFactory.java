@@ -33,33 +33,57 @@ import java.util.regex.Pattern;
 public class SingleSqlParserFactory {
 
     public static Map<String, List<String>> generateParser(String sql) {
-        BaseSingleSqlParser tmp = null;
-        //sql = sql.replace("\n"," ").replaceAll("\\s{1,}", " ") +" ENDOFSQL";
+        BaseSingleSqlParser tmp = getBaseSingleSqlParser(sql);
+        if (tmp != null) {
+            return tmp.splitSql2Segment();
+        }
+
+        throw new IllegalArgumentException(String.format("sql:%s parse fail!", sql));
+    }
+
+    private static BaseSingleSqlParser getBaseSingleSqlParser(String sql) {
         sql = sql.replace("\r\n", " ").replace("\n", " ") + " ENDOFSQL";
         if (contains(sql, "(insert\\s+into)(.+)(select)(.+)(from)(.+)")) {
-            tmp = new InsertSelectSqlParser(sql);
-        } else if (contains(sql, "(create\\s+aggtable)(.+)(as\\s+select)(.+)")) {
-            tmp = new CreateAggTableSelectSqlParser(sql);
-        } else if (contains(sql, "(execute\\s+cdcsource)")) {
-            tmp = new CreateCDCSourceSqlParser(sql);
-        } else if (contains(sql, "(select)(.+)(from)(.+)")) {
-            tmp = new SelectSqlParser(sql);
-        } else if (contains(sql, "(delete\\s+from)(.+)")) {
-            tmp = new DeleteSqlParser(sql);
-        } else if (contains(sql, "(update)(.+)(set)(.+)")) {
-            tmp = new UpdateSqlParser(sql);
-        } else if (contains(sql, "(insert\\s+into)(.+)(values)(.+)")) {
-            tmp = new InsertSqlParser(sql);
-        //} else if (contains(sql, "(create\\s+table)(.+)")) {
-        //} else if (contains(sql, "(create\\s+database)(.+)")) {
-        //} else if (contains(sql, "(show\\s+databases)")) {
-        //} else if (contains(sql, "(use)(.+)")) {
-        } else if (contains(sql, "(set)(.+)")) {
-            tmp = new SetSqlParser(sql);
-        } else if (contains(sql, "(show\\s+fragment)\\s+(.+)")) {
-            tmp = new ShowFragmentParser(sql);
+            return new InsertSelectSqlParser(sql);
         }
-        return tmp.splitSql2Segment();
+
+        if (contains(sql, "(create\\s+aggtable)(.+)(as\\s+select)(.+)")) {
+            return new CreateAggTableSelectSqlParser(sql);
+        }
+
+        if (contains(sql, CreateTemporalTableFunctionSelectSqlParser.IDENTIFIER_SQL + "(.+)")) {
+            return new CreateTemporalTableFunctionSelectSqlParser(sql);
+        }
+
+        if (contains(sql, "(execute\\s+cdcsource)")) {
+            return new CreateCDCSourceSqlParser(sql);
+        }
+
+        if (contains(sql, "(select)(.+)(from)(.+)")) {
+            return new SelectSqlParser(sql);
+        }
+
+        if (contains(sql, "(delete\\s+from)(.+)")) {
+            return new DeleteSqlParser(sql);
+        }
+
+        if (contains(sql, "(update)(.+)(set)(.+)")) {
+            return new UpdateSqlParser(sql);
+        }
+
+        if (contains(sql, "(insert\\s+into)(.+)(values)(.+)")) {
+            return new InsertSqlParser(sql);
+        }
+
+        if (contains(sql, "(set)(.+)")) {
+            return new SetSqlParser(sql);
+        }
+
+        if (contains(sql, "(show\\s+fragment)\\s+(.+)")) {
+            return new ShowFragmentParser(sql);
+        }
+
+        return null;
     }
 
     /**

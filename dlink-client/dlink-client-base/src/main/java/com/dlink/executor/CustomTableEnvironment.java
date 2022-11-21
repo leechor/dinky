@@ -37,6 +37,7 @@ import org.apache.flink.table.catalog.CatalogManager;
 import org.apache.flink.table.delegation.Parser;
 import org.apache.flink.table.delegation.Planner;
 import org.apache.flink.table.expressions.Expression;
+import org.apache.flink.table.functions.TableFunction;
 
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * @since 2022/2/5 10:35
  */
 public interface CustomTableEnvironment {
+
+    StreamExecutionEnvironment getExecutionEnvironment();
 
     TableConfig getConfig();
 
@@ -95,4 +98,6 @@ public interface CustomTableEnvironment {
     Planner getPlanner();
 
     List<LineageRel> getLineage(String statement);
+
+    <T> void registerFunction(String name, TableFunction<T> tableFunction);
 }

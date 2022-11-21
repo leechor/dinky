@@ -19,14 +19,15 @@
 
 package com.dlink.trans;
 
-import com.dlink.parser.SqlType;
-import com.dlink.trans.ddl.CreateAggTableOperation;
-import com.dlink.trans.ddl.CreateCDCSourceOperation;
-import com.dlink.trans.ddl.SetOperation;
-import com.dlink.trans.ddl.ShowFragmentOperation;
-import com.dlink.trans.ddl.ShowFragmentsOperation;
+import static org.reflections.scanners.Scanners.SubTypes;
 
+import com.dlink.parser.SqlType;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.Set;
+
+import org.reflections.Reflections;
 
 /**
  * Operations
@@ -39,12 +40,19 @@ public class Operations {
     private Operations() {
     }
 
-    private static final Operation[] ALL_OPERATIONS = {new CreateAggTableOperation()
-            , new SetOperation()
-            , new CreateCDCSourceOperation()
-            , new ShowFragmentsOperation()
-            , new ShowFragmentOperation()
-    };
+    private static final Operation[] ALL_OPERATIONS = getAllOperations();
+
+    private static Operation[] getAllOperations() {
+        Reflections reflections = new Reflections(Operation.class.getPackage().getName());
+        Set<Class<?>> operations = reflections.get(SubTypes.of(Operation.class).asClass());
+        return operations.stream().map(t -> {
+            try {
+                return t.getConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        }).toArray(Operation[]::new);
+    }
 
     public static SqlType getSqlTypeFromStatements(String statement) {
         String[] statements = statement.split(";");
@@ -75,14 +83,14 @@ public class Operations {
 
     public static Operation buildOperation(String statement) {
         String sql = statement.replace("\n", " ")
-                .replaceAll("\\s+", " ")
-                .trim()
-                .toUpperCase();
+            .replaceAll("\\s+", " ")
+            .trim()
+            .toUpperCase();
 
         return Arrays.stream(ALL_OPERATIONS)
-                .filter(p -> sql.startsWith(p.getHandle()))
-                .findFirst()
-                .map(p -> p.create(statement))
-                .orElse(null);
+            .filter(p -> sql.startsWith(p.getHandle()))
+            .findFirst()
+            .map(p -> p.create(statement))
+            .orElse(null);
     }
 }

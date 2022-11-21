@@ -26,13 +26,18 @@
 
     <artifactId>dlink-executor</artifactId>
     <properties>
-
+        <reflections.version>0.10.2</reflections.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>${target.java.version}</maven.compiler.source>
         <maven.compiler.target>${target.java.version}</maven.compiler.target>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>${reflections.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.dlink</groupId>
             <artifactId>dlink-common</artifactId>

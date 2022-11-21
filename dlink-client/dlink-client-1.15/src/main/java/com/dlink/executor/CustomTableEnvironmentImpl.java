@@ -50,6 +50,8 @@ import org.apache.flink.table.delegation.ExpressionParser;
 import org.apache.flink.table.delegation.Planner;
 import org.apache.flink.table.expressions.Expression;
 import org.apache.flink.table.factories.PlannerFactoryUtil;
+import org.apache.flink.table.functions.TableFunction;
+import org.apache.flink.table.functions.UserDefinedFunctionHelper;
 import org.apache.flink.table.module.ModuleManager;
 import org.apache.flink.table.operations.DataStreamQueryOperation;
 import org.apache.flink.table.operations.ExplainOperation;
@@ -158,6 +160,20 @@ public class CustomTableEnvironmentImpl extends AbstractStreamTableEnvironmentIm
             settings.isStreamingMode(),
             classLoader);
     }
+
+    @Override
+    public StreamExecutionEnvironment getExecutionEnvironment() {
+        return super.executionEnvironment;
+    }
+
+    @Override
+    public <T> void registerFunction(String name, TableFunction<T> tableFunction) {
+        TypeInformation<T> typeInfo =
+                UserDefinedFunctionHelper.getReturnTypeOfTableFunction(tableFunction);
+
+        functionCatalog.registerTempSystemTableFunction(name, tableFunction, typeInfo);
+    }
+
 
     public ObjectNode getStreamGraph(String statement) {
         List<Operation> operations = super.getParser().parse(statement);
