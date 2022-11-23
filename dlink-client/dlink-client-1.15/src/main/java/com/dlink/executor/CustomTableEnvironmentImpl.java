@@ -19,12 +19,15 @@
 
 package com.dlink.executor;
 
+import static org.apache.flink.table.api.bridge.internal.AbstractStreamTableEnvironmentImpl.lookupExecutor;
+
 import com.dlink.assertion.Asserts;
 import com.dlink.model.LineageRel;
 import com.dlink.result.SqlExplainResult;
+import com.dlink.utils.FlinkStreamProgramWithoutPhysical;
+import com.dlink.utils.LineageContext;
 
 import org.apache.flink.api.common.RuntimeExecutionMode;
-import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.dag.Transformation;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.ExecutionOptions;
@@ -41,7 +44,8 @@ import org.apache.flink.table.api.ExplainDetail;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.TableConfig;
 import org.apache.flink.table.api.TableException;
-import org.apache.flink.table.api.bridge.internal.AbstractStreamTableEnvironmentImpl;
+import org.apache.flink.table.api.bridge.java.internal.StreamTableEnvironmentImpl;
+import org.apache.flink.table.api.internal.TableEnvironmentImpl;
 import org.apache.flink.table.catalog.CatalogManager;
 import org.apache.flink.table.catalog.FunctionCatalog;
 import org.apache.flink.table.catalog.GenericInMemoryCatalog;
@@ -51,21 +55,18 @@ import org.apache.flink.table.delegation.Planner;
 import org.apache.flink.table.expressions.Expression;
 import org.apache.flink.table.factories.PlannerFactoryUtil;
 import org.apache.flink.table.module.ModuleManager;
-import org.apache.flink.table.operations.DataStreamQueryOperation;
 import org.apache.flink.table.operations.ExplainOperation;
 import org.apache.flink.table.operations.ModifyOperation;
 import org.apache.flink.table.operations.Operation;
 import org.apache.flink.table.operations.QueryOperation;
 import org.apache.flink.table.operations.command.ResetOperation;
 import org.apache.flink.table.operations.command.SetOperation;
-import org.apache.flink.table.typeutils.FieldInfoUtils;
+import org.apache.flink.table.planner.plan.optimize.program.FlinkChainedProgram;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -77,8 +78,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * @author wenmo
  * @since 2022/05/08
  **/
-public class CustomTableEnvironmentImpl extends AbstractStreamTableEnvironmentImpl
-    implements CustomTableEnvironment {
+public class CustomTableEnvironmentImpl extends AbstractCustomTableEnvironment {
+
+    private final FlinkChainedProgram flinkChainedProgram;
 
     public CustomTableEnvironmentImpl(
         CatalogManager catalogManager,
@@ -90,16 +92,18 @@ public class CustomTableEnvironmentImpl extends AbstractStreamTableEnvironmentIm
         Executor executor,
         boolean isStreamingMode,
         ClassLoader userClassLoader) {
-        super(
+        super(new StreamTableEnvironmentImpl(
             catalogManager,
             moduleManager,
-            tableConfig,
-            executor,
             functionCatalog,
+            tableConfig,
+            executionEnvironment,
             planner,
+            executor,
             isStreamingMode,
-            userClassLoader,
-            executionEnvironment);
+            userClassLoader));
+        this.flinkChainedProgram =
+            FlinkStreamProgramWithoutPhysical.buildProgram((Configuration) getStreamExecutionEnvironment().getConfiguration());
     }
 
     public static CustomTableEnvironmentImpl create(StreamExecutionEnvironment executionEnvironment) {
@@ -115,7 +119,8 @@ public class CustomTableEnvironmentImpl extends AbstractStreamTableEnvironmentIm
     }
 
     public static CustomTableEnvironmentImpl create(
-        StreamExecutionEnvironment executionEnvironment, EnvironmentSettings settings) {
+        StreamExecutionEnvironment executionEnvironment,
+        EnvironmentSettings settings) {
 
         // temporary solution until FLINK-15635 is fixed
         final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -129,16 +134,16 @@ public class CustomTableEnvironmentImpl extends AbstractStreamTableEnvironmentIm
         final ModuleManager moduleManager = new ModuleManager();
 
         final CatalogManager catalogManager =
-            CatalogManager.newBuilder()
-                .classLoader(classLoader)
-                .config(tableConfig)
-                .defaultCatalog(
-                    settings.getBuiltInCatalogName(),
-                    new GenericInMemoryCatalog(
-                        settings.getBuiltInCatalogName(),
-                        settings.getBuiltInDatabaseName()))
-                .executionConfig(executionEnvironment.getConfig())
-                .build();
+                CatalogManager.newBuilder()
+                        .classLoader(classLoader)
+                        .config(tableConfig)
+                        .defaultCatalog(
+                                settings.getBuiltInCatalogName(),
+                                new GenericInMemoryCatalog(
+                                        settings.getBuiltInCatalogName(),
+                                        settings.getBuiltInDatabaseName()))
+                        .executionConfig(executionEnvironment.getConfig())
+                        .build();
 
         final FunctionCatalog functionCatalog =
             new FunctionCatalog(tableConfig, catalogManager, moduleManager);
@@ -170,13 +175,13 @@ public class CustomTableEnvironmentImpl extends AbstractStreamTableEnvironmentIm
                     modifyOperations.add((ModifyOperation) operations.get(i));
                 }
             }
-            List<Transformation<?>> trans = super.planner.translate(modifyOperations);
+            List<Transformation<?>> trans = getPlanner().translate(modifyOperations);
             for (Transformation<?> transformation : trans) {
-                executionEnvironment.addOperator(transformation);
+                getStreamExecutionEnvironment().addOperator(transformation);
             }
-            StreamGraph streamGraph = executionEnvironment.getStreamGraph();
-            if (tableConfig.getConfiguration().containsKey(PipelineOptions.NAME.key())) {
-                streamGraph.setJobName(tableConfig.getConfiguration().getString(PipelineOptions.NAME));
+            StreamGraph streamGraph = getStreamExecutionEnvironment().getStreamGraph();
+            if (getConfig().getConfiguration().containsKey(PipelineOptions.NAME.key())) {
+                streamGraph.setJobName(getConfig().getConfiguration().getString(PipelineOptions.NAME));
             }
             JSONGenerator jsonGenerator = new JSONGenerator(streamGraph);
             String json = jsonGenerator.getJSON();
@@ -214,11 +219,11 @@ public class CustomTableEnvironmentImpl extends AbstractStreamTableEnvironmentIm
         }
         List<Transformation<?>> trans = getPlanner().translate(modifyOperations);
         for (Transformation<?> transformation : trans) {
-            executionEnvironment.addOperator(transformation);
+            getStreamExecutionEnvironment().addOperator(transformation);
         }
-        StreamGraph streamGraph = executionEnvironment.getStreamGraph();
-        if (tableConfig.getConfiguration().containsKey(PipelineOptions.NAME.key())) {
-            streamGraph.setJobName(tableConfig.getConfiguration().getString(PipelineOptions.NAME));
+        StreamGraph streamGraph = getStreamExecutionEnvironment().getStreamGraph();
+        if (getConfig().getConfiguration().containsKey(PipelineOptions.NAME.key())) {
+            streamGraph.setJobName(getConfig().getConfiguration().getString(PipelineOptions.NAME));
         }
         return streamGraph;
     }
@@ -248,14 +253,15 @@ public class CustomTableEnvironmentImpl extends AbstractStreamTableEnvironmentIm
         }
         record.setExplainTrue(true);
         if ("DDL".equals(record.getType())) {
-            //record.setExplain("DDL语句不进行解释。");
+            // record.setExplain("DDL语句不进行解释。");
             return record;
         }
-        record.setExplain(planner.explain(operations, extraDetails));
+        record.setExplain(getPlanner().explain(operations, extraDetails));
         return record;
     }
 
-    public boolean parseAndLoadConfiguration(String statement, StreamExecutionEnvironment environment, Map<String, Object> setMap) {
+    public boolean parseAndLoadConfiguration(String statement, StreamExecutionEnvironment environment,
+                                             Map<String, Object> setMap) {
         List<Operation> operations = getParser().parse(statement);
         for (Operation operation : operations) {
             if (operation instanceof SetOperation) {
@@ -269,7 +275,8 @@ public class CustomTableEnvironmentImpl extends AbstractStreamTableEnvironmentIm
         return false;
     }
 
-    private void callSet(SetOperation setOperation, StreamExecutionEnvironment environment, Map<String, Object> setMap) {
+    private void callSet(SetOperation setOperation, StreamExecutionEnvironment environment,
+                         Map<String, Object> setMap) {
         if (setOperation.getKey().isPresent() && setOperation.getValue().isPresent()) {
             String key = setOperation.getKey().get().trim();
             String value = setOperation.getValue().get().trim();
@@ -285,7 +292,8 @@ public class CustomTableEnvironmentImpl extends AbstractStreamTableEnvironmentIm
         }
     }
 
-    private void callReset(ResetOperation resetOperation, StreamExecutionEnvironment environment, Map<String, Object> setMap) {
+    private void callReset(ResetOperation resetOperation, StreamExecutionEnvironment environment,
+                           Map<String, Object> setMap) {
         if (resetOperation.getKey().isPresent()) {
             String key = resetOperation.getKey().get().trim();
             if (Asserts.isNullString(key)) {
@@ -302,10 +310,6 @@ public class CustomTableEnvironmentImpl extends AbstractStreamTableEnvironmentIm
         }
     }
 
-    public <T> Table fromDataStream(DataStream<T> dataStream, Expression... fields) {
-        return createTable(asQueryOperation(dataStream, Optional.of(Arrays.asList(fields))));
-    }
-
     public <T> Table fromDataStream(DataStream<T> dataStream, String fields) {
         List<Expression> expressions = ExpressionParser.INSTANCE.parseExpressionList(fields);
         return fromDataStream(dataStream, expressions.toArray(new Expression[0]));
@@ -318,24 +322,13 @@ public class CustomTableEnvironmentImpl extends AbstractStreamTableEnvironmentIm
 
     @Override
     public List<LineageRel> getLineage(String statement) {
-        return null;
+        LineageContext lineageContext = new LineageContext(flinkChainedProgram, (TableEnvironmentImpl)streamTableEnvironment);
+        return lineageContext.getLineage(statement);
     }
 
     @Override
     public <T> void createTemporaryView(
         String path, DataStream<T> dataStream, Expression... fields) {
         createTemporaryView(path, fromDataStream(dataStream, fields));
-    }
-
-    protected <T> DataStreamQueryOperation<T> asQueryOperation(DataStream<T> dataStream, Optional<List<Expression>> fields) {
-        TypeInformation<T> streamType = dataStream.getType();
-        FieldInfoUtils.TypeInfoSchema typeInfoSchema = (FieldInfoUtils.TypeInfoSchema) fields.map((f) -> {
-            FieldInfoUtils.TypeInfoSchema fieldsInfo = FieldInfoUtils.getFieldsInfo(streamType, (Expression[]) f.toArray(new Expression[0]));
-            this.validateTimeCharacteristic(fieldsInfo.isRowtimeDefined());
-            return fieldsInfo;
-        }).orElseGet(() -> {
-            return FieldInfoUtils.getFieldsInfo(streamType);
-        });
-        return new DataStreamQueryOperation(dataStream, typeInfoSchema.getIndices(), typeInfoSchema.toResolvedSchema());
     }
 }

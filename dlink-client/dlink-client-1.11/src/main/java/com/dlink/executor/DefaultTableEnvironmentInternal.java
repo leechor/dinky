@@ -17,21 +17,16 @@
  *
  */
 
-package com.dlink.executor.custom;
+package com.dlink.executor;
 
-import com.dlink.executor.TableEnvironmentInstance;
-
-import org.apache.flink.table.api.CompiledPlan;
 import org.apache.flink.table.api.ExplainDetail;
-import org.apache.flink.table.api.Table;
+import org.apache.flink.table.api.TableResult;
 import org.apache.flink.table.api.internal.TableEnvironmentInternal;
-import org.apache.flink.table.api.internal.TableResultInternal;
 import org.apache.flink.table.catalog.CatalogManager;
-import org.apache.flink.table.delegation.InternalPlan;
 import org.apache.flink.table.delegation.Parser;
 import org.apache.flink.table.operations.ModifyOperation;
 import org.apache.flink.table.operations.Operation;
-import org.apache.flink.table.operations.utils.OperationTreeBuilder;
+import org.apache.flink.table.operations.QueryOperation;
 import org.apache.flink.table.sinks.TableSink;
 import org.apache.flink.table.sources.TableSource;
 
@@ -46,53 +41,38 @@ public interface DefaultTableEnvironmentInternal extends TableEnvironmentInterna
         return (TableEnvironmentInternal) getTableEnvironment();
     }
 
-    // region TableEnvironmentInternal interface
+    @Override
     default Parser getParser() {
         return getTableEnvironmentInternal().getParser();
     }
 
+    @Override
     default CatalogManager getCatalogManager() {
         return getTableEnvironmentInternal().getCatalogManager();
     }
 
-    default OperationTreeBuilder getOperationTreeBuilder() {
-        return getTableEnvironmentInternal().getOperationTreeBuilder();
-    }
-
-    default Table fromTableSource(TableSource<?> tableSource) {
-        return getTableEnvironmentInternal().fromTableSource(tableSource);
-    }
-
-    default TableResultInternal executeInternal(List<ModifyOperation> list) {
+    @Override
+    default TableResult executeInternal(List<ModifyOperation> list) {
         return getTableEnvironmentInternal().executeInternal(list);
     }
 
-    default TableResultInternal executeInternal(Operation operation) {
-        return getTableEnvironmentInternal().executeInternal(operation);
-    }
-
+    @Override
     default String explainInternal(List<Operation> list, ExplainDetail... explainDetails) {
         return getTableEnvironmentInternal().explainInternal(list, explainDetails);
     }
 
+    @Override
     default void registerTableSourceInternal(String s, TableSource<?> tableSource) {
         getTableEnvironmentInternal().registerTableSourceInternal(s, tableSource);
     }
 
+    @Override
     default void registerTableSinkInternal(String s, TableSink<?> tableSink) {
         getTableEnvironmentInternal().registerTableSinkInternal(s, tableSink);
     }
 
-    default CompiledPlan compilePlan(List<ModifyOperation> list) {
-        return getTableEnvironmentInternal().compilePlan(list);
+    @Override
+    default TableResult executeInternal(QueryOperation queryOperation) {
+        return getTableEnvironmentInternal().executeInternal(queryOperation);
     }
-
-    default TableResultInternal executePlan(InternalPlan internalPlan) {
-        return getTableEnvironmentInternal().executePlan(internalPlan);
-    }
-
-    default String explainPlan(InternalPlan internalPlan, ExplainDetail... explainDetails) {
-        return getTableEnvironmentInternal().explainPlan(internalPlan, explainDetails);
-    }
-    // endregion
 }
