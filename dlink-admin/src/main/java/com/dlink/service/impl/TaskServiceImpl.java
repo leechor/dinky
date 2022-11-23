@@ -704,9 +704,9 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
         }
 
         boolean result = savepointTask(id, type);
-        if (!result) {
-            return Result.failed("操作失败");
-        }
+//        if (!result) {
+//            return Result.failed("操作失败");
+//        }
 
         if (!JobLifeCycle.ONLINE.equalsValue(task.getStep())) {
             return Result.succeed("停止成功");

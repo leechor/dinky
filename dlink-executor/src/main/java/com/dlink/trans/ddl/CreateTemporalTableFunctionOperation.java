@@ -6,8 +6,8 @@ import com.dlink.executor.Executor;
 import com.dlink.trans.AbstractOperation;
 import com.dlink.trans.Operation;
 
+import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.TableResult;
-import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.apache.flink.table.functions.TemporalTableFunction;
 
 /**
@@ -38,6 +38,7 @@ public class CreateTemporalTableFunctionOperation extends AbstractOperation impl
         TemporalTable temporalTable = TemporalTable.build(statement);
         CustomTableEnvironment env = executor.getCustomTableEnvironment();
         CustomTableEnvironmentImpl customTableEnvironmentImpl = ((CustomTableEnvironmentImpl)env);
+        Table table = env.sqlQuery("select * from " + temporalTable.getTable());
         TemporalTableFunction ttf = customTableEnvironmentImpl.from(temporalTable.getTable())
             .createTemporalTableFunction(temporalTable.getColumns()[0],
                 temporalTable.getColumns()[1]);
