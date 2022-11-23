@@ -32,8 +32,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * @since 2021/5/28
  */
 @EnableTransactionManagement
-@SpringBootApplication(scanBasePackages = {"com.dlink", "com.zdpx"})
-@SpringBootApplication(exclude = FreeMarkerAutoConfiguration.class)
+@SpringBootApplication(scanBasePackages = {"com.dlink", "com.zdpx"}, exclude = FreeMarkerAutoConfiguration.class)
 @EnableCaching
 public class Dlink {
 
