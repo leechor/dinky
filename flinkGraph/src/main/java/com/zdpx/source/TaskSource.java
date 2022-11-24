@@ -5,7 +5,10 @@ import org.apache.flink.table.data.GenericRowData;
 import org.apache.flink.table.data.RowData;
 import org.apache.flink.table.data.StringData;
 
+import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.javafaker.Faker;
 
 import lombok.AllArgsConstructor;
@@ -20,15 +23,22 @@ import myflink.SimulateGbuZl;
 public class TaskSource extends RichSourceFunction<RowData> {
     private static final Faker faker = new Faker();
     static ObjectMapper mapper = new ObjectMapper();
+
+    static {
+        mapper.registerModule(new JavaTimeModule());
+    }
+
     private boolean flag = true;
 
     @Override
     public void run(SourceContext<RowData> ctx) throws Exception {
+
         while (flag) {
             TaskContext taskContext =
                 TaskContext.builder()
                     .taskId(SimulateGbuZl.TASK_A)
                     .taskStatus(faker.number().numberBetween(0, 1))
+                    .dt(LocalDateTime.now().toString())
                     .build();
             String taskJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(taskContext);
             ctx.collect(GenericRowData.of(StringData.fromString("task"), StringData.fromString(taskJson)));
@@ -48,5 +58,6 @@ public class TaskSource extends RichSourceFunction<RowData> {
     public static class TaskContext {
         private String taskId;
         private int taskStatus;
+        private String  dt;
     }
 }

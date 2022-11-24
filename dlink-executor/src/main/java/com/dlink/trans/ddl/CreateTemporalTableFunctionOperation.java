@@ -6,8 +6,9 @@ import com.dlink.executor.Executor;
 import com.dlink.trans.AbstractOperation;
 import com.dlink.trans.Operation;
 
-import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.TableResult;
+import org.apache.flink.table.expressions.Expression;
+import org.apache.flink.table.expressions.ValueLiteralExpression;
 import org.apache.flink.table.functions.TemporalTableFunction;
 
 /**
@@ -38,11 +39,11 @@ public class CreateTemporalTableFunctionOperation extends AbstractOperation impl
         TemporalTable temporalTable = TemporalTable.build(statement);
         CustomTableEnvironment env = executor.getCustomTableEnvironment();
         CustomTableEnvironmentImpl customTableEnvironmentImpl = ((CustomTableEnvironmentImpl)env);
-        Table table = env.sqlQuery("select * from " + temporalTable.getTable());
+        Expression expression1 = new ValueLiteralExpression(temporalTable.getColumns()[0]);
+        Expression expression2 = new ValueLiteralExpression(temporalTable.getColumns()[1]);
         TemporalTableFunction ttf = customTableEnvironmentImpl.from(temporalTable.getTable())
-            .createTemporalTableFunction(temporalTable.getColumns()[0],
-                temporalTable.getColumns()[1]);
-        customTableEnvironmentImpl.registerFunction(temporalTable.getName(), ttf);
+            .createTemporalTableFunction(expression1, expression2);
+        customTableEnvironmentImpl.createTemporarySystemFunction(temporalTable.getName(), ttf);
         return null;
     }
 }

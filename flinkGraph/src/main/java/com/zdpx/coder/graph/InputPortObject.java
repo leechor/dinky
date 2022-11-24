@@ -1,6 +1,5 @@
 package com.zdpx.coder.graph;
 
-
 import com.zdpx.coder.operator.Operator;
 import com.zdpx.coder.utils.Preconditions;
 

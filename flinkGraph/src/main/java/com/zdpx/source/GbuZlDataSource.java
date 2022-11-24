@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.github.javafaker.Faker;
@@ -28,6 +29,7 @@ public class GbuZlDataSource implements SourceFunction<RowData> {
     @Override
     public void run(SourceContext<RowData> ctx) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
         boolean tombStone = false;
         Thread.sleep(2000);
 
@@ -65,7 +67,7 @@ public class GbuZlDataSource implements SourceFunction<RowData> {
 
         @JsonDeserialize(using = LocalDateTimeDeserializer.class)
         @JsonSerialize(using = LocalDateTimeSerializer.class)
-        private LocalDateTime dt;
+        private String  dt;
 
         private double value;
 
@@ -74,7 +76,7 @@ public class GbuZlDataSource implements SourceFunction<RowData> {
                 .id(faker.idNumber().validSvSeSsn())
                 .longitude(faker.number().numberBetween(0, 180))
                 .latitude(faker.number().numberBetween(0, 90))
-                .dt(LocalDateTime.now())
+                .dt(LocalDateTime.now().toString())
                 .value(faker.number().randomDouble(2, 0, 1000))
                 .build();
         }
@@ -96,7 +98,7 @@ public class GbuZlDataSource implements SourceFunction<RowData> {
 
         @JsonDeserialize(using = LocalDateTimeDeserializer.class)
         @JsonSerialize(using = LocalDateTimeSerializer.class)
-        private LocalDateTime dt;
+        private String dt;
 
         private int number;
         private double value;
@@ -108,8 +110,10 @@ public class GbuZlDataSource implements SourceFunction<RowData> {
                 .latitude(faker.number().numberBetween(0, 90))
                 .number(faker.number().numberBetween(0, 100))
                 .value(faker.number().randomDouble(2, 0, 1000))
+                .dt(LocalDateTime.now().toString())
                 .build();
         }
+
     }
 }
 
