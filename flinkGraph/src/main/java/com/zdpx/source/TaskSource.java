@@ -4,6 +4,7 @@ import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
 import org.apache.flink.table.data.GenericRowData;
 import org.apache.flink.table.data.RowData;
 import org.apache.flink.table.data.StringData;
+import org.apache.flink.table.data.TimestampData;
 
 import java.time.LocalDateTime;
 
@@ -38,10 +39,13 @@ public class TaskSource extends RichSourceFunction<RowData> {
                 TaskContext.builder()
                     .taskId(SimulateGbuZl.TASK_A)
                     .taskStatus(faker.number().numberBetween(0, 1))
-                    .dt(LocalDateTime.now().toString())
+                    .dt(LocalDateTime.now())
                     .build();
             String taskJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(taskContext);
-            ctx.collect(GenericRowData.of(StringData.fromString("task"), StringData.fromString(taskJson)));
+            ctx.collect(GenericRowData.of(StringData.fromString("task"),
+                StringData.fromString(taskContext.getTaskId()),
+                taskContext.getTaskStatus(),
+                TimestampData.fromLocalDateTime((taskContext.getDt()))));
             Thread.sleep(10000);
         }
     }
@@ -58,6 +62,6 @@ public class TaskSource extends RichSourceFunction<RowData> {
     public static class TaskContext {
         private String taskId;
         private int taskStatus;
-        private String  dt;
+        private LocalDateTime dt;
     }
 }

@@ -1,16 +1,14 @@
 package com.zdpx.coder.utils;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import lombok.extern.slf4j.Slf4j;
-
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-
-import static freemarker.template.Configuration.VERSION_2_3_28;
 
 
 /**

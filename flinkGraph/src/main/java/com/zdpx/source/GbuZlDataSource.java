@@ -4,6 +4,7 @@ import org.apache.flink.streaming.api.functions.source.SourceFunction;
 import org.apache.flink.table.data.GenericRowData;
 import org.apache.flink.table.data.RowData;
 import org.apache.flink.table.data.StringData;
+import org.apache.flink.table.data.TimestampData;
 
 import java.time.LocalDateTime;
 
@@ -34,12 +35,27 @@ public class GbuZlDataSource implements SourceFunction<RowData> {
         Thread.sleep(2000);
 
         while (isRunning) {
-            String gbuJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(GBU.generate());
-            ctx.collect(GenericRowData.of(StringData.fromString("gbu"), StringData.fromString(gbuJson)));
+            GBU gbu = GBU.generate();
+            String gbuJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(gbu);
+
+            ctx.collect(GenericRowData.of(StringData.fromString("gbu"),
+                StringData.fromString("taskA"),
+                StringData.fromString(gbu.getId()),
+                gbu.getLongitude(),
+                gbu.getLatitude(),
+                TimestampData.fromLocalDateTime((gbu.getDt())),
+                gbu.getValue()));
 
             String zlJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(ZL.generate());
+            ZL zl = ZL.generate();
             if (!tombStone) {
-                ctx.collect(GenericRowData.of(StringData.fromString("zl"), StringData.fromString(zlJson)));
+                ctx.collect(GenericRowData.of(StringData.fromString("zl"),
+                    StringData.fromString("taskA"),
+                    StringData.fromString(zl.getId()),
+                    zl.getLongitude(),
+                    zl.getLatitude(),
+                    TimestampData.fromLocalDateTime((zl.getDt())),
+                    zl.getValue()));
                 tombStone = true;
             }
             Thread.sleep(1000);
@@ -67,7 +83,7 @@ public class GbuZlDataSource implements SourceFunction<RowData> {
 
         @JsonDeserialize(using = LocalDateTimeDeserializer.class)
         @JsonSerialize(using = LocalDateTimeSerializer.class)
-        private String  dt;
+        private LocalDateTime dt;
 
         private double value;
 
@@ -76,7 +92,7 @@ public class GbuZlDataSource implements SourceFunction<RowData> {
                 .id(faker.idNumber().validSvSeSsn())
                 .longitude(faker.number().numberBetween(0, 180))
                 .latitude(faker.number().numberBetween(0, 90))
-                .dt(LocalDateTime.now().toString())
+                .dt(LocalDateTime.now())
                 .value(faker.number().randomDouble(2, 0, 1000))
                 .build();
         }
@@ -98,7 +114,7 @@ public class GbuZlDataSource implements SourceFunction<RowData> {
 
         @JsonDeserialize(using = LocalDateTimeDeserializer.class)
         @JsonSerialize(using = LocalDateTimeSerializer.class)
-        private String dt;
+        private LocalDateTime dt;
 
         private int number;
         private double value;
@@ -110,7 +126,7 @@ public class GbuZlDataSource implements SourceFunction<RowData> {
                 .latitude(faker.number().numberBetween(0, 90))
                 .number(faker.number().numberBetween(0, 100))
                 .value(faker.number().randomDouble(2, 0, 1000))
-                .dt(LocalDateTime.now().toString())
+                .dt(LocalDateTime.now())
                 .build();
         }
 
