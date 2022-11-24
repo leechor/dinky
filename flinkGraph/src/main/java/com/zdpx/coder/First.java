@@ -46,8 +46,8 @@ public final class First {
             "FROM DT_addSource_1 WHERE typ = 'zl'");
 
         TemporalTableFunction rates = tableEnv
-                .from("TS_addSource_2")
-                .createTemporalTableFunction($("dt"), $("taskId"));
+            .from("TS_addSource_2")
+            .createTemporalTableFunction($("dt"), $("taskId"));
 
         tableEnv.registerFunction("tp", rates);
 
