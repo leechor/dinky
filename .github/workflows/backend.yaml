@@ -46,15 +46,15 @@ jobs:
         run: |
           echo "::set-output name=dir::$(npm config get cache)"
       - uses: actions/cache@v3
-        id: npm-cache # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
+        id: npm-cache
         with:
           path: |
             ${{ steps.npm-cache-dir.outputs.dir }}
-            dlink-web/dist
           key: ${{ runner.os }}-node-${{ hashFiles('dlink-web/**/package.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
       - name: Install Dependencies
+        if: steps.npm-cache.outputs.cache-hit != 'true'
         run: cd dlink-web && npm install --legacy-peer-deps
       - name: Npm Web Build
         run: cd dlink-web && npm run build
