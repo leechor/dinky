@@ -52,16 +52,10 @@ public final class First {
         tableEnv.registerFunction("tp", rates);
 
         tableEnv.executeSql("CREATE VIEW JoinOperator16 AS " +
-            "SELECT id, V_GBU_addSource_1.taskId, taskStatus, V_GBU_addSource_1.dt FROM V_GBU_addSource_1 LEFT JOIN TS_addSource_2 FOR SYSTEM_TIME AS OF V_GBU_addSource_1.dt " +
+            "SELECT id, V_GBU_addSource_1.taskId, taskStatus, V_GBU_addSource_1.dt, TS_addSource_2.dt FROM V_GBU_addSource_1 LEFT JOIN TS_addSource_2 FOR SYSTEM_TIME AS OF V_GBU_addSource_1.dt " +
             "ON V_GBU_addSource_1.taskId = TS_addSource_2.taskId");
 
-        tableEnv.executeSql("CREATE VIEW JoinOperator17 AS " +
-            "SELECT id, V_GBU_addSource_1.taskId, taskStatus, V_GBU_addSource_1.dt " +
-            "FROM V_GBU_addSource_1 LATERAL TABLE (tp(V_GBU_addSource_1.dt)) AS tt " +
-            "ON V_GBU_addSource_1.taskId = tt.taskId");
-
-
-        Table table = tableEnv.sqlQuery("select * from JoinOperator17");
+        Table table = tableEnv.sqlQuery("select * from JoinOperator16");
         tableEnv.toChangelogStream(table).print();
         env.execute();
     }
