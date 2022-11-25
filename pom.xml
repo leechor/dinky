@@ -706,10 +706,10 @@
     </build>
 
     <repositories>
-        <repository>
-            <id>aliyun</id>
-            <url>https://maven.aliyun.com/repository/central</url>
-        </repository>
+<!--        <repository>-->
+<!--            <id>aliyun</id>-->
+<!--            <url>https://maven.aliyun.com/repository/central</url>-->
+<!--        </repository>-->
         <repository>
             <id>maven-central</id>
             <url>https://repo1.maven.org/maven2/</url>
