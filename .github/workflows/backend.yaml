@@ -50,11 +50,10 @@ jobs:
         with:
           path: |
             ${{ steps.npm-cache-dir.outputs.dir }}
-          key: ${{ runner.os }}-node-${{ hashFiles('dlink-web/**/package.json') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('dlink-web/package.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
       - name: Install Dependencies
-        if: steps.npm-cache.outputs.cache-hit != 'true'
         run: cd dlink-web && npm install --legacy-peer-deps
       - name: Npm Web Build
         run: cd dlink-web && npm run build
