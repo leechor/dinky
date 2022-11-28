@@ -51,11 +51,29 @@ public final class First {
 
         tableEnv.registerFunction("tp", rates);
 
-        tableEnv.executeSql("CREATE VIEW JoinOperator16 AS " +
-            "SELECT id, V_GBU_addSource_1.taskId, taskStatus, V_GBU_addSource_1.dt, TS_addSource_2.dt FROM V_GBU_addSource_1 LEFT JOIN TS_addSource_2 FOR SYSTEM_TIME AS OF V_GBU_addSource_1.dt " +
-            "ON V_GBU_addSource_1.taskId = TS_addSource_2.taskId");
+        tableEnv.executeSql("CREATE VIEW JoinOperator16 AS \n" +
+            "SELECT id, V_GBU_addSource_1.taskId, taskStatus, V_GBU_addSource_1.dt AS gbu_time, TS_addSource_2.dt AS task_time \n" +
+            "FROM V_GBU_addSource_1 LEFT JOIN TS_addSource_2 \n" +
+            "FOR SYSTEM_TIME AS OF V_GBU_addSource_1.dt \n" +
+            "ON V_GBU_addSource_1.taskId = TS_addSource_2.taskId;");
 
-        Table table = tableEnv.sqlQuery("select * from JoinOperator16");
+        tableEnv.executeSql("CREATE VIEW _CepOperator8 AS \n" +
+            "    SELECT *\n" +
+            "    FROM JoinOperator16\n" +
+            "    MATCH_RECOGNIZE(\n" +
+            "    PARTITION BY taskId \n" +
+            "    ORDER BY gbu_time \n" +
+            "    MEASURES    \n" +
+            "        FIRST( A.taskStatus ) AS startTaskStatus,\n" +
+            "        LAST( A.taskStatus ) AS endTaskStatus,\n" +
+            "        FIRST(A.gbu_time) AS startTaskTime, \n" +
+            "        LAST(A.gbu_time) AS endTaskTime\n" +
+            "    ONE ROW PER MATCH\n" +
+            "    AFTER MATCH SKIP PAST LAST ROW\n" +
+            "    PATTERN (A{5})\n" +
+            "    DEFINE\n" +
+            "        A AS A.taskStatus = 0);");
+        Table table = tableEnv.sqlQuery("select * from _CepOperator8");
         tableEnv.toChangelogStream(table).print();
         env.execute();
     }
