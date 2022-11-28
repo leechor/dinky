@@ -1,34 +1,47 @@
+CREATE TABLE DT_addSource_1 (
+typ STRING,
+ taskId STRING,
+ id STRING,
+ longitude DOUBLE,
+ latitude DOUBLE,
+ dt TIMESTAMP(0),
+ va DOUBLE,
+ WATERMARK FOR dt AS dt - INTERVAL '15' SECOND)
+WITH ('connector' = 'gbuzl', 'table-name' = 'DT');
 
-CREATE TABLE DT_addSource_1 (t STRING, data STRING) WITH ('connector' = 'gbuzl', 'table-name' = 'DT');
+CREATE TABLE TS_addSource_2 (
+typ STRING,
+ taskId STRING,
+ taskStatus INT,
+ dt TIMESTAMP(0),
+ WATERMARK FOR dt AS dt - INTERVAL '15' SECOND,
+ PRIMARY KEY(taskId) NOT ENFORCED)
+WITH ('connector' = 'task', 'table-name' = 'TS');
 
-CREATE TABLE TS_addSource_2 (t STRING, data STRING) WITH ('connector' = 'task', 'table-name' = 'TS');
+CREATE VIEW V_GBU_addSource_1 AS
+SELECT typ, taskId, id, longitude, latitude, dt, va
+FROM DT_addSource_1 WHERE typ = 'gbu';
 
-CREATE VIEW V_DT_addSource_1 AS
-SELECT 'task' AS task,
-        t AS type,
-       JSON_VALUE( data , '$.id' ) AS id,
-       JSON_VALUE( data , '$.longitude' ) AS longitude,
-       JSON_VALUE( data , '$.latitude' ) AS latitude,
-       JSON_VALUE( data , '$.dt[1]' ) AS dt,
-       JSON_VALUE( data , '$.value' ) AS v,
-       PROCTIME() AS proc_time
-FROM DT_addSource_1;
+CREATE VIEW V_ZL_addSource_1 AS
+SELECT typ, taskId, id, longitude, latitude, dt, va
+FROM DT_addSource_1 WHERE typ = 'zl';
 
-CREATE VIEW V_TS_addSource_2 AS
-SELECT CAST( t AS STRING ) AS task,
-        JSON_VALUE( data , '$.taskId' ) AS taskId,
-        CAST( JSON_VALUE( data , '$.taskStatus' ) AS INT ) AS taskStatus,
-        PROCTIME() AS proc_time
-FROM TS_addSource_2;
+CREATE VIEW JoinOperator16 AS
+SELECT id, V_GBU_addSource_1.taskId, taskStatus, V_GBU_addSource_1.dt AS gbu_time, TS_addSource_2.dt AS task_time
+FROM V_GBU_addSource_1 LEFT JOIN TS_addSource_2
+FOR SYSTEM_TIME AS OF V_GBU_addSource_1.dt
+ON V_GBU_addSource_1.taskId = TS_addSource_2.taskId;
 
-CREATE TTF temporal AS SELECT proc_time, taskId FROM V_TS_addSource_2;
+CREATE TABLE ts_mysqlSink_1 (id STRING, taskId STRING, taskStatus INT, gbu_time TIMESTAMP(3), task_time TIMESTAMP(3))
+WITH (
+ 'password' = '123456',
+ 'connector' = 'jdbc',
+ 'url' = 'jdbc:mysql://192.168.1.88:3306/flink?allowPublicKeyRetrieval=true',
+ 'table-name' = 'gbu_data',
+ 'username' = 'root');
 
-CREATE VIEW _JoinOperator16 AS
-SELECT type, id, longitude, latitude, dt, v, d.task, d.taskId, d.taskStatus, d.proc_time
-FROM V_DT_addSource_1, LATERAL TABLE (temporal(proc_time))
-WHERE V_DT_addSource_1.task = V_TS_addSource_2.taskId;
+INSERT INTO ts_mysqlSink_1 (id, taskId, taskStatus, gbu_time, task_time)
+SELECT id, taskId, taskStatus, gbu_time, task_time
+FROM JoinOperator16;
 
-
-
-select * from _JoinOperator16;
-
+select * from JoinOperator16;
