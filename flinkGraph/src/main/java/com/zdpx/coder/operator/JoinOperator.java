@@ -27,7 +27,7 @@ public class JoinOperator extends Operator {
         String.format("<#import \"%s\" as e>CREATE VIEW ${tableName} AS " +
                 "SELECT <@e.fieldsProcess fieldFunctions/> " +
                 "FROM ${inputTableName} " +
-                "LEFT JOIN ${anotherTableName} " +
+                "${joinType?upper_case} JOIN ${anotherTableName} " +
                 "<#if systemTimeColumn??>FOR SYSTEM_TIME AS OF ${systemTimeColumn}</#if> " +
                 "<#if where??>WHERE ${where}</#if> " +
                 "<#if onLeftColumn??>ON ${onLeftColumn} = ${onRightColumn}</#if>",
@@ -65,7 +65,7 @@ public class JoinOperator extends Operator {
         var primaryParams = OperatorParameterUtils.getColumns("primary", parameters);
         var broadcastParams = OperatorParameterUtils.getColumns("second", parameters);
         var outputParams = OperatorParameterUtils.getColumns("output", parameters);
-        var joiType = getNestValue(parameters, "/join/type").textValue();
+        var joinType = getNestValue(parameters, "/join/type").textValue();
         var forSystemTime = getNestValue(parameters, "/systemTimeColumn").textValue();
         var onLeftColumn = getNestValue(parameters, "/on/leftColumn").textValue();
         var onRightColumn = getNestValue(parameters, "/on/rightColumn").textValue();
@@ -92,6 +92,7 @@ public class JoinOperator extends Operator {
         dataModel.put("inputTableName", primaryTableName);
         dataModel.put("anotherTableName", secondTableName);
         dataModel.put(FIELD_FUNCTIONS, ffsPrimary);
+        dataModel.put("joinType", joinType);
         dataModel.put("systemTimeColumn", FieldFunction.insertTableName(primaryTableName, null, forSystemTime));
         dataModel.put("onLeftColumn", FieldFunction.insertTableName(primaryTableName, null, onLeftColumn));
         dataModel.put("onRightColumn", FieldFunction.insertTableName(secondTableName, null, onRightColumn));
