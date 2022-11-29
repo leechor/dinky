@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Application {
     public static void main(String[] args) throws IOException, FormatterException {
-        var configuration = "./flinkGraph/src/main/resources/java.scene.json";
+        var configuration = "flinkGraph/src/main/resources/general.scene_new.json";
         var scene = SceneCodeBuilder.readSceneFromFile(configuration);
         if (scene == null) {
             log.error("cannot find configure file: {}", configuration);

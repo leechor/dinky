@@ -1,9 +1,9 @@
 package com.zdpx.coder.json;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import java.util.List;
 import java.util.Objects;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * 节点配置信息,对应于json配置文件
@@ -230,7 +230,10 @@ public class OperatorNode {
             return false;
         }
         OperatorNode operator = (OperatorNode) o;
-        return parallelism == operator.parallelism && activated == operator.activated && expanded == operator.expanded && height == operator.height && width == operator.width && x == operator.x && y == operator.y && code.equals(operator.code) && name.equals(operator.name) && Objects.equals(compatibility, operator.compatibility) && Objects.equals(parentProcess, operator.parentProcess) && Objects.equals(origin, operator.origin) && Objects.equals(processes, operator.processes) && Objects.equals(parameters, operator.parameters) && Objects.equals(inputConnections, operator.inputConnections) && Objects.equals(outputConnections, operator.outputConnections);
+        return parallelism == operator.parallelism && activated == operator.activated && expanded == operator.expanded && height == operator.height && width == operator.width && x == operator.x &&
+            y == operator.y && code.equals(operator.code) && name.equals(operator.name) && Objects.equals(compatibility, operator.compatibility) &&
+            Objects.equals(parentProcess, operator.parentProcess) && Objects.equals(origin, operator.origin) && Objects.equals(processes, operator.processes) &&
+            Objects.equals(parameters, operator.parameters) && Objects.equals(inputConnections, operator.inputConnections) && Objects.equals(outputConnections, operator.outputConnections);
     }
 
     @Override

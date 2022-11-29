@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import org.reflections.Reflections;
 import org.springframework.beans.BeanUtils;
 
-import lombok.extern.slf4j.Slf4j;
 import com.zdpx.coder.SceneCodeBuilder;
 import com.zdpx.coder.json.ConnectionNode;
 import com.zdpx.coder.json.Description;
@@ -26,11 +25,13 @@ import com.zdpx.coder.json.DescriptionNode;
 import com.zdpx.coder.json.OperatorNode;
 import com.zdpx.coder.json.ProcessNode;
 import com.zdpx.coder.json.SceneNode;
+import com.zdpx.coder.operator.Identifier;
 import com.zdpx.coder.operator.Operator;
 import com.zdpx.coder.operator.TableInfo;
 import com.zdpx.coder.utils.InstantiationUtil;
 import com.zdpx.udf.IUdfDefine;
-import com.zdpx.coder.operator.Identifier;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 场景配置类,
@@ -203,7 +204,7 @@ public class Scene {
                 .ifPresentOrElse(t -> {
                     connectionInternal.setToPort(t);
                     t.setConnection(connectionInternal);
-                }, () -> log.error("not find connection ToOperator: {}", connection.getToPort()));
+                }, () -> log.error("not find connection ToOperator: {}, From: {}", connection.getToPort(), connection.getFromOp()));
         }
 
         return root;

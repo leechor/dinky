@@ -28,15 +28,9 @@ public class CommSelectFunctionOperator extends Operator {
     /**
      * 函数字段名常量
      */
-    public static final String FIELD_FUNCTIONS = "fieldFunctions";
     public static final String WHERE = "where";
     private InputPortObject<TableInfo> inputPortObject;
     private OutputPortObject<TableInfo> outputPortObject;
-
-    @SuppressWarnings("unchecked")
-    private static List<FieldFunction> getFieldFunctions(Map<String, Object> parameters) {
-        return FieldFunction.analyzeParameters((List<Map<String, Object>>) parameters.get(FIELD_FUNCTIONS));
-    }
 
     @Override
     protected void initialize() {
@@ -47,7 +41,7 @@ public class CommSelectFunctionOperator extends Operator {
     @Override
     protected Set<Class<? extends UserDefinedFunction>> declareUdfFunction() {
         var parameters = getParameterLists().get(0);
-        List<FieldFunction> ffs = getFieldFunctions(parameters);
+        List<FieldFunction> ffs = getFieldFunctions(null, parameters);
         var functions = ffs.stream().map(FieldFunction::getFunctionName).collect(Collectors.toList());
         return Scene.getUserDefinedFunctionMaps().entrySet().stream()
             .filter(k -> functions.contains(k.getKey()))
@@ -64,12 +58,13 @@ public class CommSelectFunctionOperator extends Operator {
     protected void execute() {
         var parameters = getFirstParameterMap();
         var outputTableName = NameHelper.generateVariableName("CommSelectFunctionResult");
-        List<FieldFunction> ffs = getFieldFunctions(parameters);
 
+        final String tableName = inputPortObject.getOutputPseudoData().getName();
+        List<FieldFunction> ffs = getFieldFunctions(tableName, parameters);
         Map<String, Object> p = new HashMap<>();
-        p.put(FIELD_FUNCTIONS, ffs);
         p.put("tableName", outputTableName);
-        p.put("inputTableName", inputPortObject.getOutputPseudoData().getName());
+        p.put(FIELD_FUNCTIONS, ffs);
+        p.put("inputTableName", tableName);
         p.put(WHERE, parameters.get(WHERE));
         var sqlStr = TemplateUtils.format("CommSelectFunction", p, TEMPLATE);
 

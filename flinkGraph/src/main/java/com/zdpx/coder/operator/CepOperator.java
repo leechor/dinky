@@ -113,8 +113,6 @@ public class CepOperator extends Operator {
         final String partition = (String) parameters.get(PARTITION);
         String orderBy = (String) parameters.get(ORDER_BY);
 
-        List<FieldFunction> ffs = FieldFunction.analyzeParameters((List<Map<String, Object>>) parameters.get(MEASURES));
-
         var defineList = (List<Map<String, Object>>) parameters.get(DEFINES);
         List<Define> defines = mapper.convertValue(defineList, new TypeReference<>() {
         });
@@ -126,6 +124,7 @@ public class CepOperator extends Operator {
         var skipStrategy = mapper.convertValue(parameters.get(SKIP_STRATEGY), SkipStrategy.class);
 
         TableInfo tableInfo = inputPortObject.getOutputPseudoData();
+        List<FieldFunction> ffs = FieldFunction.analyzeParameters(tableInfo.getName(), (List<Map<String, Object>>) parameters.get(MEASURES));
         var outputTableName = NameHelper.generateVariableName("CepOperator");
 
         Map<String, Object> parameterMap = new HashMap<>();

@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.squareup.javapoet.ClassName;
-
 import com.zdpx.coder.utils.Preconditions;
 
 /**

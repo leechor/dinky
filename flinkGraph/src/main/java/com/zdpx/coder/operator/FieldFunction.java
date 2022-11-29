@@ -101,7 +101,7 @@ public class FieldFunction {
      * @return 方法定义
      */
     @SuppressWarnings("unchecked")
-    static FieldFunction processFieldConfigure(Map<String, Object> fos) {
+    static FieldFunction processFieldConfigure(String primaryTableName, Map<String, Object> fos) {
         FieldFunction fo = new FieldFunction();
         fo.setOutName((String) fos.get("outName"));
         fo.setFunctionName((String) fos.get("functionName"));
@@ -109,22 +109,32 @@ public class FieldFunction {
         var fieldParameters = (List<Object>) fos.get("parameters");
 
         if (fieldParameters == null) {
+            fo.setOutName(insertTableName(primaryTableName, fo, fo.getOutName()));
             return fo;
         }
 
         List<Object> result = new ArrayList<>();
         for (var fieldParameter : fieldParameters) {
             if (fieldParameter instanceof Map) {
-//                表示函数需要递归处理
+                // 表示函数需要递归处理
                 var fp = (Map<String, Object>) fieldParameter;
-                result.add(processFieldConfigure(fp));
-            } else {
-                result.add(fieldParameter);
+                result.add(processFieldConfigure(primaryTableName, fp));
+            } else if (fieldParameter instanceof String) {
+                String field = (String) fieldParameter;
+                field = insertTableName(primaryTableName, fo, field);
+                result.add(field);
             }
         }
         fo.setParameters(result);
 
         return fo;
+    }
+
+    public static String insertTableName(String primaryTableName, FieldFunction fo, String param) {
+        if (param.startsWith("@") || fo == null || fo.getFunctionName() == null || fo.getFunctionName().isEmpty()) {
+            param = primaryTableName + "." + param;
+        }
+        return param;
     }
 
     /**
@@ -133,10 +143,10 @@ public class FieldFunction {
      * @param funcs 字段处理函数配置
      * @return {@link FieldFunction}形式的字段处理定义
      */
-    protected static List<FieldFunction> analyzeParameters(List<Map<String, Object>> funcs) {
+    protected static List<FieldFunction> analyzeParameters(String primaryTableName, List<Map<String, Object>> funcs) {
         List<FieldFunction> fieldFunctions = new ArrayList<>();
         for (var fos : funcs) {
-            var fo = processFieldConfigure(fos);
+            var fo = processFieldConfigure(primaryTableName, fos);
             fieldFunctions.add(fo);
         }
         return fieldFunctions;

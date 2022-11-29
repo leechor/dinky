@@ -1,0 +1,353 @@
+{
+  "environment": {
+    "mode": "streaming",
+    "resultType": "sql",
+    "parallelism": 1,
+    "name": "first"
+  },
+  "process": {
+    "operators": [
+      {
+        "activated": true,
+        "id": "addSource_1",
+        "code": "com.zdpx.coder.operator.mysql.MysqlSourceOperator",
+        "parallelism": 1,
+        "compatibility": 1.0,
+        "expanded": true,
+        "name": "add environment variable",
+        "origin": null,
+        "height": 100,
+        "width": 90,
+        "x": 1,
+        "y": 2,
+        "parameters": [
+          {
+            "tableName": "DT",
+            "connector": "gbuzl",
+            "columns": [
+              {
+                "name": "typ",
+                "type": "STRING"
+              },
+              {
+                "name": "taskId",
+                "type": "STRING"
+              },
+              {
+                "name": "id",
+                "type": "STRING"
+              },
+              {
+                "name": "longitude",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "latitude",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "dt",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "va",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "WATERMARK FOR dt AS dt - INTERVAL '15' SECOND",
+                "type": ""
+              }
+            ]
+          }
+        ],
+        "processes": [
+          {
+            "expanded": true,
+            "operators": [
+            ],
+            "connects": [
+            ]
+          }
+        ]
+      },
+      {
+        "activated": true,
+        "id": "addSource_2",
+        "code": "com.zdpx.coder.operator.mysql.MysqlSourceOperator",
+        "parallelism": 1,
+        "compatibility": 1.0,
+        "expanded": true,
+        "name": "add environment variable",
+        "origin": null,
+        "height": 100,
+        "width": 90,
+        "x": 1,
+        "y": 2,
+        "parameters": [
+          {
+            "tableName": "TS",
+            "connector": "task",
+            "columns": [
+              {
+                "name": "typ",
+                "type": "STRING"
+              },
+              {
+                "name": "taskId",
+                "type": "STRING"
+              },
+              {
+                "name": "taskStatus",
+                "type": "INT"
+              },
+              {
+                "name": "dt",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "WATERMARK FOR dt AS dt - INTERVAL '15' SECOND",
+                "type": ""
+              },
+              {
+                "name": "PRIMARY KEY(taskId) NOT ENFORCED) ",
+                "type": ""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "activated": true,
+        "id": "commSelectFunctionOperator_gbu",
+        "code": "com.zdpx.coder.operator.CommSelectFunctionOperator",
+        "parallelism": 1,
+        "compatibility": 1.0,
+        "expanded": true,
+        "name": "commSelectFunctionOperator_gbu",
+        "origin": null,
+        "height": 150,
+        "width": 90,
+        "x": 1,
+        "y": 2,
+        "parameters": [
+          {
+            "fieldFunctions": [
+              {
+                "outName": "typ"
+              },
+              {
+                "outName": "taskId"
+              },
+              {
+                "outName": "id"
+              },
+              {
+                "outName": "longitude"
+              },
+              {
+                "outName": "latitude"
+              },
+              {
+                "outName": "dt"
+              },
+              {
+                "outName": "va"
+              }
+            ],
+            "where": "typ='gbu'"
+          }
+        ]
+      },
+      {
+        "activated": true,
+        "id": "commSelectFunctionOperator_zl",
+        "code": "com.zdpx.coder.operator.CommSelectFunctionOperator",
+        "parallelism": 1,
+        "compatibility": 1.0,
+        "expanded": true,
+        "name": "commSelectFunctionOperator_zl",
+        "origin": null,
+        "height": 150,
+        "width": 90,
+        "x": 1,
+        "y": 2,
+        "parameters": [
+          {
+            "fieldFunctions": [
+              {
+                "outName": "typ"
+              },
+              {
+                "outName": "taskId"
+              },
+              {
+                "outName": "id"
+              },
+              {
+                "outName": "longitude"
+              },
+              {
+                "outName": "latitude"
+              },
+              {
+                "outName": "dt"
+              },
+              {
+                "outName": "va"
+              }
+            ],
+            "where": "typ='zl'"
+          }
+        ]
+      },
+      {
+        "activated": true,
+        "id": "joinOperator",
+        "code": "com.zdpx.coder.operator.JoinOperator",
+        "parallelism": 1,
+        "compatibility": 1.0,
+        "expanded": true,
+        "name": "joinOperator_1",
+        "origin": null,
+        "height": 150,
+        "width": 90,
+        "x": 1,
+        "y": 2,
+        "parameters": [
+          {
+            "primaryInput": {
+              "fieldFunctions": [
+                {
+                  "outName": "id"
+                },
+                {
+                  "outName": "taskId"
+                },
+                {
+                  "outName": "taskStatus"
+                },
+                {
+                  "outName": "gbu_time",
+                  "functionName": "",
+                  "parameters": [
+                    "dt"
+                  ]
+                }
+              ]
+            },
+            "secondInput": {
+              "fieldFunctions": [
+                {
+                  "outName": "task_time",
+                  "functionName": "",
+                  "parameters": [
+                    "dt"
+                  ]
+                }
+              ]
+            },
+            "join": {
+              "type": "left"
+            },
+            "systemTimeColumn": "dt",
+            "on": {
+              "leftColumn": "taskId",
+              "rightColumn": "taskId"
+            },
+            "output": {
+              "columns": [
+                {
+                  "name": "dt",
+                  "type": "TIMESTAMP"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "activated": true,
+        "id": "mysqlSink_join",
+        "code": "com.zdpx.coder.operator.mysql.MysqlSinkOperator",
+        "parallelism": 1,
+        "compatibility": 1.0,
+        "expanded": true,
+        "name": "MysqlSinkOperator_2",
+        "origin": null,
+        "height": 150,
+        "width": 90,
+        "x": 1,
+        "y": 2,
+        "parameters": [
+          {
+            "tableName": "match",
+            "connector": "jdbc",
+            "url": "jdbc:mysql://192.168.17.132:3306/flink?allowPublicKeyRetrieval=true",
+            "username": "root",
+            "password": "123456",
+            "columns": [
+              {
+                "name": "taskId",
+                "type": "STRING"
+              },
+              {
+                "name": "startTaskStatus",
+                "type": "INT"
+              },
+              {
+                "name": "endTaskStatus",
+                "type": "INT"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "connects": [
+      {
+        "fromOp": "addSource_1",
+        "toOp": "commSelectFunctionOperator_gbu",
+        "fromPort": "output_0",
+        "toPort": "input_0"
+      },
+      {
+        "fromOp": "commSelectFunctionOperator_gbu",
+        "toOp": "joinOperator",
+        "fromPort": "output_0",
+        "toPort": "primaryInput"
+      },
+      {
+        "fromOp": "addSource_2",
+        "toOp": "commSelectFunctionOperator_zl",
+        "fromPort": "output_0",
+        "toPort": "input_0"
+      },
+      {
+        "fromOp": "commSelectFunctionOperator_zl",
+        "toOp": "joinOperator",
+        "fromPort": "output_0",
+        "toPort": "secondInput"
+      },
+      {
+        "fromOp": "joinOperator",
+        "toOp": "mysqlSink_join",
+        "fromPort": "output_0",
+        "toPort": "input_0"
+      }
+    ],
+    "descriptions": [
+      {
+        "align": "Center",
+        "color": "Red",
+        "height": 264,
+        "width": 50,
+        "resized": false,
+        "x": 403,
+        "y": 188,
+        "context": "nothing"
+      }
+    ]
+  }
+}
+
+

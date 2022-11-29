@@ -17,11 +17,10 @@ import org.reflections.Reflections;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
-
-import lombok.extern.slf4j.Slf4j;
 import com.zdpx.coder.SceneCodeBuilder;
 import com.zdpx.coder.graph.InputPort;
 import com.zdpx.coder.graph.InputPortObject;
@@ -33,6 +32,8 @@ import com.zdpx.coder.utils.JsonSchemaValidator;
 import com.zdpx.coder.utils.Preconditions;
 import com.zdpx.udf.IUdfDefine;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * 宏算子抽象类
  *
@@ -40,6 +41,8 @@ import com.zdpx.udf.IUdfDefine;
  */
 @Slf4j
 public abstract class Operator implements Runnable, Identifier {
+    public static final String FIELD_FUNCTIONS = "fieldFunctions";
+
     protected OperatorWrapper operatorWrapper;
     protected JsonSchemaValidator jsonSchemaValidator = new JsonSchemaValidator();
     protected Parameters parameters = new Parameters();
@@ -253,7 +256,6 @@ public abstract class Operator implements Runnable, Identifier {
 
     /**
      * 生成用户自定义函数(算子)对应的注册代码, 以便在flink sql中对其进行引用调用.
-     *
      */
     private void generateUdfFunction() {
         var ufs = this.getUserFunctions();
@@ -270,6 +272,43 @@ public abstract class Operator implements Runnable, Identifier {
             }
         });
         udfFunctions.addAll(ufs);
+    }
+
+    public static JsonNode getNestValue(String json, String path) {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root;
+        try {
+            root = mapper.readTree(json);
+        } catch (JsonProcessingException e) {
+            log.error("json not contains path:{}", path);
+            return null;
+        }
+
+        return root.at(path);
+    }
+
+    public static JsonNode getNestValue(Map<String, Object> maps, String path) {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root;
+        root = mapper.valueToTree(maps);
+        return root.at(path);
+    }
+
+    public static Map<String, Object> getNestMapValue(Map<String, Object> maps, String path) {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root;
+        root = mapper.valueToTree(maps);
+        return getJsonAsMap(root.at(path));
+    }
+
+    @SuppressWarnings("unchecked")
+    static List<FieldFunction> getFieldFunctions(String primaryTableName, Map<String, Object> parameters) {
+        return FieldFunction.analyzeParameters(primaryTableName, (List<Map<String, Object>>) parameters.get(FIELD_FUNCTIONS));
+    }
+
+    public static Map<String, Object> getJsonAsMap(JsonNode inputs) {
+        return new ObjectMapper().<Map<String, Object>>convertValue(inputs, new TypeReference<>() {
+        });
     }
 
     //region g/s
