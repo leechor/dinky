@@ -109,10 +109,32 @@
                 "type": ""
               },
               {
-                "name": "PRIMARY KEY(taskId) NOT ENFORCED) ",
+                "name": "PRIMARY KEY(taskId) NOT ENFORCED ",
                 "type": ""
               }
             ]
+          }
+        ]
+      },
+      {
+        "activated": true,
+        "id": "duplicateOperator_1",
+        "code": "com.zdpx.coder.operator.DuplicateOperator",
+        "parallelism": 1,
+        "compatibility": 1.0,
+        "expanded": true,
+        "name": "DuplicateOperator_1",
+        "origin": null,
+        "height": 150,
+        "width": 90,
+        "x": 1,
+        "y": 2,
+        "parameters": [
+          {
+            "outputName": "output_0"
+          },
+          {
+            "outputName": "output_1"
           }
         ]
       },
@@ -267,12 +289,12 @@
       },
       {
         "activated": true,
-        "id": "mysqlSink_join",
-        "code": "com.zdpx.coder.operator.mysql.MysqlSinkOperator",
+        "id": "cepOperator",
+        "code": "com.zdpx.coder.operator.CepOperator",
         "parallelism": 1,
         "compatibility": 1.0,
         "expanded": true,
-        "name": "MysqlSinkOperator_2",
+        "name": "CepOperator",
         "origin": null,
         "height": 150,
         "width": 90,
@@ -280,9 +302,75 @@
         "y": 2,
         "parameters": [
           {
-            "tableName": "match",
+            "partition": "taskId",
+            "orderBy": "proc_time",
+            "patterns": [
+              {
+                "variable": "A",
+                "quantifier": "{5}"
+              }
+            ],
+            "skipStrategy": {
+              "strategy": "LAST_ROW",
+              "variable": "A"
+            },
+            "measures": [
+              {
+                "outName": "startTaskStatus",
+                "functionName": "FIRST",
+                "parameters": [
+                  "A.taskStatus"
+                ]
+              },
+              {
+                "outName": "endTaskStatus",
+                "functionName": "LAST",
+                "parameters": [
+                  "A.taskStatus"
+                ]
+              },
+              {
+                "outName": "gbuStartTime",
+                "functionName": "FIRST",
+                "parameters": [
+                  "A.gbu_time"
+                ]
+              },
+              {
+                "outName": "gbuEndTime",
+                "functionName": "LAST",
+                "parameters": [
+                  "A.gbu_time"
+                ]
+              }
+            ],
+            "defines": [
+              {
+                "variable": "A",
+                "condition": "A.taskStatus = 0"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "activated": true,
+        "id": "mysqlSink_cep",
+        "code": "com.zdpx.coder.operator.mysql.MysqlSinkOperator",
+        "parallelism": 1,
+        "compatibility": 1.0,
+        "expanded": true,
+        "name": "mysqlSink_cep",
+        "origin": null,
+        "height": 150,
+        "width": 90,
+        "x": 1,
+        "y": 2,
+        "parameters": [
+          {
+            "tableName": "cep",
             "connector": "jdbc",
-            "url": "jdbc:mysql://192.168.17.132:3306/flink?allowPublicKeyRetrieval=true",
+            "url": "jdbc:mysql://192.168.1.88:3306/flink?allowPublicKeyRetrieval=true",
             "username": "root",
             "password": "123456",
             "columns": [
@@ -297,6 +385,14 @@
               {
                 "name": "endTaskStatus",
                 "type": "INT"
+              },
+              {
+                "name": "gbuStartTime",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "gbuEndTime",
+                "type": "TIMESTAMP"
               }
             ]
           }
@@ -306,8 +402,20 @@
     "connects": [
       {
         "fromOp": "addSource_1",
+        "toOp": "duplicateOperator_1",
+        "fromPort": "output_0",
+        "toPort": "input_0"
+      },
+      {
+        "fromOp": "duplicateOperator_1",
         "toOp": "commSelectFunctionOperator_gbu",
         "fromPort": "output_0",
+        "toPort": "input_0"
+      },
+      {
+        "fromOp": "duplicateOperator_1",
+        "toOp": "commSelectFunctionOperator_zl",
+        "fromPort": "output_1",
         "toPort": "input_0"
       },
       {
@@ -318,19 +426,19 @@
       },
       {
         "fromOp": "addSource_2",
-        "toOp": "commSelectFunctionOperator_zl",
-        "fromPort": "output_0",
-        "toPort": "input_0"
-      },
-      {
-        "fromOp": "commSelectFunctionOperator_zl",
         "toOp": "joinOperator",
         "fromPort": "output_0",
         "toPort": "secondInput"
       },
       {
         "fromOp": "joinOperator",
-        "toOp": "mysqlSink_join",
+        "toOp": "cepOperator",
+        "fromPort": "output_0",
+        "toPort": "input_0"
+      },
+      {
+        "fromOp": "cepOperator",
+        "toOp": "mysqlSink_cep",
         "fromPort": "output_0",
         "toPort": "input_0"
       }

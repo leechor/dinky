@@ -80,7 +80,7 @@ public class JoinOperator extends Operator {
         func.accept(primaryParams, primaryInput);
         func.accept(broadcastParams, secondInput);
 
-        var outputTableName = NameHelper.generateVariableName("CommSelectFunctionResult");
+        var outputTableName = NameHelper.generateVariableName("JoinOperator");
         var primaryTableName = primaryInput.getOutputPseudoData().getName();
         var secondTableName = secondInput.getOutputPseudoData().getName();
         List<FieldFunction> ffsPrimary = getFieldFunctions(primaryTableName, getNestMapValue(parameters, "/primaryInput"));
@@ -100,6 +100,6 @@ public class JoinOperator extends Operator {
         var sqlStr = TemplateUtils.format(this.getName(), dataModel, TEMPLATE);
         this.getSchemaUtil().getGenerateResult().generate(sqlStr);
 
-        postOutput(outputPort, NameHelper.generateVariableName("JoinOperator"), cls);
+        postOutput(outputPort, outputTableName, cls);
     }
 }
