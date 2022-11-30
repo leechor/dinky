@@ -84,6 +84,7 @@ export const isExecuteSql = (dialect: string) => {
     case DIALECT.DORIS:
     case DIALECT.PHOENIX:
     case DIALECT.FLINKSQL:
+    case DIALECT.GRAPH_SQL:
     case DIALECT.HIVE:
     case DIALECT.STARROCKS:
     case DIALECT.PRESTO:
