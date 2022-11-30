@@ -98,7 +98,7 @@ public abstract class Operator implements Runnable, Identifier {
             log.error("{} operator not wrapper.", this.getClass().getName());
             return;
         }
-
+        log.info(String.format("execute operator id %s", this.getOperatorWrapper().getId()));
         if (applies()) {
             validParameters();
             generateUdfFunction();

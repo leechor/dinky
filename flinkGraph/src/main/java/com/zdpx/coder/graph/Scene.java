@@ -282,7 +282,7 @@ public class Scene {
         }
 
         Operator operator = InstantiationUtil.instantiate(cl);
-//        operator.setScene(this);
+        // operator.setScene(this);
         operator.setOperatorWrapper(operatorWrapper);
         operatorWrapper.setOperator(operator);
 

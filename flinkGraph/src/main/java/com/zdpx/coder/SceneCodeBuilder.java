@@ -6,7 +6,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayDeque;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
@@ -87,10 +89,12 @@ public class SceneCodeBuilder {
      * 广度优先遍历计算节点, 生成相对应的源码
      */
     private void createOperatorsCode() {
-        var sourceOperatorNodes = Scene.getSourceOperatorNodes(this.scene.getProcess());
-        var source =
-            sourceOperatorNodes.stream().map(OperatorWrapper::getOperator).collect(Collectors.toList());
-        bft(Set.copyOf(source), this::operate);
+        var sinkOperatorNodes = Scene.getSinkOperatorNodes(this.scene.getProcess());
+        var sinks =
+            sinkOperatorNodes.stream().map(OperatorWrapper::getOperator).collect(Collectors.toList());
+        Deque<Operator> ops = new ArrayDeque<>();
+        bft(Set.copyOf(sinks), ops::push);
+        ops.forEach(this::operate);
     }
 
     /**
@@ -104,18 +108,18 @@ public class SceneCodeBuilder {
             return;
         }
 
-        var ows = operators.stream()
+        var ops = operators.stream()
             .sorted(Comparator.comparing(t -> t.getOperatorWrapper().getId(), Comparator.naturalOrder()))
             .collect(Collectors.toList());
-        final var nextOperators = new HashSet<Operator>();
-        for (var op : ows) {
+        final var preOperators = new HashSet<Operator>();
+        for (var op : ops) {
             call.accept(op);
-            op.getOutputPorts().stream()
+            op.getInputPorts().stream()
                 .filter(t -> !Objects.isNull(t.getConnection()))
-                .map(t -> t.getConnection().getToPort())
-                .forEach(toPort -> nextOperators.add(toPort.getParent()));
+                .map(t -> t.getConnection().getFromPort())
+                .forEach(fromPort -> preOperators.add(fromPort.getParent()));
         }
-        bft(nextOperators, call);
+        bft(preOperators, call);
     }
 
     /**
