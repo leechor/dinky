@@ -123,7 +123,7 @@ const EditorTabs = (props: any) => {
       )
     } else if (pane.task.dialect == DIALECT.GRAPH_SQL) {
       return (
-          <StudioGraphEdit>
+          <StudioGraphEdit current={pane.task}>
 
           </StudioGraphEdit>
       )

@@ -20,7 +20,7 @@ function download(filename: string, text: string) {
 
 type FileEventTarget = EventTarget & { files: FileList };
 
-export default function BpmnIo(props: IProps) {
+export default function GraphTo(props: IProps) {
     const {lf} = props;
 
     function downloadXml() {
@@ -28,14 +28,15 @@ export default function BpmnIo(props: IProps) {
         download('logic-flow.xml', data);
     }
 
-    function uploadXml(ev: React.ChangeEvent<HTMLInputElement>) {
-        console.info("uploadXml")
+    function uploadFlinkJson(ev: React.ChangeEvent<HTMLInputElement>) {
+        console.info("uploadFlinkJson")
         const file = (ev.target as FileEventTarget).files[0];
         const reader = new FileReader()
         reader.onload = (event: ProgressEvent<FileReader>) => {
             if (event.target) {
-                const xml = event.target.result as string;
-                lf.render(xml);
+                const json = event.target.result as string;
+                // lf.render(json);
+                lf.setProperties("jsonFile", json)
             }
         }
         reader.readAsText(file); // you could also read images and other binaries
@@ -49,10 +50,10 @@ export default function BpmnIo(props: IProps) {
     return (
         <div className="graph-io">
       <span
-          title="下载 XML"
+          title="下载 JSON"
           onMouseDown={() => downloadXml()}
       >
-        <img src={"img/download.png"} alt="下载XML"/>
+        <img src={"img/download.png"} alt="下载JSON"/>
       </span>
             <span
                 id="download-img"
@@ -62,10 +63,10 @@ export default function BpmnIo(props: IProps) {
         <img src={"img/img.png"} alt="下载图片"/>
       </span>
             <span
-                id="upload-xml"
-                title="上传 XML"
+                id="upload-json"
+                title="上传 JSON"
             >
-        <input type="file" className="upload" onChange={(ev) => uploadXml(ev)}/>
+        <input type="file" className="upload" onChange={(ev) => uploadFlinkJson(ev)}/>
         <img src={"img/upload.png"} alt="上传JSON"/>
       </span>
         </div>

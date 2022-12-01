@@ -1,9 +1,8 @@
 import React from 'react';
 import LogicFlow from "@logicflow/core";
-import {Button} from 'antd';
 import {BpmnElement, BpmnXmlAdapter, Control, Menu, SelectionSelect, Snapshot} from "@logicflow/extension";
 import BpmnPattern from "./pattern";
-import BpmnIo from "./io";
+import GraphTo from "./io";
 import './index.css';
 import 'antd/lib/button/style/index.css';
 import '@logicflow/extension/lib/style/index.css';
@@ -50,7 +49,7 @@ export default class GraphEditor extends React.Component<IProps, IState> {
             ...config,
             container: document.querySelector('#graph') as HTMLElement,
             width: 1000,
-            height : 1000,
+            height: 1000,
         });
         lf.render()
         this.lf = lf;
@@ -66,14 +65,15 @@ export default class GraphEditor extends React.Component<IProps, IState> {
             tools = (
                 <div>
                     <BpmnPattern lf={this.lf}/>
-                    <BpmnIo lf={this.lf}/>
+                    <GraphTo lf={this.lf}/>
                 </div>
             );
         }
         return (
             <>
                 <div className="bpmn-example-container">
-                    <div id="graph" className="viewport" style={{width: this.props.width, height: this.props.height}}></div>
+                    <div id="graph" className="viewport"
+                         style={{width: this.props.width, height: this.props.height}}></div>
                     {tools}
                 </div>
             </>

@@ -278,7 +278,11 @@ const Model: ModelType = {
     * saveTask({payload}, {call, put}) {
       const para = payload;
       para.configJson = JSON.stringify(payload.config);
-      yield call(handleAddOrUpdate, 'api/task', para);
+      if (para.dialect == "GraphSql") {
+        yield call(handleAddOrUpdate, 'api/zdpx', para);
+      } else {
+        yield call(handleAddOrUpdate, 'api/task', para);
+      }
       yield put({
         type: 'saveTaskData',
         payload,

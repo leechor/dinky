@@ -4,13 +4,14 @@ import com.dlink.common.result.Result;
 import com.dlink.model.Task;
 
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.extern.slf4j.Slf4j;
-
 import com.zdpx.service.TaskFlowGraphService;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
@@ -26,7 +27,7 @@ public class TaskFlowGraphController {
         this.taskFlowGraphService = taskFlowGraphService;
     }
 
-    @PostMapping
+    @PutMapping
     public Result<Void> submitSql(@RequestBody Task task) {
         if (taskFlowGraphService.saveOrUpdateTask(task)) {
             return Result.succeed("操作成功");
