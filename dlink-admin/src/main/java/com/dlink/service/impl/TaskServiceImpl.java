@@ -380,25 +380,27 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
 
     @Override
     public boolean saveOrUpdateTask(Task task) {
-        if (Dialect.isUDF(task.getDialect()) && Convert.toInt(task.getConfig().get(0).get("templateId"), 0) != 0) {
-            if (CollUtil.isNotEmpty(task.getConfig()) && Asserts.isNullString(task.getStatement())) {
-                Map<String, String> config = task.getConfig().get(0);
-                UDFTemplate template = udfTemplateService.getById(config.get("templateId"));
-                if (template != null) {
-                    String code = UDFUtil.templateParse(task.getDialect(), template.getTemplateCode(),
+        if (CollUtil.isNotEmpty(task.getConfig())) {
+            if (Dialect.isUDF(task.getDialect()) && Convert.toInt(task.getConfig().get(0).get("templateId"), 0) != 0) {
+                if (CollUtil.isNotEmpty(task.getConfig()) && Asserts.isNullString(task.getStatement())) {
+                    Map<String, String> config = task.getConfig().get(0);
+                    UDFTemplate template = udfTemplateService.getById(config.get("templateId"));
+                    if (template != null) {
+                        String code = UDFUtil.templateParse(task.getDialect(), template.getTemplateCode(),
                             config.get("className"));
-                    task.setStatement(code);
+                        task.setStatement(code);
+                    }
                 }
-            }
-            // to compiler udf
-            if (Asserts.isNotNullString(task.getDialect()) && Dialect.JAVA.equalsVal(task.getDialect())
+                // to compiler udf
+                if (Asserts.isNotNullString(task.getDialect()) && Dialect.JAVA.equalsVal(task.getDialect())
                     && Asserts.isNotNullString(task.getStatement())) {
-                CustomStringJavaCompiler compiler = new CustomStringJavaCompiler(task.getStatement());
-                task.setSavePointPath(compiler.getFullClassName());
-            } else if (Dialect.PYTHON.equalsVal(task.getDialect())) {
-                task.setSavePointPath(task.getName() + "." + UDFUtil.getPyUDFAttr(task.getStatement()));
-            } else if (Dialect.SCALA.equalsVal(task.getDialect())) {
-                task.setSavePointPath(UDFUtil.getScalaFullClassName(task.getStatement()));
+                    CustomStringJavaCompiler compiler = new CustomStringJavaCompiler(task.getStatement());
+                    task.setSavePointPath(compiler.getFullClassName());
+                } else if (Dialect.PYTHON.equalsVal(task.getDialect())) {
+                    task.setSavePointPath(task.getName() + "." + UDFUtil.getPyUDFAttr(task.getStatement()));
+                } else if (Dialect.SCALA.equalsVal(task.getDialect())) {
+                    task.setSavePointPath(UDFUtil.getScalaFullClassName(task.getStatement()));
+                }
             }
         }
 
@@ -407,8 +409,8 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
             Task taskInfo = getById(task.getId());
             Assert.check(taskInfo);
             if (JobLifeCycle.RELEASE.equalsValue(taskInfo.getStep())
-                    || JobLifeCycle.ONLINE.equalsValue(taskInfo.getStep())
-                    || JobLifeCycle.CANCEL.equalsValue(taskInfo.getStep())) {
+                || JobLifeCycle.ONLINE.equalsValue(taskInfo.getStep())
+                || JobLifeCycle.CANCEL.equalsValue(taskInfo.getStep())) {
                 throw new BusException("该作业已" + JobLifeCycle.get(taskInfo.getStep()).getLabel() + "，禁止修改！");
             }
             task.setStep(JobLifeCycle.DEVELOP.getValue());
