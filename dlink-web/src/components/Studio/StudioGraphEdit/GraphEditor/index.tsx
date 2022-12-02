@@ -1,6 +1,5 @@
 import React from 'react';
 import LogicFlow from "@logicflow/core";
-import {Button} from 'antd';
 import {BpmnElement, BpmnXmlAdapter, Control, Menu, SelectionSelect, Snapshot} from "@logicflow/extension";
 import BpmnPattern from "./pattern";
 import BpmnIo from "./io";

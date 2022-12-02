@@ -29,8 +29,8 @@ const FlinkGraphEditor = (props: any) => {
         <>
             <GraphEditor
                 ref={monaco}
-                width = {width}
-                height = {height}
+                width={width}
+                height={height}
                 language={language}
                 value={code}
                 options={options}
@@ -52,9 +52,10 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
       payload: tabs.panes[tabIndex].task,
     }),*/
     saveSql: (val: any) => dispatch({
-        type: "Studio/saveGraph",
+        type: "Studio/saveSql",
         payload: val,
-    }), saveSqlMetaData: (sqlMetaData: any, key: number) => dispatch({
+    }),
+    saveSqlMetaData: (sqlMetaData: any, key: number) => dispatch({
         type: "Studio/saveSqlMetaData",
         payload: {
             activeKey: key,
