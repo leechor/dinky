@@ -249,6 +249,20 @@
                   "outName": "taskStatus"
                 },
                 {
+                  "outName": "longitude"
+                },
+                {
+                  "outName": "latitude"
+                },
+                {
+                  "outName": "va",
+                  "functionName": "ntimes",
+                  "parameters": [
+                    "@va",
+                    1000
+                  ]
+                },
+                {
                   "outName": "gbu_time",
                   "functionName": "",
                   "parameters": [

@@ -101,7 +101,7 @@ public class FieldFunction {
      * @return 方法定义
      */
     @SuppressWarnings("unchecked")
-    static FieldFunction processFieldConfigure(String primaryTableName, Map<String, Object> fos) {
+    static FieldFunction processFieldConfigure(String tableName, Map<String, Object> fos) {
         FieldFunction fo = new FieldFunction();
         fo.setOutName((String) fos.get("outName"));
         fo.setFunctionName((String) fos.get("functionName"));
@@ -109,7 +109,7 @@ public class FieldFunction {
         var fieldParameters = (List<Object>) fos.get("parameters");
 
         if (fieldParameters == null) {
-            fo.setOutName(insertTableName(primaryTableName, fo, fo.getOutName()));
+            fo.setOutName(insertTableName(tableName, fo, fo.getOutName()));
             return fo;
         }
 
@@ -118,10 +118,10 @@ public class FieldFunction {
             if (fieldParameter instanceof Map) {
                 // 表示函数需要递归处理
                 var fp = (Map<String, Object>) fieldParameter;
-                result.add(processFieldConfigure(primaryTableName, fp));
+                result.add(processFieldConfigure(tableName, fp));
             } else if (fieldParameter instanceof String) {
                 String field = (String) fieldParameter;
-                field = insertTableName(primaryTableName, fo, field);
+                field = insertTableName(tableName, fo, field);
                 result.add(field);
             }
         }
@@ -132,6 +132,9 @@ public class FieldFunction {
 
     public static String insertTableName(String primaryTableName, FieldFunction fo, String param) {
         if (param.startsWith("@") || fo == null || fo.getFunctionName() == null || fo.getFunctionName().isEmpty()) {
+            if (param.startsWith("@")) {
+                param = param.substring(1);
+            }
             param = primaryTableName + "." + param;
         }
         return param;
