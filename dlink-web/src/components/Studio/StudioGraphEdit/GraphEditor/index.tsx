@@ -6,6 +6,8 @@ import GraphTo from "./io";
 import './index.css';
 import 'antd/lib/button/style/index.css';
 import '@logicflow/extension/lib/style/index.css';
+import { connect } from 'dva';
+import context from "@@/plugin-access/context";
 
 const config = {
     stopScrollGraph: true,
@@ -26,10 +28,10 @@ type IState = {
     rendered: boolean,
 }
 
-type IProps = {}
+type IProps = { onUploadJson: (context: string) => string; }
 
 export default class GraphEditor extends React.Component<IProps, IState> {
-    lf: LogicFlow;
+    lf!: LogicFlow;
 
     constructor(props: {} | Readonly<{}>) {
         super(props);
@@ -65,7 +67,7 @@ export default class GraphEditor extends React.Component<IProps, IState> {
             tools = (
                 <div>
                     <BpmnPattern lf={this.lf}/>
-                    <GraphTo lf={this.lf}/>
+                    <GraphTo lf={this.lf} onUploadJson={this.props.onUploadJson}/>
                 </div>
             );
         }
@@ -80,3 +82,4 @@ export default class GraphEditor extends React.Component<IProps, IState> {
         )
     }
 }
+

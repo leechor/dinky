@@ -3,6 +3,7 @@ import LogicFlow from '@logicflow/core';
 
 type IProps = {
     lf: LogicFlow
+    onUploadJson: Function
 }
 
 function download(filename: string, text: string) {
@@ -21,10 +22,10 @@ function download(filename: string, text: string) {
 type FileEventTarget = EventTarget & { files: FileList };
 
 export default function GraphTo(props: IProps) {
-    const {lf} = props;
+    const {lf, onUploadJson} = props;
 
     function downloadXml() {
-        const data = lf.getGraphData() as string;
+        const data = lf!.getGraphData() as string;
         download('logic-flow.xml', data);
     }
 
@@ -36,7 +37,7 @@ export default function GraphTo(props: IProps) {
             if (event.target) {
                 const json = event.target.result as string;
                 // lf.render(json);
-                lf.setProperties("jsonFile", json)
+                onUploadJson(json);
             }
         }
         reader.readAsText(file); // you could also read images and other binaries

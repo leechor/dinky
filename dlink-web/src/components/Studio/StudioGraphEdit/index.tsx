@@ -1,4 +1,3 @@
-import {useState} from "react";
 import GraphEditor from "@/components/Studio/StudioGraphEdit/GraphEditor";
 import {Dispatch, DocumentStateType} from "@@/plugin-dva/connect";
 import {connect} from "umi";
@@ -6,24 +5,18 @@ import {connect} from "umi";
 
 const FlinkGraphEditor = (props: any) => {
     const {
-        tabsKey,
         height = '100%',
         width = '100%',
         language = 'sql',
-        onChange = (val: string, event: any) => {
-        },
         options = {
             selectOnLineNumbers: true,
             renderSideBySide: false,
             autoIndent: 'None',
         },
-        sql,
         monaco,
         // sqlMetaData,
-        fillDocuments,
     } = props;
 
-    const [code, setCode] = useState<string>(sql);
 
     return (
         <>
@@ -32,13 +25,14 @@ const FlinkGraphEditor = (props: any) => {
                 width={width}
                 height={height}
                 language={language}
-                value={code}
                 options={options}
                 onChange={() => {
                 }}
                 theme="vs-dark"
                 editorDidMount={() => {
-                }}>
+                }}
+                onUploadJson={(context: string) => props.saveSql(context)}
+            >
 
             </GraphEditor>
         </>
