@@ -123,6 +123,8 @@ public class FieldFunction {
                 String field = (String) fieldParameter;
                 field = insertTableName(tableName, fo, field);
                 result.add(field);
+            } else {
+                result.add(fieldParameter);
             }
         }
         fo.setParameters(result);
