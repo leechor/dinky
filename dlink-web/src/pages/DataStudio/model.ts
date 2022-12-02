@@ -217,6 +217,7 @@ export type ModelType = {
     saveToolRightWidth: Reducer<StateType>;
     saveToolLeftWidth: Reducer<StateType>;
     saveSql: Reducer<StateType>;
+    saveGraph: Reducer<StateType>;
     saveCurrentPath: Reducer<StateType>;
     // saveMonaco: Reducer<StateType>;
     saveSqlMetaData: Reducer<StateType>;
@@ -328,6 +329,9 @@ const Model: ModelType = {
         current: {...newCurrent},
         tabs: {...newTabs},
       };
+    },
+    saveGraph(state, {payload}) {
+
     },
     saveCurrentPath(state, {payload}) {
       return {
