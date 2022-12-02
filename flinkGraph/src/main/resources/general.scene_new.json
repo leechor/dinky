@@ -47,11 +47,11 @@
               },
               {
                 "name": "dt",
-                "type": "TIMESTAMP"
+                "type": "TIMESTAMP(3)"
               },
               {
                 "name": "va",
-                "type": "TIMESTAMP"
+                "type": "TIMESTAMP(3)"
               },
               {
                 "name": "WATERMARK FOR dt AS dt - INTERVAL '15' SECOND",
@@ -102,7 +102,7 @@
               },
               {
                 "name": "dt",
-                "type": "TIMESTAMP"
+                "type": "TIMESTAMP(3)"
               },
               {
                 "name": "WATERMARK FOR dt AS dt - INTERVAL '15' SECOND",
@@ -246,9 +246,6 @@
                   "outName": "taskId"
                 },
                 {
-                  "outName": "taskStatus"
-                },
-                {
                   "outName": "longitude"
                 },
                 {
@@ -261,6 +258,9 @@
                     "@va",
                     1000
                   ]
+                },
+                {
+                  "outName": "taskStatus"
                 },
                 {
                   "outName": "gbu_time",
@@ -294,7 +294,7 @@
               "columns": [
                 {
                   "name": "dt",
-                  "type": "TIMESTAMP"
+                  "type": "TIMESTAMP(3)"
                 }
               ]
             }
@@ -402,11 +402,11 @@
               },
               {
                 "name": "gbuStartTime",
-                "type": "TIMESTAMP"
+                "type": "TIMESTAMP(3)"
               },
               {
                 "name": "gbuEndTime",
-                "type": "TIMESTAMP"
+                "type": "TIMESTAMP(3)"
               }
             ]
           }

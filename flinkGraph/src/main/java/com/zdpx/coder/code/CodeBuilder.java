@@ -5,7 +5,7 @@ package com.zdpx.coder.code;
  */
 public interface CodeBuilder {
 
-    void registerUdfFunction(String udfFunctionName, Class<?> functionClass);
+    void registerUdfFunction(String udfFunctionName, String functionClass);
 
     void firstBuild();
 

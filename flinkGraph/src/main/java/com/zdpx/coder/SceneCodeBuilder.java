@@ -37,7 +37,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class SceneCodeBuilder {
-    // 生成文件所有路径
     // 自定义函数操作算子集
     public final Set<Class<? extends UserDefinedFunction>> udfFunctions = new HashSet<>();
 

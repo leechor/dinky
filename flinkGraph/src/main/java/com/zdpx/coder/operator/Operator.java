@@ -101,9 +101,21 @@ public abstract class Operator implements Runnable, Identifier {
         log.info(String.format("execute operator id %s", this.getOperatorWrapper().getId()));
         if (applies()) {
             validParameters();
-            generateUdfFunction();
+            generateUdfFunctionByStatic();
             execute();
         }
+    }
+
+    protected void registerUdfFunction(String functionName) {
+        this.getSchemaUtil().getGenerateResult().registerUdfFunction(functionName, null);
+    }
+
+    protected void registerUdfFunction(String functionName, String clazz) {
+        this.getSchemaUtil().getGenerateResult().registerUdfFunction(functionName, clazz);
+    }
+
+    protected void generate(String sqlStr) {
+        this.getSchemaUtil().getGenerateResult().generate(sqlStr);
     }
 
     /**
@@ -257,7 +269,7 @@ public abstract class Operator implements Runnable, Identifier {
     /**
      * 生成用户自定义函数(算子)对应的注册代码, 以便在flink sql中对其进行引用调用.
      */
-    private void generateUdfFunction() {
+    private void generateUdfFunctionByStatic() {
         var ufs = this.getUserFunctions();
         if (ufs == null) {
             return;
@@ -268,7 +280,7 @@ public abstract class Operator implements Runnable, Identifier {
             var instanceFunction = InstantiationUtil.instantiate(u);
             if (instanceFunction instanceof IUdfDefine) {
                 var name = ((IUdfDefine) instanceFunction).getUdfName();
-                this.getSchemaUtil().getGenerateResult().registerUdfFunction(name, u);
+                this.getSchemaUtil().getGenerateResult().registerUdfFunction(name, u.getName());
             }
         });
         udfFunctions.addAll(ufs);

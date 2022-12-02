@@ -30,8 +30,8 @@ public class CodeJavaBuilderImpl implements CodeJavaBuilder {
     }
 
     @Override
-    public void registerUdfFunction(String udfFunctionName, Class<?> functionClass) {
-        codeContext.getMain().addStatement("$L.createTemporarySystemFunction($S, $T.class)", Specifications.TABLE_ENV, udfFunctionName, functionClass);
+    public void registerUdfFunction(String udfFunctionName, String functionClass) {
+        codeContext.getMain().addStatement("$L.createTemporarySystemFunction($S, $S)", Specifications.TABLE_ENV, udfFunctionName, functionClass);
     }
 
     @Override

@@ -98,8 +98,9 @@ public class JoinOperator extends Operator {
         dataModel.put("onRightColumn", FieldFunction.insertTableName(secondTableName, null, onRightColumn));
 
         var sqlStr = TemplateUtils.format(this.getName(), dataModel, TEMPLATE);
-        this.getSchemaUtil().getGenerateResult().generate(sqlStr);
+        generate(sqlStr);
 
         postOutput(outputPort, outputTableName, cls);
     }
+
 }
