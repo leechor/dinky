@@ -314,6 +314,7 @@ const StudioTree: React.FC<StudioTreeProps> = (props) => {
         icon: node.icon,
         closable: true,
         path: node.path,
+        isGraph: true,
         task: {
           session: '',
           maxRowNum: 100,

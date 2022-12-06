@@ -121,11 +121,16 @@ const EditorTabs = (props: any) => {
           />
         </TabPane>
       )
-    } else if (pane.task.dialect == DIALECT.GRAPH_SQL) {
+    } else if (pane.task.dialect == DIALECT.GRAPH_SQL && pane.isGraph) {
       return (
-          <StudioGraphEdit current={pane.task}>
-
-          </StudioGraphEdit>
+          <TabPane tab={Tab(pane)} key={pane.key} closable={pane.closable}>
+            <StudioGraphEdit
+                current={pane.task}
+                height={height ? height : (toolHeight - 32)}
+                width={width}
+                language={getLanguage(current.task.dialect)}>
+            </StudioGraphEdit>
+          </TabPane>
       )
     } else {
       return (<TabPane tab={Tab(pane)} key={pane.key} closable={pane.closable}>
