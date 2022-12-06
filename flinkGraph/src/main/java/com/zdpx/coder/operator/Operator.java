@@ -27,10 +27,8 @@ import com.zdpx.coder.graph.InputPortObject;
 import com.zdpx.coder.graph.OperatorWrapper;
 import com.zdpx.coder.graph.OutputPort;
 import com.zdpx.coder.graph.OutputPortObject;
-import com.zdpx.coder.utils.InstantiationUtil;
 import com.zdpx.coder.utils.JsonSchemaValidator;
 import com.zdpx.coder.utils.Preconditions;
-import com.zdpx.udf.IUdfDefine;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,7 +48,7 @@ public abstract class Operator implements Runnable, Identifier {
     protected List<InputPort> inputPorts = new ArrayList<>();
     @SuppressWarnings("rawtypes")
     protected List<OutputPort> outputPorts = new ArrayList<>();
-    protected Set<Class<? extends UserDefinedFunction>> userFunctions;
+    protected Map<String, String> userFunctions;
 
     private SceneCodeBuilder sceneCodeBuilder;
 
@@ -106,8 +104,16 @@ public abstract class Operator implements Runnable, Identifier {
         }
     }
 
+    protected void registerUdfFunction(List<FieldFunction> fieldFunctions) {
+        fieldFunctions.stream().filter(t -> !Strings.isNullOrEmpty(t.getFunctionName()))
+            .forEach(t -> registerUdfFunction(t.getFunctionName()));
+    }
+
     protected void registerUdfFunction(String functionName) {
-        this.getSchemaUtil().getGenerateResult().registerUdfFunction(functionName, null);
+        sceneCodeBuilder.getUdfFunctionMap().entrySet().stream()
+            .filter(t -> t.getKey().equals(functionName)).findAny().ifPresent(t -> {
+                this.getSchemaUtil().getGenerateResult().registerUdfFunction(t.getKey(), t.getValue());
+            });
     }
 
     protected void registerUdfFunction(String functionName, String clazz) {
@@ -156,7 +162,7 @@ public abstract class Operator implements Runnable, Identifier {
      *
      * @return 自定义函数集
      */
-    protected abstract Set<Class<? extends UserDefinedFunction>> declareUdfFunction();
+    protected abstract Map<String, String> declareUdfFunction();
 
     /**
      * 该算子逻辑是否执行
@@ -267,7 +273,7 @@ public abstract class Operator implements Runnable, Identifier {
     }
 
     /**
-     * 生成用户自定义函数(算子)对应的注册代码, 以便在flink sql中对其进行引用调用.
+     * 生成内部用户自定义函数(算子)对应的注册代码, 以便在flink sql中对其进行引用调用.
      */
     private void generateUdfFunctionByStatic() {
         var ufs = this.getUserFunctions();
@@ -275,15 +281,11 @@ public abstract class Operator implements Runnable, Identifier {
             return;
         }
 
-        var udfFunctions = getSchemaUtil().getUdfFunctions();
-        Sets.difference(ufs, udfFunctions).forEach(u -> {
-            var instanceFunction = InstantiationUtil.instantiate(u);
-            if (instanceFunction instanceof IUdfDefine) {
-                var name = ((IUdfDefine) instanceFunction).getUdfName();
-                this.getSchemaUtil().getGenerateResult().registerUdfFunction(name, u.getName());
-            }
+        var udfFunctions = getSchemaUtil().getUdfFunctionMap();
+        Sets.difference(ufs.entrySet(), udfFunctions.entrySet()).forEach(u -> {
+            this.getSchemaUtil().getGenerateResult().registerUdfFunction(u.getKey(), u.getValue());
         });
-        udfFunctions.addAll(ufs);
+        udfFunctions.putAll(ufs);
     }
 
     public static JsonNode getNestValue(String json, String path) {
@@ -325,11 +327,11 @@ public abstract class Operator implements Runnable, Identifier {
 
     //region g/s
 
-    public Set<Class<? extends UserDefinedFunction>> getUserFunctions() {
+    public Map<String, String> getUserFunctions() {
         return userFunctions;
     }
 
-    public void setUserFunctions(Set<Class<? extends UserDefinedFunction>> userFunctions) {
+    public void setUserFunctions(Map<String, String> userFunctions) {
         this.userFunctions = userFunctions;
     }
 

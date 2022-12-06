@@ -1,13 +1,10 @@
 package com.zdpx.coder.operator;
 
-import org.apache.flink.table.functions.UserDefinedFunction;
-
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -96,8 +93,8 @@ public class CepOperator extends Operator {
     }
 
     @Override
-    protected Set<Class<? extends UserDefinedFunction>> declareUdfFunction() {
-        return Collections.emptySet();
+    protected Map<String, String> declareUdfFunction() {
+        return Map.of();
     }
 
     @Override

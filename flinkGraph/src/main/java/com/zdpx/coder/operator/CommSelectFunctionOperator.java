@@ -1,11 +1,8 @@
 package com.zdpx.coder.operator;
 
-import org.apache.flink.table.functions.UserDefinedFunction;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.zdpx.coder.Specifications;
@@ -39,14 +36,13 @@ public class CommSelectFunctionOperator extends Operator {
     }
 
     @Override
-    protected Set<Class<? extends UserDefinedFunction>> declareUdfFunction() {
+    protected Map<String, String> declareUdfFunction() {
         var parameters = getParameterLists().get(0);
         List<FieldFunction> ffs = getFieldFunctions(null, parameters);
         var functions = ffs.stream().map(FieldFunction::getFunctionName).collect(Collectors.toList());
         return Scene.getUserDefinedFunctionMaps().entrySet().stream()
             .filter(k -> functions.contains(k.getKey()))
-            .map(Map.Entry::getValue)
-            .collect(Collectors.toSet());
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     @Override

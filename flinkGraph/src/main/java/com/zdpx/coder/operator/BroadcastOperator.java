@@ -1,13 +1,10 @@
 package com.zdpx.coder.operator;
 
-import org.apache.flink.table.functions.UserDefinedFunction;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.BiConsumer;
 
 import javax.lang.model.element.Modifier;
@@ -78,8 +75,8 @@ public class BroadcastOperator extends Operator {
     }
 
     @Override
-    protected Set<Class<? extends UserDefinedFunction>> declareUdfFunction() {
-        return Collections.emptySet();
+    protected Map<String, String> declareUdfFunction() {
+        return Map.of();
     }
 
     @Override

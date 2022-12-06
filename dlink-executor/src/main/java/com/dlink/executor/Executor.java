@@ -42,6 +42,7 @@ import org.apache.flink.table.api.StatementSet;
 import org.apache.flink.table.api.TableConfig;
 import org.apache.flink.table.api.TableResult;
 import org.apache.flink.table.catalog.CatalogManager;
+import org.apache.flink.table.operations.command.AddJarOperation;
 import org.apache.flink.util.JarUtils;
 import org.apache.hadoop.security.UserGroupInformation;
 
@@ -49,7 +50,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -313,7 +313,7 @@ public abstract class Executor {
      * @param udfFilePath udf文件路径
      */
     public void initUDF(String... udfFilePath) {
-        JarUtils.getJarFiles(udfFilePath).forEach(Executor::loadJar);
+        JarUtils.getJarFiles(udfFilePath).forEach(this::loadJar);
     }
 
     public void initPyUDF(String executable, String... udfPyFilePath) {
@@ -328,31 +328,8 @@ public abstract class Executor {
         update(executorSetting);
     }
 
-    private static void loadJar(final URL jarUrl) {
-        // 从URLClassLoader类加载器中获取类的addURL方法
-        Method method = null;
-        try {
-            method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-        } catch (NoSuchMethodException | SecurityException e) {
-            logger.error(e.getMessage());
-        }
-
-        // 获取方法的访问权限
-        boolean accessible = method.isAccessible();
-        try {
-            // 修改访问权限为可写
-            if (!accessible) {
-                method.setAccessible(true);
-            }
-            // 获取系统类加载器
-            URLClassLoader classLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-            // jar路径加入到系统url路径里
-            method.invoke(classLoader, jarUrl);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        } finally {
-            method.setAccessible(accessible);
-        }
+    private void loadJar(final URL jarUrl) {
+        stEnvironment.executeInternal(new AddJarOperation(jarUrl.getPath()));
     }
 
     public String explainSql(String statement, ExplainDetail... extraDetails) {

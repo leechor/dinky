@@ -43,7 +43,7 @@ public class Scene {
      * 保存所有已定义算子, 类初始化时进行加载
      */
     protected static final Map<String, Class<? extends Operator>> OPERATOR_MAP = getOperatorMaps();
-    protected static final Map<String, Class<? extends UserDefinedFunction>> USER_DEFINED_FUNCTION =
+    public static final Map<String, String> USER_DEFINED_FUNCTION =
         getUserDefinedFunctionMaps();
 
     private Environment environment;
@@ -105,8 +105,8 @@ public class Scene {
     public static List<OperatorWrapper> getOperatorNodes(Process process) {
         List<OperatorWrapper> operatorWrappers = getAllOperatorWrappers(process);
         return operatorWrappers.stream()
-            .filter(t -> !CollectionUtils.isEmpty(t.getOperator().getInputPorts()) &&
-                !CollectionUtils.isEmpty(t.getOperator().getOutputPorts()))
+            .filter(t -> !CollectionUtils.isEmpty(t.getOperator().getInputPorts())
+                && !CollectionUtils.isEmpty(t.getOperator().getOutputPorts()))
             .collect(Collectors.toList());
     }
 
@@ -146,7 +146,7 @@ public class Scene {
      *
      * @return 算子类字典
      */
-    public static Map<String, Class<? extends UserDefinedFunction>> getUserDefinedFunctionMaps() {
+    public static Map<String, Class<? extends UserDefinedFunction>> getUserDefinedFunctionClassMaps() {
         var iun = IUdfDefine.class.getPackage().getName();
         Reflections reflections = new Reflections(iun);
         var udfFunctions = reflections.getSubTypesOf(UserDefinedFunction.class);
@@ -165,6 +165,11 @@ public class Scene {
             }
             return null;
         }, Function.identity()));
+    }
+
+    public static Map<String, String> getUserDefinedFunctionMaps() {
+        return getUserDefinedFunctionClassMaps().entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getKey, t -> t.getValue().getName()));
     }
 
     /**

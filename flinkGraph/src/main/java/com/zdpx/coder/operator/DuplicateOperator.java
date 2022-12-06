@@ -1,9 +1,6 @@
 package com.zdpx.coder.operator;
 
-import org.apache.flink.table.functions.UserDefinedFunction;
-
-import java.util.Collections;
-import java.util.Set;
+import java.util.Map;
 
 import com.zdpx.coder.graph.InputPortObject;
 import com.zdpx.coder.graph.OutputPortObject;
@@ -33,8 +30,8 @@ public class DuplicateOperator extends Operator {
     }
 
     @Override
-    protected Set<Class<? extends UserDefinedFunction>> declareUdfFunction() {
-        return Collections.emptySet();
+    protected Map<String, String> declareUdfFunction() {
+        return Map.of();
     }
 
     @Override

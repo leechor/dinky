@@ -965,6 +965,7 @@
                             <target>11</target>
                             <compilerArgs combine.children="append">
                                 <arg>--add-exports=java.base/sun.net.util=ALL-UNNAMED</arg>
+                                <arg>--add-exports=java.base/jdk.internal.loader=ALL-UNNAMED</arg>
                                 <arg>--add-exports=java.management/sun.management=ALL-UNNAMED</arg>
                                 <arg>--add-exports=java.rmi/sun.rmi.registry=ALL-UNNAMED</arg>
                                 <arg>--add-exports=java.security.jgss/sun.security.krb5=ALL-UNNAMED</arg>

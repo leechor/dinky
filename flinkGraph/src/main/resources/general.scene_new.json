@@ -51,7 +51,7 @@
               },
               {
                 "name": "va",
-                "type": "TIMESTAMP(3)"
+                "type": "DOUBLE"
               },
               {
                 "name": "WATERMARK FOR dt AS dt - INTERVAL '15' SECOND",
@@ -260,9 +260,6 @@
                   ]
                 },
                 {
-                  "outName": "taskStatus"
-                },
-                {
                   "outName": "gbu_time",
                   "functionName": "",
                   "parameters": [
@@ -273,6 +270,9 @@
             },
             "secondInput": {
               "fieldFunctions": [
+                {
+                  "outName": "taskStatus"
+                },
                 {
                   "outName": "task_time",
                   "functionName": "",
@@ -317,7 +317,7 @@
         "parameters": [
           {
             "partition": "taskId",
-            "orderBy": "proc_time",
+            "orderBy": "gbu_time",
             "patterns": [
               {
                 "variable": "A",

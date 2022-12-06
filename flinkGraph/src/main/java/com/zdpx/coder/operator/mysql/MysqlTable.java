@@ -1,12 +1,10 @@
 package com.zdpx.coder.operator.mysql;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.flink.table.functions.UserDefinedFunction;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import com.zdpx.coder.operator.Operator;
 import com.zdpx.coder.operator.TableInfo;
@@ -61,8 +59,8 @@ public abstract class MysqlTable extends Operator {
     }
 
     @Override
-    protected Set<Class<? extends UserDefinedFunction>> declareUdfFunction() {
-        return Collections.emptySet();
+    protected Map<String, String> declareUdfFunction() {
+        return Map.of();
     }
 
     @Override

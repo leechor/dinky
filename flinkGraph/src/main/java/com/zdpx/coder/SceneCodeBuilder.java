@@ -1,7 +1,5 @@
 package com.zdpx.coder;
 
-import org.apache.flink.table.functions.UserDefinedFunction;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -9,6 +7,7 @@ import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.Comparator;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
@@ -38,7 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SceneCodeBuilder {
     // 自定义函数操作算子集
-    public final Set<Class<? extends UserDefinedFunction>> udfFunctions = new HashSet<>();
+    private Map<String, String> udfFunctionMap = new HashMap<>();
 
     private CodeBuilder codeBuilder;
     private final Scene scene;
@@ -65,8 +64,12 @@ public class SceneCodeBuilder {
         return scene;
     }
 
-    public Set<Class<? extends UserDefinedFunction>> getUdfFunctions() {
-        return udfFunctions;
+    public Map<String, String> getUdfFunctionMap() {
+        return udfFunctionMap;
+    }
+
+    public void setUdfFunctionMap(Map<String, String> udfFunctionMap) {
+        this.udfFunctionMap = udfFunctionMap;
     }
 
     /**
@@ -198,7 +201,7 @@ public class SceneCodeBuilder {
 
     private static SceneNode readSceneInternal(Object in) {
         final var objectMapper = new ObjectMapper();
-        SceneNode scene = null;
+        SceneNode scene;
         try {
             if (in instanceof String) {
                 scene = objectMapper.readValue((String) in, SceneNode.class);
