@@ -35,7 +35,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication(scanBasePackages = {"com.dlink", "com.zdpx"}, exclude = FreeMarkerAutoConfiguration.class)
 @EnableCaching
 public class Dlink {
-
     public static void main(String[] args) {
         SpringApplication.run(Dlink.class, args);
     }

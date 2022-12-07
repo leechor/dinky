@@ -356,6 +356,13 @@
                 "parameters": [
                   "A.gbu_time"
                 ]
+              },
+              {
+                "outName": "va",
+                "functionName": "LAST",
+                "parameters": [
+                  "A.va"
+                ]
               }
             ],
             "defines": [
@@ -407,6 +414,10 @@
               {
                 "name": "gbuEndTime",
                 "type": "TIMESTAMP(3)"
+              },
+              {
+                "name": "va",
+                "type": "DOUBLE"
               }
             ]
           }
