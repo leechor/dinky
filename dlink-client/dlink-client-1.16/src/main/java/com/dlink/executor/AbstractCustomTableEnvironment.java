@@ -24,15 +24,18 @@ import org.apache.flink.table.api.TableEnvironment;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.apache.flink.table.api.bridge.java.internal.StreamTableEnvironmentImpl;
 import org.apache.flink.table.delegation.Planner;
+import org.apache.flink.table.operations.command.AddJarOperation;
+
+import java.util.Arrays;
 
 /**
  *
  */
 public abstract class AbstractCustomTableEnvironment
-    implements
-    CustomTableEnvironment,
-    DefaultTableEnvironmentInternal,
-    DefaultStreamTableEnvironment {
+        implements
+        CustomTableEnvironment,
+        DefaultTableEnvironmentInternal,
+        DefaultStreamTableEnvironment {
 
     protected StreamTableEnvironment streamTableEnvironment;
 
@@ -55,5 +58,10 @@ public abstract class AbstractCustomTableEnvironment
     public Planner getPlanner() {
         return ((StreamTableEnvironmentImpl) streamTableEnvironment).getPlanner();
     }
+
+    public void addJarUrl(String... paths) {
+        Arrays.stream(paths).forEach(s -> executeInternal(new AddJarOperation(s)));
+    }
+
 
 }

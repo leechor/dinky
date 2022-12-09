@@ -316,7 +316,7 @@ public abstract class Executor {
      * @param udfFilePath udf文件路径
      */
     public void initUDF(String... udfFilePath) {
-        Arrays.stream(udfFilePath).forEach(s -> stEnvironment.executeInternal(new AddJarOperation(s)));
+        stEnvironment.addJarUrl(udfFilePath);
         DinkyClassLoaderContextHolder.get().addURL(udfFilePath);
     }
 

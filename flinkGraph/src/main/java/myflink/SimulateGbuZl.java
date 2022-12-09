@@ -133,7 +133,7 @@ public class SimulateGbuZl {
                 + "taskStatus INT, "
                 + "v DOUBLE) with ( "
                 + "'connector' = 'jdbc',"
-                + "'url' = 'jdbc:mysql://192.168.17.132:3306/flink?allowPublicKeyRetrieval=true', "
+                + "'url' = 'jdbc:mysql://192.168.1.88:3306/flink?allowPublicKeyRetrieval=true', "
                 + "'username' = 'root', "
                 + "'password' = '123456', "
                 + "'table-name' = 'gbu') ");
