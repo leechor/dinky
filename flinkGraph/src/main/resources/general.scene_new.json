@@ -376,6 +376,85 @@
       },
       {
         "activated": true,
+        "id": "mysqlSink_gbu",
+        "code": "com.zdpx.coder.operator.mysql.MysqlSinkOperator",
+        "parallelism": 1,
+        "compatibility": 1.0,
+        "expanded": true,
+        "name": "MysqlSinkOperator_gbu",
+        "origin": null,
+        "height": 150,
+        "width": 90,
+        "x": 1,
+        "y": 2,
+        "parameters": [
+          {
+            "tableName": "gbu_data",
+            "connector": "jdbc",
+            "url": "jdbc:mysql://192.168.17.132:3306/flink?allowPublicKeyRetrieval=true",
+            "username": "root",
+            "password": "123456",
+            "columns": [
+              {
+                "name": "id",
+                "type": "STRING"
+              },
+              {
+                "name": "taskId",
+                "type": "STRING"
+              },
+              {
+                "name": "longitude",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "latitude",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "va",
+                "type": "DOUBLE"
+              },
+              {
+                "name": "gbu_time",
+                "type": "TIMESTAMP"
+              },
+              {
+                "name": "taskStatus",
+                "type": "INT"
+              },
+              {
+                "name": "task_time",
+                "type": "TIMESTAMP"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "activated": true,
+        "id": "duplicateOperator_2",
+        "code": "com.zdpx.coder.operator.DuplicateOperator",
+        "parallelism": 1,
+        "compatibility": 1.0,
+        "expanded": true,
+        "name": "DuplicateOperator_2",
+        "origin": null,
+        "height": 150,
+        "width": 90,
+        "x": 1,
+        "y": 2,
+        "parameters": [
+          {
+            "outputName": "output_0"
+          },
+          {
+            "outputName": "output_1"
+          }
+        ]
+      },
+      {
+        "activated": true,
         "id": "mysqlSink_cep",
         "code": "com.zdpx.coder.operator.mysql.MysqlSinkOperator",
         "parallelism": 1,
@@ -457,8 +536,20 @@
       },
       {
         "fromOp": "joinOperator",
-        "toOp": "cepOperator",
+        "toOp": "duplicateOperator_2",
         "fromPort": "output_0",
+        "toPort": "input_0"
+      },
+      {
+        "fromOp": "duplicateOperator_2",
+        "toOp": "mysqlSink_gbu",
+        "fromPort": "output_0",
+        "toPort": "input_0"
+      },
+      {
+        "fromOp": "duplicateOperator_2",
+        "toOp": "cepOperator",
+        "fromPort": "output_1",
         "toPort": "input_0"
       },
       {

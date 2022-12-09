@@ -1,19 +1,15 @@
 package com.zdpx.coder.operator;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
-
 import com.zdpx.coder.Specifications;
 import com.zdpx.coder.graph.InputPortObject;
 import com.zdpx.coder.graph.OutputPortObject;
 import com.zdpx.coder.utils.NameHelper;
 import com.zdpx.coder.utils.TemplateUtils;
-
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -21,14 +17,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JoinOperator extends Operator {
     public static final String TEMPLATE =
-        String.format("<#import \"%s\" as e>CREATE VIEW ${tableName} AS " +
-                "SELECT <@e.fieldsProcess fieldFunctions/> " +
-                "FROM ${inputTableName} " +
-                "${joinType?upper_case} JOIN ${anotherTableName} " +
-                "<#if systemTimeColumn??>FOR SYSTEM_TIME AS OF ${systemTimeColumn}</#if> " +
-                "<#if where??>WHERE ${where}</#if> " +
-                "<#if onLeftColumn??>ON ${onLeftColumn} = ${onRightColumn}</#if>",
-            Specifications.TEMPLATE_FILE);
+            String.format("<#import \"%s\" as e>CREATE VIEW ${tableName} AS " +
+                            "SELECT <@e.fieldsProcess fieldFunctions/> " +
+                            "FROM ${inputTableName} " +
+                            "${joinType?upper_case} JOIN ${anotherTableName} " +
+                            "<#if systemTimeColumn??>FOR SYSTEM_TIME AS OF ${systemTimeColumn}</#if> " +
+                            "<#if where??>WHERE ${where}</#if> " +
+                            "<#if onLeftColumn??>ON ${onLeftColumn} = ${onRightColumn}</#if>",
+                    Specifications.TEMPLATE_FILE);
 
     private InputPortObject<TableInfo> primaryInput;
     private InputPortObject<TableInfo> secondInput;
@@ -59,28 +55,16 @@ public class JoinOperator extends Operator {
         }
 
         var parameters = getFirstParameterMap();
-        var primaryParams = OperatorParameterUtils.getColumns("primary", parameters);
-        var broadcastParams = OperatorParameterUtils.getColumns("second", parameters);
-        var outputParams = OperatorParameterUtils.getColumns("output", parameters);
         var joinType = getNestValue(parameters, "/join/type").textValue();
         var forSystemTime = getNestValue(parameters, "/systemTimeColumn").textValue();
         var onLeftColumn = getNestValue(parameters, "/on/leftColumn").textValue();
         var onRightColumn = getNestValue(parameters, "/on/rightColumn").textValue();
 
-        List<Column> cls = new ArrayList<>();
-        BiConsumer<Map<String, String>, InputPortObject<TableInfo>> func =
-            (Map<String, String> params, InputPortObject<TableInfo> input) ->
-                params.forEach((k, v) -> input.getOutputPseudoData().getColumns().stream()
-                    .filter(t -> t.getName().equals(k))
-                    .findAny()
-                    .ifPresent(cls::add));
-        func.accept(primaryParams, primaryInput);
-        func.accept(broadcastParams, secondInput);
-
         var outputTableName = NameHelper.generateVariableName("JoinOperator");
         var primaryTableName = primaryInput.getOutputPseudoData().getName();
         var secondTableName = secondInput.getOutputPseudoData().getName();
-        List<FieldFunction> ffsPrimary = getFieldFunctions(primaryTableName, getNestMapValue(parameters, "/primaryInput"));
+        List<FieldFunction> ffsPrimary = getFieldFunctions(primaryTableName, getNestMapValue(parameters,
+                "/primaryInput"));
         List<FieldFunction> ffsSecond = getFieldFunctions(secondTableName, getNestMapValue(parameters, "/secondInput"));
         ffsPrimary.addAll(ffsSecond);
 
@@ -95,7 +79,9 @@ public class JoinOperator extends Operator {
         dataModel.put("onRightColumn", FieldFunction.insertTableName(secondTableName, null, onRightColumn));
 
         var sqlStr = TemplateUtils.format(this.getName(), dataModel, TEMPLATE);
-        registerUdfFunction(ffsPrimary);
+        registerUdfFunctions(ffsPrimary);
+
+        List<Column> cls = getColumnFromFieldFunctions(ffsPrimary);
         generate(sqlStr);
 
         postOutput(outputPort, outputTableName, cls);

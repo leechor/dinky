@@ -96,7 +96,7 @@ public class SceneCodeBuilder {
             sinkOperatorNodes.stream().map(OperatorWrapper::getOperator).collect(Collectors.toList());
         Deque<Operator> ops = new ArrayDeque<>();
         bft(Set.copyOf(sinks), ops::push);
-        ops.forEach(this::operate);
+        ops.stream().distinct().forEach(this::operate);
     }
 
     /**

@@ -202,6 +202,7 @@ public class OperatorWrapper {
 
 //endregion
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -210,26 +211,12 @@ public class OperatorWrapper {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        OperatorWrapper operatorWrapper = (OperatorWrapper) o;
-        return parallelism == operatorWrapper.parallelism
-                && activated == operatorWrapper.activated
-                && expanded == operatorWrapper.expanded
-                && height == operatorWrapper.height
-                && width == operatorWrapper.width
-                && x == operatorWrapper.x
-                && y == operatorWrapper.y
-                && code.equals(operatorWrapper.code)
-                && name.equals(operatorWrapper.name)
-                && Objects.equals(compatibility, operatorWrapper.compatibility)
-                && Objects.equals(parentProcess, operatorWrapper.parentProcess)
-                && Objects.equals(origin, operatorWrapper.origin)
-                && Objects.equals(processes, operatorWrapper.processes)
-                && Objects.equals(parameters, operatorWrapper.parameters);
+        OperatorWrapper that = (OperatorWrapper) o;
+        return id.equals(that.id) && code.equals(that.code) && name.equals(that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(code, name);
+        return Objects.hash(id, code, name);
     }
-
 }
