@@ -19,6 +19,7 @@
 
 package com.dlink.function.compiler;
 
+import cn.hutool.core.date.DateTime;
 import com.dlink.function.constant.PathConstant;
 import com.dlink.function.data.model.UDF;
 import com.dlink.function.util.ZipUtils;
@@ -34,6 +35,8 @@ import java.util.stream.Collectors;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
+
+import static cn.hutool.core.date.DatePattern.PURE_DATETIME_PATTERN;
 
 /**
  * @author ZackYoung
@@ -66,7 +69,10 @@ public class JVMPackage implements FunctionPackage {
             fileInputStreams[i] = FileUtil.getInputStream(absoluteFilePath);
         }
 
-        String jarPath = PathConstant.getUdfPackagePath(missionId) + PathConstant.UDF_JAR_NAME;
+        String jarPath = PathConstant.getUdfPackagePath(missionId)
+                + DateTime.now().toString(PURE_DATETIME_PATTERN)
+                + "_"
+                +PathConstant.UDF_JAR_NAME;
         // 编译好的文件打包jar
         File file = FileUtil.file(jarPath);
         FileUtil.del(file);
