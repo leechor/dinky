@@ -29,6 +29,7 @@ import com.dlink.assertion.Asserts;
 import com.dlink.assertion.Tips;
 import com.dlink.common.result.Result;
 import com.dlink.config.Dialect;
+import com.dlink.config.Docker;
 import com.dlink.constant.FlinkRestResultConstant;
 import com.dlink.constant.NetConstant;
 import com.dlink.context.TenantContextHolder;
@@ -101,6 +102,7 @@ import com.dlink.service.TaskService;
 import com.dlink.service.TaskVersionService;
 import com.dlink.service.UDFService;
 import com.dlink.service.UDFTemplateService;
+import com.dlink.utils.DockerClientUtils;
 import com.dlink.utils.JSONUtil;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -147,6 +149,7 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.lang.tree.TreeNode;
 import cn.hutool.core.lang.tree.TreeUtil;
+import cn.hutool.core.util.StrUtil;
 
 /**
  * 任务 服务实现类
@@ -203,8 +206,12 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
     private UDFService udfService;
 
     private String buildParas(Integer id) {
+        return buildParas(id, StrUtil.NULL);
+    }
+
+    private String buildParas(Integer id, String dinkyAddr) {
         return "--id " + id + " --driver " + driver + " --url " + url + " --username " + username + " --password "
-                + password;
+                + password + " --dinkyAddr " + dinkyAddr;
     }
 
     @Override
@@ -215,12 +222,22 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
             return executeCommonSql(SqlDTO.build(task.getStatement(),
                     task.getDatabaseId(), null));
         }
-        ProcessEntity process = ProcessContextHolder.registerProcess(
-                ProcessEntity.init(ProcessType.FLINKSUBMIT, StpUtil.getLoginIdAsInt()));
+        ProcessEntity process = null;
+        if (StpUtil.isLogin()) {
+            process = ProcessContextHolder.registerProcess(
+                    ProcessEntity.init(ProcessType.FLINKSUBMIT, StpUtil.getLoginIdAsInt()));
+        } else {
+            process = ProcessEntity.NULL_PROCESS;
+        }
         process.info("Initializing Flink job config...");
         JobConfig config = buildJobConfig(task);
         // init UDF
         udfService.init(task.getStatement(), config);
+
+        if (GatewayType.KUBERNETES_APPLICATION.equalsValue(config.getType())) {
+            loadDocker(id, config.getClusterConfigurationId(), config.getGatewayConfig());
+        }
+
         JobManager jobManager = JobManager.build(config);
         process.start();
         if (!config.isJarTask()) {
@@ -232,6 +249,30 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
             process.finish("Submit Flink Jar succeed.");
             return jobResult;
         }
+    }
+
+    private void loadDocker(Integer taskId, Integer clusterConfigurationId, GatewayConfig gatewayConfig) {
+        Map dockerConfig = (Map) clusterConfigurationService.getClusterConfigById(clusterConfigurationId).getConfig()
+                .get("dockerConfig");
+        if (dockerConfig == null) {
+            return;
+        }
+        String params = SystemConfiguration.getInstances().getSqlSubmitJarParas()
+                + buildParas(taskId, dockerConfig.getOrDefault("dinky.remote.addr", "").toString());
+
+        gatewayConfig.getAppConfig().setUserJarParas(params.split(" "));
+
+        Docker docker = Docker.build(dockerConfig);
+        if (docker == null || StringUtils.isBlank(docker.getInstance())) {
+            return;
+        }
+
+        DockerClientUtils dockerClientUtils = new DockerClientUtils(docker);
+        if (StrUtil.isNotBlank(dockerClientUtils.getImage())) {
+            gatewayConfig.getFlinkConfig().getConfiguration().put("kubernetes.container.image",
+                    dockerClientUtils.getImage());
+        }
+
     }
 
     @Override
@@ -379,28 +420,34 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
     }
 
     @Override
+    public void initTenantByTaskId(Integer id) {
+        Integer tenantId = baseMapper.getTenantByTaskId(id);
+        Asserts.checkNull(tenantId, Tips.TASK_NOT_EXIST);
+        TenantContextHolder.set(tenantId);
+    }
+
+    @Override
     public boolean saveOrUpdateTask(Task task) {
-        if (CollUtil.isNotEmpty(task.getConfig())) {
-            if (Dialect.isUDF(task.getDialect()) && Convert.toInt(task.getConfig().get(0).get("templateId"), 0) != 0) {
-                if (CollUtil.isNotEmpty(task.getConfig()) && Asserts.isNullString(task.getStatement())) {
-                    Map<String, String> config = task.getConfig().get(0);
-                    UDFTemplate template = udfTemplateService.getById(config.get("templateId"));
-                    if (template != null) {
-                        String code = UDFUtil.templateParse(task.getDialect(), template.getTemplateCode(),
+        if (Dialect.isUDF(task.getDialect())) {
+            if (CollUtil.isNotEmpty(task.getConfig()) && Asserts.isNullString(task.getStatement())
+                    && Convert.toInt(task.getConfig().get(0).get("templateId"), 0) != 0) {
+                Map<String, String> config = task.getConfig().get(0);
+                UDFTemplate template = udfTemplateService.getById(config.get("templateId"));
+                if (template != null) {
+                    String code = UDFUtil.templateParse(task.getDialect(), template.getTemplateCode(),
                             config.get("className"));
-                        task.setStatement(code);
-                    }
+                    task.setStatement(code);
                 }
-                // to compiler udf
-                if (Asserts.isNotNullString(task.getDialect()) && Dialect.JAVA.equalsVal(task.getDialect())
+            }
+            // to compiler udf
+            if (Asserts.isNotNullString(task.getDialect()) && Dialect.JAVA.equalsVal(task.getDialect())
                     && Asserts.isNotNullString(task.getStatement())) {
-                    CustomStringJavaCompiler compiler = new CustomStringJavaCompiler(task.getStatement());
-                    task.setSavePointPath(compiler.getFullClassName());
-                } else if (Dialect.PYTHON.equalsVal(task.getDialect())) {
-                    task.setSavePointPath(task.getName() + "." + UDFUtil.getPyUDFAttr(task.getStatement()));
-                } else if (Dialect.SCALA.equalsVal(task.getDialect())) {
-                    task.setSavePointPath(UDFUtil.getScalaFullClassName(task.getStatement()));
-                }
+                CustomStringJavaCompiler compiler = new CustomStringJavaCompiler(task.getStatement());
+                task.setSavePointPath(compiler.getFullClassName());
+            } else if (Dialect.PYTHON.equalsVal(task.getDialect())) {
+                task.setSavePointPath(task.getName() + "." + UDFUtil.getPyUDFAttr(task.getStatement()));
+            } else if (Dialect.SCALA.equalsVal(task.getDialect())) {
+                task.setSavePointPath(UDFUtil.getScalaFullClassName(task.getStatement()));
             }
         }
 
@@ -409,8 +456,8 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
             Task taskInfo = getById(task.getId());
             Assert.check(taskInfo);
             if (JobLifeCycle.RELEASE.equalsValue(taskInfo.getStep())
-                || JobLifeCycle.ONLINE.equalsValue(taskInfo.getStep())
-                || JobLifeCycle.CANCEL.equalsValue(taskInfo.getStep())) {
+                    || JobLifeCycle.ONLINE.equalsValue(taskInfo.getStep())
+                    || JobLifeCycle.CANCEL.equalsValue(taskInfo.getStep())) {
                 throw new BusException("该作业已" + JobLifeCycle.get(taskInfo.getStep()).getLabel() + "，禁止修改！");
             }
             task.setStep(JobLifeCycle.DEVELOP.getValue());
@@ -505,6 +552,9 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
     @Override
     public JobStatus checkJobStatus(JobInfoDetail jobInfoDetail) {
         JobConfig jobConfig = new JobConfig();
+        if (Asserts.isNull(jobInfoDetail.getClusterConfiguration())) {
+            return JobStatus.UNKNOWN;
+        }
         Map<String, Object> gatewayConfigMap = clusterConfigurationService
                 .getGatewayConfig(jobInfoDetail.getClusterConfiguration().getId());
         jobConfig.buildGatewayConfig(gatewayConfigMap);
@@ -536,7 +586,7 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
         Task task = getOne(
                 new QueryWrapper<Task>().in("dialect", Dialect.JAVA, Dialect.SCALA, Dialect.PYTHON).eq("enabled", 1)
                         .eq("save_point_path", className));
-        Assert.check(task);
+        Asserts.checkNull(task,StrUtil.format("class: {} ,not exists!",className));
         task.setStatement(statementService.getById(task.getId()).getStatement());
         return task;
     }
@@ -714,16 +764,10 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
         if (Asserts.isNullString(type)) {
             type = SavePointType.CANCEL.getValue();
         }
-
-        boolean result = savepointTask(id, type);
-//        if (!result) {
-//            return Result.failed("操作失败");
-//        }
-
+        savepointTask(id, type);
         if (!JobLifeCycle.ONLINE.equalsValue(task.getStep())) {
             return Result.succeed("停止成功");
         }
-
         task.setStep(JobLifeCycle.RELEASE.getValue());
         updateById(task);
         return Result.succeed("下线成功");
@@ -768,7 +812,6 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
         String jobId = jobInstance.getJid();
         boolean useGateway = false;
         JobConfig jobConfig = new JobConfig();
-        jobConfig.setAddress(cluster.getJobManagerHost());
         jobConfig.setType(cluster.getType());
         Task task = this.getTaskInfoById(cluster.getTaskId());
 
@@ -787,6 +830,7 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
             useGateway = true;
         }
         jobConfig.setTaskId(jobInstance.getTaskId());
+        jobConfig.setAddress(cluster.getJobManagerHost());
         JobManager jobManager = JobManager.build(jobConfig);
         jobManager.setUseGateway(useGateway);
         if ("canceljob".equals(savePointType)) {
@@ -1263,7 +1307,8 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
                 String exceptionUrl = "http://" + jobManagerHost + "/#/job/" + jobInstance.getJid() + "/exceptions";
 
                 for (AlertInstance alertInstance : alertGroup.getInstances()) {
-                    if (alertInstance == null) {
+                    if (alertInstance == null
+                            || (Asserts.isNotNull(alertInstance.getEnabled()) && !alertInstance.getEnabled())) {
                         continue;
                     }
                     Map<String, String> map = JSONUtil.toMap(alertInstance.getParams());

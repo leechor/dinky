@@ -135,7 +135,7 @@ public class DataBaseServiceImpl extends SuperServiceImpl<DataBaseMapper, DataBa
         Driver driver = Driver.build(dataBase.getDriverConfig());
         List<Column> columns = driver.listColumns(schemaName, tableName);
         Table table = Table.build(tableName, schemaName, columns);
-        return table.getSqlSelect(dataBase.getName());
+        return driver.getSqlSelect(table);
     }
 
     @Override
@@ -158,6 +158,19 @@ public class DataBaseServiceImpl extends SuperServiceImpl<DataBaseMapper, DataBa
     }
 
     @Override
+    public JdbcSelectResult execSql(QueryData queryData) {
+        DataBase dataBase = getById(queryData.getId());
+        Asserts.checkNotNull(dataBase, "该数据源不存在！");
+        Driver driver = Driver.build(dataBase.getDriverConfig());
+        long startTime = System.currentTimeMillis();
+        JdbcSelectResult jdbcSelectResult = driver.query(queryData.getSql(), 500);
+        long endTime = System.currentTimeMillis();
+        jdbcSelectResult.setTime(endTime - startTime);
+        jdbcSelectResult.setTotal(jdbcSelectResult.getRowData().size());
+        return jdbcSelectResult;
+    }
+
+    @Override
     public SqlGeneration getSqlGeneration(Integer id, String schemaName, String tableName) {
         DataBase dataBase = getById(id);
         Asserts.checkNotNull(dataBase, "该数据源不存在！");
@@ -165,7 +178,7 @@ public class DataBaseServiceImpl extends SuperServiceImpl<DataBaseMapper, DataBa
         Table table = driver.getTable(schemaName, tableName);
         SqlGeneration sqlGeneration = new SqlGeneration();
         sqlGeneration.setFlinkSqlCreate(table.getFlinkTableSql(dataBase.getName(), dataBase.getFlinkTemplate()));
-        sqlGeneration.setSqlSelect(table.getSqlSelect(dataBase.getName()));
+        sqlGeneration.setSqlSelect(driver.getSqlSelect(table));
         sqlGeneration.setSqlCreate(driver.getCreateTableSql(table));
         driver.close();
         return sqlGeneration;
@@ -192,7 +205,7 @@ public class DataBaseServiceImpl extends SuperServiceImpl<DataBaseMapper, DataBa
     public boolean copyDatabase(DataBase database) {
         String name = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 10);
         database.setId(null);
-        database.setName(database.getName().substring(0, 10) + "_" + name);
+        database.setName((database.getName().length() > 10 ? database.getName().substring(0, 10) : database.getName()) + "_" + name);
         database.setCreateTime(null);
         return this.save(database);
     }
