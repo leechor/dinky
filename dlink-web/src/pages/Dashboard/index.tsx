@@ -18,31 +18,15 @@
  */
 
 
-import {Settings as LayoutSettings} from '@ant-design/pro-layout';
+export default () => {
+  return (
+    <>
+      <div className={"grafana"}>
+        <iframe src={"http://192.168.1.88:3000/d/PDv5u_KVk/cep?orgId=1&refresh=5s&kiosk"} width={"100%"} height = {"1000px" }>
 
-const Settings: LayoutSettings & {
+        </iframe>
+      </div>
+    </>
+  )
+}
 
-
-  pwa?: boolean;
-  logo?: string;
-} = {
-  navTheme: 'light',
-  // 拂晓蓝
-  primaryColor: '#1890ff',
-  layout: 'mix',
-  contentWidth: 'Fluid',
-  fixedHeader: false,
-  fixSiderbar: true,
-  colorWeak: false,
-  title: 'ZDPX Real-time Platform ',
-  pwa: false,
-  logo: 'dinky.svg',
-  iconfontUrl: '',
-  menu: {
-    locale: true
-  },
-  headerHeight: 48,
-  splitMenus: true
-};
-
-export default Settings;

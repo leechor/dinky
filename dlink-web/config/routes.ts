@@ -66,7 +66,6 @@ export default [
       },
     ],
   },
-
   {
     path: '/registration',
     name: 'registration',
@@ -195,6 +194,12 @@ export default [
         component: './SettingCenter/ProcessList',
       },
     ],
+  },
+  {
+    path: '/dashboard',
+    name: 'dashboard',
+    icon: 'dashboard',
+    component: './Dashboard',
   },
   {
     path: '/about',
