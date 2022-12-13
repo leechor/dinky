@@ -21,6 +21,8 @@ create table flink.gbu_data
     id         varchar(64) not null,
     taskId     varchar(64) not null,
     taskStatus int         null,
+    longitude  double      null,
+    latitude   double      null,
     gbu_time   timestamp   null,
     task_time  timestamp   null,
     va         double      null
