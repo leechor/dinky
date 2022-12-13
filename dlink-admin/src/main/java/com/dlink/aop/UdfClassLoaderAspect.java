@@ -57,7 +57,7 @@ public class UdfClassLoaderAspect {
     public void allPointcut() {
     }
 
-//    @Around("allPointcut()")
+    @Around("allPointcut()")
     public Object round(ProceedingJoinPoint proceedingJoinPoint) {
         Object proceed = null;
 

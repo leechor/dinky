@@ -43,7 +43,6 @@ import org.apache.flink.table.api.StatementSet;
 import org.apache.flink.table.api.TableConfig;
 import org.apache.flink.table.api.TableResult;
 import org.apache.flink.table.catalog.CatalogManager;
-import org.apache.flink.table.operations.command.AddJarOperation;
 import org.apache.hadoop.security.UserGroupInformation;
 
 import java.io.IOException;
@@ -51,7 +50,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -316,7 +314,6 @@ public abstract class Executor {
      * @param udfFilePath udf文件路径
      */
     public void initUDF(String... udfFilePath) {
-        stEnvironment.addJarUrl(udfFilePath);
         DinkyClassLoaderContextHolder.get().addURL(udfFilePath);
     }
 
