@@ -48,7 +48,6 @@ under the License.
         <google-java-forma.version>1.15.0</google-java-forma.version>
         <checker.version>3.25.0</checker.version>
         <reflections.version>0.10.2</reflections.version>
-        <jackson.version>2.14.1</jackson.version>
     </properties>
 
     <repositories>

@@ -67,7 +67,7 @@
         <druid-starter>1.2.8</druid-starter>
         <mybatis-plus-boot-starter.version>3.5.1</mybatis-plus-boot-starter.version>
         <lombok.version>1.18.24</lombok.version>
-        <jackjson.version>2.14.0-rc2</jackjson.version>
+        <jackson.version>2.14.1</jackson.version>
         <guava.version>31.1-jre</guava.version>
         <mysql-connector-java.version>8.0.28</mysql-connector-java.version>
         <ojdbc8.version>12.2.0.1</ojdbc8.version>
@@ -207,12 +207,12 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
-                <version>${jackjson.version}</version>
+                <version>${jackson.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>${jackjson.version}</version>
+                <version>${jackson.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
