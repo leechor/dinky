@@ -93,6 +93,7 @@
         <jaxb.version>2.3.0</jaxb.version>
         <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
         <log4j.version>2.19.0</log4j.version>
+        <docker.java.version>3.2.13</docker.java.version>
     </properties>
 
     <dependencyManagement>
