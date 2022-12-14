@@ -1,5 +1,11 @@
 package com.zdpx.source;
 
+import com.github.javafaker.Faker;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import myflink.SimulateGbuZl;
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
 import org.apache.flink.table.data.GenericRowData;
 import org.apache.flink.table.data.RowData;
@@ -8,26 +14,16 @@ import org.apache.flink.table.data.TimestampData;
 
 import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.github.javafaker.Faker;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import myflink.SimulateGbuZl;
-
 /**
  *
  */ //  数据源算子, 模拟产生任务状态数据
 public class TaskSource extends RichSourceFunction<RowData> {
     private static final Faker faker = new Faker();
-    static ObjectMapper mapper = new ObjectMapper();
-
-    static {
-        mapper.registerModule(new JavaTimeModule());
-    }
+//    static ObjectMapper mapper = new ObjectMapper();
+//
+//    static {
+//        mapper.registerModule(new JavaTimeModule());
+//    }
 
     private boolean flag = true;
 
@@ -41,7 +37,7 @@ public class TaskSource extends RichSourceFunction<RowData> {
                     .taskStatus(faker.number().numberBetween(0, 1))
                     .dt(LocalDateTime.now())
                     .build();
-            String taskJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(taskContext);
+//            String taskJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(taskContext);
             ctx.collect(GenericRowData.of(StringData.fromString("task"),
                 StringData.fromString(taskContext.getTaskId()),
                 taskContext.getTaskStatus(),

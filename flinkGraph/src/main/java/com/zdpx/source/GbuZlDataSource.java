@@ -1,5 +1,14 @@
 package com.zdpx.source;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.github.javafaker.Faker;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
 import org.apache.flink.table.data.GenericRowData;
 import org.apache.flink.table.data.RowData;
@@ -7,19 +16,6 @@ import org.apache.flink.table.data.StringData;
 import org.apache.flink.table.data.TimestampData;
 
 import java.time.LocalDateTime;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import com.github.javafaker.Faker;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  *
@@ -29,14 +25,14 @@ public class GbuZlDataSource implements SourceFunction<RowData> {
 
     @Override
     public void run(SourceContext<RowData> ctx) throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
+//        ObjectMapper mapper = new ObjectMapper();
+//        mapper.registerModule(new JavaTimeModule());
         boolean tombStone = false;
         Thread.sleep(2000);
 
         while (isRunning) {
             GBU gbu = GBU.generate();
-            String gbuJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(gbu);
+//            String gbuJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(gbu);
 
             ctx.collect(GenericRowData.of(StringData.fromString("gbu"),
                 StringData.fromString("taskA"),
@@ -46,7 +42,7 @@ public class GbuZlDataSource implements SourceFunction<RowData> {
                 TimestampData.fromLocalDateTime((gbu.getDt())),
                 gbu.getValue()));
 
-            String zlJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(ZL.generate());
+//            String zlJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(ZL.generate());
             ZL zl = ZL.generate();
             if (!tombStone) {
                 ctx.collect(GenericRowData.of(StringData.fromString("zl"),
