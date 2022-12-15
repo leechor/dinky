@@ -237,6 +237,7 @@ export default [
     path: '/about',
     name: 'about',
     icon: 'smile',
+    hideInMenu: true,
     component: './Welcome',
   },
   {

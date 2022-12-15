@@ -26,7 +26,7 @@ export default () => {
 
   return (
     <DefaultFooter
-      copyright={l('app.copyright.produced', 'Produced by Dinky Community')}
+      copyright={l('app.copyright.produced', 'Produced by ZDPX')}
       links={[
         {
           key: 'Dinky',

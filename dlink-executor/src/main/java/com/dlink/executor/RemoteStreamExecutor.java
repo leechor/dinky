@@ -32,9 +32,13 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
  **/
 public class RemoteStreamExecutor extends Executor {
 
+     /** refactor: as {@link RemoteStreamExecutor}, configuration, environmentSetting.getJarFiles(), can pass null
+     * value. {@link RemoteStreamExecutor} maybe compatible with this class. other Executor as so.
+     */
     public RemoteStreamExecutor(EnvironmentSetting environmentSetting, ExecutorSetting executorSetting) {
         this.environmentSetting = environmentSetting;
         this.executorSetting = executorSetting;
+
         if (Asserts.isNotNull(executorSetting.getConfig())) {
             Configuration configuration = Configuration.fromMap(executorSetting.getConfig());
             this.environment = StreamExecutionEnvironment.createRemoteEnvironment(environmentSetting.getHost(), environmentSetting.getPort(), configuration, environmentSetting.getJarFiles());

@@ -34,7 +34,7 @@ const Settings: LayoutSettings & {
   fixedHeader: false,
   fixSiderbar: true,
   colorWeak: false,
-  title: 'ZDPX Real-time Platform ',
+  title: 'ZDPX计算平台',
   pwa: false,
   logo: 'dinky.svg',
   iconfontUrl: '',
