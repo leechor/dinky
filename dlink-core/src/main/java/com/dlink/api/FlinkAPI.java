@@ -54,6 +54,8 @@ public class FlinkAPI {
 
     private static final Logger logger = LoggerFactory.getLogger(FlinkAPI.class);
 
+    public static final String REST_TARGET_DIRECTORY = "rest.target-directory";
+
     private String address;
 
     public FlinkAPI(String address) {
@@ -133,7 +135,7 @@ public class FlinkAPI {
         return error == null || error instanceof NullNode;
     }
 
-    public SavePointResult savepoints(String jobId, String savePointType) {
+    public SavePointResult savepoints(String jobId, String savePointType, Map<String, String> taskConfig) {
         SavePointType type = SavePointType.get(savePointType);
         String paramType = null;
         SavePointResult result = SavePointResult.build(GatewayType.YARN_PER_JOB);
@@ -158,6 +160,12 @@ public class FlinkAPI {
                 break;
             default:
         }
+
+        if (Asserts.isNotNull(taskConfig) && taskConfig.containsKey(REST_TARGET_DIRECTORY)) {
+            paramMap.put(REST_TARGET_DIRECTORY.substring(REST_TARGET_DIRECTORY.indexOf(".") + 1),
+                    taskConfig.get(REST_TARGET_DIRECTORY));
+        }
+
         ObjectMapper mapper = new ObjectMapper();
         JsonNode json = null;
         try {

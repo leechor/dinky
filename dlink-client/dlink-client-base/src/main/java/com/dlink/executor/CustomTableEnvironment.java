@@ -28,9 +28,7 @@ import org.apache.flink.table.api.ExplainDetail;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.apache.flink.table.api.internal.TableEnvironmentInternal;
 import org.apache.flink.table.delegation.Planner;
-import org.apache.flink.table.operations.command.AddJarOperation;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
