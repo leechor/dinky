@@ -22,7 +22,7 @@ package com.dlink.executor;
 import com.dlink.assertion.Asserts;
 
 import org.apache.flink.configuration.Configuration;
-import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.environment.RemoteStreamEnvironment;
 
 /**
  * RemoteStreamExecutor
@@ -32,19 +32,15 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
  **/
 public class RemoteStreamExecutor extends Executor {
 
-     /** refactor: as {@link RemoteStreamExecutor}, configuration, environmentSetting.getJarFiles(), can pass null
-     * value. {@link RemoteStreamExecutor} maybe compatible with this class. other Executor as so.
-     */
     public RemoteStreamExecutor(EnvironmentSetting environmentSetting, ExecutorSetting executorSetting) {
         this.environmentSetting = environmentSetting;
         this.executorSetting = executorSetting;
 
-        if (Asserts.isNotNull(executorSetting.getConfig())) {
-            Configuration configuration = Configuration.fromMap(executorSetting.getConfig());
-            this.environment = StreamExecutionEnvironment.createRemoteEnvironment(environmentSetting.getHost(), environmentSetting.getPort(), configuration, environmentSetting.getJarFiles());
-        } else {
-            this.environment = StreamExecutionEnvironment.createRemoteEnvironment(environmentSetting.getHost(), environmentSetting.getPort(), environmentSetting.getJarFiles());
-        }
+        Configuration configuration = Asserts.isNotNull(executorSetting.getConfig())
+                ? Configuration.fromMap(executorSetting.getConfig())
+                : null;
+        this.environment = new RemoteStreamEnvironment(environmentSetting.getHost(), environmentSetting.getPort(),
+                configuration);
         init();
     }
 

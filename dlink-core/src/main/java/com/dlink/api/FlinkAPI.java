@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.NullNode;
 
 import cn.hutool.http.HttpUtil;
 import cn.hutool.http.Method;
@@ -71,7 +70,6 @@ public class FlinkAPI {
         JsonNode result = null;
         try {
             result = mapper.readTree(res);
-
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -126,13 +124,8 @@ public class FlinkAPI {
     }
 
     public boolean stop(String jobId) {
-        JsonNode result = get(FlinkRestAPIConstant.JOBS + jobId + FlinkRestAPIConstant.CANCEL);
-        return result != null && isSuccessfulResult(result);
-    }
-
-    private static boolean isSuccessfulResult(JsonNode result) {
-        JsonNode error = result.get("errors");
-        return error == null || error instanceof NullNode;
+        get(FlinkRestAPIConstant.JOBS + jobId + FlinkRestAPIConstant.CANCEL);
+        return true;
     }
 
     public SavePointResult savepoints(String jobId, String savePointType, Map<String, String> taskConfig) {
@@ -210,7 +203,10 @@ public class FlinkAPI {
 
     public String getVersion() {
         JsonNode result = get(FlinkRestAPIConstant.FLINK_CONFIG);
-        return result.get("flink-version").asText();
+        if (Asserts.isNotNull(result) && Asserts.isNotNull(result.get("flink-version"))) {
+            return result.get("flink-version").asText();
+        }
+        return null;
     }
 
     public JsonNode getOverview() {
