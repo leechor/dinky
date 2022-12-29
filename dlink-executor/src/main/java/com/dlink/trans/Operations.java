@@ -19,15 +19,15 @@
 
 package com.dlink.trans;
 
-import static org.reflections.scanners.Scanners.SubTypes;
-
 import com.dlink.parser.SqlType;
+import lombok.extern.slf4j.Slf4j;
+import org.reflections.Reflections;
+import org.reflections.scanners.Scanners;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Set;
 
-import org.reflections.Reflections;
 
 /**
  * Operations
@@ -35,6 +35,7 @@ import org.reflections.Reflections;
  * @author wenmo
  * @since 2021/5/25 15:50
  **/
+@Slf4j
 public class Operations {
 
     private Operations() {
@@ -44,11 +45,13 @@ public class Operations {
 
     private static Operation[] getAllOperations() {
         Reflections reflections = new Reflections(Operation.class.getPackage().getName());
-        Set<Class<?>> operations = reflections.get(SubTypes.of(Operation.class).asClass());
-        return operations.stream().map(t -> {
+        Set<Class<?>> operations = reflections.get(Scanners.SubTypes.of(Operation.class).asClass());
+        return operations.stream().filter(t -> !t.isInterface()).map(t -> {
             try {
                 return t.getConstructor().newInstance();
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                     NoSuchMethodException e) {
+                log.error(String.format("getAllOperations error, class %s, err: %s", t, e));
                 throw new RuntimeException(e);
             }
         }).toArray(Operation[]::new);
@@ -83,14 +86,14 @@ public class Operations {
 
     public static Operation buildOperation(String statement) {
         String sql = statement.replace("\n", " ")
-            .replaceAll("\\s+", " ")
-            .trim()
-            .toUpperCase();
+                .replaceAll("\\s+", " ")
+                .trim()
+                .toUpperCase();
 
         return Arrays.stream(ALL_OPERATIONS)
-            .filter(p -> sql.startsWith(p.getHandle()))
-            .findFirst()
-            .map(p -> p.create(statement))
-            .orElse(null);
+                .filter(p -> sql.startsWith(p.getHandle()))
+                .findFirst()
+                .map(p -> p.create(statement))
+                .orElse(null);
     }
 }
