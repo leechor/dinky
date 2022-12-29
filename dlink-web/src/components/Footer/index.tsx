@@ -34,12 +34,6 @@ export default () => {
           href: '',
           blankTarget: true,
         },
-        {
-          key: 'github',
-          title: <GithubOutlined/>,
-          href: 'https://github.com/DataLinkDC/dlink',
-          blankTarget: true,
-        },
       ]}
     />
   );
