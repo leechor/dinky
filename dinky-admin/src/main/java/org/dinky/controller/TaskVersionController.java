@@ -19,6 +19,8 @@
 
 package org.dinky.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.dinky.common.result.ProTableResult;
 import org.dinky.dto.TaskVersionHistoryDTO;
 import org.dinky.model.TaskVersion;
@@ -47,12 +49,14 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/task/version")
 @RequiredArgsConstructor
+@Api(value = "/api/task/version", tags = "任务版本管理相关接口")
 public class TaskVersionController {
 
     private final TaskVersionService versionService;
 
     /** 动态查询列表 */
     @PostMapping
+    @ApiOperation(value = "动态查询列表", notes = "动态查询列表")
     public ProTableResult<TaskVersionHistoryDTO> listTasks(@RequestBody JsonNode para) {
         ProTableResult<TaskVersionHistoryDTO> versionHistoryDTOProTableResult =
                 new ProTableResult<>();

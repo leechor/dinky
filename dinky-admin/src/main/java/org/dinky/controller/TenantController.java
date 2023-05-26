@@ -19,6 +19,8 @@
 
 package org.dinky.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.dinky.common.result.ProTableResult;
 import org.dinky.common.result.Result;
 import org.dinky.model.Tenant;
@@ -43,6 +45,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/tenant")
 @RequiredArgsConstructor
+@Api(value = "/api/tenant", tags = "租户管理相关接口")
 public class TenantController {
 
     private final TenantService tenantService;
@@ -54,6 +57,7 @@ public class TenantController {
      * @return {@link Result} of {@link Void}
      */
     @PutMapping
+    @ApiOperation(value = "保存会或新增租户", notes = "保存会或新增租户")
     public Result<Void> saveOrUpdate(@RequestBody Tenant tenant) {
         return tenantService.saveOrUpdateTenant(tenant);
     }
@@ -66,6 +70,7 @@ public class TenantController {
      */
     @DeleteMapping()
     @Deprecated
+    @ApiOperation(value = "批量删除租户", notes = "批量删除租户")
     public Result<Void> deleteTenantById(@RequestBody JsonNode para) {
         return tenantService.deleteTenantById(para);
     }
@@ -77,6 +82,7 @@ public class TenantController {
      * @return {@link Result} of {@link Void}
      */
     @DeleteMapping("/delete")
+    @ApiOperation(value = "根据id删除租户", notes = "根据id删除租户")
     public Result<Void> removeTenantById(@RequestParam("id") Integer tenantId) {
         return tenantService.removeTenantById(tenantId);
     }
@@ -88,6 +94,7 @@ public class TenantController {
      * @return {@link ProTableResult} of {@link Tenant}
      */
     @PostMapping
+    @ApiOperation(value = "查询租户信息(分页)", notes = "查询租户信息(分页)")
     public ProTableResult<Tenant> listTenants(@RequestBody JsonNode para) {
         return tenantService.selectForProTable(para, true);
     }
@@ -101,6 +108,7 @@ public class TenantController {
      */
     @PutMapping(value = "/grantTenantToUser")
     @Deprecated
+    @ApiOperation(value = "授权给租户", notes = "授权给租户")
     public Result<Void> distributeUser(@RequestBody JsonNode para) {
         return tenantService.distributeUsers(para);
     }
@@ -112,6 +120,7 @@ public class TenantController {
      * @return {@link Result} of {@link Void}
      */
     @PutMapping(value = "/assignUserToTenant")
+    @ApiOperation(value = "分配用户到租户", notes = "分配用户到租户")
     public Result<Void> assignUserToTenant(
             @RequestBody AssignUserToTenantParams assignUserToTenantParams) {
         return tenantService.assignUserToTenant(assignUserToTenantParams);

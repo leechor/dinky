@@ -19,6 +19,7 @@
 
 package org.dinky.controller;
 
+import io.swagger.annotations.ApiOperation;
 import org.dinky.common.result.ProTableResult;
 import org.dinky.common.result.Result;
 import org.dinky.process.model.ProcessEntity;
@@ -53,11 +54,13 @@ public class ProcessController {
     }
 
     @GetMapping("/getConsoleByUserId")
+    @ApiOperation(value = "根据用户id获取控制台信息" , notes = "根据用户id获取控制台信息")
     public Result<String> getConsoleByUserId() {
         return Result.data(processService.getConsoleByUserId(StpUtil.getLoginIdAsInt()));
     }
 
     @GetMapping("/clearConsole")
+    @ApiOperation(value = "清空控制台信息" , notes = "清空控制台信息")
     public Result<String> clearConsole() {
         processService.clearConsoleByUserId(StpUtil.getLoginIdAsInt());
         return Result.succeed("Clear succeed.");

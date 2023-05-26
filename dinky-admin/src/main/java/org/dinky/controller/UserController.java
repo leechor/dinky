@@ -19,6 +19,8 @@
 
 package org.dinky.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.dinky.assertion.Asserts;
 import org.dinky.common.result.ProTableResult;
 import org.dinky.common.result.Result;
@@ -58,6 +60,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
+@Api(value = "/api/user", tags = "用户管理相关接口")
 public class UserController {
 
     private final UserService userService;
@@ -71,6 +74,7 @@ public class UserController {
      * @return {@link Result} with {@link Void}
      */
     @PutMapping
+    @ApiOperation(value = "添加或修改用户", notes = "添加或修改用户")
     public Result<Void> saveOrUpdateUser(@RequestBody User user) {
         if (Asserts.isNull(user.getId())) {
             return userService.registerUser(user);
@@ -87,6 +91,7 @@ public class UserController {
      * @return {@link Result} with {@link Void}
      */
     @PutMapping("/enable")
+    @ApiOperation(value = "启用或禁用用户", notes = "启用或禁用用户")
     public Result<Void> enable(@RequestParam("id") Integer id) {
         if (userService.checkAdmin(id)) {
             return Result.failed(MessageResolverUtils.getMessage("user.superadmin.cannot.disable"));
@@ -106,6 +111,7 @@ public class UserController {
      * @return {@link Result} with {@link ProTableResult}
      */
     @PostMapping
+    @ApiOperation(value = "获取用户列表(分页)", notes = "获取用户列表(分页)")
     public ProTableResult<User> listUser(@RequestBody JsonNode para) {
         return userService.selectForProTable(para, true);
     }
@@ -117,6 +123,7 @@ public class UserController {
      * @return {@link Result} with {@link Void}
      */
     @DeleteMapping("/delete")
+    @ApiOperation(value = "根据id获取用户", notes = "根据id获取用户")
     public Result<Void> deleteUserById(@RequestParam("id") Integer id) {
         if (userService.removeUser(id)) {
             return Result.succeed(MessageResolverUtils.getMessage("delete.success"));
@@ -134,6 +141,7 @@ public class UserController {
      */
     @DeleteMapping
     @Deprecated
+    @ApiOperation(value = "批量删除用户", notes = "批量删除用户")
     public Result<Void> deleteMul(@RequestBody JsonNode para) {
         if (para.size() > 0) {
             List<Integer> error = new ArrayList<>();
@@ -164,6 +172,7 @@ public class UserController {
      * @return {@link Result} with {@link User}
      */
     @PostMapping("/getOneById")
+    @ApiOperation(value = "根据id删除用户", notes = "根据id删除用户")
     public Result<User> getOneById(@RequestBody User user) {
         user = userService.getById(user.getId());
         user.setPassword(null);
@@ -177,6 +186,7 @@ public class UserController {
      * @return {@link Result} with {@link Void}
      */
     @PostMapping("/modifyPassword")
+    @ApiOperation(value = "修改密码", notes = "修改密码")
     public Result<Void> modifyPassword(@RequestBody ModifyPasswordDTO modifyPasswordDTO) {
         return userService.modifyPassword(modifyPasswordDTO);
     }
@@ -190,6 +200,7 @@ public class UserController {
      */
     @PutMapping(value = "/grantRole")
     @Deprecated
+    @ApiOperation(value = "给用户分配角色", notes = "给用户分配角色")
     public Result<Void> grantRole(@RequestBody JsonNode para) {
         return userService.grantRole(para);
     }
@@ -201,6 +212,7 @@ public class UserController {
      * @return {@link Result} with {@link Void}
      */
     @PostMapping(value = "/assignRole")
+    @ApiOperation(value = "给用户分配多个角色", notes = "给用户分配多个角色")
     public Result<Void> assignRole(@RequestBody AssignRoleParams assignRoleParams) {
         return userService.assignRole(assignRoleParams);
     }
@@ -212,6 +224,7 @@ public class UserController {
      * @return {@link Result} with {@link Dict}
      */
     @GetMapping("/getUserListByTenantId")
+    @ApiOperation(value = "获取指定租户下的所有用户", notes = "获取指定租户下的所有用户")
     public Result<Dict> getUserListByTenantId(@RequestParam("id") Integer id) {
         List<User> userList = userService.list();
         List<UserTenant> userTenants =

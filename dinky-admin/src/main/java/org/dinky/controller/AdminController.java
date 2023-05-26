@@ -19,6 +19,8 @@
 
 package org.dinky.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.dinky.common.result.Result;
 import org.dinky.dto.LoginDTO;
 import org.dinky.dto.UserDTO;
@@ -46,6 +48,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Api(value = "AdminController" , description = "登陆相关接口")
 public class AdminController {
 
     private final UserService userService;
@@ -57,6 +60,7 @@ public class AdminController {
      * @return {@link Result}{@link UserDTO}
      */
     @PostMapping("/login")
+    @ApiOperation(value = "登录" , notes = "登录")
     public Result<UserDTO> login(@RequestBody LoginDTO loginDTO) {
         return userService.loginUser(loginDTO);
     }
@@ -67,6 +71,7 @@ public class AdminController {
      * @return {@link Result}{@link Void}
      */
     @DeleteMapping("/outLogin")
+    @ApiOperation(value = "登出" , notes = "登出")
     public Result<Void> outLogin() {
         StpUtil.logout();
         return Result.succeed("退出成功");
@@ -78,6 +83,7 @@ public class AdminController {
      * @return {@link Result}{@link UserDTO}
      */
     @GetMapping("/current")
+    @ApiOperation(value = "获取当前在线用户" , notes = "获取当前在线用户")
     public Result<UserDTO> current() {
         return userService.queryCurrentUserInfo();
     }
@@ -89,6 +95,7 @@ public class AdminController {
      * @return {@link Result}{@link Tenant}
      */
     @PostMapping("/chooseTenant")
+    @ApiOperation(value = "选择租户" , notes = "选择租户")
     public Result<Tenant> chooseTenant(@RequestParam("tenantId") Integer tenantId) {
         return userService.chooseTenant(tenantId);
     }

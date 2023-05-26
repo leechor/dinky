@@ -19,6 +19,8 @@
 
 package org.dinky.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.dinky.common.result.ProTableResult;
 import org.dinky.common.result.Result;
 import org.dinky.dto.GitProjectDTO;
@@ -59,6 +61,7 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping("/api/git")
 @AllArgsConstructor
+@Api(value = "/api/git" , description = "git管理相关接口")
 public class GitController {
     final GitProjectService gitProjectService;
 
@@ -69,6 +72,7 @@ public class GitController {
      * @return {@link Result} of {@link Void}
      */
     @PutMapping("/saveOrUpdate")
+    @ApiOperation(value = "新增或更新git项目" , notes = "新增或更新git项目")
     public Result<Void> saveOrUpdate(@Validated @RequestBody GitProject gitProject) {
         gitProjectService.saveOrUpdate(gitProject);
         GitRepository gitRepository =
@@ -84,6 +88,7 @@ public class GitController {
      * @return {@link Result} of {@link List}
      */
     @PostMapping("/getBranchList")
+    @ApiOperation(value = "获取当前项目分支" , notes = "获取当前项目分支")
     public Result<List<String>> getBranchList(@RequestBody GitProjectDTO gitProjectDTO) {
         GitRepository gitRepository = new GitRepository(gitProjectDTO);
         return Result.succeed(gitRepository.getBranchList());
@@ -96,6 +101,7 @@ public class GitController {
      * @return {@link Result} of {@link Void}
      */
     @DeleteMapping("/deleteProject")
+    @ApiOperation(value = "根据id删除git项目" , notes = "根据id删除git项目")
     public Result<Void> deleteProject(@RequestParam("id") Integer id) {
         gitProjectService.removeProjectAndCodeCascade(id);
         return Result.succeed();
@@ -108,6 +114,7 @@ public class GitController {
      * @return {@link Result} of {@link Void}
      */
     @PutMapping("/updateEnable")
+    @ApiOperation(value = "启用或禁用项目" , notes = "启用或禁用项目")
     public Result<Void> updateEnable(@RequestParam("id") Integer id) {
         gitProjectService.updateState(id);
         return Result.succeed();
@@ -120,6 +127,7 @@ public class GitController {
      * @return {@link ProTableResult} of {@link GitProject}
      */
     @PostMapping("/getProjectList")
+    @ApiOperation(value = "获取项目列表(分页)" , notes = "获取项目列表(分页)")
     public ProTableResult<GitProject> getAllProject(@RequestBody JsonNode params) {
         return gitProjectService.selectForProTable(params);
     }
@@ -131,6 +139,7 @@ public class GitController {
      * @return {@link Result} of {@link GitProject}
      */
     @PostMapping("/getOneDetails")
+    @ApiOperation(value = "根据id获取git项目" , notes = "根据id获取git项目")
     public Result<GitProject> getOneDetails(@RequestParam("id") Integer id) {
         return Result.succeed(gitProjectService.getById(id));
     }
@@ -142,6 +151,7 @@ public class GitController {
      * @return {@link Result} of {@link Void}
      */
     @PutMapping("/build")
+    @ApiOperation(value = "构建项目" , notes = "构建项目")
     public Result<Void> build(@RequestParam("id") Integer id) {
 
         GitProject gitProject = gitProjectService.getById(id);
@@ -167,6 +177,7 @@ public class GitController {
      * @return {@link Result} of {@link Void}
      */
     @GetMapping(path = "/build-step-logs", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @ApiOperation(value = "构建执行步骤日志" , notes = "构建执行步骤日志")
     public SseEmitter buildStepLogs(@RequestParam("id") Integer id) {
         SseEmitter emitter = new SseEmitter(TimeUnit.MINUTES.toMillis(30));
         GitProject gitProject = gitProjectService.getById(id);
@@ -189,6 +200,7 @@ public class GitController {
      * @return {@link Result} of {@link Void}
      */
     @GetMapping("/getProjectCode")
+    @ApiOperation(value = "获取项目编号" , notes = "获取项目编号")
     public Result<List<GitProjectTreeNodeDTO>> getProjectCode(@RequestParam("id") Integer id) {
 
         List<GitProjectTreeNodeDTO> projectCode = gitProjectService.getProjectCode(id);
@@ -205,6 +217,7 @@ public class GitController {
      * @return {@link Result} of {@link Void}
      */
     @GetMapping("/getAllBuildLog")
+    @ApiOperation(value = "获取所有构建日志" , notes = "获取所有构建日志")
     public Result<String> getAllBuildLog(@RequestParam("id") Integer id) {
 
         String allBuildLog = gitProjectService.getAllBuildLog(id);

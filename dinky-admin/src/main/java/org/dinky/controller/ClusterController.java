@@ -19,6 +19,8 @@
 
 package org.dinky.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.dinky.assertion.Asserts;
 import org.dinky.common.result.ProTableResult;
 import org.dinky.common.result.Result;
@@ -55,6 +57,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/cluster")
 @RequiredArgsConstructor
+@Api(value = "ClusterController" , description = "Flink实例管理相关接口")
 public class ClusterController {
 
     private final ClusterService clusterService;
@@ -62,6 +65,7 @@ public class ClusterController {
 
     /** 新增或者更新 */
     @PutMapping
+    @ApiOperation(value = "新增或更新Flink实例" , notes = "新增或更新Flink实例")
     public Result<Void> saveOrUpdate(@RequestBody Cluster cluster) throws Exception {
         cluster.setAutoRegisters(false);
         Integer id = cluster.getId();
@@ -71,6 +75,7 @@ public class ClusterController {
 
     /** 启用和禁用 */
     @PutMapping("/enable")
+    @ApiOperation(value = "启用或禁用Flink实例" , notes = "启用或禁用Flink实例")
     public Result<Void> enableCluster(@RequestBody Cluster cluster) {
         clusterService.enableCluster(cluster);
         return Result.succeed("修改成功");
@@ -78,12 +83,14 @@ public class ClusterController {
 
     /** 动态查询列表 */
     @PostMapping
+    @ApiOperation(value = "动态查询Flink实例(分页)" , notes = "动态查询Flink实例(分页)")
     public ProTableResult<Cluster> listClusters(@RequestBody JsonNode para) {
         return clusterService.selectForProTable(para);
     }
 
     /** 批量删除 */
     @DeleteMapping
+    @ApiOperation(value = "批量删除Flink实例" , notes = "批量删除Flink实例")
     public Result<Void> deleteMul(@RequestBody JsonNode para) {
         if (para.size() > 0) {
             List<JobInstance> instances = jobInstanceService.listJobInstanceActive();
@@ -118,6 +125,7 @@ public class ClusterController {
 
     /** 获取指定ID的信息 */
     @PostMapping("/getOneById")
+    @ApiOperation(value = "根据id获取Flink实例" , notes = "根据id获取Flink实例")
     public Result<Cluster> getOneById(@RequestBody Cluster cluster) throws Exception {
         cluster = clusterService.getById(cluster.getId());
         return Result.succeed(cluster, "获取成功");
@@ -125,6 +133,7 @@ public class ClusterController {
 
     /** 获取可用的集群列表 */
     @GetMapping("/listEnabledAll")
+    @ApiOperation(value = "获取所有存活的Flink实例(不分页)" , notes = "获取所有存活的Flink实例(不分页)")
     public Result<List<Cluster>> listEnabledAll() {
         List<Cluster> clusters = clusterService.listEnabledAll();
         return Result.succeed(clusters, "获取成功");
@@ -132,6 +141,7 @@ public class ClusterController {
 
     /** 获取可用的集群列表 */
     @GetMapping("/listSessionEnable")
+    @ApiOperation(value = "获取自定义Flink实例列表(不分页)" , notes = "获取自定义Flink实例列表(不分页)")
     public Result<List<Cluster>> listSessionEnable() {
         List<Cluster> clusters = clusterService.listSessionEnable();
         return Result.succeed(clusters, "获取成功");
@@ -139,6 +149,7 @@ public class ClusterController {
 
     /** 全部心跳监测 */
     @PostMapping("/heartbeats")
+    @ApiOperation(value = "监听所有Flink实例心跳" , notes = "监听所有Flink实例心跳")
     public Result<Void> heartbeat() {
         List<Cluster> clusters = clusterService.listEnabledAll();
         for (Cluster cluster : clusters) {
@@ -149,12 +160,14 @@ public class ClusterController {
 
     /** 回收过期集群 */
     @GetMapping("/clear")
+    @ApiOperation(value = "回收过期Flink实例" , notes = "回收过期Flink实例")
     public Result<Integer> clear() {
         return Result.succeed(clusterService.clearCluster(), "回收完成");
     }
 
     /** 停止集群 */
     @GetMapping("/killCluster")
+    @ApiOperation(value = "根据id停止Flink实例" , notes = "根据id停止Flink实例")
     public Result<Void> killCluster(@RequestParam("id") Integer id) {
         clusterService.killCluster(id);
         return Result.succeed("Kill Cluster Succeed.");
@@ -162,6 +175,7 @@ public class ClusterController {
 
     /** 批量停止 */
     @DeleteMapping("/killMulCluster")
+    @ApiOperation(value = "批量停止Flink实例" , notes = "批量停止Flink实例")
     public Result<Void> killMulCluster(@RequestBody JsonNode para) {
         if (para.size() > 0) {
             for (final JsonNode item : para) {
@@ -173,6 +187,7 @@ public class ClusterController {
 
     /** 启动 Session 集群 */
     @GetMapping("/deploySessionCluster")
+    @ApiOperation(value = "格局id启动 Session 集群" , notes = "格局id启动 Session 集群")
     public Result<Cluster> deploySessionCluster(@RequestParam("id") Integer id) {
         return Result.succeed(
                 clusterService.deploySessionCluster(id), "Deploy session cluster succeed.");

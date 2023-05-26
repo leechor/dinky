@@ -19,6 +19,8 @@
 
 package org.dinky.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.dinky.common.result.ProTableResult;
 import org.dinky.common.result.Result;
 import org.dinky.dto.CatalogueTaskDTO;
@@ -59,11 +61,13 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/catalogue")
 @RequiredArgsConstructor
+@Api(value = "CatalogueController" , description = "作业和目录结构管理相关接口")
 public class CatalogueController {
 
     private final CatalogueService catalogueService;
 
     @PostMapping("/upload/{id}")
+    @ApiOperation(value = "通过上传zip包的方式创建工程" , notes = "通过上传zip包的方式创建工程")
     public Result<String> upload(MultipartFile file, @PathVariable Integer id) {
         // 获取上传的路径
         String filePath = PathConstant.WORK_DIR;
@@ -165,6 +169,7 @@ public class CatalogueController {
 
     /** 新增或者更新 */
     @PutMapping
+    @ApiOperation(value = "新增或更新作业目录结构" , notes = "新增或更新作业目录结构")
     public Result<Void> saveOrUpdate(@RequestBody Catalogue catalogue) throws Exception {
         if (catalogueService.saveOrUpdate(catalogue)) {
             return Result.succeed("创建成功");
@@ -175,12 +180,14 @@ public class CatalogueController {
 
     /** 动态查询列表 */
     @PostMapping
+    @ApiOperation(value = "动态查询作业" , notes = "动态查询作业")
     public ProTableResult<Catalogue> listCatalogues(@RequestBody JsonNode para) {
         return catalogueService.selectForProTable(para);
     }
 
     /** 批量删除 */
     @DeleteMapping
+    @ApiOperation(value = "批量删除作业" , notes = "批量删除作业")
     public Result<Void> deleteMul(@RequestBody JsonNode para) {
         if (para.size() > 0) {
             boolean isAdmin = false;
@@ -204,6 +211,7 @@ public class CatalogueController {
 
     /** 获取指定ID的信息 */
     @PostMapping("/getOneById")
+    @ApiOperation(value = "获取指定id的目录信息" , notes = "获取指定id的目录信息")
     public Result<Catalogue> getOneById(@RequestBody Catalogue catalogue) throws Exception {
         catalogue = catalogueService.getById(catalogue.getId());
         return Result.succeed(catalogue, "获取成功");
@@ -211,6 +219,7 @@ public class CatalogueController {
 
     /** 获取所有目录 */
     @PostMapping("/getCatalogueTreeData")
+    @ApiOperation(value = "获取获取所有目录" , notes = "获取获取所有目录")
     public Result<List<Catalogue>> getCatalogueTreeData() {
         List<Catalogue> catalogues = catalogueService.getAllData();
         return Result.succeed(catalogues, "获取成功");
@@ -218,6 +227,7 @@ public class CatalogueController {
 
     /** 创建节点和作业 */
     @PutMapping("/createTask")
+    @ApiOperation(value = "创建节点和作业" , notes = "创建节点和作业")
     public Result<Catalogue> createTask(@RequestBody CatalogueTaskDTO catalogueTaskDTO) {
         Catalogue catalogue = catalogueService.saveOrUpdateCatalogueAndTask(catalogueTaskDTO);
         if (catalogue.getId() != null) {
@@ -229,6 +239,7 @@ public class CatalogueController {
 
     /** 重命名节点和作业 */
     @PutMapping("/toRename")
+    @ApiOperation(value = "重命名节点和作业" , notes = "重命名节点和作业")
     public Result<Void> toRename(@RequestBody Catalogue catalogue) {
         if (catalogueService.toRename(catalogue)) {
             return Result.succeed("重命名成功");
@@ -237,8 +248,8 @@ public class CatalogueController {
         }
     }
 
-    /** 重命名节点和作业 */
     @PutMapping("/moveCatalogue")
+    @ApiOperation(value = "移动作业目录" , notes = "移动作业目录")
     public Result<Boolean> moveCatalogue(@RequestBody Catalogue catalogue) {
         if (catalogueService.moveCatalogue(catalogue.getId(), catalogue.getParentId())) {
             return Result.succeed(true, "移动成功");
@@ -248,6 +259,7 @@ public class CatalogueController {
     }
 
     @PostMapping("/copyTask")
+    @ApiOperation(value = "复制作业" , notes = "复制作业")
     public Result<Catalogue> copyTask(@RequestBody Catalogue catalogue) {
         if (catalogueService.copyTask(catalogue)) {
             return Result.succeed("复制作业成功");

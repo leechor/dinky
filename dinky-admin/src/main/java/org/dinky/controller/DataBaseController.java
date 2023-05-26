@@ -19,6 +19,8 @@
 
 package org.dinky.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.dinky.assertion.Asserts;
 import org.dinky.common.result.ProTableResult;
 import org.dinky.common.result.Result;
@@ -60,12 +62,14 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/database")
 @RequiredArgsConstructor
+@Api(value = "DataBaseController" , description = "数据源管理相关接口")
 public class DataBaseController {
 
     private final DataBaseService databaseService;
 
     /** 新增或者更新 */
     @PutMapping
+    @ApiOperation(value = "新增或更新数据源" , notes = "新增或更新数据源")
     public Result<Void> saveOrUpdate(@RequestBody DataBase database) {
         if (databaseService.saveOrUpdateDataBase(database)) {
             DriverPool.remove(database.getName());
@@ -77,12 +81,14 @@ public class DataBaseController {
 
     /** 动态查询列表 */
     @PostMapping
+    @ApiOperation(value = "动态查询数据源列表(分页)" , notes = "动态查询数据源列表(分页)")
     public ProTableResult<DataBase> listDataBases(@RequestBody JsonNode para) {
         return databaseService.selectForProTable(para);
     }
 
     /** 批量删除 */
     @DeleteMapping
+    @ApiOperation(value = "批量删除数据源" , notes = "批量删除数据源")
     public Result<Void> deleteMul(@RequestBody JsonNode para) {
         if (para.size() > 0) {
             List<Integer> error = new ArrayList<>();
@@ -104,6 +110,7 @@ public class DataBaseController {
 
     /** 获取指定ID的信息 */
     @PostMapping("/getOneById")
+    @ApiOperation(value = "获取指定id的数据源信息" , notes = "获取指定id的数据源信息")
     public Result<DataBase> getOneById(@RequestBody DataBase database) {
         database = databaseService.getById(database.getId());
         return Result.succeed(database, "获取成功");
@@ -111,6 +118,7 @@ public class DataBaseController {
 
     /** 获取可用的数据库列表 */
     @GetMapping("/listEnabledAll")
+    @ApiOperation(value = "获取可用的数据库列表" , notes = "获取可用的数据库列表")
     public Result<List<DataBase>> listEnabledAll() {
         List<DataBase> dataBases = databaseService.listEnabledAll();
         return Result.succeed(dataBases, "获取成功");
@@ -118,6 +126,7 @@ public class DataBaseController {
 
     /** 连接测试 */
     @PostMapping("/testConnect")
+    @ApiOperation(value = "数据源连接测试" , notes = "数据源连接测试")
     public Result<Void> testConnect(@RequestBody DataBase database) {
         String msg = databaseService.testConnect(database);
         boolean isHealthy = Asserts.isEquals(CommonConstant.HEALTHY, msg);
@@ -130,6 +139,7 @@ public class DataBaseController {
 
     /** 全部心跳监测 */
     @PostMapping("/checkHeartBeats")
+    @ApiOperation(value = "全部数据源的心跳监测" , notes = "全部数据源的心跳监测")
     public Result<Void> checkHeartBeats() {
         List<DataBase> dataBases = databaseService.listEnabledAll();
         for (DataBase dataBase : dataBases) {
@@ -144,6 +154,7 @@ public class DataBaseController {
 
     /** 心跳检测指定ID */
     @GetMapping("/checkHeartBeatById")
+    @ApiOperation(value = "监测指定id的数据源心跳" , notes = "监测指定id的数据源心跳")
     public Result<Void> checkHeartBeatById(@RequestParam Integer id) {
         DataBase dataBase = databaseService.getById(id);
         Asserts.checkNotNull(dataBase, "该数据源不存在！");
@@ -163,6 +174,7 @@ public class DataBaseController {
     /** 获取元数据的表 */
     @Cacheable(cacheNames = "metadata_schema", key = "#id")
     @GetMapping("/getSchemasAndTables")
+    @ApiOperation(value = "获取元数据的表" , notes = "获取元数据的表")
     public Result<List<Schema>> getSchemasAndTables(@RequestParam Integer id) {
         return Result.succeed(databaseService.getSchemasAndTables(id), "获取成功");
     }
@@ -170,12 +182,14 @@ public class DataBaseController {
     /** 清除元数据表的缓存 */
     @CacheEvict(cacheNames = "metadata_schema", key = "#id")
     @GetMapping("/unCacheSchemasAndTables")
+    @ApiOperation(value = "清除元数据表的缓存" , notes = "清除元数据表的缓存")
     public Result<String> unCacheSchemasAndTables(@RequestParam Integer id) {
         return Result.succeed("clear cache", "success");
     }
 
     /** 获取元数据的指定表的列 */
     @GetMapping("/listColumns")
+    @ApiOperation(value = "获取元数据的指定表的列" , notes = "获取元数据的指定表的列")
     public Result<List<Column>> listColumns(
             @RequestParam Integer id,
             @RequestParam String schemaName,
@@ -185,6 +199,7 @@ public class DataBaseController {
 
     /** 获取元数据的指定表的数据 */
     @PostMapping("/queryData")
+    @ApiOperation(value = "获取元数据的指定表的数据" , notes = "获取元数据的指定表的数据")
     public Result<JdbcSelectResult> queryData(@RequestBody QueryData queryData) {
         JdbcSelectResult jdbcSelectResult = databaseService.queryData(queryData);
         if (jdbcSelectResult.isSuccess()) {
@@ -196,6 +211,7 @@ public class DataBaseController {
 
     /** 执行sql */
     @PostMapping("/execSql")
+    @ApiOperation(value = "执行sql" , notes = "执行sql")
     public Result<JdbcSelectResult> execSql(@RequestBody QueryData queryData) {
         JdbcSelectResult jdbcSelectResult = databaseService.execSql(queryData);
         if (jdbcSelectResult.isSuccess()) {
@@ -207,6 +223,7 @@ public class DataBaseController {
 
     /** 获取 SqlGeneration */
     @GetMapping("/getSqlGeneration")
+    @ApiOperation(value = "获取指定的 SqlGeneration" , notes = "获取指定的 SqlGeneration")
     public Result<SqlGeneration> getSqlGeneration(
             @RequestParam Integer id,
             @RequestParam String schemaName,
@@ -216,6 +233,7 @@ public class DataBaseController {
 
     /** copyDatabase */
     @PostMapping("/copyDatabase")
+    @ApiOperation(value = "复制数据源信息" , notes = "复制数据源信息")
     public Result<Void> copyDatabase(@RequestBody DataBase database) {
         if (databaseService.copyDatabase(database)) {
             return Result.succeed("复制成功!");

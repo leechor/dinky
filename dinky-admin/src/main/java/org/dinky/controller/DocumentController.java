@@ -19,6 +19,8 @@
 
 package org.dinky.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.dinky.common.result.ProTableResult;
 import org.dinky.common.result.Result;
 import org.dinky.model.Document;
@@ -47,6 +49,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/document")
 @RequiredArgsConstructor
+@Api(value = "DocumentController" , description = "文档管理相关接口")
 public class DocumentController {
 
     private final DocumentService documentService;
@@ -59,6 +62,7 @@ public class DocumentController {
      * @throws Exception {@link Exception}
      */
     @PutMapping
+    @ApiOperation(value = "新增或更新文档" , notes = "新增或更新文档")
     public Result<Void> saveOrUpdate(@RequestBody Document document) throws Exception {
         if (documentService.saveOrUpdate(document)) {
             return Result.succeed(MessageResolverUtils.getMessage("save.success"));
@@ -74,6 +78,7 @@ public class DocumentController {
      * @return {@link ProTableResult} of {@link Document}
      */
     @PostMapping
+    @ApiOperation(value = "动态查询文档列表(分页)" , notes = "动态查询文档列表(分页)")
     public ProTableResult<Document> listDocuments(@RequestBody JsonNode para) {
         return documentService.selectForProTable(para);
     }
@@ -86,6 +91,7 @@ public class DocumentController {
      */
     @DeleteMapping
     @Deprecated
+    @ApiOperation(value = "批量删除文档" , notes = "批量删除文档")
     public Result<Void> deleteMul(@RequestBody JsonNode para) {
         if (para.size() > 0) {
             List<Integer> error = new ArrayList<>();
@@ -111,6 +117,7 @@ public class DocumentController {
      * @param id {@link Integer}
      * @return {@link Result} of {@link Void}
      */
+    @ApiOperation(value = "根据id删除文档" , notes = "根据id删除文档")
     @DeleteMapping("/delete")
     public Result<Void> deleteById(@RequestParam Integer id) {
         if (documentService.removeById(id)) {
@@ -120,13 +127,8 @@ public class DocumentController {
         }
     }
 
-    /**
-     * delete document by id
-     *
-     * @param id {@link Integer}
-     * @return {@link Result} of {@link Void}
-     */
     @PutMapping("/enable")
+    @ApiOperation(value = "启用或禁用文档" , notes = "启用或禁用文档")
     public Result<Void> enable(@RequestParam Integer id) {
         if (documentService.enable(id)) {
             return Result.succeed(MessageResolverUtils.getMessage("modify.success"));
@@ -143,6 +145,7 @@ public class DocumentController {
      * @throws {@link Exception}
      */
     @PostMapping("/getOneById")
+    @ApiOperation(value = "获取指定id的文档信息" , notes = "获取指定id的文档信息")
     public Result<Document> getOneById(@RequestBody Document document) throws Exception {
         document = documentService.getById(document.getId());
         return Result.succeed(document, MessageResolverUtils.getMessage("response.get.success"));
@@ -156,6 +159,7 @@ public class DocumentController {
      * @throws {@link Exception}
      */
     @GetMapping("/getFillAllByVersion")
+    @ApiOperation(value = "获取指定版本的文档列表(不分页)" , notes = "获取指定版本的文档列表(不分页)")
     public Result<List<Document>> getFillAllByVersion(@RequestParam String version) {
         return Result.succeed(
                 documentService.getFillAllByVersion(version),

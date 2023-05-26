@@ -19,6 +19,8 @@
 
 package org.dinky.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.dinky.assertion.Asserts;
 import org.dinky.exception.BusException;
 import org.dinky.function.constant.PathConstant;
@@ -49,9 +51,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/download")
+@Api(value = "DownloadController" , description = "dinky依赖下载相关接口")
 public class DownloadController {
 
     @GetMapping("downloadDepJar/{taskId}")
+    @ApiOperation(value = "下载 Dep Jar" , notes = "下载 Dep Jar")
     public void downloadJavaUDF(@PathVariable Integer taskId, HttpServletResponse resp) {
         if (Asserts.isNull(taskId)) {
             throw new BusException("task id can not null!");
@@ -82,6 +86,7 @@ public class DownloadController {
     }
 
     @GetMapping("downloadPythonUDF/{taskId}")
+    @ApiOperation(value = "下载 Python UDF" , notes = "下载 Python UDF")
     public void downloadPythonUDF(@PathVariable Integer taskId, HttpServletResponse resp) {
         ServletUtil.write(
                 resp,
@@ -96,6 +101,7 @@ public class DownloadController {
      * @param resp resp
      */
     @GetMapping("downloadAppJar/{version}")
+    @ApiOperation(value = "提供docker通过http下载dinky-app.jar" , notes = "提供docker通过http下载dinky-app.jar")
     public void downloadAppJar(@PathVariable String version, HttpServletResponse resp) {
         List<File> files =
                 FileUtil.loopFiles(

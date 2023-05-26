@@ -19,6 +19,8 @@
 
 package org.dinky.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.dinky.common.result.ProTableResult;
 import org.dinky.common.result.Result;
 import org.dinky.model.UDFTemplate;
@@ -50,11 +52,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/api/udf")
+@Api(value = "/api/udf", tags = "UDF模板配置")
 public class UDFController {
 
     @Resource UDFTemplateService udfTemplateService;
 
     @PostMapping("/template/tree")
+    @ApiOperation(value = "获取模板树", notes = "获取模板树")
     public Result<List<Object>> listUdfTemplates() {
         List<UDFTemplate> list = udfTemplateService.list();
         Map<String, Dict> one = new HashMap<>(3);
@@ -106,11 +110,13 @@ public class UDFController {
     }
 
     @PostMapping("/template/list")
+    @ApiOperation(value = "查询节点信息(分页)", notes = "查询节点信息(分页)")
     public ProTableResult<UDFTemplate> listUdfTemplates(@RequestBody JsonNode para) {
         return udfTemplateService.selectForProTable(para);
     }
 
     @PutMapping("/template/")
+    @ApiOperation(value = "新增模板", notes = "新增模板")
     public Result<String> addTemplate(@RequestBody UDFTemplate udfTemplate) {
         return udfTemplateService.saveOrUpdate(udfTemplate)
                 ? Result.succeed("操作成功")
@@ -118,6 +124,7 @@ public class UDFController {
     }
 
     @DeleteMapping("/template/list")
+    @ApiOperation(value = "批量删除模板", notes = "批量删除模板")
     public Result deleteMul(@RequestBody JsonNode para) {
         if (para.size() > 0) {
             List<Integer> error = new ArrayList<>();

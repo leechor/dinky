@@ -19,6 +19,8 @@
 
 package org.dinky.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.dinky.common.result.ProTableResult;
 import org.dinky.common.result.Result;
 import org.dinky.model.SysConfig;
@@ -50,12 +52,14 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/sysConfig")
 @RequiredArgsConstructor
+@Api(value = "SysConfigController" , description = "系统配置管理类")
 public class SysConfigController {
 
     private final SysConfigService sysConfigService;
 
     /** 新增或者更新 */
     @PutMapping
+    @ApiOperation(value = "新增或者更新" , notes = "新增或者更新")
     public Result<Void> saveOrUpdate(@RequestBody SysConfig sysConfig) throws Exception {
         if (sysConfigService.saveOrUpdate(sysConfig)) {
             return Result.succeed("新增成功");
@@ -66,12 +70,14 @@ public class SysConfigController {
 
     /** 动态查询列表 */
     @PostMapping
+    @ApiOperation(value = "动态查询列表(分页)" , notes = "动态查询列表(分页)")
     public ProTableResult<SysConfig> listSysConfigs(@RequestBody JsonNode para) {
         return sysConfigService.selectForProTable(para);
     }
 
     /** 批量删除 */
     @DeleteMapping
+    @ApiOperation(value = "批量删除" , notes = "批量删除")
     public Result<Void> deleteMul(@RequestBody JsonNode para) {
         if (para.size() > 0) {
             List<Integer> error = new ArrayList<>();
@@ -93,6 +99,7 @@ public class SysConfigController {
 
     /** 获取指定ID的信息 */
     @PostMapping("/getOneById")
+    @ApiOperation(value = "获取指定ID的信息" , notes = "获取指定ID的信息")
     public Result<SysConfig> getOneById(@RequestBody SysConfig sysConfig) throws Exception {
         sysConfig = sysConfigService.getById(sysConfig.getId());
         return Result.succeed(sysConfig, "获取成功");
@@ -100,12 +107,14 @@ public class SysConfigController {
 
     /** 获取所有配置 */
     @GetMapping("/getAll")
+    @ApiOperation(value = "获取所有配置" , notes = "获取所有配置")
     public Result<Map<String, Object>> getAll() {
         return Result.succeed(sysConfigService.getAll(), "获取成功");
     }
 
     /** 批量更新配置 */
     @PostMapping("/updateSysConfigByJson")
+    @ApiOperation(value = "批量更新配置" , notes = "批量更新配置")
     public Result<Void> updateSysConfigByJson(@RequestBody JsonNode para) {
         sysConfigService.updateSysConfigByJson(para);
         return Result.succeed("更新配置成功");

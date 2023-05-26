@@ -19,6 +19,8 @@
 
 package org.dinky.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.dinky.common.result.ProTableResult;
 import org.dinky.common.result.Result;
 import org.dinky.model.AlertGroup;
@@ -48,6 +50,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/api/alertGroup")
+@Api(value = "AlertGroupController" , description = "故障告警配置相关接口")
 @RequiredArgsConstructor
 public class AlertGroupController {
 
@@ -62,6 +65,7 @@ public class AlertGroupController {
      * @throws Exception {@link Exception}
      */
     @PutMapping
+    @ApiOperation(value = "保存告警配置" , notes = "保存告警配置")
     public Result<Void> saveOrUpdate(@RequestBody AlertGroup alertGroup) throws Exception {
         if (alertGroupService.saveOrUpdate(alertGroup)) {
             return Result.succeed(MessageResolverUtils.getMessage("save.success"));
@@ -77,6 +81,7 @@ public class AlertGroupController {
      * @return {@link ProTableResult} with {@link AlertGroup}
      */
     @PostMapping
+    @ApiOperation(value = "获取告警配置列表(分页)" , notes = "获取告警配置列表(分页)")
     public ProTableResult<AlertGroup> listAlertGroups(@RequestBody JsonNode para) {
         return alertGroupService.selectForProTable(para);
     }
@@ -89,6 +94,7 @@ public class AlertGroupController {
      * @return {@link Result} with {@link Void}
      */
     @DeleteMapping
+    @ApiOperation(value = "删除告警配置" , notes = "删除告警配置")
     public Result<Void> deleteMul(@RequestBody JsonNode para) {
         if (para.size() > 0) {
             List<Integer> error = new ArrayList<>();
@@ -116,6 +122,7 @@ public class AlertGroupController {
      * @throws Exception
      */
     @PostMapping("/getOneById")
+    @ApiOperation(value = "根据id获取对应告警配置" , notes = "根据id获取对应告警配置")
     public Result<AlertGroup> getOneById(@RequestBody AlertGroup alertGroup) throws Exception {
         alertGroup = alertGroupService.getById(alertGroup.getId());
         return Result.succeed(alertGroup, MessageResolverUtils.getMessage("response.get.success"));
@@ -127,6 +134,7 @@ public class AlertGroupController {
      * @return {@link Result} with {@link List} of {@link AlertGroup}
      */
     @GetMapping("/listEnabledAll")
+    @ApiOperation(value = "获取告警配置列表(不分页)" , notes = "获取告警配置列表(不分页)")
     public Result<List<AlertGroup>> listEnabledAll() {
         return Result.succeed(
                 alertGroupService.listEnabledAll(),
@@ -139,6 +147,7 @@ public class AlertGroupController {
      * @return {@link Result} with {@link List} of {@link AlertGroup}
      */
     @PutMapping("/enable")
+    @ApiOperation(value = "根据id启用或禁用告警配置组" , notes = "根据id启用或禁用告警配置组")
     public Result<List<AlertGroup>> enable(@RequestParam("id") Integer id) {
         if (alertGroupService.enable(id)) {
             return Result.succeed(MessageResolverUtils.getMessage("modify.success"));
@@ -154,6 +163,7 @@ public class AlertGroupController {
      * @return {@link Result} of {@link Void}
      */
     @DeleteMapping("/delete")
+    @ApiOperation(value = "根据id删除告警配置组" , notes = "根据id删除告警配置组")
     public Result<Void> deleteGroupById(@RequestParam("id") Integer id) {
         if (alertGroupService.deleteGroupById(id)) {
             return Result.succeed(MessageResolverUtils.getMessage("delete.success"));
@@ -169,6 +179,7 @@ public class AlertGroupController {
      * @return {@link ProTableResult} with {@link AlertHistory}
      */
     @PostMapping("/history")
+    @ApiOperation(value = "展示告警记录列表" , notes = "展示告警记录列表")
     public ProTableResult<AlertHistory> listAlertHistory(@RequestBody JsonNode para) {
         return alertHistoryService.selectForProTable(para);
     }

@@ -19,6 +19,8 @@
 
 package org.dinky.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.dinky.common.result.ProTableResult;
 import org.dinky.common.result.Result;
 import org.dinky.model.Role;
@@ -49,6 +51,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/role")
 @RequiredArgsConstructor
+@Api(value = "RoleController" , description = "角色管理相关接口")
 public class RoleController {
 
     private final RoleService roleService;
@@ -62,6 +65,7 @@ public class RoleController {
      */
     @PutMapping
     @Deprecated
+    @ApiOperation(value = "保存或更新角色" , notes = "保存或更新角色")
     public Result<Void> saveOrUpdateRole(@RequestBody Role role) {
         return roleService.saveOrUpdateRole(role);
     }
@@ -73,6 +77,7 @@ public class RoleController {
      * @return {@link Role} of {@link Void}
      */
     @PutMapping("/addedOrUpdateRole")
+    @ApiOperation(value = "新增或更新角色" , notes = "新增或更新角色")
     public Result<Void> addedOrUpdateRole(@RequestBody Role role) {
         return roleService.addedOrUpdateRole(role);
     }
@@ -84,6 +89,7 @@ public class RoleController {
      * @return delete result code
      */
     @DeleteMapping
+    @ApiOperation(value = "批量删除角色" , notes = "批量删除角色")
     public Result<Void> deleteMul(@RequestBody JsonNode para) {
         return roleService.deleteRoles(para);
     }
@@ -94,18 +100,21 @@ public class RoleController {
      * @return delete result code
      */
     @DeleteMapping("/delete")
+    @ApiOperation(value = "根据id删除角色" , notes = "根据id删除角色")
     public Result<Void> deleteRoleById(@RequestParam Integer id) {
         return roleService.deleteRoleById(id);
     }
 
     /** query role list */
     @PostMapping
+    @ApiOperation(value = "查询角色列表(分页)" , notes = "查询角色列表(分页)")
     public ProTableResult<Role> listRoles(@RequestBody JsonNode para) {
         return roleService.selectForProTable(para, true);
     }
 
     /** 获取所有的角色列表以及当前用户的角色 ids */
     @GetMapping(value = "/getRolesAndIdsByUserId")
+    @ApiOperation(value = "获取所有的角色列表以及当前用户的角色 ids" , notes = "获取所有的角色列表以及当前用户的角色 ids")
     public Result<Dict> getRolesAndIdsByUserId(@RequestParam Integer id) {
         List<Role> roleList = roleService.list();
 

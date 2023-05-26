@@ -19,6 +19,8 @@
 
 package org.dinky.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.dinky.common.result.ProTableResult;
 import org.dinky.common.result.Result;
 import org.dinky.function.constant.PathConstant;
@@ -59,6 +61,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/jar")
 @RequiredArgsConstructor
+@Api(value = "JarController" , description = "jar管理相关接口")
 public class JarController {
 
     private final JarService jarService;
@@ -67,6 +70,7 @@ public class JarController {
 
     /** 新增或者更新 */
     @PutMapping
+    @ApiOperation(value = "新增或更新jar" , notes = "新增或更新jar")
     public Result<Void> saveOrUpdate(@RequestBody Jar jar) throws Exception {
         if (jarService.saveOrUpdate(jar)) {
             return Result.succeed("新增成功");
@@ -77,12 +81,14 @@ public class JarController {
 
     /** 动态查询列表 */
     @PostMapping
+    @ApiOperation(value = "动态查询jat列表(分页)" , notes = "动态查询jat列表(分页)")
     public ProTableResult<Jar> listJars(@RequestBody JsonNode para) {
         return jarService.selectForProTable(para);
     }
 
     /** 批量删除 */
     @DeleteMapping
+    @ApiOperation(value = "批量删除jar" , notes = "批量删除jar")
     public Result<Void> deleteMul(@RequestBody JsonNode para) {
         if (para.size() > 0) {
             List<Integer> error = new ArrayList<>();
@@ -104,6 +110,7 @@ public class JarController {
 
     /** 获取指定ID的信息 */
     @PostMapping("/getOneById")
+    @ApiOperation(value = "获取指定id的jar" , notes = "获取指定id的jar")
     public Result<Jar> getOneById(@RequestBody Jar jar) throws Exception {
         jar = jarService.getById(jar.getId());
         return Result.succeed(jar, "获取成功");
@@ -111,12 +118,14 @@ public class JarController {
 
     /** 获取可用的jar列表 */
     @GetMapping("/listEnabledAll")
+    @ApiOperation(value = "获取可用的jar列表(不分页)" , notes = "获取可用的jar列表(不分页)")
     public Result<List<Jar>> listEnabledAll() {
         List<Jar> jars = jarService.listEnabledAll();
         return Result.succeed(jars, "获取成功");
     }
 
     @PostMapping("/udf/generateJar")
+    @ApiOperation(value = "使用udf模板生成jar" , notes = "使用udf模板生成jar")
     public Result<Map<String, List<String>>> generateJar() {
         List<Task> allUDF = taskService.getAllUDF();
         List<UDF> udfCodes =

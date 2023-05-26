@@ -19,6 +19,8 @@
 
 package org.dinky.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.dinky.common.result.ProTableResult;
 import org.dinky.common.result.Result;
 import org.dinky.model.Statement;
@@ -50,6 +52,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/statement")
 @RequiredArgsConstructor
+@Api(value = "/api/statement", tags = "任务声明管理类")
 public class StatementController {
 
     private final StatementService statementService;
@@ -57,6 +60,7 @@ public class StatementController {
 
     /** 新增或者更新 */
     @PutMapping
+    @ApiOperation(value = "新增或者更新任务声明", notes = "新增或者更新任务声明")
     public Result<Void> saveOrUpdate(@RequestBody Statement statement) throws Exception {
         if (statementService.saveOrUpdate(statement)) {
             return Result.succeed("新增成功");
@@ -67,12 +71,14 @@ public class StatementController {
 
     /** 动态查询列表 */
     @PostMapping
+    @ApiOperation(value = "动态查询列表任务声明(分页)", notes = "动态查询列表任务声明(分页)")
     public ProTableResult<Statement> listStatements(@RequestBody JsonNode para) {
         return statementService.selectForProTable(para);
     }
 
     /** 批量删除 */
     @DeleteMapping
+    @ApiOperation(value = "批量删除任务声明", notes = "批量删除任务声明")
     public Result<Void> deleteMul(@RequestBody JsonNode para) {
         if (para.size() > 0) {
             boolean isAdmin = false;
@@ -95,12 +101,14 @@ public class StatementController {
 
     /** 获取指定ID的信息 */
     @PostMapping("/getOneById")
+    @ApiOperation(value = "根据id获取任务声明", notes = "根据id获取任务声明")
     public Result<Statement> getOneById(@RequestBody Statement statement) throws Exception {
         statement = statementService.getById(statement.getId());
         return Result.succeed(statement, "获取成功");
     }
 
     @PostMapping("/getWatchTables")
+    @ApiOperation(value = "获取使用watch标记的表名称", notes = "获取使用watch标记的表名称")
     @SuppressWarnings("unchecked")
     public Result<List<String>> getWatchTables(@RequestBody String statement) {
         try {
