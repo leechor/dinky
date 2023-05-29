@@ -19,6 +19,7 @@
 
 package com.zdpx.coder.operator;
 
+import com.zdpx.coder.Specifications;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.flink.table.functions.UserDefinedFunction;
 
@@ -103,7 +104,7 @@ public abstract class Operator extends Node implements Runnable {
         }
 
         try {
-            parametersLocal = objectMapper.readValue(parametersStr, new TypeReference<>() {});
+            parametersLocal = objectMapper.readValue(parametersStr, new TypeReference<List<Map<String, Object>>>() {});
         } catch (JsonProcessingException e) {
             log.error(e.toString());
         }
@@ -169,14 +170,9 @@ public abstract class Operator extends Node implements Runnable {
     /** 初始化信息,输出/输入端口应该在该函数中完成注册定义 */
     protected abstract void initialize();
 
-    /** 定义属性约束 */
-    protected String propertySchemaDefinition() {
-        return null;
-    }
-
     @Override
     public String getSpecification() {
-        return propertySchemaDefinition();
+        return Specifications.readSpecializationFileByClassName(this.getClass().getSimpleName());
     }
 
     /**
@@ -264,7 +260,7 @@ public abstract class Operator extends Node implements Runnable {
 
     /** 设置宏算子参数的校验信息. */
     protected void definePropertySchema() {
-        String propertySchema = propertySchemaDefinition();
+        String propertySchema = getSpecification();
         if (Strings.isNullOrEmpty(propertySchema)) {
             log.debug("operator {} don't have schema file.", this.getClass().getSimpleName());
             return;
@@ -325,7 +321,7 @@ public abstract class Operator extends Node implements Runnable {
     }
 
     public static Map<String, Object> getJsonAsMap(JsonNode inputs) {
-        return new ObjectMapper().convertValue(inputs, new TypeReference<>() {});
+        return new ObjectMapper().convertValue(inputs, new TypeReference<Map<String, Object>>() {});
     }
 
     public static List<Column> getColumnFromFieldFunctions(List<FieldFunction> ffs) {

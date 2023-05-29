@@ -144,12 +144,12 @@ public class CepOperator extends Operator {
 
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> defineList = (List<Map<String, Object>>) parameters.get(DEFINES);
-        List<Define> defines = mapper.convertValue(defineList, new TypeReference<>() {});
+        List<Define> defines = mapper.convertValue(defineList, new TypeReference<List<Define>>() {});
 
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> patternList =
                 (List<Map<String, Object>>) parameters.get(PATTERNS);
-        List<Pattern> patterns = mapper.convertValue(patternList, new TypeReference<>() {});
+        List<Pattern> patterns = mapper.convertValue(patternList, new TypeReference<List<Pattern>>() {});
 
         SkipStrategy skipStrategy =
                 mapper.convertValue(parameters.get(SKIP_STRATEGY), SkipStrategy.class);
@@ -190,7 +190,7 @@ public class CepOperator extends Operator {
     private <T> List<T> getSpecialTypeList(
             Map<String, Object> parameters, String key, Class<T> type) {
         List<Map<String, Object>> measureList = (List<Map<String, Object>>) parameters.get(key);
-        return mapper.convertValue(measureList, new TypeReference<>() {});
+        return mapper.convertValue(measureList, new TypeReference<List<T>>() {});
     }
 
     /**
@@ -359,108 +359,5 @@ public class CepOperator extends Operator {
             this.variable = variable;
         }
         // endregion
-    }
-
-    @Override
-    protected String propertySchemaDefinition() {
-        return "{\n" +
-                "  \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n" +
-                "  \"$id\": \"https://dzpx.com/detection\",\n" +
-                "  \"title\": \"CepOperator Define\",\n" +
-                "  \"description\": \"define the CepOperator parameter\",\n" +
-                "  \"type\": \"array\",\n" +
-                "  \"items\": {\n" +
-                "    \"properties\": {\n" +
-                "      \"partition\": {\n" +
-                "        \"type\": \"string\",\n" +
-                "        \"description\": \"field for partition\"\n" +
-                "      },\n" +
-                "      \"orderBy\": {\n" +
-                "        \"type\": \"string\",\n" +
-                "        \"description\": \"field for order\"\n" +
-                "      },\n" +
-                "      \"patterns\": {\n" +
-                "        \"type\": \"array\",\n" +
-                "        \"description\": \"define pattern variable and case\",\n" +
-                "        \"prefixItems\": {\n" +
-                "          \"type\": \"object\",\n" +
-                "          \"properties\": {\n" +
-                "            \"variable\": {\n" +
-                "              \"type\": \"string\",\n" +
-                "              \"description\": \"pattern variable name\"\n" +
-                "            },\n" +
-                "            \"quantifier\": {\n" +
-                "              \"type\": \"string\",\n" +
-                "              \"description\": \"pattern variable\\u0027s quantifier, * + ? {n} {n,} {n,m} {,m}\"\n" +
-                "            }\n" +
-                "          }\n" +
-                "        }\n" +
-                "      },\n" +
-                "      \"skipStrategy\": {\n" +
-                "        \"type\": \"object\",\n" +
-                "        \"description\": \"skip strategy\",\n" +
-                "        \"properties\": {\n" +
-                "          \"strategy\": {\n" +
-                "            \"type\": \"string\",\n" +
-                "            \"description\": \"strategy model\"\n" +
-                "          },\n" +
-                "          \"variable\": {\n" +
-                "            \"type\": \"string\",\n" +
-                "            \"description\": \"pattern variable\"\n" +
-                "          }\n" +
-                "        }\n" +
-                "      },\n" +
-                "      \"measures\": {\n" +
-                "        \"type\": \"array\",\n" +
-                "        \"description\": \"define measure\",\n" +
-                "        \"prefixItems\": {\n" +
-                "          \"type\": \"object\",\n" +
-                "          \"properties\": {\n" +
-                "            \"functionName\": {\n" +
-                "              \"type\": \"string\",\n" +
-                "              \"description\": \"offsetMethod last n, first n\"\n" +
-                "            },\n" +
-                "            \"outName\": {\n" +
-                "              \"type\": \"string\",\n" +
-                "              \"description\": \"the name after calculate pattern variable\\u0027s field\"\n" +
-                "            },\n" +
-                "            \"delimiter\": {\n" +
-                "              \"type\": \"string\",\n" +
-                "              \"description\": \"function parameter delimiter, if cast, can set AS, if +-*/ and not \\nfunctionName, as expression\"\n" +
-                "            },\n" +
-                "            \"parameters\": {\n" +
-                "              \"type\": \"array\",\n" +
-                "              \"prefixItems\": {\n" +
-                "                \"type\": \"string\"\n" +
-                "              }\n" +
-                "            }\n" +
-                "          }\n" +
-                "        }\n" +
-                "      },\n" +
-                "      \"defines\": {\n" +
-                "        \"type\": \"array\",\n" +
-                "        \"description\": \"define defines\",\n" +
-                "        \"prefixItems\": {\n" +
-                "          \"type\": \"object\",\n" +
-                "          \"properties\": {\n" +
-                "            \"variable\": {\n" +
-                "              \"type\": \"string\",\n" +
-                "              \"description\": \"define pattern variable\"\n" +
-                "            },\n" +
-                "            \"condition\": {\n" +
-                "              \"type\": \"string\",\n" +
-                "              \"description\": \"like sql where statement\"\n" +
-                "            }\n" +
-                "          }\n" +
-                "        }\n" +
-                "      },\n" +
-                "      \"required\": [\n" +
-                "        \"pattern\",\n" +
-                "        \"measures\",\n" +
-                "        \"defines\"\n" +
-                "      ]\n" +
-                "    }\n" +
-                "  }\n" +
-                "}";
     }
 }
