@@ -19,138 +19,48 @@
 
 package com.zdpx.coder.graph;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.zdpx.coder.SceneCodeBuilder;
+import com.zdpx.coder.operator.Identifier;
+import com.zdpx.coder.operator.Operator;
+import com.zdpx.coder.utils.InstantiationUtil;
+import com.zdpx.udf.IUdfDefine;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.flink.table.functions.UserDefinedFunction;
+import org.reflections.Reflections;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.reflections.Reflections;
-import org.springframework.beans.BeanUtils;
-
-import com.zdpx.coder.SceneCodeBuilder;
-import com.zdpx.coder.json.ConnectionNode;
-import com.zdpx.coder.json.Description;
-import com.zdpx.coder.json.DescriptionNode;
-import com.zdpx.coder.json.OperatorNode;
-import com.zdpx.coder.json.ProcessNode;
-import com.zdpx.coder.json.SceneNode;
-import com.zdpx.coder.operator.Identifier;
-import com.zdpx.coder.operator.Operator;
-import com.zdpx.coder.operator.TableInfo;
-import com.zdpx.coder.utils.InstantiationUtil;
-import com.zdpx.udf.IUdfDefine;
-
-import lombok.extern.slf4j.Slf4j;
-
-/** 场景配置类, */
+/**
+ * 场景配置类,
+ */
 @Slf4j
+@Data
 public class Scene {
 
-    /** 保存所有已定义算子, 类初始化时进行加载 */
-    protected static final Map<String, Class<? extends Operator>> OPERATOR_MAP = getOperatorMaps();
+    /**
+     * 保存所有已定义算子, 类初始化时进行加载
+     */
+    public static final Map<String, Class<? extends Operator>> OPERATOR_MAP = getOperatorMaps();
 
     public static final Map<String, String> USER_DEFINED_FUNCTION = getUserDefinedFunctionMaps();
-
-    private Environment environment;
-    private Process process;
-
-    public Scene(SceneNode scene) {
-        environment = new Environment();
-        BeanUtils.copyProperties(scene.getEnvironment(), this.getEnvironment());
-        this.process = covertProcess(scene.getProcess());
-    }
-
-    /**
-     * 获取所有节点的包裹类
-     *
-     * @param process 计算图的过程信息
-     * @return 所有节点的包裹类
-     */
-    public static List<OperatorWrapper> getAllOperatorWrappers(Process process) {
-        List<OperatorWrapper> operatorWrapperAllNodes = new ArrayList<>();
-        List<Process> processes = new LinkedList<>();
-        processes.add(process);
-        while (processes.iterator().hasNext()) {
-            Process processLocal = processes.iterator().next();
-            Set<OperatorWrapper> operatorWrappers = processLocal.getOperators();
-            if (!CollectionUtils.isEmpty(operatorWrappers)) {
-                operatorWrapperAllNodes.addAll(operatorWrappers);
-                for (OperatorWrapper operatorWrapper : operatorWrappers) {
-                    if (!Objects.isNull(operatorWrapper.getProcesses())) {
-                        processes.addAll(operatorWrapper.getProcesses());
-                    }
-                }
-            }
-            processes.remove(processLocal);
-        }
-        return operatorWrapperAllNodes;
-    }
-
-    /**
-     * get all source nodes, source nodes is operator that not have {@link InputPort} define or all
-     * {@link InputPort}'s {@link Connection} is null.
-     *
-     * @param process process level
-     * @return List<OperatorWrapper>
-     */
-    public static List<OperatorWrapper> getSourceOperatorNodes(Process process) {
-        List<OperatorWrapper> operatorWrappers = getAllOperatorWrappers(process);
-        return operatorWrappers.stream()
-                .filter(
-                        t ->
-                                t.getOperator().getInputPorts().stream()
-                                        .allMatch(p -> Objects.isNull(p.getConnection())))
-                .collect(Collectors.toList());
-    }
-
-    public static List<OperatorWrapper> getSinkOperatorNodes(Process process) {
-        List<OperatorWrapper> operatorWrappers = getAllOperatorWrappers(process);
-        return operatorWrappers.stream()
-                .filter(t -> CollectionUtils.isEmpty(t.getOperator().getOutputPorts()))
-                .collect(Collectors.toList());
-    }
-
-    public static List<OperatorWrapper> getOperatorNodes(Process process) {
-        List<OperatorWrapper> operatorWrappers = getAllOperatorWrappers(process);
-        return operatorWrappers.stream()
-                .filter(
-                        t ->
-                                !CollectionUtils.isEmpty(t.getOperator().getInputPorts())
-                                        && !CollectionUtils.isEmpty(
-                                                t.getOperator().getOutputPorts()))
-                .collect(Collectors.toList());
-    }
-
-    public static List<Connection<TableInfo>> getAllConnections(Process process) {
-        List<Connection<TableInfo>> connections = new ArrayList<>();
-        List<Process> processes = new LinkedList<>();
-        processes.add(process);
-        while (processes.iterator().hasNext()) {
-            Process processLocal = processes.iterator().next();
-            Set<OperatorWrapper> operatorWrappers = processLocal.getOperators();
-            connections.addAll(processLocal.getConnects());
-            if (!CollectionUtils.isEmpty(operatorWrappers)) {
-                for (OperatorWrapper operatorWrapper : operatorWrappers) {
-                    if (!Objects.isNull(operatorWrapper.getProcesses())) {
-                        processes.addAll(operatorWrapper.getProcesses());
-                    }
-                }
-            }
-            processes.remove(processLocal);
-        }
-        return connections;
-    }
+    private static final ObjectMapper mapper = new ObjectMapper();
+    private Environment environment = new Environment();
+    private ProcessPackage processPackage;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * 获取所有operator的定义, key为{@link Identifier#getCode()} 返回值, 目前为Operator类的全限定名 value为类型定义.
@@ -162,13 +72,38 @@ public class Scene {
         return SceneCodeBuilder.getCodeClassMap(operators);
     }
 
+    public static List<Operator> getSinkOperatorNodes(ProcessPackage processPackage) {
+        List<Operator> originOperator = getAllOperator(processPackage);
+        return originOperator.stream()
+                .filter(t -> CollectionUtils.isEmpty(t.getOutputPorts().values()))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 获取所有节点的包裹类
+     *
+     * @param processPackage 计算图的过程信息
+     * @return 所有节点的包裹类
+     */
+    public static List<Operator> getAllOperator(ProcessPackage processPackage) {
+        Set<Operator> operators = processPackage.getOperators();
+        List<Operator> originOperatorAllNodes = new ArrayList<>(operators);
+        Set<ProcessPackage> processPackages = processPackage.getProcessPackages();
+        if (processPackages != null && !processPackages.isEmpty()) {
+            for (ProcessPackage pp : processPackages) {
+                originOperatorAllNodes.addAll(getAllOperator(pp));
+            }
+        }
+        return originOperatorAllNodes;
+    }
+
     /**
      * 获取所有算子类, key 为 {@link IUdfDefine#getUdfName()}定义
      *
      * @return 算子类字典
      */
     public static Map<String, Class<? extends UserDefinedFunction>>
-            getUserDefinedFunctionClassMaps() {
+    getUserDefinedFunctionClassMaps() {
         String iun = IUdfDefine.class.getPackage().getName();
         Reflections reflections = new Reflections(iun);
         Set<Class<? extends UserDefinedFunction>> udfFunctions =
@@ -187,10 +122,10 @@ public class Scene {
                                         Method method = t.getMethod("getUdfName");
                                         return (String) method.invoke(ob);
                                     } catch (NoSuchMethodException
-                                            | InvocationTargetException
-                                            | IllegalAccessException
-                                            | InstantiationException ignore) {
-                                        //
+                                             | InvocationTargetException
+                                             | IllegalAccessException
+                                             | InstantiationException ex) {
+                                        log.error(ex.getMessage());
                                     }
                                     return null;
                                 },
@@ -202,196 +137,48 @@ public class Scene {
                 .collect(Collectors.toMap(Map.Entry::getKey, t -> t.getValue().getName()));
     }
 
-    /**
-     * 将配置文件结构信息转换为内部计算逻辑图(计算图)
-     *
-     * @param process 外部配置的根过程节点
-     * @return 内部计算图的根过程节点
-     */
-    @SuppressWarnings("unchecked")
-    public Process covertProcess(ProcessNode process) {
-
-        Process root = convertNodeToInner(process);
-
-        // process connection relation
-        List<OperatorWrapper> operatorWrappers = getAllOperatorWrappers(root);
-        List<ConnectionNode> connections = SceneNode.getAllConnections(process);
-
-        for (ConnectionNode connection : connections) {
-            final Connection<TableInfo> connectionInternal = convertConnection(connection);
-            BeanUtils.copyProperties(connection, connectionInternal);
-
-            Optional<OutputPort> outputPort =
-                    operatorWrappers.stream()
-                            .filter(t -> t.getId().equals(connection.getFromOp()))
-                            .findAny()
-                            .flatMap(
-                                    from ->
-                                            from.getOperator().getOutputPorts().stream()
-                                                    .filter(
-                                                            t ->
-                                                                    Objects.equals(
-                                                                            t.getName(),
-                                                                            connection
-                                                                                    .getFromPort()))
-                                                    .findAny());
-
-            if (outputPort.isPresent()) {
-                OutputPort t = outputPort.get();
-                connectionInternal.setFromPort(t);
-                t.setConnection(connectionInternal);
-            } else {
-                log.error("not find connection FromOperator: {}", connection.getFromOp());
-            }
-
-            Optional<InputPort> inputPort =
-                    operatorWrappers.stream()
-                            .filter(t -> t.getId().equals(connection.getToOp()))
-                            .findAny()
-                            .flatMap(
-                                    to ->
-                                            to.getOperator().getInputPorts().stream()
-                                                    .filter(
-                                                            t ->
-                                                                    Objects.equals(
-                                                                            t.getName(),
-                                                                            connection.getToPort()))
-                                                    .findAny());
-
-            if (inputPort.isPresent()) {
-                InputPort t = inputPort.get();
-                connectionInternal.setToPort(t);
-                t.setConnection(connectionInternal);
-            } else {
-                log.error(
-                        "not find connection ToOperator: {}, From: {}",
-                        connection.getToPort(),
-                        connection.getFromOp());
-            }
-        }
-
-        return root;
+    public static List<JsonNode> getOperatorConfigurations() {
+        return OPERATOR_MAP.entrySet().stream()
+                .map(
+                        t -> {
+                            Operator operator = InstantiationUtil.instantiate(t.getValue());
+                            try {
+                                ObjectNode result =  (ObjectNode)mapper.readTree(String.format(
+                                        "{\"name\": \"%s\",%n" +
+                                                "\"group\":\"%s\",%n" +
+                                                "\"specification\": %s}",
+                                        t.getKey(), operator.getGroup(), operator.getSpecification()));
+                                JsonNode portsJsonNode = generateJsonPorts(operator);
+                                result.set("ports", portsJsonNode);
+                                return result;
+                            } catch (JsonProcessingException e) {
+                                log.error("getOperatorConfigurations error");
+                                throw new RuntimeException(e);
+                            }
+                        })
+                .collect(Collectors.toList());
     }
 
-    /**
-     * 将配置中的{@link ProcessNode}和{@link OperatorNode}转化为内部计算图的{@link Process}和{@link Operator}.
-     *
-     * @param process 开始根过程节点
-     * @return 计算图的根节点
-     */
-    private Process convertNodeToInner(ProcessNode process) {
-        List<ProcessNode> unWalkProcesses = new LinkedList<>();
-        unWalkProcesses.add(process);
+    private static JsonNode generateJsonPorts(Operator operator) {
+        List<ObjectNode> inputIds = operator.getInputPorts().keySet().stream().map(k -> {
+            ObjectNode inputPortNode = mapper.createObjectNode();
+            inputPortNode.put("id", k);
+            return inputPortNode;
+        }).collect(Collectors.toList());
+        ArrayNode inputPortsNode = mapper.createArrayNode();
+        inputPortsNode.addAll(inputIds);
 
-        Process processCurrent = new Process();
-        Map<String, OperatorWrapper> operatorCodeWrapperMap = new HashMap<>();
-        Process root = processCurrent;
+        List<ObjectNode> outputIds = operator.getOutputPorts().keySet().stream().map(k -> {
+            ObjectNode outputPortNode = mapper.createObjectNode();
+            outputPortNode.put("id", k);
+            return outputPortNode;
+        }).collect(Collectors.toList());
+        ArrayNode outputPortsNode = mapper.createArrayNode();
+        outputPortsNode.addAll(outputIds);
 
-        while (unWalkProcesses.iterator().hasNext()) {
-            // BFS
-            ProcessNode processNodeCurrent = unWalkProcesses.iterator().next();
-            BeanUtils.copyProperties(processNodeCurrent, processCurrent);
-            if (processNodeCurrent.getParent() != null) {
-                // add inner parentProcess
-                operatorCodeWrapperMap
-                        .get(processNodeCurrent.getParent().getCode())
-                        .getProcesses()
-                        .add(processCurrent);
-            }
-
-            Set<OperatorNode> operatorNodesInProcess = processNodeCurrent.getOperators();
-            if (!CollectionUtils.isEmpty(operatorNodesInProcess)) {
-                for (OperatorNode operatorNode : operatorNodesInProcess) {
-                    OperatorWrapper operatorWrapper = convertOperator(operatorNode);
-                    operatorWrapper.setParentProcess(processCurrent);
-                    operatorCodeWrapperMap.put(operatorNode.getCode(), operatorWrapper);
-                    processCurrent.getOperators().add(operatorWrapper);
-
-                    if (!Objects.isNull(operatorNode.getProcesses())) {
-                        unWalkProcesses.addAll(operatorNode.getProcesses());
-                        for (ProcessNode processInNode : operatorNode.getProcesses()) {
-                            processInNode.setParent(operatorNode);
-                        }
-                    }
-                }
-            }
-
-            for (DescriptionNode descriptor : processNodeCurrent.getDescriptions()) {
-                final Description description = convertDescription(descriptor);
-                processCurrent.getDescriptions().add(description);
-            }
-
-            unWalkProcesses.remove(processNodeCurrent);
-            processCurrent = new Process();
-        }
-        return root;
+        ObjectNode rootPortNode = mapper.createObjectNode();
+        rootPortNode.set("inputs", inputPortsNode);
+        rootPortNode.set ("outputs", outputPortsNode);
+        return rootPortNode;
     }
-
-    /**
-     * 将{@link OperatorNode} 配置信息转化为{@link OperatorWrapper}节点包裹类
-     *
-     * @param operatorNode 外部配置信息类
-     * @return {@link OperatorWrapper}节点包裹类
-     */
-    public OperatorWrapper convertOperator(OperatorNode operatorNode) {
-        final OperatorWrapper operatorWrapper = new OperatorWrapper();
-        BeanUtils.copyProperties(operatorNode, operatorWrapper, null, "parameters");
-        operatorWrapper.setParameters(operatorNode.getParameters().toString());
-        Class<? extends Operator> cl = OPERATOR_MAP.get(operatorNode.getCode());
-
-        if (cl == null) {
-            String l = String.format("operator %s not exists.", operatorNode.getCode());
-            log.error(l);
-            throw new NullPointerException(l);
-        }
-
-        Operator operator = InstantiationUtil.instantiate(cl);
-        // operator.setScene(this);
-        operator.setOperatorWrapper(operatorWrapper);
-        operatorWrapper.setOperator(operator);
-
-        return operatorWrapper;
-    }
-
-    /**
-     * 将配置的{@link ConnectionNode}软化为{@link Connection}
-     *
-     * @param connectionNode 配置中的连接信息
-     * @return 计算图的连接信息
-     */
-    public Connection<TableInfo> convertConnection(ConnectionNode connectionNode) {
-        Connection connectionInternal = new Connection<TableInfo>();
-        BeanUtils.copyProperties(connectionNode, connectionInternal);
-        return connectionInternal;
-    }
-
-    /**
-     * 将外部{@link DescriptionNode}说明信息节点映射成内部{@link Description} 信息节点
-     *
-     * @param description 说明信息节点
-     * @return {@link Description} 信息节点
-     */
-    public Description convertDescription(DescriptionNode description) {
-        Description descriptionInternal = new Description();
-        BeanUtils.copyProperties(description, descriptionInternal);
-        return descriptionInternal;
-    }
-
-    // region g/s
-    public Environment getEnvironment() {
-        return environment;
-    }
-
-    public void setEnvironment(Environment environment) {
-        this.environment = environment;
-    }
-
-    public Process getProcess() {
-        return process;
-    }
-
-    public void setProcess(Process process) {
-        this.process = process;
-    }
-    // endregion
 }

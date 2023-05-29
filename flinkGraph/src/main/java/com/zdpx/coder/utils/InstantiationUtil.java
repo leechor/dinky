@@ -314,7 +314,6 @@ public final class InstantiationUtil {
         return deserializeObject(new ByteArrayInputStream(bytes), cl, isFailureTolerant);
     }
 
-    @SuppressWarnings("unchecked")
     public static <T> T deserializeObject(InputStream in, ClassLoader cl, boolean isFailureTolerant)
             throws IOException, ClassNotFoundException {
 
@@ -326,7 +325,9 @@ public final class InstantiationUtil {
                             ? new FailureTolerantObjectInputStream(in, cl)
                             : new ClassLoaderObjectInputStream(in, cl);
             Thread.currentThread().setContextClassLoader(cl);
-            return (T) oois.readObject();
+            @SuppressWarnings("unchecked")
+            T result = (T) oois.readObject();
+            return result;
         } finally {
             Thread.currentThread().setContextClassLoader(old);
         }
@@ -340,7 +341,7 @@ public final class InstantiationUtil {
 
     public static byte[] serializeObject(Object o) throws IOException {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-             ObjectOutputStream oos = new ObjectOutputStream(baos)) {
+                ObjectOutputStream oos = new ObjectOutputStream(baos)) {
             oos.writeObject(o);
             oos.flush();
             return baos.toByteArray();

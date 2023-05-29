@@ -23,7 +23,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.dinky.common.result.Result;
 import org.dinky.constant.DirConstant;
-import org.dinky.model.FileNode;
+import org.dinky.dto.TreeNodeDTO;
 import org.dinky.service.SystemService;
 
 import java.util.List;
@@ -35,11 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- * SystemController
- *
- * @since 2022/10/15 19:20
- */
+/** SystemController */
 @RestController
 @RequestMapping("/api/system")
 @RequiredArgsConstructor
@@ -48,24 +44,34 @@ public class SystemController {
 
     private final SystemService systemService;
 
+    /**
+     * All log files for this project
+     *
+     * @return {@link Result} <{@link List}<{@link TreeNodeDTO}>>
+     */
     @GetMapping("/listLogDir")
     @ApiOperation(value = "从根目录下加载文件节点", notes = "从根目录下加载文件节点")
-    public Result<List<FileNode>> listLogDir() {
+    public Result<List<TreeNodeDTO>> listLogDir() {
         return Result.data(systemService.listLogDir());
     }
 
+    /**
+     * get root log file content
+     *
+     * @return {@link Result} <{@link String}>
+     */
     @GetMapping("/getRootLog")
     @ApiOperation(value = "从日志根目录下读取文件", notes = "从日志根目录下读取文件")
     public Result<String> getRootLog() {
         return Result.data(systemService.readFile(DirConstant.ROOT_LOG_PATH));
     }
 
-    @GetMapping("/listDirByPath")
-    @ApiOperation(value = "返回指定路径所有文件节点", notes = "返回指定路径所有文件节点")
-    public Result<List<FileNode>> listDirByPath(@RequestParam String path) {
-        return Result.data(systemService.listDirByPath(path));
-    }
-
+    /**
+     * readFile by path
+     *
+     * @param path {@link String}
+     * @return {@link Result} <{@link String}>
+     */
     @GetMapping("/readFile")
     @ApiOperation(value = "读取指定路径所有文件", notes = "读取指定路径所有文件")
     public Result<String> readFile(@RequestParam String path) {

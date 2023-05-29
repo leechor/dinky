@@ -41,7 +41,6 @@ public abstract class MysqlTable extends Operator {
                     + "</#list>)";
     protected TableInfo tableInfo;
 
-    @SuppressWarnings("unchecked")
     protected Map<String, Object> getDataModel() {
         final String columns = "columns";
         String parameters = "parameters";
@@ -57,6 +56,7 @@ public abstract class MysqlTable extends Operator {
                 continue;
             }
 
+            @SuppressWarnings("unchecked")
             HashMap<String, Object> ps = (HashMap<String, Object>) result.get(parameters);
             ps.put(m.getKey(), m.getValue());
         }
@@ -64,7 +64,7 @@ public abstract class MysqlTable extends Operator {
     }
 
     protected String generateTableName(String tableName) {
-        return tableName + "_" + this.operatorWrapper.getId();
+        return tableName + "_" + this.getId().substring(this.getId().lastIndexOf('-') + 1);
     }
 
     @Override

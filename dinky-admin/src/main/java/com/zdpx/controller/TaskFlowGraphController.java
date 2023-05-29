@@ -19,9 +19,17 @@
 
 package com.zdpx.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.zdpx.coder.SceneCodeBuilder;
+import com.zdpx.coder.graph.Scene;
+import com.zdpx.coder.json.ToInternalConvert;
+import com.zdpx.coder.json.x6.X6ToInternalConvert;
 import org.dinky.common.result.Result;
 import org.dinky.model.Task;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,9 +54,24 @@ public class TaskFlowGraphController {
     @PutMapping
     public Result<Void> submitSql(@RequestBody Task task) {
         if (taskFlowGraphService.saveOrUpdateTask(task)) {
-            return Result.succeed("操作成功");
+            return Result.succeed("submit sql success");
         } else {
-            return Result.failed("操作失败");
+            return Result.failed("submit sql failed");
         }
+    }
+
+    @PutMapping("testGraphSql")
+    public Result<Void> testGraphStatement(@RequestBody String graph) {
+        String sql = taskFlowGraphService.testGraphStatement(graph);
+        return Result.succeed();
+    }
+
+    @GetMapping("/operatorConfigure")
+    public Result<List<JsonNode>> getOperatorConfigurations() {
+        List<JsonNode> configurations = taskFlowGraphService.getOperatorConfigurations();
+        if (configurations == null || configurations.isEmpty()) {
+            return Result.failed("get configuration failed");
+        }
+        return Result.succeed(configurations);
     }
 }

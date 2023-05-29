@@ -111,12 +111,12 @@ public class FieldFunction {
      * @param fos 字段配置信息
      * @return 方法定义
      */
-    @SuppressWarnings("unchecked")
     static FieldFunction processFieldConfigure(String tableName, Map<String, Object> fos) {
         FieldFunction fo = new FieldFunction();
         fo.setOutName((String) fos.get("outName"));
         fo.setFunctionName((String) fos.get("functionName"));
         fo.setDelimiter((String) fos.get("delimiter"));
+        @SuppressWarnings("unchecked")
         List<Object> fieldParameters = (List<Object>) fos.get("parameters");
 
         if (fieldParameters == null) {
@@ -128,6 +128,7 @@ public class FieldFunction {
         for (Object fieldParameter : fieldParameters) {
             if (fieldParameter instanceof Map) {
                 // 表示函数需要递归处理
+                @SuppressWarnings("unchecked")
                 Map<String, Object> fp = (Map<String, Object>) fieldParameter;
                 result.add(processFieldConfigure(tableName, fp));
             } else if (fieldParameter instanceof String) {
@@ -162,7 +163,7 @@ public class FieldFunction {
      * @param funcs 字段处理函数配置
      * @return {@link FieldFunction}形式的字段处理定义
      */
-    protected static List<FieldFunction> analyzeParameters(
+    public static List<FieldFunction> analyzeParameters(
             String primaryTableName, List<Map<String, Object>> funcs) {
         List<FieldFunction> fieldFunctions = new ArrayList<>();
         for (Map<String, Object> fos : funcs) {
