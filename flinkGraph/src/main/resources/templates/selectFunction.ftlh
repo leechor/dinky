@@ -19,7 +19,7 @@
     <@compress single_line=single>
         <#list fos as fo>
             <#assign x><@fieldFunction fo/></#assign>
-            <#if x?has_content> ${x} AS</#if> ${fo.outName}<#sep>,</#sep>
+            <#if x?has_content> ${x}</#if> <#if fo.outName??> AS ${fo.outName}</#if><#sep>,</#sep>
         </#list>
     </@compress>
 </#macro>
@@ -33,9 +33,9 @@
     MEASURES
     <@fieldsProcess cep.measures false/>
 
-    ONE ROW PER MATCH
+    <#if cep.outPutMode??>${cep.outPutMode} ROW PER MATCH</#if>
     AFTER MATCH SKIP ${cep.skipStrategy}
-    PATTERN (<#list cep.patterns as pattern>${pattern}<#sep> </#sep><#rt></#list>)
+    PATTERN (<#list cep.patterns as pattern>${pattern}<#sep> </#sep><#rt></#list>) <#if cep.timeSpan??>WITHIN INTERVAL '${cep.timeSpan}' ${cep.timeUnit}</#if>
     DEFINE
     <#list cep.defines as define>
         ${define}<#sep>,</#sep>
