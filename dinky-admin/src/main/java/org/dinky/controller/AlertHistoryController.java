@@ -19,11 +19,9 @@
 
 package org.dinky.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.dinky.common.result.ProTableResult;
-import org.dinky.common.result.Result;
-import org.dinky.model.AlertHistory;
+import org.dinky.data.model.AlertHistory;
+import org.dinky.data.result.ProTableResult;
+import org.dinky.data.result.Result;
 import org.dinky.service.AlertHistoryService;
 
 import java.util.ArrayList;
@@ -50,14 +48,12 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/alertHistory")
 @RequiredArgsConstructor
-@Api(value = "AlertHistoryController" , description = "告警历史相关接口")
 public class AlertHistoryController {
 
     private final AlertHistoryService alertHistoryService;
 
     /** 新增或者更新 */
     @PutMapping
-    @ApiOperation(value = "新增/更新告警历史列表" , notes = "新增/更新告警历史列表")
     public Result<Void> saveOrUpdate(@RequestBody AlertHistory alertHistory) throws Exception {
         if (alertHistoryService.saveOrUpdate(alertHistory)) {
             return Result.succeed("新增成功");
@@ -68,14 +64,12 @@ public class AlertHistoryController {
 
     /** 动态查询列表 */
     @PostMapping
-    @ApiOperation(value = "动态查询告警历史(分页)" , notes = "动态查询告警历史(分页)")
     public ProTableResult<AlertHistory> listAlertHistory(@RequestBody JsonNode para) {
         return alertHistoryService.selectForProTable(para);
     }
 
     /** 批量删除 */
     @DeleteMapping
-    @ApiOperation(value = "删除告警历史" , notes = "删除告警历史")
     public Result<Void> deleteMul(@RequestBody JsonNode para) {
         if (para.size() > 0) {
             List<Integer> error = new ArrayList<>();
@@ -97,7 +91,6 @@ public class AlertHistoryController {
 
     /** 获取指定ID的信息 */
     @PostMapping("/getOneById")
-    @ApiOperation(value = "获取指定id的告警历史" , notes = "获取指定id的告警历史")
     public Result<AlertHistory> getOneById(@RequestBody AlertHistory alertHistory)
             throws Exception {
         alertHistory = alertHistoryService.getById(alertHistory.getId());

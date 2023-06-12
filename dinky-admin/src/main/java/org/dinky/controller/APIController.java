@@ -19,21 +19,19 @@
 
 package org.dinky.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.dinky.common.result.Result;
-import org.dinky.dto.APICancelDTO;
-import org.dinky.dto.APIExecuteJarDTO;
-import org.dinky.dto.APIExecuteSqlDTO;
-import org.dinky.dto.APIExplainSqlDTO;
-import org.dinky.dto.APISavePointDTO;
-import org.dinky.dto.APISavePointTaskDTO;
+import org.dinky.data.dto.APICancelDTO;
+import org.dinky.data.dto.APIExecuteJarDTO;
+import org.dinky.data.dto.APIExecuteSqlDTO;
+import org.dinky.data.dto.APIExplainSqlDTO;
+import org.dinky.data.dto.APISavePointDTO;
+import org.dinky.data.dto.APISavePointTaskDTO;
+import org.dinky.data.model.JobInstance;
+import org.dinky.data.result.APIJobResult;
+import org.dinky.data.result.ExplainResult;
+import org.dinky.data.result.Result;
+import org.dinky.data.result.SelectResult;
 import org.dinky.gateway.result.SavePointResult;
 import org.dinky.job.JobResult;
-import org.dinky.model.JobInstance;
-import org.dinky.result.APIJobResult;
-import org.dinky.result.ExplainResult;
-import org.dinky.result.SelectResult;
 import org.dinky.service.APIService;
 import org.dinky.service.JobInstanceService;
 import org.dinky.service.StudioService;
@@ -60,7 +58,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/openapi")
-@Api(value = "APIController" , description = "作业执行相关接口")
 @RequiredArgsConstructor
 public class APIController {
 
@@ -125,7 +122,6 @@ public class APIController {
 
     /** 重启任务 */
     @GetMapping("/restartTask")
-    @ApiOperation(value = "根据id重启任务" , notes = "根据id重启任务")
     public Result<JobResult> restartTask(@RequestParam Integer id) {
         taskService.initTenantByTaskId(id);
         return Result.succeed(taskService.restartTask(id, null), "重启成功");
@@ -133,7 +129,6 @@ public class APIController {
 
     /** 选择保存点重启任务 */
     @GetMapping("/selectSavePointRestartTask")
-    @ApiOperation(value = "从保存节点重启任务" , notes = "从保存节点重启任务")
     public Result<JobResult> restartTask(
             @RequestParam Integer id, @RequestParam String savePointPath) {
         taskService.initTenantByTaskId(id);
@@ -142,7 +137,6 @@ public class APIController {
 
     /** 上线任务 */
     @GetMapping("/onLineTask")
-    @ApiOperation(value = "上线任务" , notes = "上线任务")
     public Result<JobResult> onLineTask(@RequestParam Integer id) {
         taskService.initTenantByTaskId(id);
         return taskService.onLineTask(id);
@@ -150,7 +144,6 @@ public class APIController {
 
     /** 下线任务 */
     @GetMapping("/offLineTask")
-    @ApiOperation(value = "下线任务" , notes = "下线任务")
     public Result<Void> offLineTask(@RequestParam Integer id) {
         taskService.initTenantByTaskId(id);
         return taskService.offLineTask(id, null);
@@ -158,7 +151,6 @@ public class APIController {
 
     /** 重新上线任务 */
     @GetMapping("/reOnLineTask")
-    @ApiOperation(value = "重新上线任务" , notes = "重新上线任务")
     public Result<JobResult> reOnLineTask(@RequestParam Integer id) {
         taskService.initTenantByTaskId(id);
         return taskService.reOnLineTask(id, null);
@@ -166,7 +158,6 @@ public class APIController {
 
     /** 选择保存点重新上线任务 */
     @GetMapping("/selectSavePointReOnLineTask")
-    @ApiOperation(value = "从保存节点重新上线任务" , notes = "从保存节点重新上线任务")
     public Result<JobResult> selectSavePointReOnLineTask(
             @RequestParam Integer id, @RequestParam String savePointPath) {
         taskService.initTenantByTaskId(id);
@@ -175,7 +166,6 @@ public class APIController {
 
     /** 获取Job实例的信息 */
     @GetMapping("/getJobInstance")
-    @ApiOperation(value = "获取Job实例的信息" , notes = "获取Job实例的信息")
     public Result<JobInstance> getJobInstance(@RequestParam Integer id) {
         jobInstanceService.initTenantByJobInstanceId(id);
         return Result.succeed(jobInstanceService.getById(id), "获取成功");
@@ -183,7 +173,6 @@ public class APIController {
 
     /** 通过 taskId 获取 Task 对应的 Job 实例的信息 */
     @GetMapping("/getJobInstanceByTaskId")
-    @ApiOperation(value = "获取Job实例的信息" , notes = "获取Job实例的信息")
     public Result<JobInstance> getJobInstanceByTaskId(@RequestParam Integer id) {
         taskService.initTenantByTaskId(id);
         return Result.succeed(jobInstanceService.getJobInstanceByTaskId(id), "获取成功");

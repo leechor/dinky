@@ -19,6 +19,18 @@
 
 package com.zdpx.service.impl;
 
+import org.dinky.data.model.Task;
+import org.dinky.mybatis.service.impl.SuperServiceImpl;
+import org.dinky.service.TaskService;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.zdpx.coder.SceneCodeBuilder;
@@ -28,21 +40,10 @@ import com.zdpx.coder.json.x6.X6ToInternalConvert;
 import com.zdpx.mapper.FlowGraphScriptMapper;
 import com.zdpx.model.FlowGraph;
 import com.zdpx.service.TaskFlowGraphService;
-import groovy.util.logging.Slf4j;
-import org.dinky.db.service.impl.SuperServiceImpl;
-import org.dinky.model.Task;
-import org.dinky.service.TaskService;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
-/**
- *
- */
+/** */
 @Slf4j
 @Service
 public class TaskTaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScriptMapper, FlowGraph>
@@ -74,7 +75,7 @@ public class TaskTaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScri
     }
 
     @Override
-    public String  testGraphStatement( String graph) {
+    public String testGraphStatement(String graph) {
         return convertToSql(graph);
     }
 

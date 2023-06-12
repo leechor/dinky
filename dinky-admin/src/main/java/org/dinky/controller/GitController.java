@@ -19,23 +19,26 @@
 
 package org.dinky.controller;
 
-import io.swagger.annotations.ApiOperation;
-import org.dinky.common.result.ProTableResult;
-import org.dinky.common.result.Result;
-import org.dinky.dto.GitProjectDTO;
-import org.dinky.dto.TreeNodeDTO;
-import org.dinky.model.GitProject;
+import org.dinky.data.dto.GitProjectDTO;
+import org.dinky.data.dto.TreeNodeDTO;
+import org.dinky.data.model.GitProject;
+import org.dinky.data.params.GitProjectSortJarParams;
+import org.dinky.data.result.ProTableResult;
+import org.dinky.data.result.Result;
 import org.dinky.service.GitProjectService;
+import org.dinky.sse.SseEmitterUTF8;
 import org.dinky.utils.GitProjectStepSseFactory;
 import org.dinky.utils.GitRepository;
-import org.dinky.utils.MessageResolverUtils;
+import org.dinky.utils.I18nMsgUtils;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -70,12 +73,57 @@ public class GitController {
      * @return {@link Result} of {@link Void}
      */
     @PutMapping("/saveOrUpdate")
-    public Result<Void> saveOrUpdate(@Validated @RequestBody GitProject gitProject) {
+    public Result<Void> saveOrUpdate(@Validated @RequestBody GitProjectDTO gitProject) {
         gitProjectService.saveOrUpdate(gitProject);
         GitRepository gitRepository =
                 new GitRepository(BeanUtil.copyProperties(gitProject, GitProjectDTO.class));
         gitRepository.cloneAndPull(gitProject.getName(), gitProject.getBranch());
         return Result.succeed();
+    }
+
+    /**
+     * drag sort project level
+     *
+     * @param sortList after sorter data
+     * @return {@link Result}<{@link Void}>
+     */
+    //    @PostMapping("/dragendSortProject")
+    //    public Result<Void> dragendSortProject(@RequestBody Map sortList) {
+    //        if (sortList == null) {
+    //            return Result.failed("获取不到项目信息");
+    //        }
+    //        gitProjectService.dragendSortProject(sortList);
+    //        return Result.succeed();
+    //    }
+    @PostMapping("/dragendSortProject")
+    public Result<Void> dragendSortProject(@RequestBody Map sortList) {
+        if (sortList == null) {
+            return Result.failed("获取不到项目信息");
+        }
+        gitProjectService.dragendSortProject(sortList);
+        return Result.succeed();
+    }
+
+    /**
+     * drag sort jar level
+     *
+     * @param gitProjectSortJarParams
+     * @return {@link Result}<{@link Void}>
+     */
+    @PostMapping("/dragendSortJar")
+    public Result<Void> dragendSortJar(
+            @RequestBody GitProjectSortJarParams gitProjectSortJarParams) {
+        GitProject gitProjectServiceById =
+                gitProjectService.getById(gitProjectSortJarParams.getProjectId());
+        if (gitProjectServiceById == null) {
+            return Result.failed("获取不到项目信息");
+        } else {
+            if (gitProjectService.dragendSortJar(gitProjectSortJarParams)) {
+                return Result.succeed();
+            } else {
+                return Result.failed("排序失败");
+            }
+        }
     }
 
     /**
@@ -168,8 +216,9 @@ public class GitController {
      * @return {@link Result} of {@link Void}
      */
     @GetMapping(path = "/build-step-logs", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @CrossOrigin("*")
     public SseEmitter buildStepLogs(@RequestParam("id") Integer id) {
-        SseEmitter emitter = new SseEmitter(TimeUnit.MINUTES.toMillis(30));
+        SseEmitter emitter = new SseEmitterUTF8(TimeUnit.MINUTES.toMillis(30));
         GitProject gitProject = gitProjectService.getById(id);
         Dict params = new Dict();
         File logDir =
@@ -190,14 +239,13 @@ public class GitController {
      * @return {@link Result} of {@link Void}
      */
     @GetMapping("/getProjectCode")
-    @ApiOperation(value = "获取项目编号" , notes = "获取项目编号")
     public Result<List<TreeNodeDTO>> getProjectCode(@RequestParam("id") Integer id) {
 
         List<TreeNodeDTO> projectCode = gitProjectService.getProjectCode(id);
         if (projectCode == null) {
-            return Result.failed(MessageResolverUtils.getMessage("response.get.failed"));
+            return Result.failed(I18nMsgUtils.getMsg("response.get.failed"));
         }
-        return Result.succeed(projectCode, MessageResolverUtils.getMessage("response.get.success"));
+        return Result.succeed(projectCode, I18nMsgUtils.getMsg("response.get.success"));
     }
 
     /**
@@ -211,8 +259,8 @@ public class GitController {
 
         String allBuildLog = gitProjectService.getAllBuildLog(id);
         if (allBuildLog == null) {
-            return Result.failed(MessageResolverUtils.getMessage("response.get.failed"));
+            return Result.failed(I18nMsgUtils.getMsg("response.get.failed"));
         }
-        return Result.succeed(allBuildLog, MessageResolverUtils.getMessage("response.get.success"));
+        return Result.succeed(allBuildLog, I18nMsgUtils.getMsg("response.get.success"));
     }
 }

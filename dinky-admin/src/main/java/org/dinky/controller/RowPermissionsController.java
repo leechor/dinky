@@ -19,13 +19,11 @@
 
 package org.dinky.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.dinky.common.result.ProTableResult;
-import org.dinky.common.result.Result;
-import org.dinky.model.RoleSelectPermissions;
+import org.dinky.data.model.RoleSelectPermissions;
+import org.dinky.data.result.ProTableResult;
+import org.dinky.data.result.Result;
 import org.dinky.service.RoleSelectPermissionsService;
-import org.dinky.utils.MessageResolverUtils;
+import org.dinky.utils.I18nMsgUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +44,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/api/rowPermissions")
-@Api(value = "RowPermissionsController" , description = "行查询权限管理相关接口")
 public class RowPermissionsController {
 
     @Autowired private RoleSelectPermissionsService roleSelectPermissionsService;
@@ -58,12 +55,11 @@ public class RowPermissionsController {
      * @return {@link Result}
      */
     @PutMapping
-    @ApiOperation(value = "保存或更新行查询权限" , notes = "保存或更新行查询权限")
     public Result saveOrUpdateRole(@RequestBody RoleSelectPermissions roleSelectPermissions) {
         if (roleSelectPermissionsService.saveOrUpdate(roleSelectPermissions)) {
-            return Result.succeed(MessageResolverUtils.getMessage("save.success"));
+            return Result.succeed(I18nMsgUtils.getMsg("save.success"));
         } else {
-            return Result.failed(MessageResolverUtils.getMessage("save.success"));
+            return Result.failed(I18nMsgUtils.getMsg("save.success"));
         }
     }
 
@@ -76,7 +72,6 @@ public class RowPermissionsController {
      */
     @DeleteMapping
     @Deprecated
-    @ApiOperation(value = "批量删除 行查询权限" , notes = "批量删除 行查询权限")
     public Result deleteMul(@RequestBody JsonNode para) {
         if (para.size() > 0) {
             List<Integer> error = new ArrayList<>();
@@ -104,13 +99,12 @@ public class RowPermissionsController {
      * @return {@link Result}
      */
     @DeleteMapping("/delete")
-    @ApiOperation(value = "根据id删除 行查询权限" , notes = "根据id删除 行查询权限")
     public Result delete(@RequestParam("id") Integer id) {
 
         if (roleSelectPermissionsService.removeById(id)) {
-            return Result.succeed(MessageResolverUtils.getMessage("delete.success"));
+            return Result.succeed(I18nMsgUtils.getMsg("delete.success"));
         }
-        return Result.failed(MessageResolverUtils.getMessage("delete.failed"));
+        return Result.failed(I18nMsgUtils.getMsg("delete.failed"));
     }
 
     /**
@@ -120,7 +114,6 @@ public class RowPermissionsController {
      * @return {@link ProTableResult} of {@link RoleSelectPermissions}
      */
     @PostMapping
-    @ApiOperation(value = "获取 行查询权限(分页)" , notes = "获取 行查询权限(分页)")
     public ProTableResult<RoleSelectPermissions> listRoles(@RequestBody JsonNode para) {
         return roleSelectPermissionsService.selectForProTable(para);
     }

@@ -19,10 +19,9 @@
 
 package org.dinky.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.dinky.assertion.Asserts;
-import org.dinky.exception.BusException;
+import org.dinky.data.exception.BusException;
+import org.dinky.data.model.FlinkUdfManifest;
 import org.dinky.function.constant.PathConstant;
 import org.dinky.function.util.ZipWriter;
 
@@ -42,20 +41,18 @@ import org.springframework.web.bind.annotation.RestController;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.extra.servlet.ServletUtil;
-import cn.hutool.json.JSONArray;
-import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 
 /** @since 0.7.0 */
 @Slf4j
 @RestController
 @RequestMapping("/download")
-@Api(value = "DownloadController" , description = "dinky依赖下载相关接口")
 public class DownloadController {
 
     @GetMapping("downloadDepJar/{taskId}")
-    @ApiOperation(value = "下载 Dep Jar" , notes = "下载 Dep Jar")
     public void downloadJavaUDF(@PathVariable Integer taskId, HttpServletResponse resp) {
         if (Asserts.isNull(taskId)) {
             throw new BusException("task id can not null!");
@@ -65,33 +62,43 @@ public class DownloadController {
         if (!depManifestFile.exists()) {
             return;
         }
-        JSONObject jsonObject = new JSONObject(FileUtil.readUtf8String(depManifestFile));
-        JSONArray jars = jsonObject.getJSONArray("jars");
-        List<String> filePath = jars.stream().map(Convert::toStr).collect(Collectors.toList());
+        FlinkUdfManifest flinkUdfManifest =
+                JSONUtil.toBean(FileUtil.readUtf8String(depManifestFile), FlinkUdfManifest.class);
+        List<String> filePath =
+                flinkUdfManifest.getJars().stream()
+                        .map(Convert::toStr)
+                        .collect(Collectors.toList());
+        List<String> pyFilePath =
+                flinkUdfManifest.getPythonFiles().stream()
+                        .map(Convert::toStr)
+                        .collect(Collectors.toList());
         String[] jarNameList =
                 filePath.stream()
                         .map(FileUtil::getName)
                         .map(x -> "jar/" + x)
                         .toArray(String[]::new);
+        String[] pyFileNameList =
+                pyFilePath.stream()
+                        .map(FileUtil::getName)
+                        .map(x -> "py/" + x)
+                        .toArray(String[]::new);
 
         File zipFile = FileUtil.file(udfPackagePath + PathConstant.DEP_ZIP);
         InputStream[] inputStreams =
                 filePath.stream().map(FileUtil::getInputStream).toArray(InputStream[]::new);
+        InputStream[] pyInputStreams =
+                pyFilePath.stream().map(FileUtil::getInputStream).toArray(InputStream[]::new);
         try (ZipWriter zip = new ZipWriter(zipFile, Charset.defaultCharset())) {
-            zip.add(jarNameList, inputStreams);
+            if (ArrayUtil.isNotEmpty(jarNameList)) {
+                zip.add(jarNameList, inputStreams);
+            }
+            if (ArrayUtil.isNotEmpty(pyFileNameList)) {
+                zip.add(pyFileNameList, pyInputStreams);
+            }
             zip.add(depManifestFile.getName(), FileUtil.getInputStream(depManifestFile));
         }
         ServletUtil.write(resp, FileUtil.getInputStream(zipFile));
         FileUtil.del(zipFile);
-    }
-
-    @GetMapping("downloadPythonUDF/{taskId}")
-    @ApiOperation(value = "下载 Python UDF" , notes = "下载 Python UDF")
-    public void downloadPythonUDF(@PathVariable Integer taskId, HttpServletResponse resp) {
-        ServletUtil.write(
-                resp,
-                FileUtil.file(
-                        PathConstant.getUdfPackagePath(taskId) + PathConstant.UDF_PYTHON_NAME));
     }
 
     /**
@@ -101,7 +108,6 @@ public class DownloadController {
      * @param resp resp
      */
     @GetMapping("downloadAppJar/{version}")
-    @ApiOperation(value = "提供docker通过http下载dinky-app.jar" , notes = "提供docker通过http下载dinky-app.jar")
     public void downloadAppJar(@PathVariable String version, HttpServletResponse resp) {
         List<File> files =
                 FileUtil.loopFiles(

@@ -23,11 +23,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.dinky.alert.AlertPool;
 import org.dinky.alert.AlertResult;
-import org.dinky.common.result.ProTableResult;
-import org.dinky.common.result.Result;
-import org.dinky.model.AlertInstance;
+import org.dinky.data.model.AlertInstance;
+import org.dinky.data.result.ProTableResult;
+import org.dinky.data.result.Result;
 import org.dinky.service.AlertInstanceService;
-import org.dinky.utils.MessageResolverUtils;
+import org.dinky.utils.I18nMsgUtils;
 
 import java.util.List;
 
@@ -67,9 +67,9 @@ public class AlertInstanceController {
     public Result<Void> saveOrUpdate(@RequestBody AlertInstance alertInstance) throws Exception {
         if (alertInstanceService.saveOrUpdate(alertInstance)) {
             AlertPool.remove(alertInstance.getName());
-            return Result.succeed(MessageResolverUtils.getMessage("save.success"));
+            return Result.succeed(I18nMsgUtils.getMsg("save.success"));
         } else {
-            return Result.failed(MessageResolverUtils.getMessage("save.failed"));
+            return Result.failed(I18nMsgUtils.getMsg("save.failed"));
         }
     }
 
@@ -109,9 +109,9 @@ public class AlertInstanceController {
     @ApiOperation(value = "根据id删除告警实例" , notes = "根据id删除告警实例")
     public Result<Void> deleteInstanceById(@RequestParam("id") Integer id) {
         if (alertInstanceService.deleteAlertInstance(id)) {
-            return Result.succeed(MessageResolverUtils.getMessage("delete.success"));
+            return Result.succeed(I18nMsgUtils.getMsg("delete.success"));
         } else {
-            return Result.failed(MessageResolverUtils.getMessage("delete.failed"));
+            return Result.failed(I18nMsgUtils.getMsg("delete.failed"));
         }
     }
 
@@ -119,9 +119,9 @@ public class AlertInstanceController {
     @ApiOperation(value = "启用或禁用告警实例" , notes = "启用或禁用告警实例")
     public Result<Void> enable(@RequestParam("id") Integer id) {
         if (alertInstanceService.enable(id)) {
-            return Result.succeed(MessageResolverUtils.getMessage("modify.success"));
+            return Result.succeed(I18nMsgUtils.getMsg("modify.success"));
         } else {
-            return Result.failed(MessageResolverUtils.getMessage("modify.failed"));
+            return Result.failed(I18nMsgUtils.getMsg("modify.failed"));
         }
     }
 
@@ -137,8 +137,7 @@ public class AlertInstanceController {
     public Result<AlertInstance> getOneById(@RequestBody AlertInstance alertInstance)
             throws Exception {
         alertInstance = alertInstanceService.getById(alertInstance.getId());
-        return Result.succeed(
-                alertInstance, MessageResolverUtils.getMessage("response.get.success"));
+        return Result.succeed(alertInstance, I18nMsgUtils.getMsg("response.get.success"));
     }
 
     /**
@@ -150,8 +149,7 @@ public class AlertInstanceController {
     @ApiOperation(value = "获取所有告警实例(不分页)" , notes = "获取所有告警实例(不分页)")
     public Result<List<AlertInstance>> listEnabledAll() {
         return Result.succeed(
-                alertInstanceService.listEnabledAll(),
-                MessageResolverUtils.getMessage("response.get.success"));
+                alertInstanceService.listEnabledAll(), I18nMsgUtils.getMsg("response.get.success"));
     }
 
     /**
@@ -165,9 +163,9 @@ public class AlertInstanceController {
     public Result<Void> sendTest(@RequestBody AlertInstance alertInstance) {
         AlertResult alertResult = alertInstanceService.testAlert(alertInstance);
         if (alertResult.getSuccess()) {
-            return Result.succeed(MessageResolverUtils.getMessage("send.success"));
+            return Result.succeed(I18nMsgUtils.getMsg("send.success"));
         } else {
-            return Result.failed(MessageResolverUtils.getMessage("send.failed"));
+            return Result.failed(I18nMsgUtils.getMsg("send.failed"));
         }
     }
 }

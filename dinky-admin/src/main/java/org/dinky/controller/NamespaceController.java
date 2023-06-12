@@ -19,12 +19,10 @@
 
 package org.dinky.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.dinky.assertion.Asserts;
-import org.dinky.common.result.ProTableResult;
-import org.dinky.common.result.Result;
-import org.dinky.model.Namespace;
+import org.dinky.data.model.Namespace;
+import org.dinky.data.result.ProTableResult;
+import org.dinky.data.result.Result;
 import org.dinky.service.NamespaceService;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -43,7 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/namespace")
 @RequiredArgsConstructor
-@Api(value = "NamespaceController" , description = "命名空间管理接口")
+@Deprecated
 public class NamespaceController {
 
     private final NamespaceService namespaceService;
@@ -54,7 +52,6 @@ public class NamespaceController {
      * @return delete result code
      */
     @PutMapping
-    @ApiOperation(value = "修改命名空间" , notes = "修改命名空间")
     public Result<Void> saveOrUpdate(@RequestBody Namespace namespace) {
         Integer id = namespace.getId();
         if (namespaceService.saveOrUpdate(namespace)) {
@@ -70,14 +67,12 @@ public class NamespaceController {
      * @return delete result code
      */
     @DeleteMapping()
-    @ApiOperation(value = "根据id删除命名空间" , notes = "根据id删除命名空间")
     public Result<Void> deleteNamespaceById(@RequestBody JsonNode para) {
         return namespaceService.deleteNamespaceById(para);
     }
 
     /** query namespace list */
     @PostMapping
-    @ApiOperation(value = "查询命名空间(分页)" , notes = "查询命名空间(分页)")
     public ProTableResult<Namespace> listNamespaces(@RequestBody JsonNode para) {
         return namespaceService.selectForProTable(para);
     }

@@ -19,11 +19,9 @@
 
 package org.dinky.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.dinky.common.result.ProTableResult;
-import org.dinky.common.result.Result;
-import org.dinky.model.History;
+import org.dinky.data.model.History;
+import org.dinky.data.result.ProTableResult;
+import org.dinky.data.result.Result;
 import org.dinky.service.HistoryService;
 
 import java.util.ArrayList;
@@ -49,21 +47,18 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/history")
 @RequiredArgsConstructor
-@Api(value = "HistoryController" , description = "执行历史管理相关接口")
 public class HistoryController {
 
     private final HistoryService historyService;
 
     /** 动态查询列表 */
     @PostMapping
-    @ApiOperation(value = "执行历史查询(分页)" , notes = "执行历史查询(分页)")
     public ProTableResult<History> listHistory(@RequestBody JsonNode para) {
         return historyService.selectForProTable(para);
     }
 
     /** 批量删除 */
     @DeleteMapping
-    @ApiOperation(value = "批量删除" , notes = "批量删除")
     public Result<Void> deleteMul(@RequestBody JsonNode para) {
         if (para.size() > 0) {
             List<Integer> error = new ArrayList<>();
@@ -86,7 +81,6 @@ public class HistoryController {
 
     /** 获取指定ID的信息 */
     @PostMapping("/getOneById")
-    @ApiOperation(value = "获取指定ID的信息" , notes = "获取指定ID的信息")
     public Result<History> getOneById(@RequestBody History history) throws Exception {
         history = historyService.getById(history.getId());
         return Result.succeed(history, "获取成功");

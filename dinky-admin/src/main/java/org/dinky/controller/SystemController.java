@@ -19,11 +19,9 @@
 
 package org.dinky.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.dinky.common.result.Result;
-import org.dinky.constant.DirConstant;
-import org.dinky.dto.TreeNodeDTO;
+import org.dinky.data.constant.DirConstant;
+import org.dinky.data.dto.TreeNodeDTO;
+import org.dinky.data.result.Result;
 import org.dinky.service.SystemService;
 
 import java.util.List;
@@ -39,7 +37,6 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/system")
 @RequiredArgsConstructor
-@Api(value = "/api/system", tags = "文件和日志读取接口")
 public class SystemController {
 
     private final SystemService systemService;
@@ -50,7 +47,6 @@ public class SystemController {
      * @return {@link Result} <{@link List}<{@link TreeNodeDTO}>>
      */
     @GetMapping("/listLogDir")
-    @ApiOperation(value = "从根目录下加载文件节点", notes = "从根目录下加载文件节点")
     public Result<List<TreeNodeDTO>> listLogDir() {
         return Result.data(systemService.listLogDir());
     }
@@ -61,7 +57,6 @@ public class SystemController {
      * @return {@link Result} <{@link String}>
      */
     @GetMapping("/getRootLog")
-    @ApiOperation(value = "从日志根目录下读取文件", notes = "从日志根目录下读取文件")
     public Result<String> getRootLog() {
         return Result.data(systemService.readFile(DirConstant.ROOT_LOG_PATH));
     }
@@ -73,7 +68,6 @@ public class SystemController {
      * @return {@link Result} <{@link String}>
      */
     @GetMapping("/readFile")
-    @ApiOperation(value = "读取指定路径所有文件", notes = "读取指定路径所有文件")
     public Result<String> readFile(@RequestParam String path) {
         return Result.data(systemService.readFile(path));
     }

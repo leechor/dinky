@@ -19,11 +19,9 @@
 
 package org.dinky.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.dinky.common.result.ProTableResult;
-import org.dinky.common.result.Result;
-import org.dinky.model.Savepoints;
+import org.dinky.data.model.Savepoints;
+import org.dinky.data.result.ProTableResult;
+import org.dinky.data.result.Result;
 import org.dinky.service.SavepointsService;
 
 import java.util.ArrayList;
@@ -52,14 +50,12 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/savepoints")
 @RequiredArgsConstructor
-@Api(value = "SavepointsController" , description = "保存点管理相关接口")
 public class SavepointsController {
 
     private final SavepointsService savepointsService;
 
     /** 新增或者更新 */
     @PutMapping
-    @ApiOperation(value = "新增或更改保存点" , notes = "新增或更改保存点")
     public Result<Void> saveOrUpdate(@RequestBody Savepoints savepoints) throws Exception {
         if (savepointsService.saveOrUpdate(savepoints)) {
             return Result.succeed("新增成功");
@@ -70,14 +66,12 @@ public class SavepointsController {
 
     /** 动态查询列表 */
     @PostMapping
-    @ApiOperation(value = "查询当前保存点列表(分页)" , notes = "查询当前保存点列表(分页)")
     public ProTableResult<Savepoints> listSavepoints(@RequestBody JsonNode para) {
         return savepointsService.selectForProTable(para);
     }
 
     /** 批量删除 */
     @DeleteMapping
-    @ApiOperation(value = "批量删除保存点信息" , notes = "批量删除保存点信息")
     public Result<Void> deleteMul(@RequestBody JsonNode para) {
         if (para.size() > 0) {
             List<Integer> error = new ArrayList<>();
@@ -99,7 +93,6 @@ public class SavepointsController {
 
     /** 获取指定ID的信息 */
     @PostMapping("/getOneById")
-    @ApiOperation(value = "获取指定ID的信息" , notes = "获取指定ID的信息")
     public Result<Savepoints> getOneById(@RequestBody Savepoints savepoints) throws Exception {
         savepoints = savepointsService.getById(savepoints.getId());
         return Result.succeed(savepoints, "获取成功");
@@ -107,7 +100,6 @@ public class SavepointsController {
 
     /** 获取指定作业ID的所有savepoint */
     @GetMapping("/listSavepointsByTaskId")
-    @ApiOperation(value = "获取指定作业ID的所有savepoint" , notes = "获取指定作业ID的所有savepoint")
     public Result<List<Savepoints>> listSavepointsByTaskId(@RequestParam Integer taskID) {
         return Result.succeed(savepointsService.listSavepointsByTaskId(taskID), "获取成功");
     }

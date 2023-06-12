@@ -19,20 +19,19 @@
 
 package org.dinky.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.dinky.assertion.Asserts;
-import org.dinky.common.result.ProTableResult;
-import org.dinky.common.result.Result;
-import org.dinky.constant.CommonConstant;
+import org.dinky.data.constant.CommonConstant;
+import org.dinky.data.model.Column;
+import org.dinky.data.model.DataBase;
+import org.dinky.data.model.QueryData;
+import org.dinky.data.model.Schema;
+import org.dinky.data.model.SqlGeneration;
+import org.dinky.data.result.ProTableResult;
+import org.dinky.data.result.Result;
 import org.dinky.metadata.driver.DriverPool;
 import org.dinky.metadata.result.JdbcSelectResult;
-import org.dinky.model.Column;
-import org.dinky.model.DataBase;
-import org.dinky.model.QueryData;
-import org.dinky.model.Schema;
-import org.dinky.model.SqlGeneration;
 import org.dinky.service.DataBaseService;
+import org.dinky.utils.I18nMsgUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,33 +61,46 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/database")
 @RequiredArgsConstructor
-@Api(value = "DataBaseController" , description = "数据源管理相关接口")
 public class DataBaseController {
 
     private final DataBaseService databaseService;
 
-    /** 新增或者更新 */
+    /**
+     * save or update database
+     *
+     * @param database {@link DataBase}
+     * @return {@link Result}< {@link Void}>
+     */
     @PutMapping
-    @ApiOperation(value = "新增或更新数据源" , notes = "新增或更新数据源")
     public Result<Void> saveOrUpdate(@RequestBody DataBase database) {
         if (databaseService.saveOrUpdateDataBase(database)) {
             DriverPool.remove(database.getName());
-            return Result.succeed("更新成功");
+            return Result.succeed(I18nMsgUtils.getMsg("save.success"));
         } else {
-            return Result.failed("更新失败");
+            return Result.failed(I18nMsgUtils.getMsg("save.failed"));
         }
     }
 
-    /** 动态查询列表 */
+    /**
+     * get all database
+     *
+     * @param para {@link JsonNode}
+     * @return {@link ProTableResult}< {@link DataBase}>
+     */
     @PostMapping
-    @ApiOperation(value = "动态查询数据源列表(分页)" , notes = "动态查询数据源列表(分页)")
     public ProTableResult<DataBase> listDataBases(@RequestBody JsonNode para) {
         return databaseService.selectForProTable(para);
     }
 
-    /** 批量删除 */
+    /**
+     * batch delete database , this method is {@link @Deprecated} , please use {@link
+     * #deleteById(Integer id)}
+     *
+     * @param para {@link JsonNode}
+     * @return {@link Result}< {@link Void}>
+     */
     @DeleteMapping
-    @ApiOperation(value = "批量删除数据源" , notes = "批量删除数据源")
+    @Deprecated
     public Result<Void> deleteMul(@RequestBody JsonNode para) {
         if (para.size() > 0) {
             List<Integer> error = new ArrayList<>();
@@ -108,25 +120,65 @@ public class DataBaseController {
         }
     }
 
-    /** 获取指定ID的信息 */
+    /**
+     * delete by id
+     *
+     * @param id {@link Integer}
+     * @return {@link Result}< {@link Void}>
+     */
+    @DeleteMapping("/delete")
+    public Result<Void> deleteById(@RequestParam Integer id) {
+        if (databaseService.removeById(id)) {
+            return Result.succeed(I18nMsgUtils.getMsg("delete.success"));
+        }
+        return Result.failed(I18nMsgUtils.getMsg("delete.failed"));
+    }
+
+    /**
+     * enable or disable by id
+     *
+     * @param id {@link Integer}
+     * @return {@link Result}< {@link Void}>
+     */
+    @PutMapping("/enable")
+    public Result<Void> enable(@RequestParam Integer id) {
+        if (databaseService.enable(id)) {
+            return Result.succeed(I18nMsgUtils.getMsg("modify.success"));
+        }
+        return Result.failed(I18nMsgUtils.getMsg("modify.failed"));
+    }
+
+    /**
+     * get one by id
+     *
+     * @param database {@link DataBase}
+     * @return {@link Result}< {@link DataBase}>
+     */
     @PostMapping("/getOneById")
-    @ApiOperation(value = "获取指定id的数据源信息" , notes = "获取指定id的数据源信息")
+    @Deprecated
     public Result<DataBase> getOneById(@RequestBody DataBase database) {
         database = databaseService.getById(database.getId());
-        return Result.succeed(database, "获取成功");
+        return Result.succeed(database, I18nMsgUtils.getMsg("response.get.success"));
     }
 
-    /** 获取可用的数据库列表 */
+    /**
+     * get all enabled database
+     *
+     * @return {@link Result}< {@link List}< {@link DataBase}>>
+     */
     @GetMapping("/listEnabledAll")
-    @ApiOperation(value = "获取可用的数据库列表" , notes = "获取可用的数据库列表")
     public Result<List<DataBase>> listEnabledAll() {
         List<DataBase> dataBases = databaseService.listEnabledAll();
-        return Result.succeed(dataBases, "获取成功");
+        return Result.succeed(dataBases, I18nMsgUtils.getMsg("response.get.success"));
     }
 
-    /** 连接测试 */
+    /**
+     * test connect database
+     *
+     * @param database {@link DataBase}
+     * @return {@link Result}< {@link Void}>
+     */
     @PostMapping("/testConnect")
-    @ApiOperation(value = "数据源连接测试" , notes = "数据源连接测试")
     public Result<Void> testConnect(@RequestBody DataBase database) {
         String msg = databaseService.testConnect(database);
         boolean isHealthy = Asserts.isEquals(CommonConstant.HEALTHY, msg);
@@ -137,9 +189,14 @@ public class DataBaseController {
         }
     }
 
-    /** 全部心跳监测 */
+    /**
+     * heart beat check all database, this method is {@link @Deprecated} , please use {@link
+     * #checkHeartBeatById(Integer id)}
+     *
+     * @return {@link Result}< {@link Void}>
+     */
     @PostMapping("/checkHeartBeats")
-    @ApiOperation(value = "全部数据源的心跳监测" , notes = "全部数据源的心跳监测")
+    @Deprecated
     public Result<Void> checkHeartBeats() {
         List<DataBase> dataBases = databaseService.listEnabledAll();
         for (DataBase dataBase : dataBases) {
@@ -152,9 +209,15 @@ public class DataBaseController {
         return Result.succeed("状态刷新完成");
     }
 
-    /** 心跳检测指定ID */
+    /**
+     * heart beat check by id, this method is {@link @Deprecated} , please use {@link
+     * #checkHeartBeatByDataSourceId(Integer id)}
+     *
+     * @param id {@link Integer}
+     * @return {@link Result}< {@link Void}>
+     */
     @GetMapping("/checkHeartBeatById")
-    @ApiOperation(value = "监测指定id的数据源心跳" , notes = "监测指定id的数据源心跳")
+    @Deprecated
     public Result<Void> checkHeartBeatById(@RequestParam Integer id) {
         DataBase dataBase = databaseService.getById(id);
         Asserts.checkNotNull(dataBase, "该数据源不存在！");
@@ -171,25 +234,62 @@ public class DataBaseController {
         return Result.succeed("数据源连接正常");
     }
 
-    /** 获取元数据的表 */
+    /**
+     * heart beat check by id
+     *
+     * @param id {@link Integer}
+     * @return {@link Result}< {@link Void}>
+     */
+    @PutMapping("/checkHeartBeatByDataSourceId")
+    public Result<Void> checkHeartBeatByDataSourceId(@RequestParam Integer id) {
+        DataBase dataBase = databaseService.getById(id);
+        Asserts.checkNotNull(dataBase, "该数据源不存在！");
+        String error = "";
+        try {
+            databaseService.checkHeartBeat(dataBase);
+        } catch (Exception e) {
+            error = e.getMessage();
+        }
+        databaseService.updateById(dataBase);
+        if (Asserts.isNotNullString(error)) {
+            return Result.failed(error);
+        }
+        return Result.succeed("数据源连接正常");
+    }
+
+    /**
+     * get all database of schemas and tables
+     *
+     * @param id {@link Integer}
+     * @return {@link Result}< {@link List}< {@link Schema}>>
+     */
     @Cacheable(cacheNames = "metadata_schema", key = "#id")
     @GetMapping("/getSchemasAndTables")
-    @ApiOperation(value = "获取元数据的表" , notes = "获取元数据的表")
     public Result<List<Schema>> getSchemasAndTables(@RequestParam Integer id) {
         return Result.succeed(databaseService.getSchemasAndTables(id), "获取成功");
     }
 
-    /** 清除元数据表的缓存 */
+    /**
+     * clear cache of schemas and tables
+     *
+     * @param id {@link Integer}
+     * @return {@link Result}< {@link String}>
+     */
     @CacheEvict(cacheNames = "metadata_schema", key = "#id")
     @GetMapping("/unCacheSchemasAndTables")
-    @ApiOperation(value = "清除元数据表的缓存" , notes = "清除元数据表的缓存")
     public Result<String> unCacheSchemasAndTables(@RequestParam Integer id) {
         return Result.succeed("clear cache", "success");
     }
 
-    /** 获取元数据的指定表的列 */
+    /**
+     * get columns of table
+     *
+     * @param id {@link Integer}
+     * @param schemaName {@link String}
+     * @param tableName {@link String}
+     * @return {@link Result}< {@link List}< {@link Column}>>
+     */
     @GetMapping("/listColumns")
-    @ApiOperation(value = "获取元数据的指定表的列" , notes = "获取元数据的指定表的列")
     public Result<List<Column>> listColumns(
             @RequestParam Integer id,
             @RequestParam String schemaName,
@@ -197,9 +297,13 @@ public class DataBaseController {
         return Result.succeed(databaseService.listColumns(id, schemaName, tableName), "获取成功");
     }
 
-    /** 获取元数据的指定表的数据 */
+    /**
+     * query data of table
+     *
+     * @param queryData {@link QueryData}
+     * @return {@link Result}< {@link JdbcSelectResult}>
+     */
     @PostMapping("/queryData")
-    @ApiOperation(value = "获取元数据的指定表的数据" , notes = "获取元数据的指定表的数据")
     public Result<JdbcSelectResult> queryData(@RequestBody QueryData queryData) {
         JdbcSelectResult jdbcSelectResult = databaseService.queryData(queryData);
         if (jdbcSelectResult.isSuccess()) {
@@ -209,9 +313,13 @@ public class DataBaseController {
         }
     }
 
-    /** 执行sql */
+    /**
+     * exec sql
+     *
+     * @param queryData {@link QueryData}
+     * @return {@link Result}< {@link JdbcSelectResult}>
+     */
     @PostMapping("/execSql")
-    @ApiOperation(value = "执行sql" , notes = "执行sql")
     public Result<JdbcSelectResult> execSql(@RequestBody QueryData queryData) {
         JdbcSelectResult jdbcSelectResult = databaseService.execSql(queryData);
         if (jdbcSelectResult.isSuccess()) {
@@ -221,9 +329,15 @@ public class DataBaseController {
         }
     }
 
-    /** 获取 SqlGeneration */
+    /**
+     * get sql generation
+     *
+     * @param id {@link Integer}
+     * @param schemaName {@link String}
+     * @param tableName {@link String}
+     * @return {@link Result}< {@link SqlGeneration}>
+     */
     @GetMapping("/getSqlGeneration")
-    @ApiOperation(value = "获取指定的 SqlGeneration" , notes = "获取指定的 SqlGeneration")
     public Result<SqlGeneration> getSqlGeneration(
             @RequestParam Integer id,
             @RequestParam String schemaName,
@@ -231,9 +345,13 @@ public class DataBaseController {
         return Result.succeed(databaseService.getSqlGeneration(id, schemaName, tableName), "获取成功");
     }
 
-    /** copyDatabase */
+    /**
+     * copy database
+     *
+     * @param database {@link DataBase}
+     * @return {@link Result}< {@link Void}>
+     */
     @PostMapping("/copyDatabase")
-    @ApiOperation(value = "复制数据源信息" , notes = "复制数据源信息")
     public Result<Void> copyDatabase(@RequestBody DataBase database) {
         if (databaseService.copyDatabase(database)) {
             return Result.succeed("复制成功!");

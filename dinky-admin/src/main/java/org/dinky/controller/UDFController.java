@@ -19,13 +19,11 @@
 
 package org.dinky.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.dinky.common.result.ProTableResult;
-import org.dinky.common.result.Result;
-import org.dinky.model.UDFTemplate;
+import org.dinky.data.model.UDFTemplate;
+import org.dinky.data.result.ProTableResult;
+import org.dinky.data.result.Result;
 import org.dinky.service.UDFTemplateService;
-import org.dinky.utils.MessageResolverUtils;
+import org.dinky.utils.I18nMsgUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,13 +53,11 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/udf/template")
 @RequiredArgsConstructor
-@Api(value = "/api/udf", tags = "UDF模板配置")
 public class UDFController {
 
     private final UDFTemplateService udfTemplateService;
 
     @PostMapping("/tree")
-    @ApiOperation(value = "获取模板树", notes = "获取模板树")
     public Result<List<Object>> listUdfTemplates() {
         List<UDFTemplate> list = udfTemplateService.list();
         Map<String, Dict> one = new HashMap<>(3);
@@ -119,7 +115,6 @@ public class UDFController {
      * @return {@link ProTableResult} <{@link UDFTemplate}>
      */
     @PostMapping("/list")
-    @ApiOperation(value = "查询节点信息(分页)", notes = "查询节点信息(分页)")
     public ProTableResult<UDFTemplate> listUdfTemplates(@RequestBody JsonNode params) {
         return udfTemplateService.selectForProTable(params);
     }
@@ -131,11 +126,10 @@ public class UDFController {
      * @return {@link Result} <{@link String}>
      */
     @PutMapping
-    @ApiOperation(value = "新增模板", notes = "新增模板")
     public Result<String> saveOrUpdate(@RequestBody UDFTemplate udfTemplate) {
         return udfTemplateService.saveOrUpdate(udfTemplate)
-                ? Result.succeed(MessageResolverUtils.getMessage("save.success"))
-                : Result.failed(MessageResolverUtils.getMessage("save.failed"));
+                ? Result.succeed(I18nMsgUtils.getMsg("save.success"))
+                : Result.failed(I18nMsgUtils.getMsg("save.failed"));
     }
 
     /**
@@ -145,7 +139,6 @@ public class UDFController {
      * @return {@link Result} <{@link String}>
      */
     @DeleteMapping("/template/list")
-    @ApiOperation(value = "批量删除模板", notes = "批量删除模板")
     @Deprecated
     public Result deleteMul(@RequestBody JsonNode para) {
         if (para.size() > 0) {
@@ -177,18 +170,18 @@ public class UDFController {
     @Transactional(rollbackFor = Exception.class)
     public Result<Void> delete(@RequestParam Integer id) {
         if (udfTemplateService.removeById(id)) {
-            return Result.succeed(MessageResolverUtils.getMessage("delete.success"));
+            return Result.succeed(I18nMsgUtils.getMsg("delete.success"));
         } else {
-            return Result.failed(MessageResolverUtils.getMessage("delete.failed"));
+            return Result.failed(I18nMsgUtils.getMsg("delete.failed"));
         }
     }
 
     @PutMapping("/enable")
     public Result<Void> enable(@RequestParam Integer id) {
         if (udfTemplateService.enable(id)) {
-            return Result.succeed(MessageResolverUtils.getMessage("modify.success"));
+            return Result.succeed(I18nMsgUtils.getMsg("modify.success"));
         } else {
-            return Result.failed(MessageResolverUtils.getMessage("modify.failed"));
+            return Result.failed(I18nMsgUtils.getMsg("modify.failed"));
         }
     }
 }

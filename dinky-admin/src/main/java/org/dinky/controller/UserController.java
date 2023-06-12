@@ -22,15 +22,15 @@ package org.dinky.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.dinky.assertion.Asserts;
-import org.dinky.common.result.ProTableResult;
-import org.dinky.common.result.Result;
-import org.dinky.dto.ModifyPasswordDTO;
-import org.dinky.model.User;
-import org.dinky.model.UserTenant;
-import org.dinky.params.AssignRoleParams;
+import org.dinky.data.dto.ModifyPasswordDTO;
+import org.dinky.data.model.User;
+import org.dinky.data.model.UserTenant;
+import org.dinky.data.params.AssignRoleParams;
+import org.dinky.data.result.ProTableResult;
+import org.dinky.data.result.Result;
 import org.dinky.service.UserService;
 import org.dinky.service.UserTenantService;
-import org.dinky.utils.MessageResolverUtils;
+import org.dinky.utils.I18nMsgUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,12 +94,12 @@ public class UserController {
     @ApiOperation(value = "启用或禁用用户", notes = "启用或禁用用户")
     public Result<Void> enable(@RequestParam("id") Integer id) {
         if (userService.checkAdmin(id)) {
-            return Result.failed(MessageResolverUtils.getMessage("user.superadmin.cannot.disable"));
+            return Result.failed(I18nMsgUtils.getMsg("user.superadmin.cannot.disable"));
         } else {
             if (userService.enable(id)) {
-                return Result.succeed(MessageResolverUtils.getMessage("modify.success"));
+                return Result.succeed(I18nMsgUtils.getMsg("modify.success"));
             } else {
-                return Result.failed(MessageResolverUtils.getMessage("modify.failed"));
+                return Result.failed(I18nMsgUtils.getMsg("modify.failed"));
             }
         }
     }
@@ -126,9 +126,9 @@ public class UserController {
     @ApiOperation(value = "根据id获取用户", notes = "根据id获取用户")
     public Result<Void> deleteUserById(@RequestParam("id") Integer id) {
         if (userService.removeUser(id)) {
-            return Result.succeed(MessageResolverUtils.getMessage("delete.success"));
+            return Result.succeed(I18nMsgUtils.getMsg("delete.success"));
         } else {
-            return Result.failed(MessageResolverUtils.getMessage("delete.failed"));
+            return Result.failed(I18nMsgUtils.getMsg("delete.failed"));
         }
     }
 
@@ -176,7 +176,7 @@ public class UserController {
     public Result<User> getOneById(@RequestBody User user) {
         user = userService.getById(user.getId());
         user.setPassword(null);
-        return Result.succeed(user, MessageResolverUtils.getMessage("response.get.success"));
+        return Result.succeed(user, I18nMsgUtils.getMsg("response.get.success"));
     }
 
     /**
@@ -238,6 +238,6 @@ public class UserController {
             userIds.add(userTenant.getUserId());
         }
         Dict result = Dict.create().set("users", userList).set("userIds", userIds);
-        return Result.succeed(result, MessageResolverUtils.getMessage("response.get.success"));
+        return Result.succeed(result, I18nMsgUtils.getMsg("response.get.success"));
     }
 }
