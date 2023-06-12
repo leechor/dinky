@@ -102,13 +102,13 @@ public final class Specifications {
 
     /**
      * 根据字段的配置, 生成待输出的数据列结构定义, 可用于设置输出端口数据信息
-     *
+     * 新增：当字段无别名时，使用输入名称作为输出
      * @param ffs 字段配置
      * @return 输出数据定义
      */
     public static List<Column> convertFieldFunctionToColumns(List<FieldFunction> ffs) {
         return ffs.stream()
-                .map(t -> new Column(t.getOutName(), t.getOutType()))
+                .map(t -> new Column(t.getOutName()==null? String.valueOf(t.getParameters().get(0)):t.getOutName(), t.getOutType()))
                 .collect(Collectors.toList());
     }
 

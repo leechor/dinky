@@ -110,6 +110,11 @@ public class CepOperator extends Operator {
     private static final String SKIP_STRATEGY = "skipStrategy";
     private static final String CEP = "CEP";
 
+    private static final String OUT_PUT_MODE = "outPutMode"; //输出规则
+    private static final String TIME_SPAN = "timeSpan"; //时间跨度
+    private static final String TIME_UNIT = "timeUnit"; //时间跨度单位
+
+
     private static final String TEMPLATE =
             MessageFormat.format(
                     "<#import \"{0}\" as e>\nCREATE VIEW $'{'{1}.{2}'}' \nAS \n<@e.cepFunction {1}/>",
@@ -139,37 +144,50 @@ public class CepOperator extends Operator {
     protected void execute() {
 
         Map<String, Object> parameters = getFirstParameterMap();
-        final String partition = (String) parameters.get(PARTITION);
-        String orderBy = (String) parameters.get(ORDER_BY);
+        final String partition = (String) parameters.get(PARTITION);//定义表的逻辑分区
+
+        String orderBy = (String) parameters.get(ORDER_BY);//指定传入行的排序方式
 
         @SuppressWarnings("unchecked")
-        List<Map<String, Object>> defineList = (List<Map<String, Object>>) parameters.get(DEFINES);
+        List<Map<String, Object>> defineList = (List<Map<String, Object>>) parameters.get(DEFINES);//定义模式的具体含义
         List<Define> defines =
                 mapper.convertValue(defineList, new TypeReference<List<Define>>() {});
 
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> patternList =
-                (List<Map<String, Object>>) parameters.get(PATTERNS);
+                (List<Map<String, Object>>) parameters.get(PATTERNS);//定义事件
         List<Pattern> patterns =
                 mapper.convertValue(patternList, new TypeReference<List<Pattern>>() {});
 
         SkipStrategy skipStrategy =
-                mapper.convertValue(parameters.get(SKIP_STRATEGY), SkipStrategy.class);
+                mapper.convertValue(parameters.get(SKIP_STRATEGY), SkipStrategy.class);//AFTER 跳过策略
 
         TableInfo tableInfo = inputPortObject.getOutputPseudoData();
+
         @SuppressWarnings("unchecked")
         List<FieldFunction> ffs =
                 FieldFunction.analyzeParameters(
-                        tableInfo.getName(), (List<Map<String, Object>>) parameters.get(MEASURES));
+                        tableInfo.getName(), (List<Map<String, Object>>) parameters.get(MEASURES)); //根据匹配成功的输入事件构造输出事件
         String outputTableName = NameHelper.generateVariableName("CepOperator");
+
+        //4 定义匹配成功后的输出方式  ONE ROW PER MATCH/ALL ROWS PER MATCH
+        String outPutMode = (String) parameters.get(OUT_PUT_MODE);
+
+        //6 定义匹配事件的最大时间跨度,格式： WITHIN INTERVAL "string" timeUnit
+        String timeSpan = String.valueOf( parameters.get(TIME_SPAN) );
+        String timeUnit = (String) parameters.get(TIME_UNIT);
+
 
         Map<String, Object> parameterMap = new HashMap<>();
         parameterMap.put(OUTPUT_TABLE_NAME, outputTableName);
         parameterMap.put(INPUT_TABLE_NAME, tableInfo.getName());
         parameterMap.put(PARTITION, partition);
         parameterMap.put(ORDER_BY, orderBy);
+        parameterMap.put(OUT_PUT_MODE, outPutMode);
         parameterMap.put(SKIP_STRATEGY, skipStrategy);
         parameterMap.put(MEASURES, ffs);
+        parameterMap.put(TIME_SPAN, timeSpan);
+        parameterMap.put(TIME_UNIT, timeUnit);
         parameterMap.put(
                 DEFINES, defines.stream().map(Define::toString).collect(Collectors.toList()));
         parameterMap.put(
