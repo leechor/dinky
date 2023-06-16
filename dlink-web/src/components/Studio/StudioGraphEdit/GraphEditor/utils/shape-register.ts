@@ -1,3 +1,4 @@
+import { handleInitNodes } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/node-by-data-loader';
 import { Graph, Node } from '@antv/x6';
 import { register } from '@antv/x6-react-shape';
 import TextNode from '@/components/Studio/StudioGraphEdit/GraphEditor/components/text-node';
@@ -7,6 +8,7 @@ import { Parameter } from '@/components/Studio/StudioGraphEdit/GraphEditor/ts-de
 import { PortManager } from '@antv/x6/es/model/port';
 import React from 'react';
 import { GroupNode } from '@/components/Studio/StudioGraphEdit/GraphEditor/components/group-node';
+import unRegisterShape from "./shape-unregister"
 
 enum LocalNodeType {
   MYSQL = 'mysql',
@@ -46,6 +48,7 @@ function registerOperatorNode(
         style: {
           'background-color': '#c6e5ff',
           border: '1px solid #949494',
+          "border-radius": "2px"
         },
       },
     },
@@ -60,9 +63,9 @@ export default (
   ports: Partial<PortManager.Metadata> | PortManager.PortMetadata[],
   operatorParameters: Parameter[],
 ) => {
-  // 基础节点 (后期考虑根据导入Json数据注册)
-  console.log(operatorParameters, 'operatorParameters');
 
+  //取消已注册，重新注册
+  unRegisterShape(operatorParameters)
   operatorParameters?.forEach((param) => {
     //生成ports Item
     const portItem: PortManager.PortMetadata[] = [];
@@ -71,15 +74,41 @@ export default (
       ...param.ports.inputs.map((item: { id: string }) => ({
         group: 'inputs',
         id: item.id,
-        zIndex: 10,
-        // markup:
+        zIndex: 999,
+        attrs: {
+          text: {
+            text: `${item.id}`,
+            style: {
+              visibility: "hidden",
+              fontSize: 10,
+              fill: "#3B4351",
+            },
+          },
+        },
+        label: {
+          position: "bottom",
+        }
       })),
     );
 
     portItem.push(
       ...param.ports.outputs.map((item: { id: string }) => ({
         group: 'outputs',
+        zIndex:999,
         id: item.id,
+        attrs: {
+          text: {
+            text: `${item.id}`,
+            style: {
+              visibility: "hidden",
+              fontSize: 10,
+              fill: "#3B4351",
+            },
+          },
+        },
+        label: {
+          position: "bottom",
+        }
       })),
     );
 
@@ -95,8 +124,8 @@ export default (
         break;
     }
   });
-
   registerTextNode();
-
   Graph.registerNode('package', GroupNode);
+
+
 };

@@ -63,7 +63,6 @@ export async function removeData(url: string, params: any[]) {
 }
 
 export async function addOrUpdateData(url: string, params: any) {
-  debugger;
   return request2(url, {
     method: 'PUT',
     data: {

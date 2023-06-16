@@ -8,11 +8,11 @@ export const handleInitPort = () => {
   return {
     groups: {
       outputs: {
-        zIndex: 1,
+        zIndex: 999,
         position: 'right',
         attrs: {
           circle: {
-            r: 6,
+            r: 8,
             magnet: true,
             stroke: '#818181',
             strokeWidth: 1,
@@ -24,10 +24,11 @@ export const handleInitPort = () => {
         },
       },
       inputs: {
+        zIndex:999,
         position: 'left',
         attrs: {
           circle: {
-            r: 6,
+            r: 8,
             magnet: true,
             stroke: '#818181',
             strokeWidth: 1,

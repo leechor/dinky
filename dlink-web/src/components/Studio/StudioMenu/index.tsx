@@ -84,6 +84,7 @@ import { isDeletedTask, JOB_LIFE_CYCLE } from '@/components/Common/JobLifeCycle'
 import DolphinPush from '@/components/Studio/StudioMenu/DolphinPush';
 import { l } from '@/utils/intl';
 import { useAppSelector } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
+import { JSONEditor } from '@json-editor/json-editor';
 
 const StudioMenu = (props: any) => {
   const {
@@ -131,8 +132,9 @@ const StudioMenu = (props: any) => {
     [current],
   );
 
-  const { graph } = useAppSelector((state) => ({
+  const { graph, editor } = useAppSelector((state) => ({
     graph: state.home.graph,
+    editor: state.home.editor
   }));
 
   useEffect(() => {
@@ -358,7 +360,23 @@ const StudioMenu = (props: any) => {
   };
 
   const saveSqlAndSettingToTask = () => {
-    props.saveTask(current, JSON.stringify(graph.toJSON()));
+    //校验
+    
+    if (editor instanceof JSONEditor<any>) {
+      const errors = editor.validate()
+      if (errors.length) {
+        console.log(errors, "errors")
+        let errmsg=""
+        errors.forEach(error=>{
+          errmsg+=error.message
+        })
+        message.warning(errmsg+ "-检查算子节点信息")
+      } else {
+        props.saveTask(current, JSON.stringify(graph.toJSON()));
+      }
+    }
+
+
   };
 
   const exportSql = () => {
@@ -611,7 +629,7 @@ const StudioMenu = (props: any) => {
       title: current.task.jobName + l('pages.datastudio.editor.api.doc'),
       width: 1000,
       content: <TaskAPI task={current.task} />,
-      onOk() {},
+      onOk() { },
     });
   };
 
@@ -620,7 +638,7 @@ const StudioMenu = (props: any) => {
       title: l('pages.datastudio.editor.usehelp'),
       width: 1000,
       content: <StudioHelp />,
-      onOk() {},
+      onOk() { },
     });
   };
 
@@ -769,7 +787,7 @@ const StudioMenu = (props: any) => {
                 </Tooltip>
               ) : undefined}
               {current.task.step != JOB_LIFE_CYCLE.ONLINE &&
-              current.task.step != JOB_LIFE_CYCLE.CANCEL ? (
+                current.task.step != JOB_LIFE_CYCLE.CANCEL ? (
                 <Tooltip title={l('pages.datastudio.editor.delete')}>
                   <Button type="text" icon={<DeleteTwoTone />} onClick={toCancelTask} />
                 </Tooltip>
@@ -883,7 +901,7 @@ const StudioMenu = (props: any) => {
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   saveTask: (current: any, statement?: string) => {
-    debugger;
+    ;
     dispatch({
       type: 'Studio/saveTask',
       payload: { ...current.task, statement },

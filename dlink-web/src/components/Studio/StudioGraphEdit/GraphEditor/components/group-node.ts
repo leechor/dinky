@@ -120,8 +120,7 @@ GroupNode.config({
       ry: 4,
     },
     image: {
-      'xlink:href':
-        'https://gw.alipayobjects.com/mdn/rms_0b51a4/afts/img/A*X4e0TrDsEiIAAAAAAAAAAAAAARQnAQ',
+      href:"/graphUseSvg/file.svg",
       width: 16,
       height: 16,
       x: 8,
