@@ -212,6 +212,10 @@ public final class X6ToInternalConvert implements ToInternalConvert {
                         String parameters = data.get("parameters").toPrettyString();
                         NodeWrapper nodeWrapper = t.getNodeWrapper();
                         nodeWrapper.setParameters(parameters);
+                        if(data.get("config")!=null){
+                            String config = data.get("config").toPrettyString();
+                            nodeWrapper.setConfig(config);
+                        }
                         t.setOperatorWrapper(nodeWrapper);
                     }
                 });

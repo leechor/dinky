@@ -421,6 +421,9 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
         Statement statement = statementService.getById(id);
         if (statement != null) {
             task.setStatement(statement.getStatement());
+            if(statement.getGraphJson()!=null){
+                task.setGraphJson(statement.getGraphJson());
+            }
         }
 
         JobInstance jobInstance = jobInstanceService.getJobInstanceByTaskId(id);

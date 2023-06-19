@@ -123,6 +123,9 @@ public class Task extends SuperEntity<Task> {
     @TableField(exist = false)
     private String alertGroupName;
 
+    @TableField(exist = false)
+    private String graphJson;
+
     public static final ObjectMapper objectMapper = new ObjectMapper();
 
     @SuppressWarnings("unchecked")

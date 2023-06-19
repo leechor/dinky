@@ -19,7 +19,9 @@
 
 package com.zdpx.coder.operator.mysql;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.zdpx.coder.graph.InputPortObject;
@@ -42,14 +44,43 @@ public class MysqlSinkOperator extends MysqlTable {
     @Override
     protected void execute() {
         Map<String, Object> dataModel = getDataModel();
+
+        //任意数据源格式转换
+        dataModel.put("parameters",formatConversion(dataModel,"dataSink"));
+
+        //从config中获取输入
+        @SuppressWarnings("unchecked")
+        List<Map<String, List<Map<String,Object>>>> config = (List<Map<String, List<Map<String,Object>>>>) dataModel.get("config");
+        List<Map<String, Object>> input = new ArrayList<>();
+        for(Map<String, List<Map<String,Object>>> map:config){
+            for(Map.Entry<String, List<Map<String,Object>>> m2:map.entrySet()){
+                List<Map<String, Object>> value = m2.getValue();
+                for(Map<String, Object> l:value){
+                    if((boolean)l.get("flag")){
+                        input.add(l);
+                    }
+                }
+            }
+        }
+
+        //删除没有勾选的字段
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> output = (List<Map<String, Object>>) dataModel.get("columns");
+        for(Map<String, Object> s:output){
+            if(!(boolean)s.get("flag")){
+                output.remove(s);
+            }
+        }
+
+
         String sqlStr = TemplateUtils.format("sink", dataModel, MysqlTable.TEMPLATE);
 
         this.getSchemaUtil().getGenerateResult().generate(sqlStr);
 
         String sql =
-                "INSERT INTO ${tableName} (<#list tableInfo.columns as column>${column.name}<#sep>,</#sep></#list>) "
-                        + "SELECT <#list tableInfo.columns as column>${column.name}<#sep>, </#list> "
-                        + "FROM ${tableInfo.name}";
+                "INSERT INTO ${outPutTableName} (<#list tableInfo as column>${column.name}<#sep>,</#sep></#list>) "
+                        + "SELECT <#list tableInfo as column>${column.name}<#sep>, </#list> "
+                        + "FROM ${inPutTableName}";
 
         @SuppressWarnings("unchecked")
         TableInfo pseudoData =
@@ -60,8 +91,9 @@ public class MysqlSinkOperator extends MysqlTable {
         }
 
         Map<String, Object> data = new HashMap<>();
-        data.put("tableName", dataModel.get("tableName"));
-        data.put("tableInfo", pseudoData);
+        data.put("outPutTableName", dataModel.get("tableName"));
+        data.put("tableInfo", input);//pseudoData
+        data.put("inPutTableName", pseudoData.getName());
         String insertSqlStr = TemplateUtils.format("insert", data, sql);
         this.getSchemaUtil().getGenerateResult().generate(insertSqlStr);
     }

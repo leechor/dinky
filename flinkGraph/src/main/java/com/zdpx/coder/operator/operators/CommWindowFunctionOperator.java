@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 /**
  * 通过创建视图的形式进行开窗和窗口聚合
  * 支持开开窗方式：
- * tumble    ---> TUMBLE(TABLE data, DESCRIPTOR(timecol), size)
+ * TUMBLE    ---> TUMBLE(TABLE data, DESCRIPTOR(timecol), size)
  * HOP       ---> HOP(TABLE data, DESCRIPTOR(timecol), slide, size[, offset])
  * CUMULATE  ---> CUMULATE(TABLE data, DESCRIPTOR(timecol), step, size)
  *
@@ -45,7 +45,7 @@ public class CommWindowFunctionOperator extends Operator {
 
     public static final String TEMPLATE =
             String.format(
-                    "<#import \"%s\" as e>CREATE VIEW ${tableName} SELECT <@e.fieldsProcess fieldFunctions/> FROM ${inputTableName} " +
+                    "<#import \"%s\" as e>CREATE VIEW ${tableName} SELECT <@e.fieldsProcess columns/> FROM ${inputTableName} " +
                             "<#if where??>WHERE ${where}</#if> " +
                             "<#if window??> ${window.windowFunction} ( TABLE ${window.table} , DESCRIPTOR(${window.descriptor}), " +
                                 "<#if window.slide??>INTERVAL '${window.slide.timeSpan}' ${window.slide.timeUnit},</#if> " +

@@ -3,97 +3,153 @@
   "$id": "https://dzpx.com/detection",
   "title": "CepOperator Define",
   "description": "define the CepOperator parameter",
+  "minItems": 1,
   "type": "array",
-  "items": {
-    "properties": {
-      "partition": {
-        "type": "string",
-        "description": "field for partition"
-      },
-      "orderBy": {
-        "type": "string",
-        "description": "field for order"
-      },
-      "patterns": {
-        "type": "array",
-        "description": "define pattern variable and case",
-        "prefixItems": {
-          "type": "object",
+        "items": {
+          "required": [
+            "partition",
+            "orderBy",
+            "outPutMode",
+            "patterns",
+            "skipStrategy",
+            "measures",
+            "defines"
+          ],
           "properties": {
-            "variable": {
+            "partition": {
               "type": "string",
-              "description": "pattern variable name"
+              "minLength": 1,
+              "description": "field for partition"
+            },
+            "orderBy": {
+              "type": "string",
+              "minLength": 1,
+              "description": "field for order"
+            },
+            "outPutMode": {
+              "type":"string",
+              "enum":["ONE","ALL"],
+              "description": "specify ths output mode after successful matching"
+            },
+            "timeSpan":{
+              "type":"integer",
+              "description": "specify ths length of time"
+            },
+            "timeUnit":{
+              "type":"string",
+              "minLength": 1,
+              "enum":["SECOND","MINUTE","DAY","MONTH","YEAR"],
+              "description": "set time unit"
+            },
+"patterns": {
+    "type": "array",
+    "minItems": 1,
+    "title": "The patterns Schema",
+    "items": {
+        "type": "object",
+        "title": "patterns",
+        "description": "event matching rule",
+        "required": [
+            "variable",
+            "quantifier"
+        ],
+        "properties": {
+            "variable": {
+                "type": "string",
+                "minLength": 1,
+                "title": "The variable Schema"
             },
             "quantifier": {
-              "type": "string",
-              "description": "pattern variable\u0027s quantifier, * + ? {n} {n,} {n,m} {,m}"
+                "type": "string",
+                "minLength": 1,
+                "title": "The quantifier Schema",
+                "description": "pattern quantifier's quantifier, * + ? {n} {n,} {n,m} {,m}"
             }
-          }
         }
-      },
-      "skipStrategy": {
+    }
+},
+"skipStrategy": {
         "type": "object",
-        "description": "skip strategy",
+        "title": "skipStrategy",
+        "description": "jump rule after success",
+        "required": [
+            "strategy",
+            "variable"
+        ],
         "properties": {
-          "strategy": {
-            "type": "string",
-            "description": "strategy model"
-          },
-          "variable": {
-            "type": "string",
-            "description": "pattern variable"
-          }
+            "strategy": {
+                "type": "string",
+                "enum":["LAST_ROW","NEXT_ROW","LAST","FIRST"],
+                "title": "The strategy Schema"
+            },
+            "variable": {
+                "type": "string",
+                "minLength": 1,
+                "title": "The variable Schema"
+            }
         }
-      },
-      "measures": {
-        "type": "array",
-        "description": "define measure",
-        "prefixItems": {
-          "type": "object",
-          "properties": {
+},
+"measures": {
+    "type": "array",
+    "minItems": 1,
+    "title": "The measures Schema",
+    "items": {
+        "type": "object",
+        "title": "measures",
+        "description": "output field",
+        "required": [
+            "functionName",
+            "outName",
+            "parameters"
+        ],
+        "properties": {
             "functionName": {
-              "type": "string",
-              "description": "offsetMethod last n, first n"
+                "type": "string",
+                "minLength": 1,
+                "title": "The functionName Schema"
             },
             "outName": {
-              "type": "string",
-              "description": "the name after calculate pattern variable\u0027s field"
-            },
-            "delimiter": {
-              "type": "string",
-              "description": "function parameter delimiter, if cast, can set AS, if +-*/ and not functionName, as expression"
+                "type": "string",
+                "minLength": 1,
+                "title": "The outName Schema"
             },
             "parameters": {
-              "type": "array",
-              "prefixItems": {
-                "type": "string"
-              }
+                "type": "array",
+                "minItems": 1,
+                "title": "The parameters Schema",
+                "items": {
+                   "type": "string"
+                }
             }
-          }
         }
-      },
-      "defines": {
-        "type": "array",
-        "description": "define defines",
-        "prefixItems": {
-          "type": "object",
-          "properties": {
-            "variable": {
-              "type": "string",
-              "description": "define pattern variable"
-            },
-            "condition": {
-              "type": "string",
-              "description": "like sql where statement"
-            }
-          }
-        }
-      },
-      "required": [
-        "pattern",
-        "measures",
-        "defines"
-      ]
     }
-  }
+},
+            "defines": {
+                "type": "array",
+                "minItems": 1,
+                "title": "The defines Schema",
+                "items": {
+                    "type": "object",
+                    "title": "Schema",
+                    "description": "the specific meaning of the event",
+                    "required": [
+                        "variable",
+                        "condition"
+                    ],
+                    "properties": {
+                        "variable": {
+                            "type": "string",
+                            "minLength": 1,
+                            "title": "The variable Schema"
+                        },
+                        "condition": {
+                            "type": "string",
+                            "minLength": 1,
+                            "title": "The condition Schema"
+                        }
+                    }
+                }
+            }
+          }
+        }
 }

@@ -19,10 +19,10 @@ public class CustomerOperator extends Operator {
             "<#import \"%s\" as e>" +
             "<#list Table as item>${item.sql}" +
                     "<#if item.type??>" +
-                    "<#if item.type == \"inputTableName\">${item.columns}" +
-                    "<#elseif item.type == \"outPutTableName\">${item.columns}" +
-                    "<#elseif item.type == \"fieldName\"><#if item.needBrackets == \"true\">(</#if><@e.fieldsProcess item.fieldFunctions/><#if item.needBrackets == \"true\">)</#if>" +
-                    "<#elseif item.type == \"outPutFieldName\"><#if item.needBrackets == \"true\">(</#if><@e.fieldsProcess item.fieldFunctions/><#if item.needBrackets == \"true\">)</#if>" +
+                    "<#if item.type == \"inputTableName\">${item.column}" +
+                    "<#elseif item.type == \"outPutTableName\">${item.column}" +
+                    "<#elseif item.type == \"fieldName\"><#if item.needBrackets == \"true\">(</#if><@e.fieldsProcess item.columns/><#if item.needBrackets == \"true\">)</#if>" +
+                    "<#elseif item.type == \"outPutFieldName\"><#if item.needBrackets == \"true\">(</#if><@e.fieldsProcess item.columns/><#if item.needBrackets == \"true\">)</#if>" +
                     "</#if> " +
                     "</#if> " +
             "</#list>"
@@ -40,6 +40,7 @@ public class CustomerOperator extends Operator {
 
     @Override
     protected void initialize() {
+        registerInputObjectPort("input_0");
         outputPortObject = registerOutputObjectPort("output_0");
     }
 
@@ -124,6 +125,7 @@ public class CustomerOperator extends Operator {
                 Specifications.convertFieldFunctionToColumns(outPutFfs));
 
     }
+
 
 
 

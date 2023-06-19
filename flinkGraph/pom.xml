@@ -89,7 +89,7 @@ under the License.
     <dependencies>
         <dependency>
             <groupId>org.dinky</groupId>
-            <artifactId>dinky-flink-1.17</artifactId>
+            <artifactId>dinky-flink-1.16</artifactId>
             <scope>${scope.runtime}</scope>
         </dependency>
         <dependency>

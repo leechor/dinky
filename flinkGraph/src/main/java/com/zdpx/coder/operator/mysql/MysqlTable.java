@@ -33,7 +33,7 @@ import com.zdpx.coder.utils.TableDataStreamConverter;
 public abstract class MysqlTable extends Operator {
     public static final String TEMPLATE =
             "CREATE TABLE ${tableName} ("
-                    + "<#list columns as column>${column.name} ${column.type}<#sep>, "
+                    + "<#list columns as column>${column.name} ${column.type} <#sep>,"
                     + "</#list>) "
                     + "WITH ("
                     + "<#list parameters as key, value>"
@@ -41,11 +41,29 @@ public abstract class MysqlTable extends Operator {
                     + "</#list>)";
     protected TableInfo tableInfo;
 
+    //兼容任意类型的数据源
+    protected Map<String, Object> formatConversion(Map<String, Object> dataModel, String source){
+        @SuppressWarnings("unchecked")
+        Map<String, Object> defineList = (Map<String, Object>) dataModel.get("parameters");
+        @SuppressWarnings("unchecked")
+        Map<String, Object> dataSource = (Map<String, Object>) defineList.get(source);
+        if(dataSource.get("other")!=null){
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> other = (List<Map<String, Object>>) dataSource.get("other");
+            dataSource.clear();
+            for(Map<String, Object> m:other){
+                dataSource.put(m.get("key").toString(),m.get("values"));
+            }
+        }
+        return dataSource;
+    }
+
     protected Map<String, Object> getDataModel() {
         final String columns = "columns";
         String parameters = "parameters";
 
-        Map<String, Object> psFirst = getParameterLists().get(0);
+        List<Map<String, Object>> parameterLists = getParameterLists();
+        Map<String, Object> psFirst = parameterLists.get(0);
 
         Map<String, Object> result = new HashMap<>();
         result.put(parameters, new HashMap<String, Object>());
@@ -55,16 +73,18 @@ public abstract class MysqlTable extends Operator {
                 result.put(columns, m.getValue());
                 continue;
             }
-
             @SuppressWarnings("unchecked")
             HashMap<String, Object> ps = (HashMap<String, Object>) result.get(parameters);
             ps.put(m.getKey(), m.getValue());
+        }
+        if(parameterLists.size()>1){
+            result.putAll(parameterLists.get(1));
         }
         return result;
     }
 
     protected String generateTableName(String tableName) {
-        return tableName + "_" + this.getId().substring(this.getId().lastIndexOf('-') + 1);
+        return (tableName==null ? "":(tableName + "_")) + this.getId().substring(this.getId().lastIndexOf('-') + 1);
     }
 
     @Override

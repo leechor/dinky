@@ -2,7 +2,7 @@
     <@compress single_line=true>
         <#if fo.functionName??>${fo.functionName}(</#if>
         <#list fo.parameters as parameter>
-            <#if instanceOf(parameter, "org.zdpx.coder.operator.FieldFunction")>
+            <#if instanceOf(parameter, "com.zdpx.coder.operator.FieldFunction")>
                 <@fieldFunction parameter/>
             <#elseif parameter?is_number>
                 ${parameter?c}
@@ -19,7 +19,7 @@
     <@compress single_line=single>
         <#list fos as fo>
             <#assign x><@fieldFunction fo/></#assign>
-            <#if x?has_content> ${x} AS</#if> ${fo.outName}<#sep>,</#sep>
+            <#if x?has_content> ${x}</#if> <#if fo.name??> AS ${fo.name}</#if><#sep>,</#sep>
         </#list>
     </@compress>
 </#macro>
@@ -31,11 +31,11 @@
     <#if cep.partition??>PARTITION BY ${cep.partition} </#if>
     <#if cep.orderBy??>ORDER BY ${cep.orderBy} </#if>
     MEASURES
-    <@fieldsProcess cep.measures false/>
+    <@fieldsProcess cep.columns false/>
 
-    ONE ROW PER MATCH
+    <#if cep.outPutMode??>${cep.outPutMode} ROW PER MATCH</#if>
     AFTER MATCH SKIP ${cep.skipStrategy}
-    PATTERN (<#list cep.patterns as pattern>${pattern}<#sep> </#sep><#rt></#list>)
+    PATTERN (<#list cep.patterns as pattern>${pattern}<#sep> </#sep><#rt></#list>) <#if cep.timeSpan??>WITHIN INTERVAL '${cep.timeSpan}' ${cep.timeUnit}</#if>
     DEFINE
     <#list cep.defines as define>
         ${define}<#sep>,</#sep>
