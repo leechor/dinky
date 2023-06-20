@@ -19,6 +19,8 @@
 
 package com.zdpx.coder.operator;
 
+import org.apache.logging.log4j.util.Strings;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -145,16 +147,19 @@ public class FieldFunction {
     }
 
     public static String insertTableName(String primaryTableName, FieldFunction fo, String param) {
-        if ((param.startsWith("@")
-                || fo == null
-                || fo.getFunctionName() == null
-                || fo.getFunctionName().isEmpty())&&!primaryTableName.equals("")) {
-            if (param.startsWith("@")) {
-                param = param.substring(1);
-            }
-            param = primaryTableName + "." + param;
+        boolean notAt = !param.startsWith("@")
+                && fo != null
+                && Strings.isNotEmpty(fo.getFunctionName());
+
+        if (notAt || Strings.isBlank(primaryTableName)) {
+            return param;
         }
-        return param;
+
+        if (param.startsWith("@")) {
+            param = param.substring(1);
+        }
+
+        return primaryTableName + "." + param;
     }
 
     /**
