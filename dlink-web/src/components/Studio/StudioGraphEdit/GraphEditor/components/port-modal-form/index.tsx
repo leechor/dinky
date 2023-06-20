@@ -22,7 +22,6 @@ type PortModalProps = {
     onSubmit: (values: string) => void;
     modalVisible: boolean;
     values: ParametersData;
-    selectedNode: Node;
 };
 
 const PortModalForm: React.FC<PortModalProps> = (props) => {
@@ -46,9 +45,9 @@ const PortModalForm: React.FC<PortModalProps> = (props) => {
         onCancel: handleModalVisible,
         modalVisible,
         values,
-        selectedNode,
     } = props;
     const initValue = values?.parametersConfig.filter(value => value.flag).map(value => value.name)
+    const selectedNode=values.readConfigData?.currentCell
     debugger
     /**
      * when modalVisible or values changed, set form values
@@ -69,7 +68,7 @@ const PortModalForm: React.FC<PortModalProps> = (props) => {
      */
     const submitForm = async () => {
         const fieldsValue = await form.validateFields();
-        await handleSubmit({ origin: [...values.parametersConfig], ...fieldsValue, isOutputs: values.isOutputs, id: values.id });
+        await handleSubmit({ origin: [...values.parametersConfig], ...fieldsValue, isOutputs: values.isOutputs, readConfigData: values.readConfigData });
         await handleCancel();
     };
 
