@@ -113,7 +113,7 @@ public class FieldFunction {
      */
     static FieldFunction processFieldConfigure(String tableName, Map<String, Object> fos) {
         FieldFunction fo = new FieldFunction();
-        fo.setOutName((String) fos.get("outName"));
+        fo.setOutName((String) fos.get("name"));
         fo.setFunctionName((String) fos.get("functionName"));
         fo.setDelimiter((String) fos.get("delimiter"));
         @SuppressWarnings("unchecked")
@@ -145,10 +145,10 @@ public class FieldFunction {
     }
 
     public static String insertTableName(String primaryTableName, FieldFunction fo, String param) {
-        if (param.startsWith("@")
+        if ((param.startsWith("@")
                 || fo == null
                 || fo.getFunctionName() == null
-                || fo.getFunctionName().isEmpty()) {
+                || fo.getFunctionName().isEmpty())&&!primaryTableName.equals("")) {
             if (param.startsWith("@")) {
                 param = param.substring(1);
             }

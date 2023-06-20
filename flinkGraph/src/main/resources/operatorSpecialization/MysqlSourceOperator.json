@@ -1,31 +1,229 @@
 {
-  "title": "Person",
-  "definitions": {
-      "type": "object",
-      "properties": {
-        "fname": {
-          "title": "first name",
-          "type": "string"
-        },
-        "lname": {
-          "title": "last name",
-          " type": "string"
-        },
-        "bestFriend": {
-          "title": "best friend",
-          "oneOf": [
-            {
-              "title": "none",
-              "type": "null"
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "http://example.com/example.json",
+    "type": "array",
+    "title": "DataSourceOperator",
+	"minItems": 1,
+    "items": {
+        "type": "object",
+        "required": [
+			"dataSource"
+        ],
+        "properties": {
+
+"dataSource": {
+  "title": "data Source",
+  "type": "object",
+  "anyOf": [
+	{
+	  "title": "MySQL",
+	  "type": "object",
+	  "properties": {
+		"tableName": {
+			"type": "string",
+			"minLength": 1,
+			"title": "tableName",
+			"description": "mysql data source table name"
+		},
+		"connector": {
+			"type": "string",
+			"default": "jdbc",
+			"minLength": 1,
+			"title": "connector",
+			"enum":["jdbc"]
+		},
+		"url": {
+			"type": "string",
+			"minLength": 1,
+			"title": "jdbc-url",
+			"description": "eg: jdbc:mysql://127.0.0.1:3306",
+			"examples": [
+				"jdbc:mysql://127.0.0.1:3306"
+			]
+		},
+		"username": {
+			"type": "string",
+			"default": "root",
+			"minLength": 1,
+			"title": "username",
+			"examples": [
+				"root"
+			]
+		},
+		"password": {
+			"type": "string",
+			"default": "123456",
+			"minLength": 1,
+			"title": "password",
+			"examples": [
+				"123456"
+			]
+		}
+	  },
+	  "additionalProperties":false
+	},
+	{
+	  "title": "KafKa",
+	  "type": "object",
+	  "properties": {
+		"connector": {
+			"type": "string",
+			"default": "kafka",
+			"minLength": 1,
+			"title": "connector",
+			"enum":["kafka"]
+		},
+		"topic": {
+			"type": "string",
+			"minLength": 1,
+			"title": "topic",
+			"examples": [
+				"sensor"
+			]
+		},
+		"properties.bootstrip.servers": {
+			"type": "string",
+			"default": "hadoop102:9092",
+			"minLength": 1,
+			"title": "properties.bootstrip.servers",
+			"examples": [
+				"hadoop102:9092"
+			]
+		},
+		"format": {
+			"type": "string",
+			"default": "json",
+			"minLength": 1,
+			"title": "format",
+			"examples": [
+				"json"
+			]
+		}
+	  },
+	  "additionalProperties":false
+	},
+	{
+	  "title": "ES",
+	  "type": "object",
+	  "properties": {
+		"connector": {
+			"type": "string",
+			"default": "elasticsearch-7",
+			"title": "connector",
+			"enum":["elasticsearch-7"]
+		},
+		"hosts": {
+			"type": "string",
+			"minLength": 1,
+			"title": "hosts",
+			"default": "http://localhost:9200",
+			"examples": [
+				"http://localhost:9200"
+			]
+		},
+		"index": {
+			"type": "string",
+			"default": "users",
+			"minLength": 1,
+			"title": "index",
+			"examples": [
+				"users"
+			]
+		},
+		"sink.bulk-flush.max-actions": {
+			"type": "integer",
+			"default": 1,
+			"title": "sink.bulk-flush.max-actions",
+			"examples": [
+				1
+			]
+		}
+	  },
+	  "additionalProperties":false
+	},
+	{
+		"type": "object",
+		"title": "otherConnect",
+		"properties": {
+		   "other":{
+			 "title": "otherConnect",
+			  "type": "array",
+			  "minItems": 1,
+			  "items": {
+				"type": "object",
+				"title": "otherConfig",
+				"required": [
+					"key",
+					"values"
+				],
+				"properties": {
+					"key": {
+						"type": "string",
+						"minLength": 1,
+						"description": "custom field name    eg: hostName port ...",
+						"title": "key"
+					},
+					"values": {
+						"type": "string",
+						"minLength": 1,
+						"description": "custom field name   eg: 225.0.0.1  8000 ...",
+						"title": "values"
+					}
+				}
+			  }
+		   }
+		},
+		"additionalProperties":false
+	}
+  ]
+},
+            "columns": {
+                "type": "array",
+				"minItems": 1,
+                "title": "columns",
+                "items": {
+                    "type": "object",
+                    "title": "schema",
+                    "required": [
+                        "name",
+                        "type",
+						"flag"
+                    ],
+                    "properties": {
+                        "name": {
+                            "type": "string",
+							"minLength": 1,
+                            "title": "name",
+                            "examples": [
+                                "typ",
+                                "taskId",
+                                "taskStatus",
+                                "dt",
+                                "WATERMARK FOR dt AS dt - INTERVAL '15' SECOND",
+                                "PRIMARY KEY(taskId) NOT ENFORCED "
+                            ],
+							"description": "field name"
+                        },
+                        "type": {
+                            "type": "string",
+							"minLength": 1,
+                            "title": "type",
+                            "default": "STRING",
+                            "enum":["CHAR","VARCHAR","STRING","BOOLEAN","BINARY","VARBINARY","BYTES","DECIMAL","TINYINT","SMALLINT","INTEGER","BIGINT","FLOAT","DOUBLE","DATE","TIME","TIMESTAMP","TIMESTAMP_LTZ","INTERVAL","ARRAY","MULTISET","MAP","ROW","RAW"],
+                            "examples": [
+                                "STRING",
+                                "INT",
+                                "TIMESTAMP(3)"
+                            ]
+                        },
+						"flag":{
+							"type": "boolean",
+							"default": true,
+							"title": "checked ?"
+						}
+                    }
+                }
             }
-          ]
         }
-      },
-    "year": {
-      "type": "integer",
-      "pattern": "^[0-9]{4}$",
-      "minimum": 1900,
-      "maximum": 2100
     }
-  }
 }
