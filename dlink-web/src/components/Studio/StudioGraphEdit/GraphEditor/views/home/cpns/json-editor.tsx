@@ -50,13 +50,12 @@ const Editor = memo(() => {
       const container = jsonRef.current;
       container.innerHTML = '';
       if (!config.schema) return
-      debugger
+
       editor = new JSONEditor<any>(container, config);
       editor.on('ready', function () {
         dispatch(changeJsonEditor(editor))
         if (currentSelectNode instanceof Node) {
           if (currentSelectNode.getData()&&currentSelectNode.getData().parameters) {
-            debugger
             //解决bug 防止直接将config的值设置
             editor.setValue(currentSelectNode.getData().parameters)
           }
@@ -68,7 +67,6 @@ const Editor = memo(() => {
         //设置当前属性值
         dispatch(changeCurrentSelectNodeParamsData(editor.getValue()));
         if (currentSelectNode instanceof Node) {
-          debugger
           currentSelectNode.setData({ parameters: editor.getValue() },{overwrite:true});
           dispatch(changeCurrentSelectNode(currentSelectNode));
         }

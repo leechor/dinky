@@ -136,7 +136,6 @@ const LeftEditor = memo(() => {
           if (targetPortId === port) {
             //获取config
             let id = `${sourceCell!.id}&${sourcePortId} ${targetCell!.id}&${targetPortId}`
-            debugger
             //获取最新输出配置
             if (targetCell?.getData().config) {
               // //读取config
@@ -203,7 +202,6 @@ const LeftEditor = memo(() => {
         let configMap: Map<string, ParametersConfigType[]> = new Map();
         //转换为config设置到当前节点的node-data里
         if (sourceCell && sourcePortId && currentCell && currentPort) {
-          debugger
           let id = `${sourceCell.id}&${sourcePortId} ${currentCell.id}&${currentPort}`
           configMap.set(id, parametersConfig);
           let config = strMapToObj(configMap)
@@ -223,7 +221,6 @@ const LeftEditor = memo(() => {
 
 
   const handleSubmit = (value: CompareCheckProps) => {
-    debugger
     value.origin.forEach(item => {
       if (value.parameters.includes(item.name)) {
         item.flag = true;
@@ -251,9 +248,9 @@ const LeftEditor = memo(() => {
             let configMap: Map<string, ParametersConfigType[]> = new Map();
             let id = `${value.readConfigData.currentCell.id}&${sourcePortId} ${targetCell!.id}&${targetPortId}`
             console.log(id);
-            
-            
-            
+
+
+
             configMap.set(id, value.origin);
             let config = strMapToObj(configMap)
             targetCell!.setData({ config: [config] });
