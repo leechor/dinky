@@ -55,7 +55,10 @@ import { showEnv, showMetaStoreCatalogs } from '@/components/Studio/StudioEvent/
 import UploadModal from '@/components/Studio/StudioTree/components/UploadModal';
 import { l } from '@/utils/intl';
 import { CatalogueTableListItem } from '@/components/Studio/StudioTree/data';
-
+import {
+  useAppDispatch,
+} from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
+import { initFlowDataInfo } from "@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home"
 type StudioTreeProps = {
   rightClickMenu: StateType['rightClickMenu'];
   dispatch: any;
@@ -125,7 +128,7 @@ const StudioTree: React.FC<StudioTreeProps> = (props) => {
   const [autoExpandParent, setAutoExpandParent] = useState(true);
   const [cutId, setCutId] = useState<number | undefined>(undefined);
   const [exportTaskIds, setExportTaskIds] = useState<any[]>([]);
-
+  const graphDispatch = useAppDispatch();
   const getTreeData = async () => {
     const result = await getCatalogueTreeData();
     let data = result.datas;
@@ -183,6 +186,7 @@ const StudioTree: React.FC<StudioTreeProps> = (props) => {
     if (key == 'Open') {
       toOpen(rightClickNode);
     } else if (key == 'OpenGraph') {
+      
       toOpenGraph(rightClickNode);
     } else if (key == 'Submit') {
       toSubmit(rightClickNode);
@@ -298,7 +302,7 @@ const StudioTree: React.FC<StudioTreeProps> = (props) => {
   };
 
   const toOpenGraph = (node: TreeDataNode | undefined) => {
-    debugger;
+    ;
     if (!available) {
       return;
     }
@@ -319,6 +323,7 @@ const StudioTree: React.FC<StudioTreeProps> = (props) => {
 
     const result = getInfoById('/api/task', node.taskId);
     result.then((result) => {
+      
       let newTabs = tabs;
       let newPane: any = {
         title: node.name,
@@ -357,7 +362,7 @@ const StudioTree: React.FC<StudioTreeProps> = (props) => {
           type: 'Studio/saveTabs',
           payload: newTabs,
         });
-
+      graphDispatch && graphDispatch(initFlowDataInfo(result.datas.graphJson ? JSON.parse(result.datas.graphJson) : {}))
       showMetaStoreCatalogs(result.datas, dispatch);
     });
   };
@@ -658,6 +663,7 @@ const StudioTree: React.FC<StudioTreeProps> = (props) => {
 
   //选中节点时触发
   const onSelect = (selectedKeys: Key[], e: any) => {
+    
     if (e.node && e.node.isLeaf) {
       dispatch({
         type: 'Studio/saveCurrentPath',

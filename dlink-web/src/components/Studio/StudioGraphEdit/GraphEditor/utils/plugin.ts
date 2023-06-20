@@ -18,7 +18,7 @@ export const clipboard = (graph: Graph) => {
       movable: true,
       showNodeSelectionBox: true,
       pointerEvents: 'none',
-      showEdgeSelectionBox: true,
+      showEdgeSelectionBox: false,
     }),
   );
 

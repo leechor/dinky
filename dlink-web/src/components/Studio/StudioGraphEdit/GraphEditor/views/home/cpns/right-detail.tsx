@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import {  memo } from 'react';
 import Editor from './json-editor';
 import styles from './index.less';
 

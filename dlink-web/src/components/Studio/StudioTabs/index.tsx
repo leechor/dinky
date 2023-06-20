@@ -128,10 +128,7 @@ const EditorTabs = (props: any) => {
           style={{ width: '100%', height: '100%' }}
         >
           <StudioGraphEdit
-            current={pane.task}
-            height={height ? height : toolHeight - 32}
-            width={width}
-            language={getLanguage(current.task.dialect)}
+            
           ></StudioGraphEdit>
         </TabPane>
       );

@@ -127,27 +127,32 @@ export const initGraph = (
   //加载相关插件
   loadPlugin(graph);
 
-  function showPort(port: Element | SVGElement | null, show: boolean) {
+  function showPortOrLable(port: Element | SVGElement | null, show: boolean) {
     if (port instanceof SVGElement) {
       port.style.visibility = show ? 'visible' : 'hidden';
     }
   }
 
   // 控制连接桩显示/隐藏
-  const showPorts = (ports: NodeListOf<Element>, show: boolean) => {
-    ports.forEach((port) => {
-      showPort(port, show);
+  const showPortsOrLabels = (portsOrLabels: NodeListOf<Element>, show: boolean) => {
+    portsOrLabels.forEach((portOrLabel) => {
+      showPortOrLable(portOrLabel, show);
     });
   };
 
   function showAllPorts(show: boolean) {
     //显示连接桩
-    const ports = container.querySelectorAll('.x6-port-body');
-    showPorts(ports, show);
+    const ports = container.querySelectorAll(".x6-port-body");
+    const labels=container.querySelectorAll(".x6-port-label")
+    showPortsOrLabels(ports, show);
+    showPortsOrLabels(labels, show);
+    
   }
 
   graph.on('node:mouseenter', ({ cell }) => {
-    showAllPorts(true);
+    if(cell.isNode()&&cell.hasPorts()){
+      showAllPorts(true);
+    }
 
     //显示删除按钮
     cell.addTools([
@@ -163,7 +168,7 @@ export const initGraph = (
   });
 
   graph.on('node:mouseleave', ({ cell }) => {
-    showAllPorts(false);
+    // showAllPorts(false);
 
     //移除删除工具
     cell.removeTools();
@@ -177,24 +182,26 @@ export const initGraph = (
     edge.getTargetNode()?.setPortProp(edge.getTargetPortId()!, VISIBILITY_PATH, visibility);
   }
 
-  graph.on('edge:mouseenter', ({ e, view, edge, cell }) => {
-    edge.attr(LINE_STOKE_WIDTH, 4);
-    showEdgePorts(edge, true);
+  // graph.on('edge:mouseenter', ({ e, view, edge, cell }) => {
+  //   console.log("enter");
+    
+  //   edge.attr(LINE_STOKE_WIDTH, 4);
+  //   showEdgePorts(edge, true);
 
-    edge.addTools([
-      {
-        name: 'button-remove',
-        args: {
-          distance: view.path.length() / 2,
-        },
-      },
-    ]);
-  });
-  graph.on('edge:mouseleave', ({ e, view, edge, cell }) => {
-    edge.setAttrByPath(LINE_STOKE_WIDTH, 2);
-    showEdgePorts(edge, false);
-    edge.removeTools();
-  });
+  //   edge.addTools([
+  //     {
+  //       name: 'button-remove',
+  //       args: {
+  //         distance: view.path.length() / 2,
+  //       },
+  //     },
+  //   ]);
+  // });
+  // graph.on('edge:mouseleave', ({ e, view, edge, cell }) => {
+  //   edge.setAttrByPath(LINE_STOKE_WIDTH, 2);
+  //   showEdgePorts(edge, false);
+  //   edge.removeTools();
+  // });
 
   graph.on('node:selected', ({ node }) => {
     dispatch(changeCurrentSelectNode(node));
@@ -259,7 +266,7 @@ export const initGraph = (
   graph.on('cell:selected', (cell: Cell, options: Model.SetOptions) => {
     //节点被选中时隐藏连接桩
     const ports = container.querySelectorAll('.x6-port-body');
-    showPorts(ports, false);
+    showPortsOrLabels(ports, false);
   });
 
   graph.on('cell:added', ({ cell, index, options }) => {
@@ -286,6 +293,12 @@ export const initGraph = (
       },
     });
   });
+  // graph.on("node:port:mousedown",({node,port})=>{
+  //   console.log("port",node.getPort(port!));
+  //   node.setPortProp(port!,"attrs/circle",{
+  //     r:8,
+  //   })
+  // })
   dispatch(changeGraph(graph));
   return graph;
 };

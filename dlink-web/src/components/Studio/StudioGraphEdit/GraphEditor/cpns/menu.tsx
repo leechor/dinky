@@ -119,7 +119,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(
               e = new MouseEvent("click"),
               a = document.createElement("a");
 
-            a.download = "流程数据";
+            a.download = "算子流程数据.json";
             a.href = window.URL.createObjectURL(blob);
             a.dataset.downloadurl = ["text/json", a.download, a.href].join(":");
             a.dispatchEvent(e);
