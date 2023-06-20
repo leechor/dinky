@@ -42,12 +42,13 @@ public class JoinOperator extends Operator {
     public static final String TEMPLATE =
             String.format(
                     "<#import \"%s\" as e>CREATE VIEW ${tableName} AS "
-                            + "SELECT <@e.fieldsProcess fieldFunctions/> "
+                            + "SELECT <@e.fieldsProcess columns/> "
                             + "FROM ${inputTableName} "
                             + "${joinType?upper_case} JOIN ${anotherTableName} "
                             + "<#if systemTimeColumn??>FOR SYSTEM_TIME AS OF ${systemTimeColumn}</#if> "
+                            + "<#if onLeftColumn??>ON ${onLeftColumn} = ${onRightColumn}</#if>"
                             + "<#if where??>WHERE ${where}</#if> "
-                            + "<#if onLeftColumn??>ON ${onLeftColumn} = ${onRightColumn}</#if>",
+                            ,
                     Specifications.TEMPLATE_FILE);
 
     private InputPortObject<TableInfo> primaryInput;

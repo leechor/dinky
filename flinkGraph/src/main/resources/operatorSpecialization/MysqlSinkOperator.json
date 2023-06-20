@@ -2,21 +2,23 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "http://example.com/example.json",
     "type": "array",
-    "default": [],
-    "title": "Root Schema",
+    "title": "MySqlSinkOperator",
+	"minItems": 1,
     "items": {
         "type": "object",
-        "default": {},
-        "title": "A Schema",
+        "title": "Data sink configuration",
         "required": [
             "tableName",
             "connector",
+            "url",
+            "username",
+            "password",
             "columns"
         ],
         "properties": {
             "tableName": {
                 "type": "string",
-                "default": "",
+                "minLength": 4,
                 "title": "The tableName Schema",
                 "examples": [
                     "TS"
@@ -24,15 +26,43 @@
             },
             "connector": {
                 "type": "string",
-                "default": "",
+                "default": "source",
+				"minLength": 1,
                 "title": "The connector Schema",
+            "enum":["source"],
                 "examples": [
-                    "task"
+                    "source"
+                ]
+            },
+            "url": {
+                "type": "string",
+				"minLength": 1,
+                "title": "The MySQL jdbc source URL Schema",
+                "examples": [
+                    "jdbc:mysql://127.0.0.1:3306"
+                ]
+            },
+            "username": {
+                "type": "string",
+                "default": "root",
+				"minLength": 1,
+                "title": "The username Schema",
+                "examples": [
+                    "root"
+                ]
+            },
+            "password": {
+                "type": "string",
+                "default": "123456",
+				"minLength": 1,
+                "title": "The password Schema",
+                "examples": [
+                    "123456"
                 ]
             },
             "columns": {
                 "type": "array",
-                "default": [],
+				"minItems": 1,
                 "title": "The columns Schema",
                 "items": {
                     "type": "object",
@@ -44,6 +74,7 @@
                     "properties": {
                         "name": {
                             "type": "string",
+							"minLength": 1,
                             "title": "The name Schema",
                             "examples": [
                                 "typ",
@@ -56,12 +87,14 @@
                         },
                         "type": {
                             "type": "string",
+							"minLength": 1,
                             "title": "The type Schema",
+                            "default": "STRING",
+                            "enum":["CHAR","VARCHAR","STRING","BOOLEAN","BINARY","VARBINARY","BYTES","DECIMAL","TINYINT","SMALLINT","INTEGER","BIGINT","FLOAT","DOUBLE","DATE","TIME","TIMESTAMP","TIMESTAMP_LTZ","INTERVAL","ARRAY","MULTISET","MAP","ROW","RAW"],
                             "examples": [
                                 "STRING",
                                 "INT",
-                                "TIMESTAMP(3)",
-                                ""
+                                "TIMESTAMP(3)"
                             ]
                         }
                     },

@@ -20,6 +20,7 @@
 package com.zdpx.coder.operator.operators;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,11 +105,12 @@ public class CepOperator extends Operator {
     public static final String ORDER_BY = "orderBy";
     public static final String INPUT_TABLE_NAME = "inputTableName";
     public static final String OUTPUT_TABLE_NAME = "outputTableName";
-    public static final String MEASURES = "measures";
+    public static final String COLUMNS = "columns"; //保证输出名称的一致
     public static final String DEFINES = "defines";
     public static final String PATTERNS = "patterns";
     private static final String SKIP_STRATEGY = "skipStrategy";
     private static final String CEP = "CEP";
+    private static final String INPUT_COLUMN = "inputColumn";
 
     private static final String OUT_PUT_MODE = "outPutMode"; //输出规则
     private static final String TIME_SPAN = "timeSpan"; //时间跨度
@@ -148,6 +150,19 @@ public class CepOperator extends Operator {
 
         String orderBy = (String) parameters.get(ORDER_BY);//指定传入行的排序方式
 
+        List<String> inputColumn = new ArrayList<>();
+        @SuppressWarnings("unchecked")
+        List<Map<String, List<Map<String, Object>>>> input=(List<Map<String, List<Map<String, Object>>>>)parameters.get("config");
+        for(Map<String, List<Map<String, Object>>> i:input){
+            for(Map.Entry<String, List<Map<String, Object>>> map: i.entrySet() ){
+                for(Map<String, Object> j:map.getValue()){
+                    if((boolean)j.get("flag")){
+                        inputColumn.add(j.get("name").toString());
+                    }
+                }
+            }
+        }
+
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> defineList = (List<Map<String, Object>>) parameters.get(DEFINES);//定义模式的具体含义
         List<Define> defines =
@@ -167,7 +182,7 @@ public class CepOperator extends Operator {
         @SuppressWarnings("unchecked")
         List<FieldFunction> ffs =
                 FieldFunction.analyzeParameters(
-                        tableInfo.getName(), (List<Map<String, Object>>) parameters.get(MEASURES)); //根据匹配成功的输入事件构造输出事件
+                        tableInfo.getName(), (List<Map<String, Object>>) parameters.get(COLUMNS)); //根据匹配成功的输入事件构造输出事件
         String outputTableName = NameHelper.generateVariableName("CepOperator");
 
         //4 定义匹配成功后的输出方式  ONE ROW PER MATCH/ALL ROWS PER MATCH
@@ -185,7 +200,8 @@ public class CepOperator extends Operator {
         parameterMap.put(ORDER_BY, orderBy);
         parameterMap.put(OUT_PUT_MODE, outPutMode);
         parameterMap.put(SKIP_STRATEGY, skipStrategy);
-        parameterMap.put(MEASURES, ffs);
+        parameterMap.put(COLUMNS, ffs);
+        parameterMap.put(INPUT_COLUMN, inputColumn);
         parameterMap.put(TIME_SPAN, timeSpan);
         parameterMap.put(TIME_UNIT, timeUnit);
         parameterMap.put(

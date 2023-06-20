@@ -19,8 +19,10 @@
 
 package com.zdpx.service.impl;
 
+import org.dinky.data.model.Statement;
 import org.dinky.data.model.Task;
 import org.dinky.mybatis.service.impl.SuperServiceImpl;
+import org.dinky.service.StatementService;
 import org.dinky.service.TaskService;
 
 import java.util.HashMap;
@@ -50,9 +52,11 @@ public class TaskTaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScri
         implements TaskFlowGraphService {
 
     private final TaskService taskService;
+    private final StatementService statementService;
 
-    public TaskTaskFlowGraphServiceImpl(TaskService taskService) {
+    public TaskTaskFlowGraphServiceImpl(TaskService taskService,StatementService statementService) {
         this.taskService = taskService;
+        this.statementService=statementService;
     }
 
     @Override
@@ -83,6 +87,18 @@ public class TaskTaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScri
         String flowGraphScript = task.getStatement();
         String sql = convertToSql(flowGraphScript);
 
+        //保存json
+        Statement statement = new Statement();
+        statement.setId(task.getId());
+        statement.setGraphJson(task.getStatement());
+        Statement old = statementService.selectById(task.getId());
+        if(old!=null){
+            statement.setStatement(old.getStatement());
+            statementService.updateById(statement);
+        }else{
+            statement.setStatement("");
+            statementService.insert(statement);
+        }
         FlowGraph flowGraph = new FlowGraph();
         flowGraph.setTaskId(task.getId());
         flowGraph.setScript(flowGraphScript);

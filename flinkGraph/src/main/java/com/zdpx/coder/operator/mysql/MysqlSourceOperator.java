@@ -19,6 +19,8 @@
 
 package com.zdpx.coder.operator.mysql;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.zdpx.coder.graph.OutputPortObject;
@@ -40,7 +42,22 @@ public class MysqlSourceOperator extends MysqlTable {
     @Override
     protected void execute() {
 
-        String sqlStr = TemplateUtils.format("Source", getDataModel(), TEMPLATE);
+        Map<String, Object> dataModel = getDataModel();
+
+        //任意数据源格式转换
+        dataModel.put("parameters",formatConversion(dataModel,"dataSource"));
+
+        //删除没有勾选的字段
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> columns = (List<Map<String, Object>>) dataModel.get("columns");
+        for(Map<String, Object> s:columns){
+            if(!(boolean)s.get("flag")){
+                columns.remove(s);
+            }
+        }
+
+
+        String sqlStr = TemplateUtils.format("Source", dataModel, TEMPLATE);
         this.getSchemaUtil().getGenerateResult().generate(sqlStr);
 
         Map<String, Object> parameters = getParameterLists().get(0);

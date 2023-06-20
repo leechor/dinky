@@ -40,7 +40,7 @@ public class DuplicateOperator extends Operator {
         if (getOutputPorts().isEmpty() && this.nodeWrapper != null) {
             List<Map<String, Object>> outputInfo = Operator.getParameterLists(parameters);
 
-            for (Map<String, Object> oi : outputInfo) {
+            for (Map<String, Object> oi : outputInfo) {//此处过滤选中的节点
                 OutputPortObject<TableInfo> opi =
                         registerOutputObjectPort(oi.get("outputName").toString());
                 getOutputPorts().put(opi.getName(), opi);

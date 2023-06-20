@@ -8,6 +8,7 @@ import lombok.Data;
 @Data
 public abstract class NodeWrapper {
     private String parameters;
+    private String config;//
     private Node parent;
     private List<Node> children = new ArrayList<>();
 }

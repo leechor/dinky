@@ -43,4 +43,6 @@ public class Statement implements Serializable {
     private Integer tenantId;
 
     private String statement;
+
+    private String graphJson;
 }

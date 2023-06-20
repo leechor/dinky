@@ -64,7 +64,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public abstract class Operator extends Node implements Runnable {
-    public static final String FIELD_FUNCTIONS = "fieldFunctions";
+    public static final String FIELD_FUNCTIONS = "columns";//保证输出名称的一致性
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private Map<String, InputPort<? extends PseudoData<?>>> inputPorts = new HashMap<>();
@@ -193,7 +193,12 @@ public abstract class Operator extends Node implements Runnable {
     protected abstract boolean applies();
 
     protected Map<String, Object> getFirstParameterMap() {
-        return getParameterLists().get(0);
+        List<Map<String, Object>> parameterLists = getParameterLists();//增加config中的字段
+        Map<String, Object> map = new HashMap<>();
+        for(Map<String, Object> p:parameterLists){
+            map.putAll(p);
+        }
+        return map;
     }
 
     /** 逻辑执行函数 */
@@ -278,7 +283,13 @@ public abstract class Operator extends Node implements Runnable {
      * @return 非结构化参数信息
      */
     protected List<Map<String, Object>> getParameterLists() {
-        return getParameterLists(this.nodeWrapper.getParameters());
+        List<Map<String, Object>> parameterLists = getParameterLists(this.nodeWrapper.getParameters());
+        if(this.nodeWrapper.getConfig()!=null){
+            Map<String, Object> map = new HashMap<>();
+            map.put("config",getParameterLists(this.nodeWrapper.getConfig()));
+            parameterLists.add(map);
+        }
+        return parameterLists;
     }
 
     public String getParametersString() {

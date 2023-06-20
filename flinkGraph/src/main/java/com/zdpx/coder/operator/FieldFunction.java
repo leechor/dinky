@@ -166,9 +166,11 @@ public class FieldFunction {
     public static List<FieldFunction> analyzeParameters(
             String primaryTableName, List<Map<String, Object>> funcs) {
         List<FieldFunction> fieldFunctions = new ArrayList<>();
-        for (Map<String, Object> fos : funcs) {
-            FieldFunction fo = processFieldConfigure(primaryTableName, fos);
-            fieldFunctions.add(fo);
+        for (Map<String, Object> fos : funcs) {//此处处理未选中的节点
+            if((boolean)fos.get("flag")){
+                FieldFunction fo = processFieldConfigure(primaryTableName, fos);
+                fieldFunctions.add(fo);
+            }
         }
         return fieldFunctions;
     }

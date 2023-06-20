@@ -59,4 +59,9 @@ public class StatementServiceImpl extends SuperServiceImpl<StatementMapper, Stat
                 .flatMap(t -> Arrays.stream(WatchStatementExplainer.splitTableNames(t)))
                 .collect(Collectors.toList());
     }
+
+    public Statement selectById(int id){
+        return baseMapper.selectById(id);
+    }
+
 }
