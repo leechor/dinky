@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { Form, Modal } from 'antd';
-import { Node } from '@antv/x6';
 
 import { ParametersData } from '../../views/home/cpns/left-editor';
 import PortForm from "./port-form";
@@ -87,7 +86,6 @@ const PortModalForm: React.FC<PortModalProps> = (props) => {
                 <span style={{ paddingLeft: "5px" }}>{selectedNode.shape}</span>
             </>
         }
-
     }
     /**
      * render

@@ -17,7 +17,7 @@
  *
  */
 
-package com.zdpx.coder.operator.mysql;
+package com.zdpx.coder.operator.dataSource.mysql;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,13 +26,14 @@ import java.util.Map;
 
 import com.zdpx.coder.graph.InputPortObject;
 import com.zdpx.coder.operator.TableInfo;
+import com.zdpx.coder.operator.dataSource.AbstractSqlTable;
 import com.zdpx.coder.utils.TemplateUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
 /** */
 @Slf4j
-public class MysqlSinkOperator extends MysqlTable {
+public class MysqlSinkOperator extends AbstractSqlTable {
 
     public static final String INPUT_0 = "input_0";
 
@@ -73,7 +74,7 @@ public class MysqlSinkOperator extends MysqlTable {
         }
 
 
-        String sqlStr = TemplateUtils.format("sink", dataModel, MysqlTable.TEMPLATE);
+        String sqlStr = TemplateUtils.format("sink", dataModel, AbstractSqlTable.TEMPLATE);
 
         this.getSchemaUtil().getGenerateResult().generate(sqlStr);
 

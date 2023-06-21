@@ -17,7 +17,7 @@
  *
  */
 
-package com.zdpx.coder.operator.mysql;
+package com.zdpx.coder.operator.dataSource;
 
 import org.apache.commons.collections.CollectionUtils;
 
@@ -30,7 +30,7 @@ import com.zdpx.coder.operator.TableInfo;
 import com.zdpx.coder.utils.TableDataStreamConverter;
 
 /** */
-public abstract class MysqlTable extends Operator {
+public abstract class AbstractSqlTable extends Operator {
     public static final String TEMPLATE =
             "CREATE TABLE ${tableName} ("
                     + "<#list columns as column>${column.name} ${column.type} <#sep>,"
