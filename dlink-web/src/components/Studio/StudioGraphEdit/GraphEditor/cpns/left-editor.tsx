@@ -1,18 +1,18 @@
 import { memo, useEffect, useRef, useState } from "react";
-import { Graph, Node } from "@antv/x6";
+import { Graph, Node,Cell } from "@antv/x6";
 import { CloudSyncOutlined, FileOutlined } from "@ant-design/icons";
-import { handleInitPort } from "@/utils/ports-register";
-import { initGraph } from "@/utils/init-graph";
-import { stencilComponentsLoader } from "@/utils/stencil-components-loader";
-import { initStencil } from "@/utils/init-stencil";
-import { handleInitNodes } from "@/utils/node-by-data-loader";
-import registerShape from "@/utils/shape-register";
-import unRegisterShape from "@/utils/shape-unregister";
+import { handleInitPort } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/ports-register";
+import { initGraph } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/init-graph";
+import { stencilComponentsLoader } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/stencil-components-loader";
+import { initStencil } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/init-stencil";
+import { handleInitNodes } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/node-by-data-loader";
+import registerShape from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/shape-register";
+import unRegisterShape from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/shape-unregister";
 import { message } from "antd";
-import { useAppDispatch, useAppSelector } from "@/hooks/redux-hooks";
-import { putSqlJson } from "@/service/request/test";
+import { useAppDispatch, useAppSelector } from "@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks";
+import { putSqlJson } from "@/components/Studio/StudioGraphEdit/GraphEditor/service/request/test";
 import { CustomMenu } from "./menu";
-import { initMenu } from "@/utils/init-menu";
+import { initMenu } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/init-menu";
 
 const LeftEditor = memo(() => {
   const [selectedNodes, setSelectedNodes] = useState<Node[]>([]);
@@ -20,10 +20,14 @@ const LeftEditor = memo(() => {
     show: boolean;
     top: number;
     left: number;
+    cell:Cell|null
+    showMenuInfo:
   }>({
     show: false,
     top: 0,
     left: 0,
+    cell:null,
+    showMenuInfo:
   });
 
   const editorContentRef = useRef(null);
@@ -139,6 +143,8 @@ const LeftEditor = memo(() => {
                 top={showMenuInfo.top}
                 left={showMenuInfo.left}
                 graph={graphRef.current}
+                setShowMenuInfo={setShowMenuInfo}
+                showMenuInfo={showMenuInfo}
               />
             )}
           </div>

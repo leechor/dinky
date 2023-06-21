@@ -47,10 +47,6 @@ const PortModalForm: React.FC<PortModalProps> = (props) => {
     } = props;
     const initValue = values?.parametersConfig.filter(value => value.flag).map(value => value.name)
     const selectedNode=values.readConfigData?.currentCell
-<<<<<<< HEAD
-=======
-
->>>>>>> 49b61af94aadf23700d2ea20f602a353f15f759d
     /**
      * when modalVisible or values changed, set form values
      */

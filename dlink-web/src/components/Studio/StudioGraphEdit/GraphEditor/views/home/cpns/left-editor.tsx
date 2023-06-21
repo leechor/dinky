@@ -60,12 +60,12 @@ const LeftEditor = memo(() => {
     show: boolean;
     top: number;
     left: number;
-    type:string;
+    cell: Cell | null;
   }>({
     show: false,
     top: 0,
     left: 0,
-    type:"blank"
+    cell: null
   });
   const [modalVisible, handlemodalVisible] = useState(false)
   const [parametersConfig, setParametersConfig] = useState<ParametersData>({ isOutputs: true, parametersConfig: [], readConfigData: {} as ReadConfigData } as ParametersData)
@@ -114,7 +114,7 @@ const LeftEditor = memo(() => {
       }
       // 输出  由editor配置
       if (node.getPort(port)?.group === portType.outputs) {
-        const parametersConfig: ParametersConfigType[] = node.getData()?.parameters[0].columns;
+        const parametersConfig: ParametersConfigType[] = node.getData()?.parameters.columns;
         setParametersConfig({
           isOutputs: true,
           parametersConfig: [...parametersConfig],
@@ -141,10 +141,7 @@ const LeftEditor = memo(() => {
           if (targetPortId === port) {
             //获取config
             let id = `${sourceCell!.id}&${sourcePortId} ${targetCell!.id}&${targetPortId}`
-<<<<<<< HEAD
-            
-=======
->>>>>>> 49b61af94aadf23700d2ea20f602a353f15f759d
+
             //获取最新输出配置
             if (targetCell?.getData().config) {
               // //读取config
@@ -204,17 +201,14 @@ const LeftEditor = memo(() => {
         const sourceCell = edge.getSourceCell()
         //获取source的columns
         if (!sourceCell?.getData()) return
-        let parametersConfig: ParametersConfigType[] = sourceCell?.getData()?.parameters[0].columns;
+        let parametersConfig: ParametersConfigType[] = sourceCell?.getData()?.parameters.columns;
         //将输出数据筛选后设置给输入【flag为true】
         parametersConfig = parametersConfig.filter(item => item.flag)
         if (!parametersConfig) return
         let configMap: Map<string, ParametersConfigType[]> = new Map();
         //转换为config设置到当前节点的node-data里
         if (sourceCell && sourcePortId && currentCell && currentPort) {
-<<<<<<< HEAD
-          
-=======
->>>>>>> 49b61af94aadf23700d2ea20f602a353f15f759d
+
           let id = `${sourceCell.id}&${sourcePortId} ${currentCell.id}&${currentPort}`
           configMap.set(id, parametersConfig);
           let config = strMapToObj(configMap)
@@ -234,10 +228,7 @@ const LeftEditor = memo(() => {
 
 
   const handleSubmit = (value: CompareCheckProps) => {
-<<<<<<< HEAD
-    
-=======
->>>>>>> 49b61af94aadf23700d2ea20f602a353f15f759d
+
     value.origin.forEach(item => {
       if (value.parameters.includes(item.name)) {
         item.flag = true;
@@ -249,7 +240,7 @@ const LeftEditor = memo(() => {
       //判断是否连线
       const flag = isConnected(graphRef.current!, value.readConfigData.currentCell, value.readConfigData.currentPort, value.isOutputs)
       //同步选中节点信息   修改columns
-      value.readConfigData.currentCell.setData({ parameters: [{ columns: value.origin }] });
+      value.readConfigData.currentCell.setData({ parameters: { columns: value.origin } });
       //同步jsoneditor
       jsonEditor.setValue(value.readConfigData.currentCell.getData()?.parameters)
       if (flag) {
@@ -264,24 +255,17 @@ const LeftEditor = memo(() => {
             //修改target里config（目前直接覆盖，后面考虑对比保存）
             let configMap: Map<string, ParametersConfigType[]> = new Map();
             let id = `${value.readConfigData.currentCell.id}&${sourcePortId} ${targetCell!.id}&${targetPortId}`
-            
+
             console.log(id);
-<<<<<<< HEAD
-            console.log(value.origin,"value.origin");
-            let filterConfigMap=value.origin.filter(item=>item.flag)
-            console.log(filterConfigMap,"filterConfigMap");
-            
-            
-            
+            console.log(value.origin, "value.origin");
+            let filterConfigMap = value.origin.filter(item => item.flag)
+            console.log(filterConfigMap, "filterConfigMap");
+
+
+
             configMap.set(id, filterConfigMap);
-=======
-
-
-
-            configMap.set(id, value.origin);
->>>>>>> 49b61af94aadf23700d2ea20f602a353f15f759d
             let config = strMapToObj(configMap)
-            targetCell!.setData({ config: [config] },{overwrite:true});
+            targetCell!.setData({ config: [config] }, { overwrite: true });
           }
         }
       }
@@ -297,6 +281,10 @@ const LeftEditor = memo(() => {
 
     console.log(graphRef.current?.toJSON(), "confirm");
 
+  }
+
+  const handleShowMenu = (value: boolean) => {
+    setShowMenuInfo({ ...showMenuInfo, show: value })
   }
   useEffect(() => {
     if (editorContentRef.current) {
@@ -359,8 +347,9 @@ const LeftEditor = memo(() => {
                 <CustomMenu
                   top={showMenuInfo.top}
                   left={showMenuInfo.left}
-                  type={showMenuInfo.type}
+                  cell={showMenuInfo.cell}
                   graph={graphRef.current}
+                  handleShowMenu={handleShowMenu}
                 />
               )}
             </div>

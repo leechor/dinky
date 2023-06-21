@@ -1,23 +1,24 @@
-import { Graph } from "@antv/x6";
+import { Cell, Graph } from "@antv/x6";
 
-type DispatchMenuInfo = React.Dispatch<
+export type DispatchMenuInfo = React.Dispatch<
   React.SetStateAction<{
     show: boolean;
     top: number;
     left: number;
-    type:string;
+    cell:Cell|null
   }>
 >;
 
 export function initMenu(graph: Graph, isShowMenuInfo: DispatchMenuInfo) {
   //右键菜单点击node时
   graph.on("node:contextmenu", ({ cell, e }) => {
+    debugger
     const p = graph.clientToGraph(e.clientX, e.clientY);
     isShowMenuInfo({
       show: true,
       top: p.y,
       left: p.x,
-      type:cell.shape
+      cell,
     });
   });
 
@@ -28,7 +29,7 @@ export function initMenu(graph: Graph, isShowMenuInfo: DispatchMenuInfo) {
       show: true,
       top: p.y,
       left: p.x,
-      type:"blank"
+      cell:null,
     });
   });
 
@@ -37,7 +38,7 @@ export function initMenu(graph: Graph, isShowMenuInfo: DispatchMenuInfo) {
       show: false,
       top: 0,
       left: 0,
-      type:"blank"
+      cell:null
     });
   });
 }
