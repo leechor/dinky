@@ -19,15 +19,13 @@
 
 package com.zdpx.coder.graph;
 
+import io.debezium.util.Strings;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.flink.table.functions.UserDefinedFunction;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -142,16 +140,7 @@ public class Scene {
                         t -> {
                             Operator operator = InstantiationUtil.instantiate(t.getValue());
                             try {
-                                ObjectNode result =
-                                        (ObjectNode)
-                                                mapper.readTree(
-                                                        String.format(
-                                                                "{\"name\": \"%s\",%n"
-                                                                        + "\"group\":\"%s\",%n"
-                                                                        + "\"specification\": %s}",
-                                                                t.getKey(),
-                                                                operator.getGroup(),
-                                                                operator.getSpecification()));
+                                ObjectNode result =(ObjectNode) getOperationJsonNode(t, operator);
                                 JsonNode portsJsonNode = generateJsonPorts(operator);
                                 result.set("ports", portsJsonNode);
                                 return result;
@@ -161,6 +150,17 @@ public class Scene {
                             }
                         })
                 .collect(Collectors.toList());
+    }
+
+    private static JsonNode getOperationJsonNode(Map.Entry<String, Class<? extends Operator>> t, Operator operator) throws JsonProcessingException {
+        Map<String, Object> jsonMap = new HashMap<>();
+        String name = Strings.isNullOrEmpty(operator.getName()) ?  t.getKey() : operator.getName();
+        jsonMap.put("key", t.getKey());
+        jsonMap.put("name", name);
+        jsonMap.put("icon", operator.getIcon());
+        jsonMap.put("group", operator.getGroup());
+        jsonMap.put("specification", operator.getSpecification());
+        return mapper.convertValue(jsonMap, JsonNode.class);
     }
 
     private static JsonNode generateJsonPorts(Operator operator) {
