@@ -17,19 +17,19 @@
  *
  */
 
-package com.zdpx.coder.operator.mysql;
+package com.zdpx.coder.operator.dataSource.mysql;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.zdpx.coder.graph.OutputPortObject;
 import com.zdpx.coder.operator.TableInfo;
+import com.zdpx.coder.operator.dataSource.AbstractSqlTable;
 import com.zdpx.coder.utils.TableDataStreamConverter;
 import com.zdpx.coder.utils.TemplateUtils;
 
 /** */
-public class MysqlSourceOperator extends MysqlTable {
+public class MysqlSourceOperator extends AbstractSqlTable {
 
     private OutputPortObject<TableInfo> outputPortObject;
 

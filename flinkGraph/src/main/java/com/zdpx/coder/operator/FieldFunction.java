@@ -19,6 +19,8 @@
 
 package com.zdpx.coder.operator;
 
+import org.apache.logging.log4j.util.Strings;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -113,7 +115,7 @@ public class FieldFunction {
      */
     static FieldFunction processFieldConfigure(String tableName, Map<String, Object> fos) {
         FieldFunction fo = new FieldFunction();
-        fo.setOutName((String) fos.get("outName"));
+        fo.setOutName((String) fos.get("name"));
         fo.setFunctionName((String) fos.get("functionName"));
         fo.setDelimiter((String) fos.get("delimiter"));
         @SuppressWarnings("unchecked")
@@ -145,16 +147,19 @@ public class FieldFunction {
     }
 
     public static String insertTableName(String primaryTableName, FieldFunction fo, String param) {
-        if (param.startsWith("@")
-                || fo == null
-                || fo.getFunctionName() == null
-                || fo.getFunctionName().isEmpty()) {
-            if (param.startsWith("@")) {
-                param = param.substring(1);
-            }
-            param = primaryTableName + "." + param;
+        boolean notAt = !param.startsWith("@")
+                && fo != null
+                && Strings.isNotEmpty(fo.getFunctionName());
+
+        if (notAt || Strings.isBlank(primaryTableName)) {
+            return param;
         }
-        return param;
+
+        if (param.startsWith("@")) {
+            param = param.substring(1);
+        }
+
+        return primaryTableName + "." + param;
     }
 
     /**

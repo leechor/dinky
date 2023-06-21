@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://dzpx.com/detection",
-  "title": "CepOperator Define",
-  "description": "define the CepOperator parameter",
+  "title": "CepOperator",
+  "description": "CepOperator parameter",
   "minItems": 1,
   "type": "array",
         "items": {
@@ -12,7 +12,7 @@
             "outPutMode",
             "patterns",
             "skipStrategy",
-            "measures",
+            "columns",
             "defines"
           ],
           "properties": {
@@ -33,18 +33,19 @@
             },
             "timeSpan":{
               "type":"integer",
+			  "default":10,
+			  "minimum":0,
               "description": "specify ths length of time"
             },
             "timeUnit":{
               "type":"string",
-              "minLength": 1,
               "enum":["SECOND","MINUTE","DAY","MONTH","YEAR"],
               "description": "set time unit"
             },
 "patterns": {
     "type": "array",
     "minItems": 1,
-    "title": "The patterns Schema",
+    "title": "patterns",
     "items": {
         "type": "object",
         "title": "patterns",
@@ -57,12 +58,12 @@
             "variable": {
                 "type": "string",
                 "minLength": 1,
-                "title": "The variable Schema"
+                "title": "variable"
             },
             "quantifier": {
                 "type": "string",
                 "minLength": 1,
-                "title": "The quantifier Schema",
+                "title": "quantifier",
                 "description": "pattern quantifier's quantifier, * + ? {n} {n,} {n,m} {,m}"
             }
         }
@@ -80,54 +81,60 @@
             "strategy": {
                 "type": "string",
                 "enum":["LAST_ROW","NEXT_ROW","LAST","FIRST"],
-                "title": "The strategy Schema"
+                "title": "strategy"
             },
             "variable": {
                 "type": "string",
                 "minLength": 1,
-                "title": "The variable Schema"
+                "title": "variable"
             }
         }
 },
-"measures": {
+"columns": {
     "type": "array",
     "minItems": 1,
-    "title": "The measures Schema",
+    "title": "columns",
     "items": {
         "type": "object",
-        "title": "measures",
+        "title": "columns",
         "description": "output field",
         "required": [
             "functionName",
-            "outName",
-            "parameters"
+            "name",
+            "parameters",
+			"flag"
         ],
         "properties": {
             "functionName": {
                 "type": "string",
                 "minLength": 1,
-                "title": "The functionName Schema"
+                "title": "functionName"
             },
-            "outName": {
+            "name": {
                 "type": "string",
                 "minLength": 1,
-                "title": "The outName Schema"
+                "title": "outName"
             },
             "parameters": {
                 "type": "array",
                 "minItems": 1,
-                "title": "The parameters Schema",
+                "title": "parameters",
                 "items": {
                    "type": "string"
                 }
-            }
+            },
+			"flag":{
+				"type": "boolean",
+				"default": true,
+				"title": "checked ?"
+			}
         }
     }
 },
             "defines": {
                 "type": "array",
                 "minItems": 1,
-                "title": "The defines Schema",
+                "title": "defines",
                 "items": {
                     "type": "object",
                     "title": "Schema",
@@ -140,12 +147,12 @@
                         "variable": {
                             "type": "string",
                             "minLength": 1,
-                            "title": "The variable Schema"
+                            "title": "variable"
                         },
                         "condition": {
                             "type": "string",
                             "minLength": 1,
-                            "title": "The condition Schema"
+                            "title": "condition"
                         }
                     }
                 }

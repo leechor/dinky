@@ -36,14 +36,12 @@ const PortForm: React.FC<PortProFormProps> = (props) => {
 
     const { values, form ,initValue} = props;
     console.log(initValue,"initValue");
-    
+
 
     /**
      * construct role form
      * @constructor
      */
-   
-
     const renderRoleForm = () => {
         return <>
             <Form.Item name="parameters" initialValue={initValue}>

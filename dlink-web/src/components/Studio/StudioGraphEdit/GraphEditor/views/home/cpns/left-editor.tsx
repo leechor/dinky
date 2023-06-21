@@ -141,7 +141,10 @@ const LeftEditor = memo(() => {
           if (targetPortId === port) {
             //获取config
             let id = `${sourceCell!.id}&${sourcePortId} ${targetCell!.id}&${targetPortId}`
+<<<<<<< HEAD
             
+=======
+>>>>>>> 49b61af94aadf23700d2ea20f602a353f15f759d
             //获取最新输出配置
             if (targetCell?.getData().config) {
               // //读取config
@@ -208,7 +211,10 @@ const LeftEditor = memo(() => {
         let configMap: Map<string, ParametersConfigType[]> = new Map();
         //转换为config设置到当前节点的node-data里
         if (sourceCell && sourcePortId && currentCell && currentPort) {
+<<<<<<< HEAD
           
+=======
+>>>>>>> 49b61af94aadf23700d2ea20f602a353f15f759d
           let id = `${sourceCell.id}&${sourcePortId} ${currentCell.id}&${currentPort}`
           configMap.set(id, parametersConfig);
           let config = strMapToObj(configMap)
@@ -228,7 +234,10 @@ const LeftEditor = memo(() => {
 
 
   const handleSubmit = (value: CompareCheckProps) => {
+<<<<<<< HEAD
     
+=======
+>>>>>>> 49b61af94aadf23700d2ea20f602a353f15f759d
     value.origin.forEach(item => {
       if (value.parameters.includes(item.name)) {
         item.flag = true;
@@ -257,6 +266,7 @@ const LeftEditor = memo(() => {
             let id = `${value.readConfigData.currentCell.id}&${sourcePortId} ${targetCell!.id}&${targetPortId}`
             
             console.log(id);
+<<<<<<< HEAD
             console.log(value.origin,"value.origin");
             let filterConfigMap=value.origin.filter(item=>item.flag)
             console.log(filterConfigMap,"filterConfigMap");
@@ -264,6 +274,12 @@ const LeftEditor = memo(() => {
             
             
             configMap.set(id, filterConfigMap);
+=======
+
+
+
+            configMap.set(id, value.origin);
+>>>>>>> 49b61af94aadf23700d2ea20f602a353f15f759d
             let config = strMapToObj(configMap)
             targetCell!.setData({ config: [config] },{overwrite:true});
           }

@@ -19,6 +19,7 @@
 
 package com.zdpx.coder.operator.operators;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,7 @@ import com.zdpx.coder.utils.TemplateUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
-/** */
+/** config中选中的输入，对columns中的parameters产生影响，再通过columns中的outPutName指定输出，所以config和outPutName没有直接联系 */
 @Slf4j
 public class JoinOperator extends Operator {
     public static final String TEMPLATE =
@@ -54,6 +55,7 @@ public class JoinOperator extends Operator {
     private InputPortObject<TableInfo> primaryInput;
     private InputPortObject<TableInfo> secondInput;
     private OutputPortObject<TableInfo> outputPort;
+    public static final String COLUMNS = "columns"; //保证输出名称的一致
 
     @Override
     protected void initialize() {
@@ -80,21 +82,18 @@ public class JoinOperator extends Operator {
         }
 
         Map<String, Object> parameters = getFirstParameterMap();
-        String joinType = Operator.getNestValue(parameters, "/join/type").textValue();
-        String forSystemTime = Operator.getNestValue(parameters, "/systemTimeColumn").textValue();
-        String onLeftColumn = Operator.getNestValue(parameters, "/on/leftColumn").textValue();
-        String onRightColumn = Operator.getNestValue(parameters, "/on/rightColumn").textValue();
+        String joinType = (String) parameters.get("joinType");
+        String forSystemTime = (String) parameters.get("systemTimeColumn");
+        String onLeftColumn = (String) parameters.get("onLeftColumn");
+        String onRightColumn = (String) parameters.get("onRightColumn");
 
         String outputTableName = NameHelper.generateVariableName("JoinOperator");
         String primaryTableName = primaryInput.getOutputPseudoData().getName();
         String secondTableName = secondInput.getOutputPseudoData().getName();
-        List<FieldFunction> ffsPrimary =
-                Operator.getFieldFunctions(
-                        primaryTableName, Operator.getNestMapValue(parameters, "/primaryInput"));
-        List<FieldFunction> ffsSecond =
-                Operator.getFieldFunctions(
-                        secondTableName, Operator.getNestMapValue(parameters, "/secondInput"));
-        ffsPrimary.addAll(ffsSecond);
+
+        //根据config中的字段，确定columns中的字段属于哪张表
+        List<FieldFunction> ffsPrimary = outPutFieldFunction(parameters, primaryTableName, secondTableName);
+
 
         Map<String, Object> dataModel = new HashMap<>();
         dataModel.put("tableName", outputTableName);
@@ -120,4 +119,33 @@ public class JoinOperator extends Operator {
 
         OperatorUtil.postTableOutput(outputPort, outputTableName, cls);
     }
+
+    public List<FieldFunction> outPutFieldFunction (Map<String, Object> parameters,String primaryTableName,String secondTableName){
+
+        List<FieldFunction> ffsPrimary = new ArrayList<>();
+
+        List<Map<String, Object>> primaryInput = new ArrayList<>();
+        List<Map<String, Object>> secondInput = new ArrayList<>();
+
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> columns =(List<Map<String, Object>>) parameters.get(COLUMNS);
+        for(Map<String, Object> column:columns){
+            if((boolean)column.get("flag")){
+                switch (column.get("inputTable").toString()){
+                    case "primaryInput":
+                        primaryInput.add(column);
+                        break;
+                    case "secondInput":
+                        secondInput.add(column);
+                        break;
+                }
+            }
+        }
+        ffsPrimary.addAll(FieldFunction.analyzeParameters(primaryTableName,primaryInput));
+        ffsPrimary.addAll(FieldFunction.analyzeParameters(secondTableName,secondInput));
+
+        return ffsPrimary;
+
+    }
+
 }

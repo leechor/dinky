@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dzpx.com/detection",
+  "title": "JoinOperator Define",
+  "description": "define the JoinOperator parameter",
+  "minItems": 1,
+  "type": "array",
+	"items": {
+	  "required": [
+		"joinType",
+		"systemTimeColumn",
+		"onLeftColumn",
+		"onRightColumn",
+		"where",
+		"columns"
+	  ],
+	  "properties": {
+		"joinType": {
+		  "type": "string",
+		  "enum":["INNER","LEFT","RIGHT","FULL OUTER","LEFT OUTER","RIGHT OUTER","CROSS",""],
+		  "description": "field for joinType"
+		},
+		"systemTimeColumn": {
+		  "type": "string",
+		  "minLength": 1,
+		  "description": "field for systemTimeColumn"
+		},
+		"onLeftColumn": {
+		  "type":"string",
+		  "minLength": 1,
+		  "description": "field for onLeftColumn"
+		},
+		"onRightColumn":{
+		  "type":"string",
+		  "minLength": 1,
+		  "description": "field for onRightColumn"
+		},
+		"where":{
+		  "type":"string",
+		  "minLength": 1,
+		  "description": "field for where"
+		},
+		"columns": {
+			"type": "array",
+			"minItems": 1,
+			"title": "The columns Schema",
+			"items": {
+				"type": "object",
+				"title": "columns",
+				"description": "output field",
+				"required": [
+					"functionName",
+					"name",
+					"parameters"
+				],
+				"properties": {
+					"functionName": {
+						"type": "string",
+						"minLength": 1,
+						"title": "The functionName Schema"
+					},
+					"name": {
+						"type": "string",
+						"minLength": 1,
+						"title": "The outName Schema"
+					},
+					"parameters": {
+						"type": "array",
+						"minItems": 1,
+						"title": "The parameters Schema",
+						"items": {
+						   "type": "string"
+						}
+					},
+					"inputTable":{
+						"type": "string",
+						"enum":["primaryInput","secondInput"]
+					},
+					"flag":{
+						"type": "boolean",
+						"default": true,
+						"title": "checked ?"
+					}
+				}
+			}
+		}
+	  }
+	}
+}

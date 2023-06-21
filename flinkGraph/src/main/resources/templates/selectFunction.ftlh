@@ -19,7 +19,7 @@
     <@compress single_line=single>
         <#list fos as fo>
             <#assign x><@fieldFunction fo/></#assign>
-            <#if x?has_content> ${x}</#if> <#if fo.name??> AS ${fo.name}</#if><#sep>,</#sep>
+            <#if x?has_content> ${x}</#if> <#if fo.outName??> AS ${fo.outName}</#if><#sep>,</#sep>
         </#list>
     </@compress>
 </#macro>

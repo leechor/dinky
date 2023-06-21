@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { Form, Modal } from 'antd';
-import { Node } from '@antv/x6';
 
 import { ParametersData } from '../../views/home/cpns/left-editor';
 import PortForm from "./port-form";
@@ -48,6 +47,10 @@ const PortModalForm: React.FC<PortModalProps> = (props) => {
     } = props;
     const initValue = values?.parametersConfig.filter(value => value.flag).map(value => value.name)
     const selectedNode=values.readConfigData?.currentCell
+<<<<<<< HEAD
+=======
+
+>>>>>>> 49b61af94aadf23700d2ea20f602a353f15f759d
     /**
      * when modalVisible or values changed, set form values
      */
@@ -86,7 +89,6 @@ const PortModalForm: React.FC<PortModalProps> = (props) => {
                 <span style={{ paddingLeft: "5px" }}>{selectedNode.shape}</span>
             </>
         }
-
     }
     /**
      * render
