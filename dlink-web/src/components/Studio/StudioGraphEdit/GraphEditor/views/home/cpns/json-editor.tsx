@@ -42,7 +42,7 @@ const Editor = memo(() => {
     disable_array_reorder: true,
     //属性为object时,属性默认normal,设置grid可以一排多个
     object_layout: 'normal',
-    disable_array_delete: true,
+    disable_array_delete: false,
   };
 
   useEffect(() => {
@@ -50,13 +50,13 @@ const Editor = memo(() => {
       const container = jsonRef.current;
       container.innerHTML = '';
       if (!config.schema) return
-      debugger
+      
       editor = new JSONEditor<any>(container, config);
       editor.on('ready', function () {
         dispatch(changeJsonEditor(editor))
         if (currentSelectNode instanceof Node) {
           if (currentSelectNode.getData()&&currentSelectNode.getData().parameters) {
-            debugger
+            
             //解决bug 防止直接将config的值设置
             editor.setValue(currentSelectNode.getData().parameters)
           }
@@ -68,8 +68,12 @@ const Editor = memo(() => {
         //设置当前属性值
         dispatch(changeCurrentSelectNodeParamsData(editor.getValue()));
         if (currentSelectNode instanceof Node) {
-          debugger
-          currentSelectNode.setData({ parameters: editor.getValue() },{overwrite:true});
+          
+          let config=[]
+          if(currentSelectNode.getData()&&currentSelectNode.getData().config){
+            config=currentSelectNode.getData().config
+          }
+          currentSelectNode.setData({ parameters: editor.getValue(),config},{overwrite:true});
           dispatch(changeCurrentSelectNode(currentSelectNode));
         }
       });

@@ -5,12 +5,21 @@ type DispatchMenuInfo = React.Dispatch<
     show: boolean;
     top: number;
     left: number;
+    type:string;
   }>
 >;
 
 export function initMenu(graph: Graph, isShowMenuInfo: DispatchMenuInfo) {
   //右键菜单点击node时
-  graph.on("node:contextmenu", ({ cell, e }) => {});
+  graph.on("node:contextmenu", ({ cell, e }) => {
+    const p = graph.clientToGraph(e.clientX, e.clientY);
+    isShowMenuInfo({
+      show: true,
+      top: p.y,
+      left: p.x,
+      type:cell.shape
+    });
+  });
 
   //画图区域右键
   graph.on("blank:contextmenu", ({ e }) => {
@@ -19,6 +28,7 @@ export function initMenu(graph: Graph, isShowMenuInfo: DispatchMenuInfo) {
       show: true,
       top: p.y,
       left: p.x,
+      type:"blank"
     });
   });
 
@@ -27,6 +37,7 @@ export function initMenu(graph: Graph, isShowMenuInfo: DispatchMenuInfo) {
       show: false,
       top: 0,
       left: 0,
+      type:"blank"
     });
   });
 }

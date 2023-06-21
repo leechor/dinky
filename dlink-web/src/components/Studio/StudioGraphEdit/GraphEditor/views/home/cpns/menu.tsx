@@ -17,9 +17,10 @@ type MenuPropsType = {
   top: number;
   left: number;
   graph: Graph | undefined;
+  type: string,
 };
 
-export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph }) => {
+export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, type }) => {
   const MenuItem = Menu.Item;
   const SubMenu = Menu.SubMenu;
   const Divider = Menu.Divider;
@@ -125,8 +126,51 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph })
       }
     }
   };
-  const onMenuItemClick = () => {};
+  const onMenuItemClick = () => { };
+  const blankMenu = () => {
+    return (<> <MenuItem
+      onClick={onMenuItemClick}
+      name="undo"
+      icon={<UndoOutlined />}
+      hotkey="Cmd+Z"
+      text="Undo"
+    />
+      <MenuItem name="redo" icon={<RedoOutlined />} hotkey="Cmd+Shift+Z" text="Redo" />
+      <SubMenu text="Export" icon={<ExportOutlined />}>
+        <MenuItem name="save-PNG" text="Save As PNG" />
+        <MenuItem name="save-SVG" text="Save As SVG" />
+        <MenuItem name="save-JPEG" text="Save As JPEG" />
+        <MenuItem name="save-JSON" text="Save As JSON" />
+      </SubMenu>
+      <Divider />
+      <MenuItem icon={<ScissorOutlined />} name="cut" hotkey="Cmd+X" text="Cut" />
+      <MenuItem icon={<CopyOutlined />} name="copy" hotkey="Cmd+C" text="Copy" />
+      <MenuItem
+        name="paste"
+        icon={<SnippetsOutlined />}
+        hotkey="Cmd+V"
+        disabled={isDisablePaste}
+        text="Paste"
+      />
+      <MenuItem name="delete" icon={<DeleteOutlined />} hotkey="Delete" text="Delete" /></>)
+  }
+  const menuItem = () => {
+    switch (type) {
+      case "blank":
+        blankMenu()
+        break
+      case "DuplicateOperator":
+        DuplicateOperatorMenu();
+        break
+      default:
+        return <></>
 
+    }
+
+  }
+  const DuplicateOperatorMenu = () => {
+    return (<>  <MenuItem icon={<ScissorOutlined />} name="cut" hotkey="Cmd+X" text="添加节点" /></>)
+  }
   const styleObj: any = {
     position: 'absolute',
     top: `${top}px`, // 将top属性设置为state变量的值
@@ -139,31 +183,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph })
     <div style={styleObj}>
       {contextHolder}
       <Menu hasIcon={true} onClick={onMenuClick}>
-        <MenuItem
-          onClick={onMenuItemClick}
-          name="undo"
-          icon={<UndoOutlined />}
-          hotkey="Cmd+Z"
-          text="Undo"
-        />
-        <MenuItem name="redo" icon={<RedoOutlined />} hotkey="Cmd+Shift+Z" text="Redo" />
-        <SubMenu text="Export" icon={<ExportOutlined />}>
-          <MenuItem name="save-PNG" text="Save As PNG" />
-          <MenuItem name="save-SVG" text="Save As SVG" />
-          <MenuItem name="save-JPEG" text="Save As JPEG" />
-          <MenuItem name="save-JSON" text="Save As JSON" />
-        </SubMenu>
-        <Divider />
-        <MenuItem icon={<ScissorOutlined />} name="cut" hotkey="Cmd+X" text="Cut" />
-        <MenuItem icon={<CopyOutlined />} name="copy" hotkey="Cmd+C" text="Copy" />
-        <MenuItem
-          name="paste"
-          icon={<SnippetsOutlined />}
-          hotkey="Cmd+V"
-          disabled={isDisablePaste}
-          text="Paste"
-        />
-        <MenuItem name="delete" icon={<DeleteOutlined />} hotkey="Delete" text="Delete" />
+        {menuItem()}
       </Menu>
     </div>
   );

@@ -372,6 +372,8 @@ const StudioMenu = (props: any) => {
         })
         message.warning(errmsg+ "-检查算子节点信息")
       } else {
+        console.log("save", JSON.stringify(graph.toJSON()));
+        
         props.saveTask(current, JSON.stringify(graph.toJSON()));
       }
     }

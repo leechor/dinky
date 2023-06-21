@@ -16,6 +16,9 @@ import { initMenu } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/
 import PortModalForm from '@/components/Studio/StudioGraphEdit/GraphEditor/components/port-modal-form';
 import styles from './index.less';
 import { message } from 'antd';
+import {
+  changeCurrentSelectNode,
+} from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 
 export interface ParametersConfigType {
   name: string,
@@ -57,10 +60,12 @@ const LeftEditor = memo(() => {
     show: boolean;
     top: number;
     left: number;
+    type:string;
   }>({
     show: false,
     top: 0,
     left: 0,
+    type:"blank"
   });
   const [modalVisible, handlemodalVisible] = useState(false)
   const [parametersConfig, setParametersConfig] = useState<ParametersData>({ isOutputs: true, parametersConfig: [], readConfigData: {} as ReadConfigData } as ParametersData)
@@ -136,7 +141,7 @@ const LeftEditor = memo(() => {
           if (targetPortId === port) {
             //获取config
             let id = `${sourceCell!.id}&${sourcePortId} ${targetCell!.id}&${targetPortId}`
-            debugger
+            
             //获取最新输出配置
             if (targetCell?.getData().config) {
               // //读取config
@@ -203,7 +208,7 @@ const LeftEditor = memo(() => {
         let configMap: Map<string, ParametersConfigType[]> = new Map();
         //转换为config设置到当前节点的node-data里
         if (sourceCell && sourcePortId && currentCell && currentPort) {
-          debugger
+          
           let id = `${sourceCell.id}&${sourcePortId} ${currentCell.id}&${currentPort}`
           configMap.set(id, parametersConfig);
           let config = strMapToObj(configMap)
@@ -223,7 +228,7 @@ const LeftEditor = memo(() => {
 
 
   const handleSubmit = (value: CompareCheckProps) => {
-    debugger
+    
     value.origin.forEach(item => {
       if (value.parameters.includes(item.name)) {
         item.flag = true;
@@ -250,13 +255,17 @@ const LeftEditor = memo(() => {
             //修改target里config（目前直接覆盖，后面考虑对比保存）
             let configMap: Map<string, ParametersConfigType[]> = new Map();
             let id = `${value.readConfigData.currentCell.id}&${sourcePortId} ${targetCell!.id}&${targetPortId}`
+            
             console.log(id);
+            console.log(value.origin,"value.origin");
+            let filterConfigMap=value.origin.filter(item=>item.flag)
+            console.log(filterConfigMap,"filterConfigMap");
             
             
             
-            configMap.set(id, value.origin);
+            configMap.set(id, filterConfigMap);
             let config = strMapToObj(configMap)
-            targetCell!.setData({ config: [config] });
+            targetCell!.setData({ config: [config] },{overwrite:true});
           }
         }
       }
@@ -334,6 +343,7 @@ const LeftEditor = memo(() => {
                 <CustomMenu
                   top={showMenuInfo.top}
                   left={showMenuInfo.left}
+                  type={showMenuInfo.type}
                   graph={graphRef.current}
                 />
               )}
