@@ -113,16 +113,8 @@ export default (
     );
 
     //保存组和节点关系
-    switch (param.group.split('.')[0]) {
-      case LocalNodeType.MYSQL:
-        registerOperatorNode(param.name, ports, SqlNode, portItem);
-        break;
-      case LocalNodeType.OPERATORS:
-        registerOperatorNode(param.name, ports, OperatorNode, portItem);
-        break;
-      default:
-        break;
-    }
+    registerOperatorNode(param.name, ports, OperatorNode, portItem);
+
   });
   registerTextNode();
   Graph.registerNode('package', GroupNode);
