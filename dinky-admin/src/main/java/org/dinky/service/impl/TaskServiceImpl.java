@@ -33,7 +33,6 @@ import org.dinky.context.TenantContextHolder;
 import org.dinky.daemon.task.DaemonFactory;
 import org.dinky.daemon.task.DaemonTaskConfig;
 import org.dinky.data.constant.FlinkRestResultConstant;
-import org.dinky.data.constant.NetConstant;
 import org.dinky.data.dto.SqlDTO;
 import org.dinky.data.dto.TaskRollbackVersionDTO;
 import org.dinky.data.dto.TaskVersionConfigureDTO;
@@ -55,6 +54,8 @@ import org.dinky.data.model.Jar;
 import org.dinky.data.model.JobHistory;
 import org.dinky.data.model.JobInfoDetail;
 import org.dinky.data.model.JobInstance;
+import org.dinky.data.model.JobModelOverview;
+import org.dinky.data.model.JobTypeOverView;
 import org.dinky.data.model.RowPermissions;
 import org.dinky.data.model.Savepoints;
 import org.dinky.data.model.Statement;
@@ -116,8 +117,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -611,6 +610,16 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
 
         Gateway gateway = Gateway.build(gatewayConfig);
         return gateway.getJobStatusById(jobInfoDetail.getCluster().getName());
+    }
+
+    @Override
+    public List<JobTypeOverView> getTaskOnlineRate() {
+        return baseMapper.getTaskOnlineRate();
+    }
+
+    @Override
+    public JobModelOverview getJobStreamingOrBatchModelOverview() {
+        return baseMapper.getJobStreamingOrBatchModelOverview();
     }
 
     @Override
@@ -1164,15 +1173,7 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
 
     @Override
     public String getTaskAPIAddress() {
-        try {
-            InetAddress inetAddress = InetAddress.getLocalHost();
-            if (inetAddress != null) {
-                return inetAddress.getHostAddress() + NetConstant.COLON + serverPort;
-            }
-        } catch (UnknownHostException e) {
-            log.error(e.getMessage());
-        }
-        return "127.0.0.1:" + serverPort;
+        return SystemConfiguration.getInstances().getDinkyAddr().getValue();
     }
 
     @Override

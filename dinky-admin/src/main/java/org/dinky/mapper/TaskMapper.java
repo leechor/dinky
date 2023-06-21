@@ -19,6 +19,8 @@
 
 package org.dinky.mapper;
 
+import org.dinky.data.model.JobModelOverview;
+import org.dinky.data.model.JobTypeOverView;
 import org.dinky.data.model.Task;
 import org.dinky.mybatis.mapper.SuperMapper;
 
@@ -50,4 +52,8 @@ public interface TaskMapper extends SuperMapper<Task> {
 
     @InterceptorIgnore(tenantLine = "true")
     Integer getTenantByTaskId(@Param("id") Integer id);
+
+    List<JobTypeOverView> getTaskOnlineRate();
+
+    JobModelOverview getJobStreamingOrBatchModelOverview();
 }

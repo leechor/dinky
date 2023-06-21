@@ -51,6 +51,7 @@ export default {
   'menu.registration.fragment': 'Global Variable',
   'menu.registration.gitprojects': 'Git Project(Beta)',
   'menu.registration.udf': 'UDF Template',
+  'menu.registration.resource': 'Resource',
   'menu.auth': 'Auth Center',
   'menu.auth.user': 'User',
   'menu.auth.role': 'Role',
@@ -62,7 +63,7 @@ export default {
   'menu.settings.systemlog': 'System Log',
   'menu.settings.process': 'Process List',
   'menu.settings.services': 'Servers List',
-  'menu.metrics': 'Dashboard',
+  'menu.metrics': 'Metrics',
   'menu.about': 'About',
   'menu.version': 'Version: {version}',
 };

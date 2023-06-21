@@ -27,16 +27,25 @@ import {
     DatabaseIcon, GitIcon,
     GlobalVarIcon
 } from "@/components/Icons/HomeIcon";
-import {DatabaseTwoTone} from "@ant-design/icons";
 import {imgStyle} from "@/pages/Home/constants";
 import CountFormatter from "@/components/CountFormatter";
 import {l} from "@/utils/intl";
-
+import {queryDataByParams} from "@/services/BusinessCrud";
+import {API_CONSTANTS} from "@/services/constants";
+import {ResourceOverView} from "@/types/Home/data";
 
 
 const ResourceView = () => {
 
   const [responsive, setResponsive] = useState(false);
+
+  const [data, setData] = useState<ResourceOverView>();
+
+  useEffect(() => {
+      queryDataByParams(API_CONSTANTS.GET_RESOURCE_OVERVIEW).then((res) => {
+          setData(res);
+      });
+  }, [])
 
   return (
     <RcResizeObserver
@@ -49,7 +58,7 @@ const ResourceView = () => {
         <StatisticCard
           statistic={{
             title: l('home.develop.re.ci'),
-            value: 2176,
+            value: data?.flinkClusterCount || 0,
             icon:<ClusterInstanceIcon style={imgStyle}/>,
             formatter: (value)=> <CountFormatter value={Number(value)}/>
           }}
@@ -57,7 +66,7 @@ const ResourceView = () => {
         <StatisticCard
           statistic={{
             title: l('home.develop.re.cc'),
-            value: 475,
+            value: data?.flinkConfigCount || 0,
             icon: <ClusterConfigIcon style={imgStyle}/>,
             formatter: (value)=> <CountFormatter value={Number(value)}/>
           }}
@@ -67,7 +76,7 @@ const ResourceView = () => {
         <StatisticCard
           statistic={{
             title: l('home.develop.re.ds'),
-            value: 87,
+            value: data?.dbSourceCount || 0,
             icon: <DatabaseIcon style={imgStyle}/>,
               formatter: (value)=> <CountFormatter value={Number(value)}/>
           }}
@@ -75,7 +84,7 @@ const ResourceView = () => {
         <StatisticCard
           statistic={{
             title: l('home.develop.re.gv'),
-            value: 1754,
+            value: data?.globalVarCount || 0,
             icon: <GlobalVarIcon style={imgStyle}/>,
               formatter: (value)=> <CountFormatter value={Number(value)}/>
           }}
@@ -85,7 +94,7 @@ const ResourceView = () => {
         <StatisticCard
           statistic={{
             title: l('home.develop.re.ai'),
-            value: 87,
+            value: data?.alertInstanceCount || 0,
             icon: <AlertInstanceIcon style={imgStyle}/>,
               formatter: (value)=> <CountFormatter value={Number(value)}/>
           }}
@@ -93,7 +102,7 @@ const ResourceView = () => {
         <StatisticCard
           statistic={{
             title: l('home.develop.re.ag'),
-            value: 1754,
+            value: data?.alertGroupCount || 0,
             icon: <AlertGroupIcon style={imgStyle}/>,
               formatter: (value)=> <CountFormatter value={Number(value)}/>
           }}
@@ -103,7 +112,7 @@ const ResourceView = () => {
         <StatisticCard
             statistic={{
                 title: l('home.develop.re.git'),
-                value: 220,
+                value: data?.gitProjectCount || 0,
                 icon: <GitIcon style={imgStyle}/>,
                 formatter: (value)=> <CountFormatter value={Number(value)}/>
             }}

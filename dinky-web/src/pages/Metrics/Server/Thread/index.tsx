@@ -17,37 +17,42 @@
  *
  */
 
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Area, AreaConfig} from "@ant-design/plots";
+import {MetricsDataType} from "@/pages/Metrics/Server/data";
+import Heap from "@/pages/Metrics/Server/Heap";
+import {AreaOptions as G2plotConfig} from "@antv/g2plot/lib/plots/area/types";
+import {Datum} from "@antv/g2plot";
 
-const Thread = () => {
-    const [data, setData] = useState([]);
+type ThreadProps = {
+  data: MetricsDataType[];
+  chartConfig: G2plotConfig;
+}
+type Thread = {
+  time: Date;
+  value: string | number;
+  name: string
+}
+const Thread: React.FC<ThreadProps> = (props) => {
+  const {data, chartConfig} = props;
+  const dataList: Thread[] = data.map(x => {
+    return {time: x.heartTime, value: x.content.jvm.threadPeakCount, name: "Peak"};
+  })
+  const dataList2: Thread[] = data.map(x => {
+    return {time: x.heartTime, value: x.content.jvm.threadCount, name: "Count"};
+  })
+  const dataListAll = dataList.concat(dataList2);
 
-    useEffect(() => {
-        asyncFetch();
-    }, []);
 
-    const asyncFetch = () => {
-        fetch('https://gw.alipayobjects.com/os/bmw-prod/b21e7336-0b3e-486c-9070-612ede49284e.json')
-            .then((response) => response.json())
-            .then((json) => setData(json))
-            .catch((error) => {
-                console.log('fetch data failed', error);
-            });
-    };
-    const config: AreaConfig = {
-        data,
-        height: 200,
-        xField: 'date',
-        yField: 'value',
-        seriesField: 'country',
-        slider: {
-            start: 0.1,
-            end: 0.9,
-        },
-    };
+  const config: AreaConfig = {
+    ...chartConfig,
+    data: dataListAll,
+    seriesField: 'name',
+    isStack: false,
+    tooltip: {}
+  };
 
-    return <Area {...config} />;
+  return <Area {...config} />;
 }
 
 export default Thread;

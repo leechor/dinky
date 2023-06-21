@@ -17,44 +17,45 @@
  *
  */
 
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Area, AreaConfig} from "@ant-design/plots";
+import {MetricsDataType} from "@/pages/Metrics/Server/data";
+import {Datum} from "@antv/g2plot";
+import {AreaOptions as G2plotConfig} from "@antv/g2plot/lib/plots/area/types";
 
-const CPU = () => {
 
-  const [data, setData] = useState([]);
+type CpuProps = {
+    data: MetricsDataType[];
+  chartConfig: G2plotConfig;
+}
+type Cpu = {
+    time: Date;
+    value: string | number;
+}
+const CPU: React.FC<CpuProps> = (props) => {
 
-  useEffect(() => {
-    asyncFetch();
-  }, []);
+    const {data,chartConfig} = props;
 
-  const asyncFetch = () => {
-    fetch('https://gw.alipayobjects.com/os/bmw-prod/1d565782-dde4-4bb6-8946-ea6a38ccf184.json')
-        .then((response) => response.json())
-        .then((json) => setData(json))
-        .catch((error) => {
-          console.log('fetch data failed', error);
-        });
-  };
-  const config :AreaConfig = {
-    data,
-    height: 200,
-    xField: 'Date',
-    yField: 'scales',
-    xAxis: {
-      tickCount: 5,
-    },
-    animation: false,
-    slider: {
-      start: 0.1,
-      end: 0.9,
-      trendCfg: {
-        isArea: true,
-      },
-    },
-  };
+    const dataList: Cpu[] = data.map(x => {
+        return {time: x.heartTime, value: Number(x.content.jvm.cpuUsed.toFixed(2))};
+    })
 
-  return <Area {...config} />;
+
+    const config: AreaConfig = {
+      ...chartConfig,
+        data: dataList,
+        yAxis: {
+            min: 0,
+            max: 100
+        },
+        tooltip: {
+            formatter: (datum: Datum) => {
+                return {name: "Cpu Used", value: datum.value + ' %'};
+            },
+        }
+    };
+
+    return <Area {...config} />;
 }
 
 export default CPU;

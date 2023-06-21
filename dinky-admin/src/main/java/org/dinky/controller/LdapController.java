@@ -19,17 +19,24 @@
 
 package org.dinky.controller;
 
+import org.dinky.data.dto.LoginDTO;
+import org.dinky.data.dto.UserDTO;
 import org.dinky.data.enums.Status;
+import org.dinky.data.exception.AuthException;
 import org.dinky.data.model.SystemConfiguration;
 import org.dinky.data.model.User;
-import org.dinky.data.result.ProTableResult;
 import org.dinky.data.result.Result;
 import org.dinky.service.LdapService;
+import org.dinky.service.UserService;
 
 import java.util.List;
 
+import javax.naming.NamingException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -43,6 +50,8 @@ import lombok.extern.slf4j.Slf4j;
 public class LdapController {
 
     @Autowired LdapService ldapService;
+
+    @Autowired UserService userService;
 
     @GetMapping("/ldapEnableStatus")
     public Result<Boolean> ldapStatus() {
@@ -61,12 +70,46 @@ public class LdapController {
     }
 
     @GetMapping("/listUser")
-    public ProTableResult<User> listUser() {
+    public Result<List<User>> listUser() {
         List<User> users = ldapService.listUsers();
-        return ProTableResult.<User>builder()
-                .success(true)
-                .data(users)
-                .total((long) users.size())
-                .build();
+        List<User> localUsers = userService.list();
+
+        users.stream()
+                .filter(
+                        ldapUser ->
+                                localUsers.stream()
+                                        .anyMatch(
+                                                user ->
+                                                        user.getUsername()
+                                                                .equals(ldapUser.getUsername())))
+                .forEach(user -> user.setEnabled(false));
+
+        return Result.succeed(users);
+    }
+
+    @PostMapping("/importUsers")
+    public Result<Void> importUsers(@RequestBody List<User> users) {
+        boolean b = userService.saveBatch(users);
+        if (b) {
+            return Result.succeed();
+        }
+        return Result.failed();
+    }
+
+    /**
+     * ldap test login
+     *
+     * @param loginDTO basic information for user login
+     * @return {@link Result}{@link UserDTO} obtain the user's UserDTO
+     */
+    @PostMapping("/testLogin")
+    public Result<User> login(@RequestBody LoginDTO loginDTO) {
+        try {
+            return Result.succeed(ldapService.authenticate(loginDTO));
+        } catch (AuthException e) {
+            return Result.failed(e.getStatus());
+        } catch (NamingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

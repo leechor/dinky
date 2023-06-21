@@ -72,6 +72,7 @@ export default {
   'home.job.batch': '批作业',
   'home.job.stream': '流作业',
   'home.job.total': '作业数',
+  'home.job.onlineRate': '作业上线率',
   'home.job.type': '作业类型',
   'home.job.rate': '作业占比',
   'home.develop.re.ci': 'Flink 集群实例',
@@ -506,6 +507,12 @@ export default {
   'rc.template.create': '创建 UDF 模板',
   'rc.template.modify': '修改 UDF 模板',
 
+  // resource
+  'rc.resource.click': '点击左侧文件查看详情',
+  'rc.resource.noResource': '\t\t暂无资源\n请点击上方按钮上传文件夹/文件',
+  'rc.resource.upload': '上传文件夹/文件',
+
+
 
   //-------------------------------- setting center --------------------------------
   //setting
@@ -577,6 +584,12 @@ export default {
   'sys.ldap.settings.defaultTeant': 'LDAP导入默认租户编码',
   'sys.ldap.settings.defaultTeant.note': '开启自动导入用户后，新用户登录需要一个默认的租户编码，否则无法登录',
 
+  'sys.ldap.settings.testConnect': '测试连接',
+  'sys.ldap.settings.testConnect.success': '测试连接成功，获取到了{count}个用户',
+  'sys.ldap.settings.testLogin': '测试登录',
+  'sys.ldap.settings.loadUser': '导入用户',
+  'sys.ldap.settings.loadable': '是否可以导入',
+
 
   // process
   'sys.process.id': '进程ID',
@@ -596,5 +609,28 @@ export default {
 
   // system info of log
   'sys.info.logList.tips': '点击左侧日志文件查看',
+
+
+  // metrics
+  // server
+  'metrics.filter.60seconds': '60秒',
+  'metrics.filter.5minutes': '5分钟',
+  'metrics.filter.10minutes': '10分钟',
+  'metrics.filter.1hour': '1小时',
+  'metrics.filter.2hours': '2小时',
+  'metrics.filter.5hours': '5小时',
+  'metrics.filter.custom': '自定义',
+  'metrics.filter.custom.range': '日期时间范围',
+  // flink job
+  'metrics.flink.job.name': '任务名称',
+  'metrics.flink.job.placeholder': '请选择任务名称',
+  "metrics.flink.jobId": 'Flink 任务ID',
+  'metrics.flink.taskId': 'Dinky 任务ID',
+  'metrics.flink.subTask': '子任务',
+  'metrics.flink.subTask.placeholder': '请选择子任务名称',
+  'metrics.flink.metrics.name': '指标名称',
+  'metrics.flink.metrics.placeholder': '请选择指标名称(可多选)',
+
+
 
 };

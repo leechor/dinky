@@ -76,6 +76,7 @@ export default {
   'home.job.batch': 'Batch Job',
   'home.job.stream': 'Streaming Job',
   'home.job.total': 'Number of Jobs',
+  'home.job.onlineRate': 'Number of Jobs Online Rate',
   'home.job.type': 'Job Type',
   'home.job.rate': 'Proportion of Jobs',
   'home.develop.re.ci': 'Flink Cluster Instance',
@@ -506,6 +507,10 @@ export default {
   'rc.template.create': 'Create UDF Template',
   'rc.template.modify': 'Modify UDF Template',
 
+  // resource
+  'rc.resource.click': 'Click left file to view details',
+  'rc.resource.noResource': '\t\tNo resources\nPlease Click the button above to upload folders/files',
+  'rc.resource.upload': 'Upload Files/Folders',
 
   //-------------------------------- setting center --------------------------------
   //setting
@@ -575,6 +580,12 @@ export default {
   'sys.ldap.settings.defaultTeant': 'The LDAP imports the default tenant code',
   'sys.ldap.settings.defaultTeant.note': 'After opening the automatic import of users, the new user login needs a default tenant code, otherwise it cannot log in',
 
+  'sys.ldap.settings.testConnect': 'Test Connect',
+  'sys.ldap.settings.testConnect.success': 'Test Connect Successful, {count} users were obtained',
+  'sys.ldap.settings.testLogin': 'Test Login',
+  'sys.ldap.settings.loadUser': 'Load User',
+  'sys.ldap.settings.loadable': 'Whether it can be imported',
+
   // process
   'sys.process.id': 'Process ID',
   'sys.process.name': 'Process Name',
@@ -594,5 +605,26 @@ export default {
   // system info of log
   'sys.info.logList.tips': 'Click left log file to viewing',
 
+
+  // metrics
+  // server
+  'metrics.filter.60seconds': '60 Seconds',
+  'metrics.filter.5minutes': '5 Minutes',
+  'metrics.filter.10minutes': '10 Minutes',
+  'metrics.filter.1hour': '1 Hours',
+  'metrics.filter.2hours': '2 Hours',
+  'metrics.filter.5hours': '5 Hours',
+  'metrics.filter.custom': 'Custom',
+  'metrics.filter.custom.range': 'DateTime Range',
+
+  // flink job
+  'metrics.flink.job.name': 'Job Name',
+  'metrics.flink.job.placeholder': 'Please select a job name',
+  'metrics.flink.jobId': 'Flink Job ID',
+  'metrics.flink.taskId': 'Dinky Job ID',
+  'metrics.flink.subTask': 'SubTask',
+  'metrics.flink.subTask.placeholder': 'Please select a SubTask Name',
+  'metrics.flink.metrics.name': 'Metric Name',
+  'metrics.flink.metrics.placeholder': 'Please select the Metric Name (multiple choices)',
 
 };
