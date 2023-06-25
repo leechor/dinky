@@ -1,8 +1,9 @@
 import { Menu } from '@antv/x6-react-components';
 import { FC, memo, useState } from 'react';
 import { message } from 'antd';
-import { DataUri, Graph } from '@antv/x6';
+import { DataUri, Graph, Cell } from '@antv/x6';
 import '@antv/x6-react-components/es/menu/style/index.css';
+import AddModalPort from '@/components/Studio/StudioGraphEdit/GraphEditor/components/add-port-modal';
 import {
   CopyOutlined,
   SnippetsOutlined,
@@ -11,20 +12,24 @@ import {
   ScissorOutlined,
   DeleteOutlined,
   ExportOutlined,
+  EditOutlined
 } from '@ant-design/icons';
 
 type MenuPropsType = {
   top: number;
   left: number;
   graph: Graph | undefined;
+  cell: Cell | null,
+  handleShowMenu: (value: boolean) => void
 };
 
-export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph }) => {
+export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, cell, handleShowMenu }) => {
   const MenuItem = Menu.Item;
   const SubMenu = Menu.SubMenu;
   const Divider = Menu.Divider;
   const [messageApi, contextHolder] = message.useMessage();
   const [isDisablePaste, setIsDisablePaste] = useState(true);
+  const [modalVisible, handlemodalVisible] = useState(false)
 
   const copy = () => {
     const cells = graph!.getSelectedCells();
@@ -120,13 +125,68 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph })
 
           // graph.fromJSON({cells:[graph.toJSON().cells[0],graph.toJSON().cells[1]]})
           break;
+        case 'add-port':
+          debugger
+
+          // handleShowMenu(false)
+
+          handlemodalVisible(true)
+
+
+          break
+
         default:
           break;
       }
     }
   };
-  const onMenuItemClick = () => {};
+  const onMenuItemClick = () => { };
+  const blankMenu = () => {
+    return (<Menu hasIcon={true} onClick={onMenuClick}>
+      <MenuItem
+        onClick={onMenuItemClick}
+        name="undo"
+        icon={<UndoOutlined />}
+        hotkey="Cmd+Z"
+        text="Undo"
+      />
+      <MenuItem name="redo" icon={<RedoOutlined />} hotkey="Cmd+Shift+Z" text="Redo" />
+      <SubMenu text="Export" icon={<ExportOutlined />}>
+        <MenuItem name="save-PNG" text="Save As PNG" />
+        <MenuItem name="save-SVG" text="Save As SVG" />
+        <MenuItem name="save-JPEG" text="Save As JPEG" />
+        <MenuItem name="save-JSON" text="Save As JSON" />
+      </SubMenu>
+      <Divider />
+      <MenuItem icon={<ScissorOutlined />} name="cut" hotkey="Cmd+X" text="Cut" />
+      <MenuItem icon={<CopyOutlined />} name="copy" hotkey="Cmd+C" text="Copy" />
+      <MenuItem
+        name="paste"
+        icon={<SnippetsOutlined />}
+        hotkey="Cmd+V"
+        disabled={isDisablePaste}
+        text="Paste"
+      />
+      <MenuItem name="delete" icon={<DeleteOutlined />} hotkey="Delete" text="Delete" />
+    </Menu>)
+  }
+  const menuItem = () => {
+    if (!cell) {
+      return blankMenu()
+    } else if (cell.shape == "DuplicateOperator") {
+      return DuplicateOperatorMenu();
+    } else {
+      return <></>
+    }
 
+
+
+  }
+  const DuplicateOperatorMenu = () => {
+    return <Menu hasIcon={true} onClick={onMenuClick}>
+      <MenuItem icon={<EditOutlined />} name="add-port" text="添加输出桩" />
+    </Menu>
+  }
   const styleObj: any = {
     position: 'absolute',
     top: `${top}px`, // 将top属性设置为state变量的值
@@ -135,36 +195,22 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph })
     height: '105px',
     zIndex: 9999,
   };
+  const handleSubmit = (value:any) => { 
+
+  }
+  const handleCancel = () => {
+    handlemodalVisible(false);
+    handleShowMenu(false)
+    
+   }
   return (
     <div style={styleObj}>
       {contextHolder}
-      <Menu hasIcon={true} onClick={onMenuClick}>
-        <MenuItem
-          onClick={onMenuItemClick}
-          name="undo"
-          icon={<UndoOutlined />}
-          hotkey="Cmd+Z"
-          text="Undo"
-        />
-        <MenuItem name="redo" icon={<RedoOutlined />} hotkey="Cmd+Shift+Z" text="Redo" />
-        <SubMenu text="Export" icon={<ExportOutlined />}>
-          <MenuItem name="save-PNG" text="Save As PNG" />
-          <MenuItem name="save-SVG" text="Save As SVG" />
-          <MenuItem name="save-JPEG" text="Save As JPEG" />
-          <MenuItem name="save-JSON" text="Save As JSON" />
-        </SubMenu>
-        <Divider />
-        <MenuItem icon={<ScissorOutlined />} name="cut" hotkey="Cmd+X" text="Cut" />
-        <MenuItem icon={<CopyOutlined />} name="copy" hotkey="Cmd+C" text="Copy" />
-        <MenuItem
-          name="paste"
-          icon={<SnippetsOutlined />}
-          hotkey="Cmd+V"
-          disabled={isDisablePaste}
-          text="Paste"
-        />
-        <MenuItem name="delete" icon={<DeleteOutlined />} hotkey="Delete" text="Delete" />
-      </Menu>
+      {menuItem()}
+      {cell && <AddModalPort onSubmit={(value: any) => handleSubmit(value)}
+        onCancel={() => handleCancel()}
+        modalVisible={modalVisible}
+        values={cell} />}
     </div>
   );
 });

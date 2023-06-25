@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class Node implements Identifier {
     protected String id;
     protected String name;
+    private String icon;
+
     protected Parameters parameters = new Parameters();
     protected NodeWrapper nodeWrapper;
 
@@ -28,6 +30,14 @@ public abstract class Node implements Identifier {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
     public NodeWrapper getNodeWrapper() {

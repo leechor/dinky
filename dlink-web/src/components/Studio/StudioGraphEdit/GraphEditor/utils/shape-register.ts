@@ -1,19 +1,12 @@
-import { handleInitNodes } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/node-by-data-loader';
 import { Graph, Node } from '@antv/x6';
 import { register } from '@antv/x6-react-shape';
 import TextNode from '@/components/Studio/StudioGraphEdit/GraphEditor/components/text-node';
 import OperatorNode from '@/components/Studio/StudioGraphEdit/GraphEditor/components/operator-node';
-import SqlNode from '@/components/Studio/StudioGraphEdit/GraphEditor/components/sql-node';
 import { Parameter } from '@/components/Studio/StudioGraphEdit/GraphEditor/ts-define/parameter';
 import { PortManager } from '@antv/x6/es/model/port';
 import React from 'react';
 import { GroupNode } from '@/components/Studio/StudioGraphEdit/GraphEditor/components/group-node';
 import unRegisterShape from "./shape-unregister"
-
-enum LocalNodeType {
-  MYSQL = 'mysql',
-  OPERATORS = 'operators',
-}
 
 function registerTextNode() {
   //注册文本节点
@@ -40,6 +33,7 @@ function registerOperatorNode(
   }>,
   portItem: PortManager.PortMetadata[],
 ) {
+
   register({
     width: 80,
     height: 50,
@@ -113,16 +107,8 @@ export default (
     );
 
     //保存组和节点关系
-    switch (param.group.split('.')[0]) {
-      case LocalNodeType.MYSQL:
-        registerOperatorNode(param.name, ports, SqlNode, portItem);
-        break;
-      case LocalNodeType.OPERATORS:
-        registerOperatorNode(param.name, ports, OperatorNode, portItem);
-        break;
-      default:
-        break;
-    }
+    registerOperatorNode(param.name, ports, OperatorNode(param.icon), portItem);
+
   });
   registerTextNode();
   Graph.registerNode('package', GroupNode);
