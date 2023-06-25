@@ -38,6 +38,7 @@ public class MysqlSourceOperator extends AbstractSqlTable {
         outputPortObject = new OutputPortObject<>(this, "output_0");
         getOutputPorts().put("output_0", outputPortObject);
         setIcon("icon-MySQL-icon-02");
+        setName("Mysql数据源");
     }
 
     @Override

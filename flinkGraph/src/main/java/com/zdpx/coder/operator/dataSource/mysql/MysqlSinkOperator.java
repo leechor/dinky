@@ -40,6 +40,7 @@ public class MysqlSinkOperator extends AbstractSqlTable {
     @Override
     protected void initialize() {
         getInputPorts().put(INPUT_0, new InputPortObject<>(this, INPUT_0));
+        setName("MysqlSink");
     }
 
     @Override
@@ -67,11 +68,7 @@ public class MysqlSinkOperator extends AbstractSqlTable {
         //删除没有勾选的字段
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> output = (List<Map<String, Object>>) dataModel.get("columns");
-        for(Map<String, Object> s:output){
-            if(!(boolean)s.get("flag")){
-                output.remove(s);
-            }
-        }
+        output.removeIf(s -> !(boolean) s.get("flag"));
 
 
         String sqlStr = TemplateUtils.format("sink", dataModel, AbstractSqlTable.TEMPLATE);
