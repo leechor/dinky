@@ -37,6 +37,7 @@ public class MysqlSourceOperator extends AbstractSqlTable {
     protected void initialize() {
         outputPortObject = new OutputPortObject<>(this, "output_0");
         getOutputPorts().put("output_0", outputPortObject);
+        setIcon("icon-MySQL-icon-02");
     }
 
     @Override
@@ -50,11 +51,7 @@ public class MysqlSourceOperator extends AbstractSqlTable {
         //删除没有勾选的字段
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> columns = (List<Map<String, Object>>) dataModel.get("columns");
-        for(Map<String, Object> s:columns){
-            if(!(boolean)s.get("flag")){
-                columns.remove(s);
-            }
-        }
+        columns.removeIf(s -> !(boolean) s.get("flag"));
 
 
         String sqlStr = TemplateUtils.format("Source", dataModel, TEMPLATE);
