@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CustomerSinkOperator extends AbstractSqlTable {
 
-    private static final String ES_SINK = "esSink";
+    private static final String CUSTOMER_SINK = "customerSink";
 
     @Override
     protected void initialize() {
@@ -18,6 +18,6 @@ public class CustomerSinkOperator extends AbstractSqlTable {
 
     @Override
     protected void execute() {
-        processLogic(ES_SINK,true,null);
+        processLogic(CUSTOMER_SINK,true,null);
     }
 }

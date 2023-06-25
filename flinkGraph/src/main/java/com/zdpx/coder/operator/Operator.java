@@ -23,12 +23,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.flink.table.functions.UserDefinedFunction;
 
 import java.security.InvalidParameterException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -97,16 +92,21 @@ public abstract class Operator extends Node implements Runnable {
         return reflections.getSubTypesOf(Operator.class);
     }
 
+    //处理两种类型的数据，数据源类型为对象，其他算子为数组
     protected static List<Map<String, Object>> getParameterLists(@Nullable String parametersStr) {
-        List<Map<String, Object>> parametersLocal = Collections.emptyList();
+        List<Map<String, Object>> parametersLocal = new ArrayList<>();
+
         if (Strings.isNullOrEmpty(parametersStr)) {
             return parametersLocal;
         }
-
         try {
-            parametersLocal =
-                    objectMapper.readValue(
-                            parametersStr, new TypeReference<List<Map<String, Object>>>() {});
+            if(!parametersStr.subSequence(0,1).equals("[")){
+                parametersLocal.add(objectMapper.readValue(parametersStr, new TypeReference<Map<String, Object>>() {}));
+
+            }else{
+                parametersLocal=objectMapper.readValue(parametersStr, new TypeReference<List<Map<String, Object>>>() {});
+            }
+
         } catch (JsonProcessingException e) {
             log.error(e.toString());
         }

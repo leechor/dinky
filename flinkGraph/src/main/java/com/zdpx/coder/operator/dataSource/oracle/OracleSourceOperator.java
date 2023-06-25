@@ -28,7 +28,7 @@ public class OracleSourceOperator extends AbstractSqlTable {
 
     private OutputPortObject<TableInfo> outputPortObject;
 
-    private static final String MYSQL_SOURCE = "MysqlSource";
+    private static final String ORACLE_SOURCE = "OracleSource";
 
     @Override
     protected void initialize() {
@@ -38,6 +38,6 @@ public class OracleSourceOperator extends AbstractSqlTable {
 
     @Override
     protected void execute() {
-        processLogic(MYSQL_SOURCE,false,outputPortObject);
+        processLogic(ORACLE_SOURCE,false,outputPortObject);
     }
 }

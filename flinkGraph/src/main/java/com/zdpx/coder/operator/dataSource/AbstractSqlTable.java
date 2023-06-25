@@ -19,8 +19,12 @@
 
 package com.zdpx.coder.operator.dataSource;
 
+import com.zdpx.coder.graph.InputPortObject;
+import com.zdpx.coder.graph.OutputPortObject;
+import com.zdpx.coder.utils.TemplateUtils;
 import org.apache.commons.collections.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,26 +43,109 @@ public abstract class AbstractSqlTable extends Operator {
                     + "<#list parameters as key, value>"
                     + "'${(key == \"tableName\")?then(\"table-name\", key)}' = '${value}'<#sep>, "
                     + "</#list>)";
+
+
+    public static final String INPUT_SQL =
+            "INSERT INTO ${outPutTableName} (<#list columns as column>${column.name}<#sep>,</#sep></#list>) "
+                    + "SELECT <#list tableInfo as column>${column.name}<#sep>, </#list> "
+                    + "FROM ${inPutTableName}";
     protected TableInfo tableInfo;
 
+    protected static final String PARAMETERS = "parameters";
+
+    protected static final String INPUT_0 = "input_0";
+    protected static final String OUTPUT_0 = "output_0";
+    protected static final String FLAG = "flag";
+    protected static final String COLUMNS = "columns";
+
+
+
+    //重复代码提取  source:false  sink:true
+    public void processLogic(String tableName, boolean flag, OutputPortObject<TableInfo> outputPortObject){
+
+        Map<String, Object> dataModel = getDataModel(tableName);
+
+        //任意数据源格式转换
+        dataModel.put(PARAMETERS,formatConversion(dataModel));
+
+        if(flag){ //sink
+            List<Map<String, Object>> input = formatProcessingSink(dataModel);
+            connectToSink(INPUT_0,dataModel,input);
+        }else{ //source
+            //删除没有勾选的字段
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> columns = (List<Map<String, Object>>) dataModel.get(COLUMNS);
+            columns.removeIf(s -> !(boolean) s.get(FLAG));
+            Map<String, Object> parameters = getParameterLists().get(0); // [ parameters , config ]
+            final TableInfo ti = TableDataStreamConverter.getTableInfo(parameters);
+            ti.setName(generateTableName(ti.getName()));
+            outputPortObject.setPseudoData(ti);
+        }
+
+        String sqlStr = TemplateUtils.format(tableName, dataModel, TEMPLATE);
+        this.getSchemaUtil().getGenerateResult().generate(sqlStr);
+
+    }
+
     //兼容任意类型的数据源
-    protected Map<String, Object> formatConversion(Map<String, Object> dataModel, String source){
+    protected Map<String, Object> formatConversion(Map<String, Object> dataModel){
         @SuppressWarnings("unchecked")
         Map<String, Object> defineList = (Map<String, Object>) dataModel.get("parameters");
         @SuppressWarnings("unchecked")
-        Map<String, Object> dataSource = (Map<String, Object>) defineList.get(source);
-        if(dataSource.get("other")!=null){
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> other = (List<Map<String, Object>>) dataSource.get("other");
-            dataSource.clear();
+        List<Map<String, Object>> other = (List<Map<String, Object>>) defineList.get("other");
+        if(other.size()>0){
             for(Map<String, Object> m:other){
-                dataSource.put(m.get("key").toString(),m.get("values"));
+                defineList.put(m.get("key").toString(),m.get("values"));
             }
         }
-        return dataSource;
+        defineList.remove("other");
+        return defineList;
     }
 
-    protected Map<String, Object> getDataModel() {
+    //数据汇内部格式处理，包括输入的获取和勾选字段的设置
+    public List<Map<String, Object>> formatProcessingSink(Map<String, Object> dataModel){
+        //从config中获取输入
+        @SuppressWarnings("unchecked")
+        List<Map<String, List<Map<String,Object>>>> config = (List<Map<String, List<Map<String,Object>>>>) dataModel.get("config");
+        List<Map<String, Object>> input = new ArrayList<>();
+        for(Map<String, List<Map<String,Object>>> map:config){
+            for(Map.Entry<String, List<Map<String,Object>>> m2:map.entrySet()){
+                List<Map<String, Object>> value = m2.getValue();
+                for(Map<String, Object> l:value){
+                    if((boolean)l.get("flag")){
+                        input.add(l);
+                    }
+                }
+            }
+        }
+        //删除没有勾选的字段
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> output = (List<Map<String, Object>>) dataModel.get("columns");
+        for(Map<String, Object> s:output){
+            if(!(boolean)s.get("flag")){
+                output.remove(s);
+            }
+        }
+        return input;
+    }
+
+    //配置连接到sink的input语句
+    public void connectToSink(String input_0,Map<String, Object> dataModel,List<Map<String, Object>> input){
+        @SuppressWarnings("unchecked")
+        TableInfo pseudoData =
+                ((InputPortObject<TableInfo>) getInputPorts().get(input_0)).getOutputPseudoData();
+        if (pseudoData != null) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("outPutTableName", dataModel.get("tableName"));
+            data.put("tableInfo", input);//pseudoData
+            data.put("inPutTableName", pseudoData.getName());
+            data.put("columns", dataModel.get("columns"));
+            String insertSqlStr = TemplateUtils.format("insert", data, INPUT_SQL);
+            this.getSchemaUtil().getGenerateResult().generate(insertSqlStr);
+        }
+    }
+
+    protected Map<String, Object> getDataModel(String tableName) {
         final String columns = "columns";
         String parameters = "parameters";
 
@@ -67,7 +154,10 @@ public abstract class AbstractSqlTable extends Operator {
 
         Map<String, Object> result = new HashMap<>();
         result.put(parameters, new HashMap<String, Object>());
-        result.put("tableName", generateTableName((String) psFirst.get("tableName")));
+        result.put("tableName",tableName);
+        if(psFirst.get("tableName")!=null){
+            result.put("tableName", generateTableName( (String)psFirst.get("tableName") ));
+        }
         for (Map.Entry<String, Object> m : psFirst.entrySet()) {
             if (m.getKey().equals(columns)) {
                 result.put(columns, m.getValue());
@@ -77,14 +167,15 @@ public abstract class AbstractSqlTable extends Operator {
             HashMap<String, Object> ps = (HashMap<String, Object>) result.get(parameters);
             ps.put(m.getKey(), m.getValue());
         }
-        if(parameterLists.size()>1){
+        if(parameterLists.size()>1){//文件中存在config
             result.putAll(parameterLists.get(1));
         }
         return result;
     }
 
+    //该方法只适用于mysql类型的数据源，其他数据源没有输入tableName
     protected String generateTableName(String tableName) {
-        return (tableName==null ? "":(tableName + "_")) + this.getId().substring(this.getId().lastIndexOf('-') + 1);
+        return tableName + "_" + this.getId().substring(this.getId().lastIndexOf('-') + 1);
     }
 
     @Override

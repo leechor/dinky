@@ -19,47 +19,26 @@
 
 package com.zdpx.coder.operator.dataSource.mysql;
 
-import java.util.List;
-import java.util.Map;
-
 import com.zdpx.coder.graph.OutputPortObject;
 import com.zdpx.coder.operator.TableInfo;
 import com.zdpx.coder.operator.dataSource.AbstractSqlTable;
-import com.zdpx.coder.utils.TableDataStreamConverter;
-import com.zdpx.coder.utils.TemplateUtils;
 
 /** */
 public class MysqlSourceOperator extends AbstractSqlTable {
 
     private OutputPortObject<TableInfo> outputPortObject;
 
+    private static final String MYSQL_SOURCE = "MysqlSource";
+
     @Override
     protected void initialize() {
-        outputPortObject = new OutputPortObject<>(this, "output_0");
-        getOutputPorts().put("output_0", outputPortObject);
+        outputPortObject = new OutputPortObject<>(this, OUTPUT_0);
+        getOutputPorts().put(OUTPUT_0, outputPortObject);
         setIcon("icon-MySQL-icon-02");
     }
 
     @Override
     protected void execute() {
-
-        Map<String, Object> dataModel = getDataModel();
-
-        //任意数据源格式转换
-        dataModel.put("parameters",formatConversion(dataModel,"dataSource"));
-
-        //删除没有勾选的字段
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> columns = (List<Map<String, Object>>) dataModel.get("columns");
-        columns.removeIf(s -> !(boolean) s.get("flag"));
-
-
-        String sqlStr = TemplateUtils.format("Source", dataModel, TEMPLATE);
-        this.getSchemaUtil().getGenerateResult().generate(sqlStr);
-
-        Map<String, Object> parameters = getParameterLists().get(0);
-        final TableInfo ti = TableDataStreamConverter.getTableInfo(parameters);
-        ti.setName(generateTableName(ti.getName()));
-        outputPortObject.setPseudoData(ti);
+        processLogic(MYSQL_SOURCE,false,outputPortObject);
     }
 }

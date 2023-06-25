@@ -28,7 +28,7 @@ public class CustomerSourceOperator extends AbstractSqlTable {
 
     private OutputPortObject<TableInfo> outputPortObject;
 
-    private static final String ES_SOURCE = "esSource";
+    private static final String CUSTOMER_SOURCE = "customerSource";
 
     @Override
     protected void initialize() {
@@ -38,6 +38,6 @@ public class CustomerSourceOperator extends AbstractSqlTable {
 
     @Override
     protected void execute() {
-        processLogic(ES_SOURCE,false,outputPortObject);
+        processLogic(CUSTOMER_SOURCE,false,outputPortObject);
     }
 }

@@ -87,13 +87,10 @@ import cn.hutool.extra.template.engine.freemarker.FreemarkerEngine;
 public class UDFUtil {
 
     public static final String FUNCTION_SQL_REGEX =
-<<<<<<< HEAD
+
             "^CREATE\\s+(?:(?:TEMPORARY|TEMPORARY\\s+SYSTEM)\\s+)?FUNCTION\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?(\\S+)\\s+AS\\s+'(\\S+)'\\s*(?:LANGUAGE\\s+(?:JAVA|SCALA|PYTHON)\\s+)?(?:USING\\s+JAR\\s+'(\\S+)'\\s*(?:,\\s*JAR\\s+'(\\S+)'\\s*)*)?";
     public static final Pattern PATTERN =
             Pattern.compile(FUNCTION_SQL_REGEX, Pattern.CASE_INSENSITIVE);
-=======
-            "create\\s+.*function\\s+(.*)\\s+as\\s+'(.*)'(\\s+language (.*))?";
->>>>>>> parent of 65ded4ca3 (feat: compatiable office create function sql syntax, and fix some bug (#1896))
 
     public static final String SESSION = "SESSION";
     public static final String YARN = "YARN";

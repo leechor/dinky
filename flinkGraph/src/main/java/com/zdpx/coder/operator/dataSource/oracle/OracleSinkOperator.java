@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class OracleSinkOperator extends AbstractSqlTable {
 
-    private static final String MYSQL_SINK = "MysqlSink";
+    private static final String ORACLE_SINK = "OracleSink";
 
     @Override
     protected void initialize() {
@@ -36,6 +36,6 @@ public class OracleSinkOperator extends AbstractSqlTable {
 
     @Override
     protected void execute() {
-        processLogic(MYSQL_SINK,true,null);
+        processLogic(ORACLE_SINK,true,null);
     }
 }

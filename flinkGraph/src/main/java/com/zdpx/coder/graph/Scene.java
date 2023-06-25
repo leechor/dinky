@@ -153,14 +153,21 @@ public class Scene {
     }
 
     private static JsonNode getOperationJsonNode(Map.Entry<String, Class<? extends Operator>> t, Operator operator) throws JsonProcessingException {
-        Map<String, Object> jsonMap = new HashMap<>();
+
         String name = Strings.isNullOrEmpty(operator.getName()) ?  t.getKey() : operator.getName();
-        jsonMap.put("key", t.getKey());
-        jsonMap.put("name", name);
-        jsonMap.put("icon", operator.getIcon());
-        jsonMap.put("group", operator.getGroup());
-        jsonMap.put("specification", operator.getSpecification());
-        return mapper.convertValue(jsonMap, JsonNode.class);
+
+        return mapper.readTree(
+                        String.format(
+                                "{\"name\": \"%s\",%n"
+                                        + "\"key\":\"%s\",%n"
+                                        + "\"icon\":\"%s\",%n"
+                                        + "\"group\":\"%s\",%n"
+                                        + "\"specification\": %s}",
+                                t.getKey(),
+                                name,
+                                operator.getIcon(),
+                                operator.getGroup(),
+                                operator.getSpecification()));
     }
 
     private static JsonNode generateJsonPorts(Operator operator) {
