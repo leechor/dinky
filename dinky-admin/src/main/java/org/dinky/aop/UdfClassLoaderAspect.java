@@ -60,8 +60,10 @@ public class UdfClassLoaderAspect {
             if (!(e instanceof DinkyException)) {
                 throw new DinkyException(e);
             }
+
             e.printStackTrace();
             throw (DinkyException) e;
+
         } finally {
             if (proceed instanceof JobResult) {
                 ClassLoader lastContextClassLoader = Thread.currentThread().getContextClassLoader();
