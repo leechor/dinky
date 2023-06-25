@@ -13,9 +13,10 @@ import {
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
 import { CustomMenu } from './menu';
 import { initMenu } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/init-menu';
-import PortModalForm from '@/components/Studio/StudioGraphEdit/GraphEditor/components/port-modal-form';
+import NodeModalForm from '@/components/Studio/StudioGraphEdit/GraphEditor/components/node-modal-form';
 import styles from './index.less';
 import { message } from 'antd';
+import AddModalPort from '../../../components/add-port-modal';
 import {
   changeCurrentSelectNode,
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
@@ -60,12 +61,12 @@ const LeftEditor = memo(() => {
     show: boolean;
     top: number;
     left: number;
-    cell: Cell | null;
+    node: Node | null;
   }>({
     show: false,
     top: 0,
     left: 0,
-    cell: null
+    node: null
   });
   const [modalVisible, handlemodalVisible] = useState(false)
   const [parametersConfig, setParametersConfig] = useState<ParametersData>({ isOutputs: true, parametersConfig: [], readConfigData: {} as ReadConfigData } as ParametersData)
@@ -105,7 +106,7 @@ const LeftEditor = memo(() => {
       }
     }
   }
-  const handlePortModal = (graph: Graph) => {
+  const handleNodeConfigSet = (graph: Graph) => {
     graph.on("node:port:click", ({ node, port }: { node: Node, port: string }) => {
       // dispatch(changeCurrentSelectNode(node))
       if (!node.getData()) {
@@ -225,6 +226,9 @@ const LeftEditor = memo(() => {
   const handleCancel = () => {
     handlemodalVisible(false);
   }
+  const handleCancelPort = () => {
+    setShowMenuInfo({ ...showMenuInfo, show: true, node: {} as Node })
+  }
 
 
   const handleSubmit = (value: CompareCheckProps) => {
@@ -282,7 +286,28 @@ const LeftEditor = memo(() => {
     console.log(graphRef.current?.toJSON(), "confirm");
 
   }
+  const handleSubmitPort = (value: any) => {
 
+    showMenuInfo.node!.addPort({
+      group: 'outputs',
+      zIndex: 999,
+      id: value.portName,
+      attrs: {
+        text: {
+          text: `${value.portName}`,
+          style: {
+            visibility: "hidden",
+            fontSize: 10,
+            fill: "#3B4351",
+          },
+        },
+      },
+      label: {
+        position: "bottom",
+      }
+    })
+    message.success("连接桩添加成功！")
+  }
   const handleShowMenu = (value: boolean) => {
     setShowMenuInfo({ ...showMenuInfo, show: value })
   }
@@ -319,7 +344,7 @@ const LeftEditor = memo(() => {
         timer = handleInitNodes(graphRef.current, flowData);
 
         //加载连接装点击事件控制portmodal
-        handlePortModal(graphRef.current)
+        handleNodeConfigSet(graphRef.current)
       }
     }
 
@@ -347,8 +372,9 @@ const LeftEditor = memo(() => {
                 <CustomMenu
                   top={showMenuInfo.top}
                   left={showMenuInfo.left}
-                  cell={showMenuInfo.cell}
+                  node={showMenuInfo.node}
                   graph={graphRef.current}
+                  show={showMenuInfo.show}
                   handleShowMenu={handleShowMenu}
                 />
               )}
@@ -357,10 +383,15 @@ const LeftEditor = memo(() => {
         </div>
       </div>
 
-      <PortModalForm onSubmit={(value: any) => handleSubmit(value)}
+      <NodeModalForm onSubmit={(value: any) => handleSubmit(value)}
         onCancel={() => handleCancel()}
         modalVisible={modalVisible}
         values={parametersConfig} />
+
+      {showMenuInfo.node ? <AddModalPort onSubmit={(value: any) => handleSubmitPort(value)}
+        onCancel={() => handleCancelPort()}
+        modalVisible={!showMenuInfo.show}
+        values={showMenuInfo.node} /> : null}
 
     </>
 

@@ -1,6 +1,7 @@
 import React,{ memo, FC } from "react";
 import { Form, Modal } from 'antd';
-import { Cell } from "@antv/x6";
+import {  Node } from "@antv/x6";
+import PortForm from "./port-form";
 const NORMAL_MODAL_OPTIONS = {
     width: "50%",
     bodyStyle: { padding: "20px 30px 10px" },
@@ -11,7 +12,7 @@ type PortAddProps = {
     onCancel: (flag?: boolean) => void;
     onSubmit: (values: string) => void;
     modalVisible: boolean;
-    values: Cell;
+    values: Node;
 };
 interface FormContextValue {
     resetForm: () => void;
@@ -40,7 +41,10 @@ const AddModalPort: FC<PortAddProps> = memo((props) => {
      * submit form
      */
     const submitForm = async () => {
+        
         const fieldsValue = await form.validateFields();
+        console.log(fieldsValue);
+        
         await handleSubmit({ ...fieldsValue,});
         await handleCancel();
     };
@@ -53,7 +57,7 @@ const AddModalPort: FC<PortAddProps> = memo((props) => {
             onCancel={() => handleCancel()}
             onOk={() => submitForm()}
         >
-            <div>test</div>
+            <PortForm form={form} values={values} />
         </Modal></>
 })
 export default AddModalPort
