@@ -115,9 +115,51 @@ kbd {
     font-size: 18px;
     font-weight: 1000;
   }
-
+  .btn-group{
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+  }
   .je-panel {
-    background-color: #fff !important;
+    background-color: #f5f5f5 !important;
+    
+    .columns{
+      &:first-child{
+        
+          border-top: 1px solid #ccc !important;
+       
+      }
+      .column{
+        border-bottom: 1px solid #ccc !important;
+      }
+      .form-group{
+        padding: 4px 0px;
+        display: flex !important;
+        flex-direction: row;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        .form-label{
+          font-size: 12px !important;
+          font-weight: 400 !important;
+          width: 40% !important;
+          word-break: break-word;
+          white-space:pre-wrap;
+        }
+
+        .form-input ,.form-select{
+          width:60% !important;
+          
+        }
+        .je-desc{
+          flex-wrap: wrap !important;
+          color:#1677ff;
+          font-style: oblique;
+          word-break: break-word;
+          white-space:pre-wrap;
+        }
+      }
+    }
+    
   }
 
   .btn.btn-primary {

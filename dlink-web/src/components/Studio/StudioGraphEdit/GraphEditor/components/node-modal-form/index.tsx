@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Form, Modal } from 'antd';
 
 import { ParametersData } from '../../views/home/cpns/left-editor';
-import PortForm from "./port-form";
+import NodeForm from "./node-form";
 import CpnShape from "../cpn-shape"
 
 
@@ -16,14 +16,14 @@ const NORMAL_MODAL_OPTIONS = {
     maskClosable: false,
 };
 
-type PortModalProps = {
+type NodetModalProps = {
     onCancel: (flag?: boolean) => void;
     onSubmit: (values: string) => void;
     modalVisible: boolean;
     values: ParametersData;
 };
 
-const PortModalForm: React.FC<PortModalProps> = (props) => {
+const NodeModalForm: React.FC<NodetModalProps> = (props) => {
 
     /**
      * init form
@@ -97,9 +97,9 @@ const PortModalForm: React.FC<PortModalProps> = (props) => {
             onCancel={() => handleCancel()}
             onOk={() => submitForm()}
         >
-            <PortForm form={form} values={values.parametersConfig} initValue={initValue} />
+            <NodeForm form={form} values={values.parametersConfig} initValue={initValue} />
         </Modal>
     </>
 
 };
-export default PortModalForm;
+export default NodeModalForm;

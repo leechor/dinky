@@ -1,7 +1,7 @@
 import { Menu } from '@antv/x6-react-components';
 import { FC, memo, useState } from 'react';
 import { message } from 'antd';
-import { DataUri, Graph, Cell } from '@antv/x6';
+import { DataUri, Graph, Cell, Node } from '@antv/x6';
 import '@antv/x6-react-components/es/menu/style/index.css';
 import AddModalPort from '@/components/Studio/StudioGraphEdit/GraphEditor/components/add-port-modal';
 import {
@@ -19,17 +19,17 @@ type MenuPropsType = {
   top: number;
   left: number;
   graph: Graph | undefined;
-  cell: Cell | null,
+  node: Node | null,
+  show: boolean,
   handleShowMenu: (value: boolean) => void
 };
 
-export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, cell, handleShowMenu }) => {
+export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, node, handleShowMenu, show }) => {
   const MenuItem = Menu.Item;
   const SubMenu = Menu.SubMenu;
   const Divider = Menu.Divider;
   const [messageApi, contextHolder] = message.useMessage();
   const [isDisablePaste, setIsDisablePaste] = useState(true);
-  const [modalVisible, handlemodalVisible] = useState(false)
 
   const copy = () => {
     const cells = graph!.getSelectedCells();
@@ -113,6 +113,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, c
           setIsDisablePaste(true);
           break;
         case 'save-JSON':
+          handleShowMenu(false)
           let data = JSON.stringify(graph.toJSON(), null, 4);
           const blob = new Blob([data], { type: 'text/json' }),
             e = new MouseEvent('click'),
@@ -126,13 +127,8 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, c
           // graph.fromJSON({cells:[graph.toJSON().cells[0],graph.toJSON().cells[1]]})
           break;
         case 'add-port':
-          debugger
-
-          // handleShowMenu(false)
-
-          handlemodalVisible(true)
-
-
+          
+          handleShowMenu(false)
           break
 
         default:
@@ -143,6 +139,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, c
   const onMenuItemClick = () => { };
   const blankMenu = () => {
     return (<Menu hasIcon={true} onClick={onMenuClick}>
+      {(node && node.shape === "DuplicateOperator") && DuplicateOperatorMenu()}
       <MenuItem
         onClick={onMenuItemClick}
         name="undo"
@@ -151,15 +148,16 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, c
         text="Undo"
       />
       <MenuItem name="redo" icon={<RedoOutlined />} hotkey="Cmd+Shift+Z" text="Redo" />
-      <SubMenu text="Export" icon={<ExportOutlined />}>
+      {!node && <SubMenu text="Export" icon={<ExportOutlined />}>
         <MenuItem name="save-PNG" text="Save As PNG" />
         <MenuItem name="save-SVG" text="Save As SVG" />
         <MenuItem name="save-JPEG" text="Save As JPEG" />
         <MenuItem name="save-JSON" text="Save As JSON" />
-      </SubMenu>
+      </SubMenu>}
       <Divider />
       <MenuItem icon={<ScissorOutlined />} name="cut" hotkey="Cmd+X" text="Cut" />
       <MenuItem icon={<CopyOutlined />} name="copy" hotkey="Cmd+C" text="Copy" />
+
       <MenuItem
         name="paste"
         icon={<SnippetsOutlined />}
@@ -170,22 +168,9 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, c
       <MenuItem name="delete" icon={<DeleteOutlined />} hotkey="Delete" text="Delete" />
     </Menu>)
   }
-  const menuItem = () => {
-    if (!cell) {
-      return blankMenu()
-    } else if (cell.shape == "DuplicateOperator") {
-      return DuplicateOperatorMenu();
-    } else {
-      return <></>
-    }
 
-
-
-  }
   const DuplicateOperatorMenu = () => {
-    return <Menu hasIcon={true} onClick={onMenuClick}>
-      <MenuItem icon={<EditOutlined />} name="add-port" text="添加输出桩" />
-    </Menu>
+    return <MenuItem icon={<EditOutlined />} name="add-port" text="添加输出桩" />
   }
   const styleObj: any = {
     position: 'absolute',
@@ -195,22 +180,11 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, c
     height: '105px',
     zIndex: 9999,
   };
-  const handleSubmit = (value:any) => { 
-
-  }
-  const handleCancel = () => {
-    handlemodalVisible(false);
-    handleShowMenu(false)
-    
-   }
   return (
     <div style={styleObj}>
       {contextHolder}
-      {menuItem()}
-      {cell && <AddModalPort onSubmit={(value: any) => handleSubmit(value)}
-        onCancel={() => handleCancel()}
-        modalVisible={modalVisible}
-        values={cell} />}
+      {blankMenu()}
+
     </div>
   );
 });
