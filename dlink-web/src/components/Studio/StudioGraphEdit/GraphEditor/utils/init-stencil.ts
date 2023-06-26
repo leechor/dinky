@@ -30,7 +30,7 @@ export const initStencil = (
   const otherGroups = [
     {
       name: 'groupNode',
-      title: 'groupNode',
+      title: '分组',
       collapsable: true,
       collapsed: true,
       layoutOptions: {
@@ -41,7 +41,7 @@ export const initStencil = (
     },
     {
       name: 'textArea',
-      title: 'textArea',
+      title: '文本',
       collapsable: true,
       collapsed: true,
       layoutOptions: {
@@ -51,7 +51,7 @@ export const initStencil = (
   ];
 
   const stencil = new Stencil({
-    title: 'Calculate Flow Components',
+    title: '组件信息',
     target: graph,
     search(cell, keyword) {
       return cell.shape.indexOf(keyword) !== -1;
@@ -65,7 +65,7 @@ export const initStencil = (
         return node.clone();
       }
     },
-    placeholder: 'Search by shape name',
+    placeholder: '查找',
     notFoundText: 'Not Found',
     collapsable: true,
     stencilGraphWidth: 180,

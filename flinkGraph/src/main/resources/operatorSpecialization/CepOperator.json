@@ -1,11 +1,8 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://dzpx.com/detection",
   "title": "CepOperator",
   "description": "CepOperator parameter",
-  "minItems": 1,
-  "type": "array",
-        "items": {
+  "type": "object",
+
           "required": [
             "partition",
             "orderBy",
@@ -158,5 +155,5 @@
                 }
             }
           }
-        }
+
 }

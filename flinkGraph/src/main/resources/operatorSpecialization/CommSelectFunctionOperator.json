@@ -1,12 +1,6 @@
 {
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "http://example.com/example.json",
-    "type": "array",
+    "type": "object",
     "title": "CommSelectFunctionOperator",
-	"minItems": 1,
-    "items": {
-        "type": "object",
-        "title": "configuration",
         "required": [
 			"where",
 			"columns"
@@ -55,5 +49,4 @@
 				}
             }
         }
-    }
 }

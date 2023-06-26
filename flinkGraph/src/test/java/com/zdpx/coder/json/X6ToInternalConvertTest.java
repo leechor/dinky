@@ -22,8 +22,8 @@ class X6ToInternalConvertTest {
                     "    \"cells\": [\n" +
                     "        {\n" +
                     "            \"position\": {\n" +
-                    "                \"x\": 30,\n" +
-                    "                \"y\": 270\n" +
+                    "                \"x\": 90,\n" +
+                    "                \"y\": 260\n" +
                     "            },\n" +
                     "            \"size\": {\n" +
                     "                \"width\": 70,\n" +
@@ -97,43 +97,33 @@ class X6ToInternalConvertTest {
                     "                    }\n" +
                     "                ]\n" +
                     "            },\n" +
-                    "            \"id\": \"dd723265-bdc5-43d3-8a1b-93ac3bc56db0\",\n" +
+                    "            \"id\": \"033ca49c-a236-43b3-a744-d5dd900a6ec3\",\n" +
                     "            \"zIndex\": 1,\n" +
+
                     "            \"data\": {\n" +
-                    "                \"parameters\": [\n" +
-                    "                    {\n" +
-                    "                        \"dataSource\": {\n" +
-                    "                            \"tableName\": \"asdas\",\n" +
-                    "                            \"connector\": \"jdbc\",\n" +
-                    "                            \"url\": \"aa\",\n" +
-                    "                            \"username\": \"root\",\n" +
-                    "                            \"password\": \"123456\"\n" +
-                    "                        },\n" +
-                    "                        \"columns\": [\n" +
-                    "                            {\n" +
-                    "                                \"name\": \"a\",\n" +
-                    "                                \"type\": \"STRING\",\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"name\": \"b\",\n" +
-                    "                                \"type\": \"STRING\",\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"name\": \"c\",\n" +
-                    "                                \"type\": \"STRING\",\n" +
-                    "                                \"flag\": true\n" +
-                    "                            }\n" +
-                    "                        ]\n" +
-                    "                    }\n" +
-                    "                ]\n" +
-                    "            }\n" +
+                    "                \"parameters\": {\n" +
+                    "                    \"tableName\": \"aaaaa\",\n" +
+                    "                    \"connector\": \"jdbc\",\n" +
+                    "                    \"url\": \"a\",\n" +
+                    "                    \"username\": \"root\",\n" +
+                    "                    \"password\": \"123456\",\n" +
+                    "                    \"other\": [],\n" +
+                    "                    \"columns\": [\n" +
+                    "                        {\n" +
+                    "                            \"name\": \"a\",\n" +
+                    "                            \"type\": \"STRING\",\n" +
+                    "                            \"flag\": true\n" +
+                    "                        }\n" +
+                    "                    ]\n" +
+                    "                },\n" +
+                    "                \"config\": []\n" +
+                    "            }"+
+
                     "        },\n" +
                     "        {\n" +
                     "            \"position\": {\n" +
-                    "                \"x\": 350,\n" +
-                    "                \"y\": 270\n" +
+                    "                \"x\": 420,\n" +
+                    "                \"y\": 290\n" +
                     "            },\n" +
                     "            \"size\": {\n" +
                     "                \"width\": 70,\n" +
@@ -207,31 +197,31 @@ class X6ToInternalConvertTest {
                     "                    }\n" +
                     "                ]\n" +
                     "            },\n" +
-                    "            \"id\": \"945d7023-c9c3-454f-a09a-8c152a5dfe62\",\n" +
+                    "            \"id\": \"c41ba12f-2825-41a2-b369-42e1e30d6c76\",\n" +
                     "            \"zIndex\": 2,\n" +
                     "            \"data\": {\n" +
                     "                \"parameters\": [\n" +
                     "                    {\n" +
                     "                        \"dataSink\": {\n" +
-                    "                            \"tableName\": \"asdasd\",\n" +
+                    "                            \"tableName\": \"s3\",\n" +
                     "                            \"connector\": \"jdbc\",\n" +
-                    "                            \"url\": \"asas\",\n" +
+                    "                            \"url\": \"url\",\n" +
                     "                            \"username\": \"root\",\n" +
                     "                            \"password\": \"123456\"\n" +
                     "                        },\n" +
                     "                        \"columns\": [\n" +
                     "                            {\n" +
-                    "                                \"name\": \"aa\",\n" +
+                    "                                \"name\": \"aaa\",\n" +
                     "                                \"type\": \"STRING\",\n" +
                     "                                \"flag\": true\n" +
                     "                            },\n" +
                     "                            {\n" +
-                    "                                \"name\": \"bb\",\n" +
+                    "                                \"name\": \"bbb\",\n" +
                     "                                \"type\": \"STRING\",\n" +
                     "                                \"flag\": true\n" +
                     "                            },\n" +
                     "                            {\n" +
-                    "                                \"name\": \"cc\",\n" +
+                    "                                \"name\": \"ccc\",\n" +
                     "                                \"type\": \"STRING\",\n" +
                     "                                \"flag\": true\n" +
                     "                            }\n" +
@@ -240,29 +230,14 @@ class X6ToInternalConvertTest {
                     "                ],\n" +
                     "                \"config\": [\n" +
                     "                    {\n" +
-                    "                        \"0b2caf7d-561c-4f83-9e99-3039a0250e15&output_0 945d7023-c9c3-454f-a09a-8c152a5dfe62&input_0\": [\n" +
+                    "                        \"27303e91-0bed-4648-a09c-d009e96a9c7c&output_0 c41ba12f-2825-41a2-b369-42e1e30d6c76&input_0\": [\n" +
                     "                            {\n" +
                     "                                \"functionName\": \"f1\",\n" +
                     "                                \"name\": \"out1\",\n" +
                     "                                \"parameters\": [\n" +
-                    "                                    \"a\"\n" +
+                    "                                    \"a1\"\n" +
                     "                                ],\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"functionName\": \"f2\",\n" +
-                    "                                \"name\": \"out2\",\n" +
-                    "                                \"parameters\": [\n" +
-                    "                                    \"b\"\n" +
-                    "                                ],\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"functionName\": \"f1\",\n" +
-                    "                                \"name\": \"out3\",\n" +
-                    "                                \"parameters\": [\n" +
-                    "                                    \"c\"\n" +
-                    "                                ],\n" +
+                    "                                \"inputTable\": \"primaryInput\",\n" +
                     "                                \"flag\": true\n" +
                     "                            }\n" +
                     "                        ]\n" +
@@ -272,8 +247,8 @@ class X6ToInternalConvertTest {
                     "        },\n" +
                     "        {\n" +
                     "            \"position\": {\n" +
-                    "                \"x\": 184,\n" +
-                    "                \"y\": 270\n" +
+                    "                \"x\": 90,\n" +
+                    "                \"y\": 340\n" +
                     "            },\n" +
                     "            \"size\": {\n" +
                     "                \"width\": 70,\n" +
@@ -286,11 +261,11 @@ class X6ToInternalConvertTest {
                     "                    \"ry\": 6\n" +
                     "                },\n" +
                     "                \"text\": {\n" +
-                    "                    \"text\": \"CepOperator\",\n" +
+                    "                    \"text\": \"MysqlSourceOperator\",\n" +
                     "                    \"fontSize\": 2\n" +
                     "                }\n" +
                     "            },\n" +
-                    "            \"shape\": \"CepOperator\",\n" +
+                    "            \"shape\": \"MysqlSourceOperator\",\n" +
                     "            \"ports\": {\n" +
                     "                \"groups\": {\n" +
                     "                    \"outputs\": {\n" +
@@ -328,24 +303,6 @@ class X6ToInternalConvertTest {
                     "                },\n" +
                     "                \"items\": [\n" +
                     "                    {\n" +
-                    "                        \"group\": \"inputs\",\n" +
-                    "                        \"id\": \"input_0\",\n" +
-                    "                        \"zIndex\": 999,\n" +
-                    "                        \"attrs\": {\n" +
-                    "                            \"text\": {\n" +
-                    "                                \"text\": \"input_0\",\n" +
-                    "                                \"style\": {\n" +
-                    "                                    \"visibility\": \"hidden\",\n" +
-                    "                                    \"fontSize\": 10,\n" +
-                    "                                    \"fill\": \"#3B4351\"\n" +
-                    "                                }\n" +
-                    "                            }\n" +
-                    "                        },\n" +
-                    "                        \"label\": {\n" +
-                    "                            \"position\": \"bottom\"\n" +
-                    "                        }\n" +
-                    "                    },\n" +
-                    "                    {\n" +
                     "                        \"group\": \"outputs\",\n" +
                     "                        \"zIndex\": 999,\n" +
                     "                        \"id\": \"output_0\",\n" +
@@ -365,358 +322,44 @@ class X6ToInternalConvertTest {
                     "                    }\n" +
                     "                ]\n" +
                     "            },\n" +
-                    "            \"id\": \"0b2caf7d-561c-4f83-9e99-3039a0250e15\",\n" +
+                    "            \"id\": \"e6dcb268-db9c-42d2-a7de-01802d7982d4\",\n" +
                     "            \"zIndex\": 3,\n" +
                     "            \"data\": {\n" +
                     "                \"parameters\": [\n" +
                     "                    {\n" +
-                    "                        \"partition\": \"asdas\",\n" +
-                    "                        \"orderBy\": \"a\",\n" +
-                    "                        \"outPutMode\": \"ONE\",\n" +
-                    "                        \"timeSpan\": 10,\n" +
-                    "                        \"timeUnit\": \"SECOND\",\n" +
-                    "                        \"patterns\": [\n" +
-                    "                            {\n" +
-                    "                                \"variable\": \"asdas\",\n" +
-                    "                                \"quantifier\": \"adsa\"\n" +
-                    "                            }\n" +
-                    "                        ],\n" +
-                    "                        \"skipStrategy\": {\n" +
-                    "                            \"strategy\": \"LAST_ROW\",\n" +
-                    "                            \"variable\": \"sadasd\"\n" +
+                    "                        \"dataSource\": {\n" +
+                    "                            \"tableName\": \"s2\",\n" +
+                    "                            \"connector\": \"jdbc\",\n" +
+                    "                            \"url\": \"url\",\n" +
+                    "                            \"username\": \"root\",\n" +
+                    "                            \"password\": \"123456\"\n" +
                     "                        },\n" +
                     "                        \"columns\": [\n" +
                     "                            {\n" +
-                    "                                \"functionName\": \"f1\",\n" +
-                    "                                \"name\": \"out1\",\n" +
-                    "                                \"parameters\": [\n" +
-                    "                                    \"a\"\n" +
-                    "                                ],\n" +
-                    "                                \"flag\": false\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"functionName\": \"f2\",\n" +
-                    "                                \"name\": \"out2\",\n" +
-                    "                                \"parameters\": [\n" +
-                    "                                    \"b\"\n" +
-                    "                                ],\n" +
+                    "                                \"name\": \"a1\",\n" +
+                    "                                \"type\": \"STRING\",\n" +
                     "                                \"flag\": true\n" +
                     "                            },\n" +
                     "                            {\n" +
-                    "                                \"functionName\": \"f1\",\n" +
-                    "                                \"name\": \"out3\",\n" +
-                    "                                \"parameters\": [\n" +
-                    "                                    \"c\"\n" +
-                    "                                ],\n" +
+                    "                                \"name\": \"a2\",\n" +
+                    "                                \"type\": \"STRING\",\n" +
                     "                                \"flag\": true\n" +
-                    "                            }\n" +
-                    "                        ],\n" +
-                    "                        \"defines\": [\n" +
+                    "                            },\n" +
                     "                            {\n" +
-                    "                                \"variable\": \"ssd\",\n" +
-                    "                                \"condition\": \"asd\"\n" +
+                    "                                \"name\": \"a3\",\n" +
+                    "                                \"type\": \"STRING\",\n" +
+                    "                                \"flag\": true\n" +
                     "                            }\n" +
                     "                        ]\n" +
                     "                    }\n" +
                     "                ],\n" +
-                    "                \"config\": [\n" +
-                    "                    {\n" +
-                    "                        \"dd723265-bdc5-43d3-8a1b-93ac3bc56db0&output_0 0b2caf7d-561c-4f83-9e99-3039a0250e15&input_0\": [\n" +
-                    "                            {\n" +
-                    "                                \"name\": \"a\",\n" +
-                    "                                \"type\": \"STRING\",\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"name\": \"b\",\n" +
-                    "                                \"type\": \"STRING\",\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"name\": \"c\",\n" +
-                    "                                \"type\": \"STRING\",\n" +
-                    "                                \"flag\": true\n" +
-                    "                            }\n" +
-                    "                        ]\n" +
-                    "                    }\n" +
-                    "                ]\n" +
-                    "            }\n" +
-                    "        },\n" +
-                    "        {\n" +
-                    "            \"shape\": \"edge\",\n" +
-                    "            \"attrs\": {\n" +
-                    "                \"line\": {\n" +
-                    "                    \"stroke\": \"#b2a2e9\",\n" +
-                    "                    \"targetMarker\": {\n" +
-                    "                        \"name\": \"classic\",\n" +
-                    "                        \"size\": 10\n" +
-                    "                    }\n" +
-                    "                }\n" +
-                    "            },\n" +
-                    "            \"id\": \"551fe26a-71da-498c-961d-085310caccd1\",\n" +
-                    "            \"source\": {\n" +
-                    "                \"cell\": \"dd723265-bdc5-43d3-8a1b-93ac3bc56db0\",\n" +
-                    "                \"port\": \"output_0\"\n" +
-                    "            },\n" +
-                    "            \"target\": {\n" +
-                    "                \"cell\": \"0b2caf7d-561c-4f83-9e99-3039a0250e15\",\n" +
-                    "                \"port\": \"input_0\"\n" +
-                    "            },\n" +
-                    "            \"zIndex\": 4\n" +
-                    "        },\n" +
-                    "        {\n" +
-                    "            \"shape\": \"edge\",\n" +
-                    "            \"attrs\": {\n" +
-                    "                \"line\": {\n" +
-                    "                    \"stroke\": \"#b2a2e9\",\n" +
-                    "                    \"targetMarker\": {\n" +
-                    "                        \"name\": \"classic\",\n" +
-                    "                        \"size\": 10\n" +
-                    "                    }\n" +
-                    "                }\n" +
-                    "            },\n" +
-                    "            \"id\": \"344de512-eba4-4891-a223-64d30c1b06b1\",\n" +
-                    "            \"source\": {\n" +
-                    "                \"cell\": \"0b2caf7d-561c-4f83-9e99-3039a0250e15\",\n" +
-                    "                \"port\": \"output_0\"\n" +
-                    "            },\n" +
-                    "            \"target\": {\n" +
-                    "                \"cell\": \"945d7023-c9c3-454f-a09a-8c152a5dfe62\",\n" +
-                    "                \"port\": \"input_0\"\n" +
-                    "            },\n" +
-                    "            \"zIndex\": 5\n" +
-                    "        }\n" +
-                    "    ]\n" +
-                    "}";
-
-
-    private static final String x6_json2 =
-            "{\n" +
-                    "    \"cells\": [\n" +
-                    "        {\n" +
-                    "            \"position\": {\n" +
-                    "                \"x\": 50,\n" +
-                    "                \"y\": 70\n" +
-                    "            },\n" +
-                    "            \"size\": {\n" +
-                    "                \"width\": 70,\n" +
-                    "                \"height\": 50\n" +
-                    "            },\n" +
-                    "            \"view\": \"react-shape-view\",\n" +
-                    "            \"attrs\": {\n" +
-                    "                \"body\": {\n" +
-                    "                    \"rx\": 7,\n" +
-                    "                    \"ry\": 6\n" +
-                    "                },\n" +
-                    "                \"text\": {\n" +
-                    "                    \"text\": \"MysqlSourceOperator\",\n" +
-                    "                    \"fontSize\": 2\n" +
-                    "                }\n" +
-                    "            },\n" +
-                    "            \"shape\": \"MysqlSourceOperator\",\n" +
-                    "            \"ports\": {\n" +
-                    "                \"groups\": {\n" +
-                    "                    \"outputs\": {\n" +
-                    "                        \"zIndex\": 999,\n" +
-                    "                        \"position\": \"right\",\n" +
-                    "                        \"attrs\": {\n" +
-                    "                            \"circle\": {\n" +
-                    "                                \"r\": 8,\n" +
-                    "                                \"magnet\": true,\n" +
-                    "                                \"stroke\": \"#818181\",\n" +
-                    "                                \"strokeWidth\": 1,\n" +
-                    "                                \"fill\": \"#b2a2e9\",\n" +
-                    "                                \"style\": {\n" +
-                    "                                    \"visibility\": \"hidden\"\n" +
-                    "                                }\n" +
-                    "                            }\n" +
-                    "                        }\n" +
-                    "                    },\n" +
-                    "                    \"inputs\": {\n" +
-                    "                        \"zIndex\": 999,\n" +
-                    "                        \"position\": \"left\",\n" +
-                    "                        \"attrs\": {\n" +
-                    "                            \"circle\": {\n" +
-                    "                                \"r\": 8,\n" +
-                    "                                \"magnet\": true,\n" +
-                    "                                \"stroke\": \"#818181\",\n" +
-                    "                                \"strokeWidth\": 1,\n" +
-                    "                                \"fill\": \"#915dac\",\n" +
-                    "                                \"style\": {\n" +
-                    "                                    \"visibility\": \"hidden\"\n" +
-                    "                                }\n" +
-                    "                            }\n" +
-                    "                        }\n" +
-                    "                    }\n" +
-                    "                },\n" +
-                    "                \"items\": [\n" +
-                    "                    {\n" +
-                    "                        \"group\": \"outputs\",\n" +
-                    "                        \"zIndex\": 999,\n" +
-                    "                        \"id\": \"output_0\",\n" +
-                    "                        \"attrs\": {\n" +
-                    "                            \"text\": {\n" +
-                    "                                \"text\": \"output_0\",\n" +
-                    "                                \"style\": {\n" +
-                    "                                    \"visibility\": \"hidden\",\n" +
-                    "                                    \"fontSize\": 10,\n" +
-                    "                                    \"fill\": \"#3B4351\"\n" +
-                    "                                }\n" +
-                    "                            }\n" +
-                    "                        },\n" +
-                    "                        \"label\": {\n" +
-                    "                            \"position\": \"bottom\"\n" +
-                    "                        }\n" +
-                    "                    }\n" +
-                    "                ]\n" +
-                    "            },\n" +
-                    "            \"id\": \"285941d5-c949-4f0d-bd45-ac51e8b32515\",\n" +
-                    "            \"zIndex\": 1,\n" +
-                    "            \"data\": {\n" +
-                    "                \"parameters\": [\n" +
-                    "                    {\n" +
-                    "                        \"dataSource\": {\n" +
-                    "                            \"tableName\": \"n1\",\n" +
-                    "                            \"connector\": \"jdbc\",\n" +
-                    "                            \"url\": \"u\",\n" +
-                    "                            \"username\": \"root\",\n" +
-                    "                            \"password\": \"123456\"\n" +
-                    "                        },\n" +
-                    "                        \"columns\": [\n" +
-                    "                            {\n" +
-                    "                                \"name\": \"a\",\n" +
-                    "                                \"type\": \"STRING\",\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"name\": \"b\",\n" +
-                    "                                \"type\": \"STRING\",\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"name\": \"c\",\n" +
-                    "                                \"type\": \"STRING\",\n" +
-                    "                                \"flag\": true\n" +
-                    "                            }\n" +
-                    "                        ]\n" +
-                    "                    }\n" +
-                    "                ]\n" +
+                    "                \"config\": []\n" +
                     "            }\n" +
                     "        },\n" +
                     "        {\n" +
                     "            \"position\": {\n" +
-                    "                \"x\": 50,\n" +
-                    "                \"y\": 162\n" +
-                    "            },\n" +
-                    "            \"size\": {\n" +
-                    "                \"width\": 70,\n" +
-                    "                \"height\": 50\n" +
-                    "            },\n" +
-                    "            \"view\": \"react-shape-view\",\n" +
-                    "            \"attrs\": {\n" +
-                    "                \"body\": {\n" +
-                    "                    \"rx\": 7,\n" +
-                    "                    \"ry\": 6\n" +
-                    "                },\n" +
-                    "                \"text\": {\n" +
-                    "                    \"text\": \"MysqlSourceOperator\",\n" +
-                    "                    \"fontSize\": 2\n" +
-                    "                }\n" +
-                    "            },\n" +
-                    "            \"shape\": \"MysqlSourceOperator\",\n" +
-                    "            \"ports\": {\n" +
-                    "                \"groups\": {\n" +
-                    "                    \"outputs\": {\n" +
-                    "                        \"zIndex\": 999,\n" +
-                    "                        \"position\": \"right\",\n" +
-                    "                        \"attrs\": {\n" +
-                    "                            \"circle\": {\n" +
-                    "                                \"r\": 8,\n" +
-                    "                                \"magnet\": true,\n" +
-                    "                                \"stroke\": \"#818181\",\n" +
-                    "                                \"strokeWidth\": 1,\n" +
-                    "                                \"fill\": \"#b2a2e9\",\n" +
-                    "                                \"style\": {\n" +
-                    "                                    \"visibility\": \"hidden\"\n" +
-                    "                                }\n" +
-                    "                            }\n" +
-                    "                        }\n" +
-                    "                    },\n" +
-                    "                    \"inputs\": {\n" +
-                    "                        \"zIndex\": 999,\n" +
-                    "                        \"position\": \"left\",\n" +
-                    "                        \"attrs\": {\n" +
-                    "                            \"circle\": {\n" +
-                    "                                \"r\": 8,\n" +
-                    "                                \"magnet\": true,\n" +
-                    "                                \"stroke\": \"#818181\",\n" +
-                    "                                \"strokeWidth\": 1,\n" +
-                    "                                \"fill\": \"#915dac\",\n" +
-                    "                                \"style\": {\n" +
-                    "                                    \"visibility\": \"hidden\"\n" +
-                    "                                }\n" +
-                    "                            }\n" +
-                    "                        }\n" +
-                    "                    }\n" +
-                    "                },\n" +
-                    "                \"items\": [\n" +
-                    "                    {\n" +
-                    "                        \"group\": \"outputs\",\n" +
-                    "                        \"zIndex\": 999,\n" +
-                    "                        \"id\": \"output_0\",\n" +
-                    "                        \"attrs\": {\n" +
-                    "                            \"text\": {\n" +
-                    "                                \"text\": \"output_0\",\n" +
-                    "                                \"style\": {\n" +
-                    "                                    \"visibility\": \"hidden\",\n" +
-                    "                                    \"fontSize\": 10,\n" +
-                    "                                    \"fill\": \"#3B4351\"\n" +
-                    "                                }\n" +
-                    "                            }\n" +
-                    "                        },\n" +
-                    "                        \"label\": {\n" +
-                    "                            \"position\": \"bottom\"\n" +
-                    "                        }\n" +
-                    "                    }\n" +
-                    "                ]\n" +
-                    "            },\n" +
-                    "            \"id\": \"9ff19373-9026-4df2-8231-c1dd8793808e\",\n" +
-                    "            \"zIndex\": 2,\n" +
-                    "            \"data\": {\n" +
-                    "                \"parameters\": [\n" +
-                    "                    {\n" +
-                    "                        \"dataSource\": {\n" +
-                    "                            \"tableName\": \"n2\",\n" +
-                    "                            \"connector\": \"jdbc\",\n" +
-                    "                            \"url\": \"u\",\n" +
-                    "                            \"username\": \"root\",\n" +
-                    "                            \"password\": \"123456\"\n" +
-                    "                        },\n" +
-                    "                        \"columns\": [\n" +
-                    "                            {\n" +
-                    "                                \"name\": \"aa\",\n" +
-                    "                                \"type\": \"STRING\",\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"name\": \"bb\",\n" +
-                    "                                \"type\": \"STRING\",\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"name\": \"cc\",\n" +
-                    "                                \"type\": \"STRING\",\n" +
-                    "                                \"flag\": true\n" +
-                    "                            }\n" +
-                    "                        ]\n" +
-                    "                    }\n" +
-                    "                ]\n" +
-                    "            }\n" +
-                    "        },\n" +
-                    "        {\n" +
-                    "            \"position\": {\n" +
-                    "                \"x\": 190,\n" +
-                    "                \"y\": 120\n" +
+                    "                \"x\": 255,\n" +
+                    "                \"y\": 290\n" +
                     "            },\n" +
                     "            \"size\": {\n" +
                     "                \"width\": 70,\n" +
@@ -826,42 +469,32 @@ class X6ToInternalConvertTest {
                     "                    }\n" +
                     "                ]\n" +
                     "            },\n" +
-                    "            \"id\": \"35d67e0a-7f67-470b-93e3-3ec77d2c7652\",\n" +
-                    "            \"zIndex\": 3,\n" +
+                    "            \"id\": \"27303e91-0bed-4648-a09c-d009e96a9c7c\",\n" +
+                    "            \"zIndex\": 4,\n" +
                     "            \"data\": {\n" +
                     "                \"parameters\": [\n" +
                     "                    {\n" +
                     "                        \"joinType\": \"INNER\",\n" +
-                    "                        \"systemTimeColumn\": \"\",\n" +
-                    "                        \"onLeftColumn\": \"left\",\n" +
-                    "                        \"onRightColumn\": \"right\",\n" +
-                    "                        \"where\": \"a=aa;b=bb\",\n" +
+                    "                        \"systemTimeColumn\": \"systemTimeColumn\",\n" +
+                    "                        \"onLeftColumn\": \"a1\",\n" +
+                    "                        \"onRightColumn\": \"a\",\n" +
+                    "                        \"where\": \"a=a1;b=b1;\",\n" +
                     "                        \"columns\": [\n" +
                     "                            {\n" +
-                    "                                \"functionName\": \"a1\",\n" +
-                    "                                \"name\": \"test1\",\n" +
+                    "                                \"functionName\": \"f1\",\n" +
+                    "                                \"name\": \"out1\",\n" +
                     "                                \"parameters\": [\n" +
-                    "                                    \"a\"\n" +
+                    "                                    \"a1\"\n" +
                     "                                ],\n" +
-                    "                                \"flag\": true,\n" +
-                    "                                \"inputTable\": \"secondInput\"\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"functionName\": \"a2\",\n" +
-                    "                                \"name\": \"test2\",\n" +
-                    "                                \"parameters\": [\n" +
-                    "                                    \"2\"\n" +
-                    "                                ],\n" +
-                    "                                \"flag\": true,\n" +
-                    "                                \"inputTable\": \"primaryInput\"\n" +
+                    "                                \"inputTable\": \"primaryInput\",\n" +
+                    "                                \"flag\": true\n" +
                     "                            }\n" +
                     "                        ]\n" +
                     "                    }\n" +
                     "                ],\n" +
-
                     "                \"config\": [\n" +
                     "                    {\n" +
-                    "                        \"0a0b08d6-2c60-48db-96e7-b6d6043b7849&output_0 2d00f038-8b68-4c9b-8140-c47f0870f9b2&primaryInput\": [\n" +
+                    "                        \"033ca49c-a236-43b3-a744-d5dd900a6ec3&output_0 27303e91-0bed-4648-a09c-d009e96a9c7c&primaryInput\": [\n" +
                     "                            {\n" +
                     "                                \"name\": \"a\",\n" +
                     "                                \"type\": \"STRING\",\n" +
@@ -870,36 +503,38 @@ class X6ToInternalConvertTest {
                     "                            {\n" +
                     "                                \"name\": \"b\",\n" +
                     "                                \"type\": \"STRING\",\n" +
-                    "                                \"flag\": false\n" +
+                    "                                \"flag\": true\n" +
                     "                            },\n" +
                     "                            {\n" +
                     "                                \"name\": \"c\",\n" +
                     "                                \"type\": \"STRING\",\n" +
                     "                                \"flag\": true\n" +
-                    "                            }\n" +
-                    "                        ]\n" +
-                    "                   },\n" +
-                    "                   {\n" +
-                    "                        \"66164c41-0cbe-4a50-b893-acdde0ef71cc&output_0 2d00f038-8b68-4c9b-8140-c47f0870f9b2&secondInput\": [\n" +
+                    "                            },\n" +
                     "                            {\n" +
-                    "                                \"name\": \"aa\",\n" +
+                    "                                \"name\": \"d\",\n" +
+                    "                                \"type\": \"STRING\",\n" +
+                    "                                \"flag\": true\n" +
+                    "                            }\n" +
+                    "                        ],\n" +
+                    "                        \"e6dcb268-db9c-42d2-a7de-01802d7982d4&output_0 27303e91-0bed-4648-a09c-d009e96a9c7c&secondInput\": [\n" +
+                    "                            {\n" +
+                    "                                \"name\": \"a1\",\n" +
                     "                                \"type\": \"STRING\",\n" +
                     "                                \"flag\": true\n" +
                     "                            },\n" +
                     "                            {\n" +
-                    "                                \"name\": \"bb\",\n" +
+                    "                                \"name\": \"a2\",\n" +
                     "                                \"type\": \"STRING\",\n" +
-                    "                                \"flag\": false\n" +
+                    "                                \"flag\": true\n" +
                     "                            },\n" +
                     "                            {\n" +
-                    "                                \"name\": \"cc\",\n" +
+                    "                                \"name\": \"a3\",\n" +
                     "                                \"type\": \"STRING\",\n" +
-                    "                                \"flag\": false\n" +
+                    "                                \"flag\": true\n" +
                     "                            }\n" +
                     "                        ]\n" +
                     "                    }\n" +
-                    "                ]"+
-
+                    "                ]\n" +
                     "            }\n" +
                     "        },\n" +
                     "        {\n" +
@@ -913,16 +548,16 @@ class X6ToInternalConvertTest {
                     "                    }\n" +
                     "                }\n" +
                     "            },\n" +
-                    "            \"id\": \"10faea17-d620-47c7-b2a1-ef60fc754262\",\n" +
+                    "            \"id\": \"25f4ab79-e698-4ba5-8fdd-2c0392e1eba2\",\n" +
                     "            \"source\": {\n" +
-                    "                \"cell\": \"285941d5-c949-4f0d-bd45-ac51e8b32515\",\n" +
+                    "                \"cell\": \"033ca49c-a236-43b3-a744-d5dd900a6ec3\",\n" +
                     "                \"port\": \"output_0\"\n" +
                     "            },\n" +
                     "            \"target\": {\n" +
-                    "                \"cell\": \"35d67e0a-7f67-470b-93e3-3ec77d2c7652\",\n" +
+                    "                \"cell\": \"27303e91-0bed-4648-a09c-d009e96a9c7c\",\n" +
                     "                \"port\": \"primaryInput\"\n" +
                     "            },\n" +
-                    "            \"zIndex\": 4\n" +
+                    "            \"zIndex\": 5\n" +
                     "        },\n" +
                     "        {\n" +
                     "            \"shape\": \"edge\",\n" +
@@ -935,21 +570,162 @@ class X6ToInternalConvertTest {
                     "                    }\n" +
                     "                }\n" +
                     "            },\n" +
-                    "            \"id\": \"4f3aa944-558f-47c0-aa72-54dff8318973\",\n" +
+                    "            \"id\": \"155c3d48-5ed1-4d69-ab49-a19fd638ebbe\",\n" +
                     "            \"source\": {\n" +
-                    "                \"cell\": \"9ff19373-9026-4df2-8231-c1dd8793808e\",\n" +
+                    "                \"cell\": \"e6dcb268-db9c-42d2-a7de-01802d7982d4\",\n" +
                     "                \"port\": \"output_0\"\n" +
                     "            },\n" +
                     "            \"target\": {\n" +
-                    "                \"cell\": \"35d67e0a-7f67-470b-93e3-3ec77d2c7652\",\n" +
+                    "                \"cell\": \"27303e91-0bed-4648-a09c-d009e96a9c7c\",\n" +
                     "                \"port\": \"secondInput\"\n" +
                     "            },\n" +
-                    "            \"zIndex\": 5\n" +
+                    "            \"zIndex\": 6\n" +
+                    "        },\n" +
+                    "        {\n" +
+                    "            \"shape\": \"edge\",\n" +
+                    "            \"attrs\": {\n" +
+                    "                \"line\": {\n" +
+                    "                    \"stroke\": \"#b2a2e9\",\n" +
+                    "                    \"targetMarker\": {\n" +
+                    "                        \"name\": \"classic\",\n" +
+                    "                        \"size\": 10\n" +
+                    "                    }\n" +
+                    "                }\n" +
+                    "            },\n" +
+                    "            \"id\": \"2f96edf9-0d85-419a-9e92-a36222348780\",\n" +
+                    "            \"source\": {\n" +
+                    "                \"cell\": \"27303e91-0bed-4648-a09c-d009e96a9c7c\",\n" +
+                    "                \"port\": \"output_0\"\n" +
+                    "            },\n" +
+                    "            \"target\": {\n" +
+                    "                \"cell\": \"c41ba12f-2825-41a2-b369-42e1e30d6c76\",\n" +
+                    "                \"port\": \"input_0\"\n" +
+                    "            },\n" +
+                    "            \"zIndex\": 7\n" +
+                    "        }\n" +
+                    "    ]\n" +
+                    "}";
+
+
+    private static final String x6_json2 =
+            "{\n" +
+                    "    \"cells\": [\n" +
+                    "        {\n" +
+                    "            \"position\": {\n" +
+                    "                \"x\": 50,\n" +
+                    "                \"y\": 250\n" +
+                    "            },\n" +
+                    "            \"size\": {\n" +
+                    "                \"width\": 70,\n" +
+                    "                \"height\": 50\n" +
+                    "            },\n" +
+                    "            \"view\": \"react-shape-view\",\n" +
+                    "            \"attrs\": {\n" +
+                    "                \"body\": {\n" +
+                    "                    \"rx\": 7,\n" +
+                    "                    \"ry\": 6\n" +
+                    "                },\n" +
+                    "                \"text\": {\n" +
+                    "                    \"text\": \"MysqlSourceOperator\",\n" +
+                    "                    \"fontSize\": 2\n" +
+                    "                }\n" +
+                    "            },\n" +
+                    "            \"shape\": \"MysqlSourceOperator\",\n" +
+                    "            \"ports\": {\n" +
+                    "                \"groups\": {\n" +
+                    "                    \"outputs\": {\n" +
+                    "                        \"zIndex\": 999,\n" +
+                    "                        \"position\": \"right\",\n" +
+                    "                        \"attrs\": {\n" +
+                    "                            \"circle\": {\n" +
+                    "                                \"r\": 8,\n" +
+                    "                                \"magnet\": true,\n" +
+                    "                                \"stroke\": \"#818181\",\n" +
+                    "                                \"strokeWidth\": 1,\n" +
+                    "                                \"fill\": \"#b2a2e9\",\n" +
+                    "                                \"style\": {\n" +
+                    "                                    \"visibility\": \"hidden\"\n" +
+                    "                                }\n" +
+                    "                            }\n" +
+                    "                        }\n" +
+                    "                    },\n" +
+                    "                    \"inputs\": {\n" +
+                    "                        \"zIndex\": 999,\n" +
+                    "                        \"position\": \"left\",\n" +
+                    "                        \"attrs\": {\n" +
+                    "                            \"circle\": {\n" +
+                    "                                \"r\": 8,\n" +
+                    "                                \"magnet\": true,\n" +
+                    "                                \"stroke\": \"#818181\",\n" +
+                    "                                \"strokeWidth\": 1,\n" +
+                    "                                \"fill\": \"#915dac\",\n" +
+                    "                                \"style\": {\n" +
+                    "                                    \"visibility\": \"hidden\"\n" +
+                    "                                }\n" +
+                    "                            }\n" +
+                    "                        }\n" +
+                    "                    }\n" +
+                    "                },\n" +
+                    "                \"items\": [\n" +
+                    "                    {\n" +
+                    "                        \"group\": \"outputs\",\n" +
+                    "                        \"zIndex\": 999,\n" +
+                    "                        \"id\": \"output_0\",\n" +
+                    "                        \"attrs\": {\n" +
+                    "                            \"text\": {\n" +
+                    "                                \"text\": \"output_0\",\n" +
+                    "                                \"style\": {\n" +
+                    "                                    \"visibility\": \"hidden\",\n" +
+                    "                                    \"fontSize\": 10,\n" +
+                    "                                    \"fill\": \"#3B4351\"\n" +
+                    "                                }\n" +
+                    "                            }\n" +
+                    "                        },\n" +
+                    "                        \"label\": {\n" +
+                    "                            \"position\": \"bottom\"\n" +
+                    "                        }\n" +
+                    "                    }\n" +
+                    "                ]\n" +
+                    "            },\n" +
+                    "            \"id\": \"4784bd8d-40b1-4d90-be63-8826b4349b72\",\n" +
+                    "            \"zIndex\": 1,\n" +
+                    "            \"data\": {\n" +
+                    "                \"parameters\": {\n" +
+                    "                    \"tableName\": \"n1\",\n" +
+                    "                    \"connector\": \"jdbc\",\n" +
+                    "                    \"url\": \"url\",\n" +
+                    "                    \"username\": \"root\",\n" +
+                    "                    \"password\": \"123456\",\n" +
+                    "                    \"other\": [\n" +
+                    "                        {\n" +
+                    "                            \"key\": \"port\",\n" +
+                    "                            \"values\": \"123123\"\n" +
+                    "                        },\n" +
+                    "                        {\n" +
+                    "                            \"key\": \"ip\",\n" +
+                    "                            \"values\": \"225.225.225.225\"\n" +
+                    "                        }\n" +
+                    "                    ],\n" +
+                    "                    \"columns\": [\n" +
+                    "                        {\n" +
+                    "                            \"name\": \"a\",\n" +
+                    "                            \"type\": \"STRING\",\n" +
+                    "                            \"flag\": true\n" +
+                    "                        },\n" +
+                    "                        {\n" +
+                    "                            \"name\": \"b\",\n" +
+                    "                            \"type\": \"STRING\",\n" +
+                    "                            \"flag\": true\n" +
+                    "                        }\n" +
+                    "                    ]\n" +
+                    "                },\n" +
+                    "                \"config\": []\n" +
+                    "            }\n" +
                     "        },\n" +
                     "        {\n" +
                     "            \"position\": {\n" +
-                    "                \"x\": 328,\n" +
-                    "                \"y\": 120\n" +
+                    "                \"x\": 300,\n" +
+                    "                \"y\": 250\n" +
                     "            },\n" +
                     "            \"size\": {\n" +
                     "                \"width\": 70,\n" +
@@ -1023,54 +799,49 @@ class X6ToInternalConvertTest {
                     "                    }\n" +
                     "                ]\n" +
                     "            },\n" +
-                    "            \"id\": \"36fd714f-c1b0-476b-85ee-d10ced644f22\",\n" +
-                    "            \"zIndex\": 6,\n" +
+                    "            \"id\": \"90c741fe-3ea3-4c5a-bf58-ef206f23be09\",\n" +
+                    "            \"zIndex\": 2,\n" +
                     "            \"data\": {\n" +
-                    "                \"parameters\": [\n" +
-                    "                    {\n" +
-                    "                        \"dataSink\": {\n" +
-                    "                            \"tableName\": \"out\",\n" +
-                    "                            \"connector\": \"jdbc\",\n" +
-                    "                            \"url\": \"u\",\n" +
-                    "                            \"username\": \"root\",\n" +
-                    "                            \"password\": \"123456\"\n" +
+                    "                \"parameters\": {\n" +
+                    "                    \"tableName\": \"asd\",\n" +
+                    "                    \"connector\": \"jdbc\",\n" +
+                    "                    \"url\": \"asd\",\n" +
+                    "                    \"username\": \"root\",\n" +
+                    "                    \"password\": \"123456\",\n" +
+                    "                    \"other\": [\n" +
+                    "                        {\n" +
+                    "                            \"key\": \"aaaaaaa\",\n" +
+                    "                            \"values\": \"f\"\n" +
                     "                        },\n" +
-                    "                        \"columns\": [\n" +
-                    "                            {\n" +
-                    "                                \"name\": \"ab\",\n" +
-                    "                                \"type\": \"STRING\",\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"name\": \"bb\",\n" +
-                    "                                \"type\": \"STRING\",\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"name\": \"cb\",\n" +
-                    "                                \"type\": \"STRING\",\n" +
-                    "                                \"flag\": true\n" +
-                    "                            }\n" +
-                    "                        ]\n" +
-                    "                    }\n" +
-                    "                ],\n" +
+                    "                        {\n" +
+                    "                            \"key\": \"bbbbbbb\",\n" +
+                    "                            \"values\": \"v\"\n" +
+                    "                        }\n" +
+                    "                    ],\n" +
+                    "                    \"columns\": [\n" +
+                    "                        {\n" +
+                    "                            \"name\": \"aa\",\n" +
+                    "                            \"type\": \"STRING\",\n" +
+                    "                            \"flag\": true\n" +
+                    "                        },\n" +
+                    "                        {\n" +
+                    "                            \"name\": \"bb\",\n" +
+                    "                            \"type\": \"STRING\",\n" +
+                    "                            \"flag\": true\n" +
+                    "                        }\n" +
+                    "                    ]\n" +
+                    "                },\n" +
                     "                \"config\": [\n" +
                     "                    {\n" +
-                    "                        \"35d67e0a-7f67-470b-93e3-3ec77d2c7652&output_0 36fd714f-c1b0-476b-85ee-d10ced644f22&input_0\": [\n" +
+                    "                        \"4784bd8d-40b1-4d90-be63-8826b4349b72&output_0 90c741fe-3ea3-4c5a-bf58-ef206f23be09&input_0\": [\n" +
                     "                            {\n" +
-                    "                                \"functionName\": \"a1\",\n" +
-                    "                                \"name\": \"test1\",\n" +
-                    "                                \"parameters\": [\n" +
-                    "                                    \"a\"\n" +
-                    "                                ],\n" +
+                    "                                \"name\": \"a\",\n" +
+                    "                                \"type\": \"STRING\",\n" +
                     "                                \"flag\": true\n" +
                     "                            },\n" +
                     "                            {\n" +
-                    "                                \"functionName\": \"a2\",\n" +
-                    "                                \"name\": \"test2\",\n" +
-                    "                                \"parameters\": [\n" +
-                    "                                    \"2\"\n" +
-                    "                                ],\n" +
+                    "                                \"name\": \"b\",\n" +
+                    "                                \"type\": \"STRING\",\n" +
                     "                                \"flag\": true\n" +
                     "                            }\n" +
                     "                        ]\n" +
@@ -1089,16 +860,16 @@ class X6ToInternalConvertTest {
                     "                    }\n" +
                     "                }\n" +
                     "            },\n" +
-                    "            \"id\": \"e524efc6-1c03-4cdf-8cf9-3108bf300a8f\",\n" +
+                    "            \"id\": \"d8b50986-0530-4aa2-b654-7d9396774e64\",\n" +
+                    "            \"zIndex\": 3,\n" +
                     "            \"source\": {\n" +
-                    "                \"cell\": \"35d67e0a-7f67-470b-93e3-3ec77d2c7652\",\n" +
+                    "                \"cell\": \"4784bd8d-40b1-4d90-be63-8826b4349b72\",\n" +
                     "                \"port\": \"output_0\"\n" +
                     "            },\n" +
                     "            \"target\": {\n" +
-                    "                \"cell\": \"36fd714f-c1b0-476b-85ee-d10ced644f22\",\n" +
+                    "                \"cell\": \"90c741fe-3ea3-4c5a-bf58-ef206f23be09\",\n" +
                     "                \"port\": \"input_0\"\n" +
-                    "            },\n" +
-                    "            \"zIndex\": 7\n" +
+                    "            }\n" +
                     "        }\n" +
                     "    ]\n" +
                     "}";
