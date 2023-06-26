@@ -13,22 +13,21 @@ import { JSONEditor, JSONEditorOptions } from '@json-editor/json-editor';
 import {
   changeCurrentSelectNode,
   changeCurrentSelectNodeParamsData,
-  changeCurrentSelectNodeName,
   changeJsonEditor,
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 
 const Editor = memo(() => {
+
   const jsonRef = useRef<HTMLDivElement>(null);
   let editor: InstanceType<typeof JSONEditor>
   const dispatch = useAppDispatch();
-  const { operatorParameters, currentSelectNode, currentSelectNodeName } = useAppSelector(
+  const { operatorParameters, currentSelectNode } = useAppSelector(
     (state) => ({
       operatorParameters: state.home.operatorParameters,
       currentSelectNode: state.home.currentSelectNode,
-      currentSelectNodeName: state.home.currentSelectNodeName,
     }),
   );
-  const currentNodeDes = operatorParameters.find((item: any) => item.name === currentSelectNodeName);
+  const currentNodeDes = operatorParameters.find((item: any) => item.name === currentSelectNode.shape);
   const config: JSONEditorOptions<any> = {
     schema: currentNodeDes?.specification ?? null,
     //设置主题,可以是bootstrap或者jqueryUI等
@@ -50,30 +49,38 @@ const Editor = memo(() => {
       const container = jsonRef.current;
       container.innerHTML = '';
       if (!config.schema) return
-      
+
       editor = new JSONEditor<any>(container, config);
       editor.on('ready', function () {
         dispatch(changeJsonEditor(editor))
         if (currentSelectNode instanceof Node) {
-          if (currentSelectNode.getData()&&currentSelectNode.getData().parameters) {
-            
+          if (currentSelectNode.getData() && currentSelectNode.getData().parameters) {
+
             //解决bug 防止直接将config的值设置
             editor.setValue(currentSelectNode.getData().parameters)
           }
         }
       });
       editor.on('change', function () {
+        
         //先恢复初始值
         dispatch(changeCurrentSelectNodeParamsData([]));
         //设置当前属性值
+        console.log(editor.getValue());
+
         dispatch(changeCurrentSelectNodeParamsData(editor.getValue()));
         if (currentSelectNode instanceof Node) {
-          
-          let config=[]
-          if(currentSelectNode.getData()&&currentSelectNode.getData().config){
-            config=currentSelectNode.getData().config
+
+          let nodeConfig = []
+          if (currentSelectNode.getData() && currentSelectNode.getData().config) {
+            nodeConfig = currentSelectNode.getData().config
           }
-          currentSelectNode.setData({ parameters: editor.getValue(),config},{overwrite:true});
+          console.log(editor.getValue());
+
+          //判断当前节点是否有变化
+          // 如果是同一个节点，说明只是值发生变化
+          //如果节点发生变化，则不设置，让其读取自己的配置
+          currentSelectNode.setData({ parameters: editor.getValue(), config: nodeConfig }, { overwrite: true });
           dispatch(changeCurrentSelectNode(currentSelectNode));
         }
       });
@@ -83,7 +90,7 @@ const Editor = memo(() => {
       editor.destroy()
     }
 
-  }, [operatorParameters, currentSelectNodeName,currentSelectNode]);
+  }, [operatorParameters, currentSelectNode]);
 
   return <div className={styles['json-editor-content']} ref={jsonRef}></div>;
 });
