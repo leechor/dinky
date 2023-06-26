@@ -59,6 +59,9 @@ import {
   useAppDispatch,
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
 import { initFlowDataInfo } from "@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home"
+import { useAppSelector } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
+import localcache from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/localStorage"
+
 type StudioTreeProps = {
   rightClickMenu: StateType['rightClickMenu'];
   dispatch: any;
@@ -129,6 +132,9 @@ const StudioTree: React.FC<StudioTreeProps> = (props) => {
   const [cutId, setCutId] = useState<number | undefined>(undefined);
   const [exportTaskIds, setExportTaskIds] = useState<any[]>([]);
   const graphDispatch = useAppDispatch();
+  const { graph } = useAppSelector((state) => ({
+    graph: state.home.graph,
+  }));
   const getTreeData = async () => {
     const result = await getCatalogueTreeData();
     let data = result.datas;
@@ -186,7 +192,7 @@ const StudioTree: React.FC<StudioTreeProps> = (props) => {
     if (key == 'Open') {
       toOpen(rightClickNode);
     } else if (key == 'OpenGraph') {
-      
+
       toOpenGraph(rightClickNode);
     } else if (key == 'Submit') {
       toSubmit(rightClickNode);
@@ -323,7 +329,7 @@ const StudioTree: React.FC<StudioTreeProps> = (props) => {
 
     const result = getInfoById('/api/task', node.taskId);
     result.then((result) => {
-      
+
       let newTabs = tabs;
       let newPane: any = {
         title: node.name,
@@ -363,6 +369,7 @@ const StudioTree: React.FC<StudioTreeProps> = (props) => {
           payload: newTabs,
         });
       graphDispatch && graphDispatch(initFlowDataInfo(result.datas.graphJson ? JSON.parse(result.datas.graphJson) : {}))
+      localcache.setCache("graphData", result.datas.graphJson ? JSON.parse(result.datas.graphJson) : {})
       showMetaStoreCatalogs(result.datas, dispatch);
     });
   };
@@ -663,7 +670,7 @@ const StudioTree: React.FC<StudioTreeProps> = (props) => {
 
   //选中节点时触发
   const onSelect = (selectedKeys: Key[], e: any) => {
-    
+
     if (e.node && e.node.isLeaf) {
       dispatch({
         type: 'Studio/saveCurrentPath',

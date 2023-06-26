@@ -17,9 +17,8 @@ import NodeModalForm from '@/components/Studio/StudioGraphEdit/GraphEditor/compo
 import styles from './index.less';
 import { message } from 'antd';
 import AddModalPort from '../../../components/add-port-modal';
-import {
-  changeCurrentSelectNode,
-} from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
+
+import localCache from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/localStorage"
 
 export interface ParametersConfigType {
   name: string,
@@ -341,7 +340,8 @@ const LeftEditor = memo(() => {
         stencilComponentsLoader(graphRef.current, stencil, operatorParameters);
 
         // 6、加载数据
-        timer = handleInitNodes(graphRef.current, flowData);
+        const data = localCache.getCache("graphData")
+        timer = handleInitNodes(graphRef.current, data);
 
         //加载连接装点击事件控制portmodal
         handleNodeConfigSet(graphRef.current)
@@ -398,4 +398,4 @@ const LeftEditor = memo(() => {
   );
 });
 
-export default LeftEditor;
+export default LeftEditor
