@@ -129,4 +129,5 @@ export default function loadPlugin(graph: Graph) {
   snapLine(graph);
   keyboard(graph);
   history(graph);
+  transform(graph);
 }
