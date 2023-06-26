@@ -10,7 +10,6 @@ import { Graph } from "@antv/x6";
 
 export const handleInitNodes = (graph: Graph, data: any) => {
   //目前写死，后续优化
-  debugger
   let timer;
   if (data) {
     timer = setTimeout(() => {

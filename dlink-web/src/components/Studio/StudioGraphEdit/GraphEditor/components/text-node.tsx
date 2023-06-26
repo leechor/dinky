@@ -20,6 +20,7 @@ const TextNode: FC<NodeType> = memo(({ node }: NodeType) => {
           backgroundColor: backgroundColor,
           color: fontColor,
           resize: "none",
+          border: "none",
         }}
         onChange={onChange}
         placeholder="input..."
