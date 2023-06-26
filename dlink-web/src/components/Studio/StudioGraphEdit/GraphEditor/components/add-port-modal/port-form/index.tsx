@@ -21,12 +21,11 @@
 import React from 'react';
 import { FormInstance } from "antd/es/form/hooks/useForm";
 import { Values } from "async-validator";
-import { Checkbox, Form, Row, Col } from "antd"
-import { ParametersConfigType } from "../../../views/home/cpns/left-editor"
+import { Input, Form, Row, Col } from "antd"
+import { Cell, Node } from '@antv/x6';
 type PortProFormProps = {
-    values: ParametersConfigType[];
+    values: Node;
     form: FormInstance<Values>;
-    initValue:string[]
 };
 export const FORM_LAYOUT_PUBLIC = {
     labelCol: { span: 5 },
@@ -34,9 +33,19 @@ export const FORM_LAYOUT_PUBLIC = {
 };
 const PortForm: React.FC<PortProFormProps> = (props) => {
 
-    const { values, form ,initValue} = props;
-    console.log(initValue,"initValue");
+    const { values, form, } = props;
+    const vallidatePortName = (rule:any, val: string, callback:any) => {
+        
+        if (val === "") {
+            callback("portName 不能为空")
+        } else {
+            const found = values.getPorts().find(item => item.id === val)
+            if (!found) { callback() } else {
+                callback("portName 不能重复")
+            }
 
+        }
+    }
 
     /**
      * construct role form
@@ -44,12 +53,9 @@ const PortForm: React.FC<PortProFormProps> = (props) => {
      */
     const renderRoleForm = () => {
         return <>
-            <Form.Item name="parameters" initialValue={initValue}>
-                <Checkbox.Group>{values && values.map(value =>
-                    <Checkbox key={value.name} value={value.name} style={{ lineHeight: "32px" }}>{value.name}</Checkbox>
-                )}</Checkbox.Group>
+            <Form.Item name="portName" label="portName" rules={[{ required: true, message: "portName不能为空" }, { validator: (rule, val, callback) => { vallidatePortName(rule, val, callback) } }]}>
+                <Input placeholder='input portName...' />
             </Form.Item>
-
         </>
     };
 

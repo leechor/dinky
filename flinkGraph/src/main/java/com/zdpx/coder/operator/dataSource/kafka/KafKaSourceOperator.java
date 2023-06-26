@@ -17,29 +17,32 @@
  *
  */
 
-package com.zdpx.coder.operator.dataSource.mysql;
+package com.zdpx.coder.operator.dataSource.kafka;
 
 import com.zdpx.coder.graph.OutputPortObject;
 import com.zdpx.coder.operator.TableInfo;
 import com.zdpx.coder.operator.dataSource.AbstractSqlTable;
+import com.zdpx.coder.utils.TableDataStreamConverter;
+import com.zdpx.coder.utils.TemplateUtils;
+
+import java.util.List;
+import java.util.Map;
 
 /** */
-public class MysqlSourceOperator extends AbstractSqlTable {
+public class KafKaSourceOperator extends AbstractSqlTable {
 
     private OutputPortObject<TableInfo> outputPortObject;
 
-    private static final String MYSQL_SOURCE = "MysqlSource";
+    private static final String KAFKA_SOURCE = "KafKaSource";
 
     @Override
     protected void initialize() {
         outputPortObject = new OutputPortObject<>(this, OUTPUT_0);
         getOutputPorts().put(OUTPUT_0, outputPortObject);
-        setIcon("icon-MySQL-icon-02");
-        setName("Mysql数据源");
     }
 
     @Override
     protected void execute() {
-        processLogic(MYSQL_SOURCE,false,outputPortObject);
+        processLogic(KAFKA_SOURCE,false,outputPortObject);
     }
 }

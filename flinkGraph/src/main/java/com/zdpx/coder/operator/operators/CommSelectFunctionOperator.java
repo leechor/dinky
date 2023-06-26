@@ -43,7 +43,7 @@ import com.zdpx.coder.utils.TemplateUtils;
 public class CommSelectFunctionOperator extends Operator {
     public static final String TEMPLATE =
             String.format(
-                    "<#import \"%s\" as e>CREATE VIEW ${tableName} AS SELECT <@e.fieldsProcess fieldFunctions/> FROM ${inputTableName} <#if where??>WHERE ${where}</#if>",
+                    "<#import \"%s\" as e>CREATE VIEW ${tableName} AS SELECT <@e.fieldsProcess columns/> FROM ${inputTableName} <#if where??>WHERE ${where}</#if>",
                     Specifications.TEMPLATE_FILE);
 
     /** 函数字段名常量 */

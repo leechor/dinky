@@ -147,7 +147,7 @@ public class Explainer {
             } else {
                 UDF udf = UDFUtil.toUDF(statement);
                 if (Asserts.isNotNull(udf)) {
-                    udfList.add(udf);
+                    udfList.add(UDFUtil.toUDF(statement));
                 }
                 ddl.add(new StatementParam(statement, operationType));
                 statementList.add(statement);

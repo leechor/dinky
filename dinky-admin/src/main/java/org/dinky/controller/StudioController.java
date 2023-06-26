@@ -70,17 +70,8 @@ public class StudioController {
     @PostMapping("/executeSql")
     @ApiOperation(value = "执行Sql", notes = "执行Sql")
     public Result<JobResult> executeSql(@RequestBody StudioExecuteDTO studioExecuteDTO) {
-        try {
-            JobResult jobResult = studioService.executeSql(studioExecuteDTO);
-            return Result.succeed(jobResult, "execute successful");
-        } catch (Exception ex) {
-            JobResult jobResult = new JobResult();
-            jobResult.setJobConfig(studioExecuteDTO.getJobConfig());
-            jobResult.setSuccess(false);
-            jobResult.setStatement(studioExecuteDTO.getStatement());
-            jobResult.setError(ex.toString());
-            return Result.failed(jobResult, "execute failed");
-        }
+        JobResult jobResult = studioService.executeSql(studioExecuteDTO);
+        return Result.succeed(jobResult, "执行成功");
     }
 
     /** 解释Sql */

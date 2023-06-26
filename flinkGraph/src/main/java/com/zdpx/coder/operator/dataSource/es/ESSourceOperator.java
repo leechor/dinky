@@ -17,29 +17,27 @@
  *
  */
 
-package com.zdpx.coder.operator.dataSource.mysql;
+package com.zdpx.coder.operator.dataSource.es;
 
 import com.zdpx.coder.graph.OutputPortObject;
 import com.zdpx.coder.operator.TableInfo;
 import com.zdpx.coder.operator.dataSource.AbstractSqlTable;
 
 /** */
-public class MysqlSourceOperator extends AbstractSqlTable {
+public class ESSourceOperator extends AbstractSqlTable {
 
     private OutputPortObject<TableInfo> outputPortObject;
 
-    private static final String MYSQL_SOURCE = "MysqlSource";
+    private static final String ES_SOURCE = "esSource";
 
     @Override
     protected void initialize() {
         outputPortObject = new OutputPortObject<>(this, OUTPUT_0);
         getOutputPorts().put(OUTPUT_0, outputPortObject);
-        setIcon("icon-MySQL-icon-02");
-        setName("Mysql数据源");
     }
 
     @Override
     protected void execute() {
-        processLogic(MYSQL_SOURCE,false,outputPortObject);
+        processLogic(ES_SOURCE,false,outputPortObject);
     }
 }

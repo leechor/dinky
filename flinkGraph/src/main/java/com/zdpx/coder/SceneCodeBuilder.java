@@ -20,16 +20,8 @@
 package com.zdpx.coder;
 
 import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.lang.reflect.Modifier;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -151,22 +143,22 @@ public class SceneCodeBuilder {
 
     /**
      * 获取operator的定义, key为{@link Identifier#getCode()} 返回值, 目前为Operator类的全限定名 value为类型定义.
+     * 增加排序规则
      *
      * @return 返回operator集
      */
     public static Map<String, Class<? extends Operator>> getCodeClassMap(
             Set<Class<? extends Operator>> operators) {
-        return operators.stream()
-                .filter(c -> !java.lang.reflect.Modifier.isAbstract(c.getModifiers()))
-                .collect(
-                        Collectors.toMap(
-                                t -> {
-                                    Operator bcg = InstantiationUtil.instantiate(t);
-                                    String code = bcg.getCode();
-                                    bcg = null;
-                                    return code;
-                                },
-                                t -> t));
+
+        LinkedHashSet<Class<? extends Operator>> collect = operators.stream()
+                .filter(c -> !Modifier.isAbstract(c.getModifiers()))
+                .sorted(Comparator.comparing(Class::getName,Comparator.reverseOrder()))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        Map<String, Class<? extends Operator>> map = new LinkedHashMap<>();
+        for(Class<? extends Operator> l : collect){
+            map.put(InstantiationUtil.instantiate(l).getCode(),l);
+        }
+        return  map;
     }
 
     /**
@@ -178,4 +170,5 @@ public class SceneCodeBuilder {
     public CodeContext createCodeContext(Scene scene) {
         return CodeContext.newBuilder(scene.getEnvironment().getName()).scene(scene).build();
     }
+
 }
