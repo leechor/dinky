@@ -78,7 +78,14 @@ public abstract class AbstractSqlTable extends Operator {
             columns.removeIf(s -> !(boolean) s.get(FLAG));
             Map<String, Object> parameters = getParameterLists().get(0); // [ parameters , config ]
             final TableInfo ti = TableDataStreamConverter.getTableInfo(parameters);
-            ti.setName(generateTableName(ti.getName()));
+            if(ti.getName()==null){
+                String outputTableName = generateTableName(dataModel.get("tableName").toString());
+                ti.setName(outputTableName);
+                dataModel.put("tableName",outputTableName);
+            }else{
+                ti.setName(generateTableName(ti.getName()));
+            }
+//            ti.setName(generateTableName(tableNam));
             outputPortObject.setPseudoData(ti);
         }
 

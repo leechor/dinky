@@ -1,11 +1,8 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://dzpx.com/detection",
   "title": "JoinOperator Define",
   "description": "define the JoinOperator parameter",
-  "minItems": 1,
-  "type": "array",
-	"items": {
+  "type": "object",
+
 	  "required": [
 		"statementBody",
 		"placeholder"
@@ -194,5 +191,4 @@
   ]
 }
 	  }
-	}
 }

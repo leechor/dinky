@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  *
  * */
 
-public class CommWindowFunctionOperator extends Operator {
+public class CommWindowOperator extends Operator {
 
     public static final String TEMPLATE =
             String.format(
