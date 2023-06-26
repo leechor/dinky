@@ -127,7 +127,7 @@ export const initGraph = (
   //加载相关插件
   loadPlugin(graph);
 
-  function showPortOrLable(port: Element | SVGElement | null, show: boolean) {
+  function showPortOrLabel(port: Element | SVGElement | null, show: boolean) {
     if (port instanceof SVGElement) {
       port.style.visibility = show ? 'visible' : 'hidden';
     }
@@ -136,7 +136,7 @@ export const initGraph = (
   // 控制连接桩显示/隐藏
   const showPortsOrLabels = (portsOrLabels: NodeListOf<Element>, show: boolean) => {
     portsOrLabels.forEach((portOrLabel) => {
-      showPortOrLable(portOrLabel, show);
+      showPortOrLabel(portOrLabel, show);
     });
   };
 
@@ -146,7 +146,7 @@ export const initGraph = (
     const labels=container.querySelectorAll(".x6-port-label")
     showPortsOrLabels(ports, show);
     showPortsOrLabels(labels, show);
-    
+
   }
 
   graph.on('node:mouseenter', ({ cell }) => {
@@ -184,7 +184,7 @@ export const initGraph = (
 
   // graph.on('edge:mouseenter', ({ e, view, edge, cell }) => {
   //   console.log("enter");
-    
+
   //   edge.attr(LINE_STOKE_WIDTH, 4);
   //   showEdgePorts(edge, true);
 
