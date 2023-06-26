@@ -6,14 +6,25 @@ import {
   useAppSelector,
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
 const RightDetail = memo(() => {
-  const { currentSelectNode } = useAppSelector(
+  const { currentSelectNode, operatorParameters } = useAppSelector(
     (state) => ({
       currentSelectNode: state.home.currentSelectNode,
+      operatorParameters: state.home.operatorParameters
     }),
   );
   const getTitleInfo = () => {
+    console.log(currentSelectNode, operatorParameters);
+
     if (currentSelectNode && currentSelectNode.shape) {
-      return <span>{currentSelectNode.shape}</span>
+      const found = operatorParameters.find((item: any) => item.name === currentSelectNode.shape)
+      if (found) {
+        return (<>
+          <CpnShape iconPath={found.icon} />
+          <span>{currentSelectNode.shape}</span>
+        </>)
+      } else {
+        return <span>节点信息</span>
+      }
     } else {
       return <span>节点信息</span>
     }

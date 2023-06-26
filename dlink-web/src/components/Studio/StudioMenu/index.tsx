@@ -85,6 +85,7 @@ import DolphinPush from '@/components/Studio/StudioMenu/DolphinPush';
 import { l } from '@/utils/intl';
 import { useAppSelector } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
 import { JSONEditor } from '@json-editor/json-editor';
+import localcache from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/localStorage"
 
 const StudioMenu = (props: any) => {
   const {
@@ -126,6 +127,7 @@ const StudioMenu = (props: any) => {
         if (current) {
           // handleEditModalVisible(true);
           props.changeFullScreen(true);
+          localcache.setCache("graphData",graph.toJSON())
         }
       }
     },
@@ -352,6 +354,8 @@ const StudioMenu = (props: any) => {
   const toFullScreen = () => {
     if (current) {
       props.changeFullScreen(true);
+      //保存当前画布中json信息
+      localcache.setCache("graphData",graph.toJSON())
     }
   };
 
@@ -372,8 +376,7 @@ const StudioMenu = (props: any) => {
         })
         message.warning(errmsg+ "-检查算子节点信息")
       } else {
-        console.log("save", JSON.stringify(graph.toJSON()));
-        
+        localcache.setCache("graphData",graph.toJSON())
         props.saveTask(current, JSON.stringify(graph.toJSON()));
       }
     }
@@ -892,6 +895,7 @@ const StudioMenu = (props: any) => {
           footer={null}
           onCancel={() => {
             props.changeFullScreen(false);
+            localcache.setCache("graphData",graph.toJSON())
           }}
         >
           <StudioTabs width={width} height={height} />
