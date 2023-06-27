@@ -83,6 +83,30 @@ const LeftEditor = memo(() => {
     currentSelectNode: state.home.currentSelectNode,
     jsonEditor: state.home.editor
   }));
+  const getNewConfig = (cell: Cell, config: any) => {
+
+    if (!cell.getData() || !cell.getData()["config"][0]) {
+      return config
+    }
+    let oldConifg = cell.getData()["config"][0]
+    for (let newKey in config) {
+      oldConifg[newKey] = config[newKey]
+    }
+
+    // for (let oldkey in oldConifg) {
+    //   for (let newkey in config) {
+
+    //     if (oldkey === newkey) {
+    //       //修改
+    //       newConfigObj[oldkey] = oldConifg[oldkey]
+    //     } else {
+    //       //新增
+    //       newConfigObj[newkey] = config
+    //     }
+    //   }
+    // }
+    return oldConifg
+  }
   const isConnected = (graph: Graph, node: Cell, id: string, isOutputs: boolean) => {
     let edges: Edge[] | null;
     if (isOutputs) {
@@ -99,15 +123,19 @@ const LeftEditor = memo(() => {
     graph.on("node:port:click", ({ node, port }: { node: Node, port: string }) => {
       dispatch(changeCurrentSelectNode(node))
 
-      if (!node.getData()) {
+      if (!node.getData()&&node.shape!=="DuplicateOperator") {
         message.warning("请先设置节点参数！")
         return
+      }
+      if(!node.getData()&&node.shape==="DuplicateOperator"){
+        message.warning("请先连接输入源！")
       }
       // 输出  由editor配置
       if (node.getPort(port)?.group === portType.outputs) {
 
         //修改（如果是DuplicateOperator则需要从输入节点的config里读取 ）
         const parametersConfig: ParametersConfigType[] = node.getData()?.parameters.columns;
+        if (parametersConfig.some(config => !config.name)) { message.warning("节点参数名称不能为空！"); return }
         setParametersConfig({
           isOutputs: true,
           parametersConfig: [...parametersConfig],
@@ -153,8 +181,6 @@ const LeftEditor = memo(() => {
         parametersConfig: parametersConfig,
         readConfigData: { currentCell, currentPort, id }
       })
-
-      // setSelectedNode(currentCell as Node)
       handlemodalVisible(true)
     }
     graph.on("edge:connected", ({ isNew, edge, currentCell, currentPort }) => {
@@ -165,6 +191,8 @@ const LeftEditor = memo(() => {
         const sourceCell = edge.getSourceCell()
         //获取source的columns
         if (!sourceCell?.getData()) return
+
+        //修改（如果是DuplicateOperator则需要从输入节点的config里读取 ）
         let parametersConfig: ParametersConfigType[] = sourceCell?.getData()?.parameters.columns;
         //将输出数据筛选后设置给输入【flag为true】
         parametersConfig = parametersConfig.filter(item => item.flag)
@@ -175,8 +203,9 @@ const LeftEditor = memo(() => {
           let id = `${sourceCell.id}&${sourcePortId} ${currentCell.id}&${currentPort}`
           configMap.set(id, parametersConfig);
           let config = strMapToObj(configMap)
-          // currentCell.getData()["config"] = [config]
-          currentCell.setData({ config: [config] });
+          let newConfigObj = getNewConfig(currentCell, config)
+          currentCell.setData({ ...(currentCell.getData() ? currentCell.getData() : {}), config: [newConfigObj] }, { overwrite: true });
+
           //从node-data 读取config
           readConfigFromData(currentCell, sourceCell, sourcePortId, currentPort, id)
         }
@@ -223,19 +252,11 @@ const LeftEditor = memo(() => {
             //修改target里config（目前直接覆盖，后面考虑对比保存）
             let configMap: Map<string, ParametersConfigType[]> = new Map();
             let id = `${value.readConfigData.currentCell.id}&${sourcePortId} ${targetCell!.id}&${targetPortId}`
-
-            console.log(id);
-            console.log(value.origin, "value.origin");
             let filterConfigMap = value.origin.filter(item => item.flag)
-            console.log(filterConfigMap, "filterConfigMap");
-
-
-
             configMap.set(id, filterConfigMap);
             let config = strMapToObj(configMap)
-            // targetCell!.getData()["config"] = [config];
-            targetCell!.setData({ config: [config] });
-            // targetCell!.setData({ config: [config], parameters: targetCell?.getData().parameters }, { overwrite: true });
+            let newConfigObj = getNewConfig(targetCell!, config)
+            targetCell!.setData({ ... (targetCell?.getData() ? targetCell.getData() : {}), config: [newConfigObj] }, { overwrite: true });
           }
         }
       }
@@ -246,9 +267,8 @@ const LeftEditor = memo(() => {
       let configMap: Map<string, ParametersConfigType[]> = new Map();
       configMap.set(value.readConfigData.id!, value.origin);
       let config = strMapToObj(configMap)
-      // value.readConfigData.currentCell.getData()["config"] = [config]
-      value.readConfigData.currentCell.setData({ config: [config] });
-
+      let newConfigObj = getNewConfig(value.readConfigData.currentCell!, config)
+      value.readConfigData.currentCell.setData({ ...(value.readConfigData.currentCell.getData() ? value.readConfigData.currentCell.getData() : {}), config: [newConfigObj] }, { overwrite: true });
     }
 
     console.log(graphRef.current?.toJSON(), "confirm");
