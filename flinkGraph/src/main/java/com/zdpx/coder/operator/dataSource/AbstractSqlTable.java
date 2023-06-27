@@ -67,6 +67,7 @@ public abstract class AbstractSqlTable extends Operator {
 
         //任意数据源格式转换
         dataModel.put(PARAMETERS,formatConversion(dataModel));
+        dataModel.put("tableName",generateTableName(dataModel.get("tableName").toString()));
 
         if(flag){ //sink
             List<Map<String, Object>> input = formatProcessingSink(dataModel);
@@ -78,14 +79,13 @@ public abstract class AbstractSqlTable extends Operator {
             columns.removeIf(s -> !(boolean) s.get(FLAG));
             Map<String, Object> parameters = getParameterLists().get(0); // [ parameters , config ]
             final TableInfo ti = TableDataStreamConverter.getTableInfo(parameters);
+
             if(ti.getName()==null){
-                String outputTableName = generateTableName(dataModel.get("tableName").toString());
-                ti.setName(outputTableName);
-                dataModel.put("tableName",outputTableName);
+                ti.setName(dataModel.get("tableName").toString());
             }else{
                 ti.setName(generateTableName(ti.getName()));
             }
-//            ti.setName(generateTableName(tableNam));
+
             outputPortObject.setPseudoData(ti);
         }
 
@@ -163,8 +163,9 @@ public abstract class AbstractSqlTable extends Operator {
         result.put(parameters, new HashMap<String, Object>());
         result.put("tableName",tableName);
         if(psFirst.get("tableName")!=null){
-            result.put("tableName", generateTableName( (String)psFirst.get("tableName") ));
+            result.put("tableName", psFirst.get("tableName") );
         }
+
         for (Map.Entry<String, Object> m : psFirst.entrySet()) {
             if (m.getKey().equals(columns)) {
                 result.put(columns, m.getValue());
