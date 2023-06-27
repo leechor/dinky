@@ -107,7 +107,7 @@ const LeftEditor = memo(() => {
       // 输出  由editor配置
       if (node.getPort(port)?.group === portType.outputs) {
 
-        //修改（如果是DuplicateOperator则需要从输入节点的config里读取）
+        //修改（如果是DuplicateOperator则需要从输入节点的config里读取 ）
         const parametersConfig: ParametersConfigType[] = node.getData()?.parameters.columns;
         setParametersConfig({
           isOutputs: true,
