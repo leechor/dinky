@@ -17,7 +17,10 @@ import NodeModalForm from '@/components/Studio/StudioGraphEdit/GraphEditor/compo
 import styles from './index.less';
 import { message } from 'antd';
 import AddModalPort from '../../../components/add-port-modal';
-
+import {
+  changeCurrentSelectNode,
+  changeCurrentSelectNodeName
+} from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import localCache from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/localStorage"
 
 export interface ParametersConfigType {
@@ -78,6 +81,7 @@ const LeftEditor = memo(() => {
   const { flowData, operatorParameters: operatorParameters, jsonEditor } = useAppSelector((state) => ({
     flowData: state.home.flowData,
     operatorParameters: state.home.operatorParameters,
+    currentSelectNode: state.home.currentSelectNode,
     jsonEditor: state.home.editor
   }));
   const isConnected = (graph: Graph, node: Cell, id: string, isOutputs: boolean) => {
@@ -85,29 +89,17 @@ const LeftEditor = memo(() => {
     if (isOutputs) {
       edges = graph.model.getOutgoingEdges(node)
       if (!edges) return false;
-      for (let edge of edges) {
-        const sourcePortId = edge.getSourcePortId();
-        if (sourcePortId === id) { return true }
-        else {
-          return false
-        }
-      }
+      return edges.some(edge=>edge.getSourcePortId()===id)
     } else {
       edges = graph.model.getIncomingEdges(node)
       if (!edges) return false;
-      for (let edge of edges) {
-        const targetPortId = edge.getTargetPortId();
-        if (targetPortId === id) {
-          return true;
-        } else {
-          return false
-        }
-      }
+      return edges.some(edge=>edge.getTargetPortId()===id)
     }
   }
   const handleNodeConfigSet = (graph: Graph) => {
     graph.on("node:port:click", ({ node, port }: { node: Node, port: string }) => {
-      // dispatch(changeCurrentSelectNode(node))
+      dispatch(changeCurrentSelectNode(node))
+
       if (!node.getData()) {
         message.warning("请先设置节点参数！")
         return
@@ -122,7 +114,6 @@ const LeftEditor = memo(() => {
             currentCell: node,
             currentPort: port,
           }
-
         })
         handlemodalVisible(true)
       } else {
@@ -141,37 +132,10 @@ const LeftEditor = memo(() => {
           if (targetPortId === port) {
             //获取config
             let id = `${sourceCell!.id}&${sourcePortId} ${targetCell!.id}&${targetPortId}`
-
             //获取最新输出配置
             if (targetCell?.getData().config) {
-              // //读取config
-              // const portParametersConfig = targetCell?.getData()?.config.find((item: any) => {
-              //   for (let key in item) {
-              //     if (key === id) {
-              //       return true
-              //     } else {
-              //       return false
-              //     }
-              //   }
-              // })
-              // const parametersConfig = portParametersConfig[0];
-              // readConfigFromData(targetCell, id)
               readConfigFromData(targetCell, sourceCell!, sourcePortId!, sourcePortId!, id)
-              // //将id
-              // let configMap: Map<string, ParametersConfigType[]> = new Map();
-              // //转换为config设置到当前节点的node-data里
-              // if (sourceCell && sourcePortId && targetCell && targetPortId) {
-              //   configMap.set(id, parametersConfig);
-              //   let config = strMapToObj(configMap)
-              //   //设置更新后的输入config
-              //   targetCell.setData({ config: [config] });
-              //   //从node-data 读取config
-              //   readConfigFromData(targetCell, id)
-              // }
-
             }
-          } else {
-            return
           }
         }
       }
@@ -193,7 +157,6 @@ const LeftEditor = memo(() => {
       handlemodalVisible(true)
     }
     graph.on("edge:connected", ({ isNew, edge, currentCell, currentPort }) => {
-
       //创建新边
       if (isNew) {
         //拿到该边的sourcecell和sourcePortId
@@ -208,10 +171,10 @@ const LeftEditor = memo(() => {
         let configMap: Map<string, ParametersConfigType[]> = new Map();
         //转换为config设置到当前节点的node-data里
         if (sourceCell && sourcePortId && currentCell && currentPort) {
-
           let id = `${sourceCell.id}&${sourcePortId} ${currentCell.id}&${currentPort}`
           configMap.set(id, parametersConfig);
           let config = strMapToObj(configMap)
+          // currentCell.getData()["config"] = [config]
           currentCell.setData({ config: [config] });
           //从node-data 读取config
           readConfigFromData(currentCell, sourceCell, sourcePortId, currentPort, id)
@@ -231,7 +194,7 @@ const LeftEditor = memo(() => {
 
 
   const handleSubmit = (value: CompareCheckProps) => {
-
+    
     value.origin.forEach(item => {
       if (value.parameters.includes(item.name)) {
         item.flag = true;
@@ -243,7 +206,8 @@ const LeftEditor = memo(() => {
       //判断是否连线
       const flag = isConnected(graphRef.current!, value.readConfigData.currentCell, value.readConfigData.currentPort, value.isOutputs)
       //同步选中节点信息   修改columns
-      value.readConfigData.currentCell.setData({ parameters: { columns: value.origin } });
+      // value.readConfigData.currentCell.setData({ parameters: { columns: value.origin } });
+      value.readConfigData.currentCell.getData().parameters.columns = value.origin;
       //同步jsoneditor
       jsonEditor.setValue(value.readConfigData.currentCell.getData()?.parameters)
       if (flag) {
@@ -268,7 +232,9 @@ const LeftEditor = memo(() => {
 
             configMap.set(id, filterConfigMap);
             let config = strMapToObj(configMap)
-            targetCell!.setData({ config: [config] }, { overwrite: true });
+            // targetCell!.getData()["config"] = [config];
+            targetCell!.setData({ config: [config] });
+            // targetCell!.setData({ config: [config], parameters: targetCell?.getData().parameters }, { overwrite: true });
           }
         }
       }
@@ -279,7 +245,9 @@ const LeftEditor = memo(() => {
       let configMap: Map<string, ParametersConfigType[]> = new Map();
       configMap.set(value.readConfigData.id!, value.origin);
       let config = strMapToObj(configMap)
+      // value.readConfigData.currentCell.getData()["config"] = [config]
       value.readConfigData.currentCell.setData({ config: [config] });
+
     }
 
     console.log(graphRef.current?.toJSON(), "confirm");

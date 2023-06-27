@@ -72,6 +72,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
 
   const onMenuClick = (name: string) => {
     messageApi.info(`clicked ${name}`);
+    handleShowMenu(false)
 
     switch (name) {
       case 'undo':
@@ -128,7 +129,6 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
         setIsDisablePaste(true);
         break;
       case 'save-JSON':
-        handleShowMenu(false)
         let data = JSON.stringify(graph.toJSON(), null, 4);
         const blob = new Blob([data], {type: 'text/json'}),
           e = new MouseEvent('click'),
@@ -142,7 +142,6 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
         // graph.fromJSON({cells:[graph.toJSON().cells[0],graph.toJSON().cells[1]]})
         break;
       case 'add-port':
-        handleShowMenu(false)
         break;
       case 'front':
         front();
