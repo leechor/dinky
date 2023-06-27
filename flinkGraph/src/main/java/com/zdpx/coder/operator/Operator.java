@@ -92,7 +92,7 @@ public abstract class Operator extends Node implements Runnable {
         return reflections.getSubTypesOf(Operator.class);
     }
 
-    //处理两种类型的数据，数据源类型为对象，其他算子为数组
+    //处理两种类型的数据，对象或数组
     protected static List<Map<String, Object>> getParameterLists(@Nullable String parametersStr) {
         List<Map<String, Object>> parametersLocal = new ArrayList<>();
 
