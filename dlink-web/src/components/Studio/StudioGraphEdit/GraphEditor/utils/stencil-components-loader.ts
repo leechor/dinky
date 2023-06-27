@@ -1,6 +1,7 @@
 import { Stencil } from '@antv/x6-plugin-stencil';
 import { Graph, Node } from '@antv/x6';
 import { Parameter } from '@/components/Studio/StudioGraphEdit/GraphEditor/ts-define/parameter';
+import CustomShape from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
 
 /**
  * //注册stencil中的组件
@@ -46,7 +47,7 @@ export const stencilComponentsLoader = (
 
   //文本节点
   const textAreaNode = graph.createNode({
-    shape: 'custom-text-node',
+    shape: CustomShape.TEXT_NODE,
   });
   stencil.load([textAreaNode], 'textArea');
 

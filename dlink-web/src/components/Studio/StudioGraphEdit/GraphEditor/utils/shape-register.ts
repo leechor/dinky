@@ -7,17 +7,19 @@ import { PortManager } from '@antv/x6/es/model/port';
 import React from 'react';
 import { GroupNode } from '@/components/Studio/StudioGraphEdit/GraphEditor/components/group-node';
 import unRegisterShape from "./shape-unregister"
+import CustomShape from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
 
 function registerTextNode() {
   //注册文本节点
   register({
-    shape: 'custom-text-node',
+    shape: CustomShape.TEXT_NODE,
     component: TextNode,
     width: 180,
     height: 180,
+    effect: ['data'],
     attrs: {
       text: {
-        text: 'custom-text-node',
+        text: CustomShape.TEXT_NODE,
       },
     },
     zIndex: 20,
