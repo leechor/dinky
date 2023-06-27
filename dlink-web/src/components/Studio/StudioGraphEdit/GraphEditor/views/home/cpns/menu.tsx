@@ -1,6 +1,6 @@
 import { Menu } from '@antv/x6-react-components';
 import { FC, memo, useState } from 'react';
-import { message } from 'antd';
+import {message, Radio, RadioChangeEvent, Space} from 'antd';
 import { DataUri, Graph, Node } from '@antv/x6';
 import '@antv/x6-react-components/es/menu/style/index.css';
 import {
@@ -13,6 +13,7 @@ import {
   ExportOutlined,
   EditOutlined, RadiusSettingOutlined
 } from '@ant-design/icons';
+import CustomShape from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
 
 type MenuPropsType = {
   top: number;
@@ -23,10 +24,54 @@ type MenuPropsType = {
   handleShowMenu: (value: boolean) => void
 };
 
+enum HorizontalAlignState {
+  LEFT = 1,
+  CENTER,
+  RIGHT
+}
+
+enum VerticalAlignState {
+  TOP = 1,
+  CENTER,
+  BOTTOM
+}
+
 export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, node, handleShowMenu, show }) => {
+  const convertHorizontalAlign = (align: string) => {
+    switch (align) {
+      case 'left':
+        return HorizontalAlignState.LEFT
+      case 'center':
+        return HorizontalAlignState.CENTER
+      case 'right':
+        return HorizontalAlignState.RIGHT
+      default:
+        return HorizontalAlignState.LEFT
+    }
+  }
+
+  const convertVerticalAlign = (align: string) => {
+    switch (align) {
+      case 'top':
+        return VerticalAlignState.TOP
+      case 'center':
+        return VerticalAlignState.CENTER
+      case 'bottom':
+        return VerticalAlignState.BOTTOM
+      default:
+        return VerticalAlignState.TOP
+    }
+  }
+
   const {Item: MenuItem, SubMenu, Divider} = Menu;
   const [messageApi, contextHolder] = message.useMessage();
   const [isDisablePaste, setIsDisablePaste] = useState(true);
+  const [horizontalAlign, setHorizontalAlign] =
+    useState(convertHorizontalAlign(node?.getData()?.horizontalAlign ?? 'left'));
+  const [verticalAlign, setVerticalAlign] =
+    useState(convertVerticalAlign(node?.getData()?.verticalAlign ?? 'top'));
+
+
 
   const copy = () => {
     const cells = graph.getSelectedCells();
@@ -69,6 +114,44 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     const cells = graph.getSelectedCells();
     cells?.forEach(c => {c.setZIndex((c.getZIndex() ?? 0) - 1)});
   };
+
+  const horizontalAlignHandler = (e: RadioChangeEvent) => {
+    const horizontalAlign = e.target.value as number;
+    const align = ((value: number) => {
+      switch (value) {
+        case HorizontalAlignState.LEFT:
+          return 'left'
+        case HorizontalAlignState.CENTER:
+          return 'center'
+        case HorizontalAlignState.RIGHT:
+          return 'right'
+        default:
+          return 'left'
+      }
+    })(horizontalAlign);
+    graph.getSelectedCells()?.filter(c => c.shape == CustomShape.TEXT_NODE)
+      .forEach(c => c.setData({...c.getData(), 'horizontalAlign': align}))
+    setHorizontalAlign(horizontalAlign)
+  }
+
+  const verticalAlignHandler = (e: RadioChangeEvent) => {
+    const verticalAlign = e.target.value as number;
+    const align = ((value: number) => {
+      switch (value) {
+        case VerticalAlignState.TOP:
+          return 'top'
+        case VerticalAlignState.CENTER:
+          return 'center'
+        case VerticalAlignState.BOTTOM:
+          return 'bottom'
+        default:
+          return 'top'
+      }
+    })(verticalAlign);
+    const cc= graph.getSelectedCells()?.filter(c => c.shape == CustomShape.TEXT_NODE)
+    cc.forEach(c => c.setData({...c.getData(), 'verticalAlign': align}))
+    setVerticalAlign(verticalAlign)
+  }
 
   const onMenuClick = (name: string) => {
     messageApi.info(`clicked ${name}`);
@@ -163,7 +246,30 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
   const onMenuItemClick = () => { };
   const blankMenu = () => {
     return (<Menu hasIcon={true} onClick={onMenuClick}>
-      {(node && node.shape === "DuplicateOperator") && DuplicateOperatorMenu()}
+      {(node?.shape === "DuplicateOperator") && DuplicateOperatorMenu()}
+
+      { node?.shape == CustomShape.TEXT_NODE &&<>
+        <SubMenu name="align" icon={<RadiusSettingOutlined/>} text="Text alignment">
+          <Radio.Group name="horizontal" onChange={horizontalAlignHandler} value={horizontalAlign}>
+            <Space direction="vertical">
+              <Radio value={HorizontalAlignState.LEFT}>Left</Radio>
+              <Radio value={HorizontalAlignState.CENTER}>H-Center</Radio>
+              <Radio value={HorizontalAlignState.RIGHT}>Right</Radio>
+            </Space>
+          </Radio.Group>
+          <Divider/>
+          <Radio.Group name="vertical" onChange={verticalAlignHandler} value={verticalAlign}>
+            <Space direction="vertical">
+              <Radio value={VerticalAlignState.TOP}>Top</Radio>
+              <Radio value={VerticalAlignState.CENTER}>V-Center</Radio>
+              <Radio value={VerticalAlignState.BOTTOM}>Bottom</Radio>
+            </Space>
+          </Radio.Group>
+        </SubMenu>
+      <Divider/>
+      </>
+      }
+
       <MenuItem
         onClick={onMenuItemClick}
         name="undo"

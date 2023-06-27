@@ -1,6 +1,7 @@
 import { Stencil } from '@antv/x6-plugin-stencil';
 import { Graph } from '@antv/x6';
 import { Parameter } from '@/components/Studio/StudioGraphEdit/GraphEditor/ts-define/parameter';
+import CustomShape from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
 
 export const initStencil = (
   graph: Graph,
@@ -57,7 +58,7 @@ export const initStencil = (
       return cell.shape.indexOf(keyword) !== -1;
     },
     getDropNode(node) {
-      if (node.shape === 'custom-text-node') {
+      if (node.shape === CustomShape.TEXT_NODE) {
         const { width, height } = node.size();
         // 返回一个新的节点作为实际放置到画布上的节点
         return node.clone().size(width * 3, height * 3);
