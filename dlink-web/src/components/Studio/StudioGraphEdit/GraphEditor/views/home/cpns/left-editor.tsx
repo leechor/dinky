@@ -89,24 +89,11 @@ const LeftEditor = memo(() => {
     if (isOutputs) {
       edges = graph.model.getOutgoingEdges(node)
       if (!edges) return false;
-      for (let edge of edges) {
-        const sourcePortId = edge.getSourcePortId();
-        if (sourcePortId === id) { return true }
-        else {
-          return false
-        }
-      }
+      return edges.some(edge=>edge.getSourcePortId()===id)
     } else {
       edges = graph.model.getIncomingEdges(node)
       if (!edges) return false;
-      for (let edge of edges) {
-        const targetPortId = edge.getTargetPortId();
-        if (targetPortId === id) {
-          return true;
-        } else {
-          return false
-        }
-      }
+      return edges.some(edge=>edge.getTargetPortId()===id)
     }
   }
   const handleNodeConfigSet = (graph: Graph) => {
@@ -127,7 +114,6 @@ const LeftEditor = memo(() => {
             currentCell: node,
             currentPort: port,
           }
-
         })
         handlemodalVisible(true)
       } else {
@@ -146,13 +132,10 @@ const LeftEditor = memo(() => {
           if (targetPortId === port) {
             //获取config
             let id = `${sourceCell!.id}&${sourcePortId} ${targetCell!.id}&${targetPortId}`
-
             //获取最新输出配置
             if (targetCell?.getData().config) {
               readConfigFromData(targetCell, sourceCell!, sourcePortId!, sourcePortId!, id)
             }
-          } else {
-            return
           }
         }
       }
@@ -174,7 +157,6 @@ const LeftEditor = memo(() => {
       handlemodalVisible(true)
     }
     graph.on("edge:connected", ({ isNew, edge, currentCell, currentPort }) => {
-
       //创建新边
       if (isNew) {
         //拿到该边的sourcecell和sourcePortId
@@ -189,12 +171,11 @@ const LeftEditor = memo(() => {
         let configMap: Map<string, ParametersConfigType[]> = new Map();
         //转换为config设置到当前节点的node-data里
         if (sourceCell && sourcePortId && currentCell && currentPort) {
-
           let id = `${sourceCell.id}&${sourcePortId} ${currentCell.id}&${currentPort}`
           configMap.set(id, parametersConfig);
           let config = strMapToObj(configMap)
-          currentCell.getData()["config"] = [config]
-          // currentCell.setData({ config: [config] });
+          // currentCell.getData()["config"] = [config]
+          currentCell.setData({ config: [config] });
           //从node-data 读取config
           readConfigFromData(currentCell, sourceCell, sourcePortId, currentPort, id)
         }
@@ -251,7 +232,8 @@ const LeftEditor = memo(() => {
 
             configMap.set(id, filterConfigMap);
             let config = strMapToObj(configMap)
-            targetCell!.getData()["config"] = [config];
+            // targetCell!.getData()["config"] = [config];
+            targetCell!.setData({ config: [config] });
             // targetCell!.setData({ config: [config], parameters: targetCell?.getData().parameters }, { overwrite: true });
           }
         }
@@ -263,8 +245,8 @@ const LeftEditor = memo(() => {
       let configMap: Map<string, ParametersConfigType[]> = new Map();
       configMap.set(value.readConfigData.id!, value.origin);
       let config = strMapToObj(configMap)
-      value.readConfigData.currentCell.getData()["config"] = [config]
-      // value.readConfigData.currentCell.setData({ config: [config] });
+      // value.readConfigData.currentCell.getData()["config"] = [config]
+      value.readConfigData.currentCell.setData({ config: [config] });
 
     }
 

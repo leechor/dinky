@@ -60,15 +60,19 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     if (graph) {
       switch (name) {
         case 'undo':
+          handleShowMenu(false)
           graph.undo();
           break;
         case 'redo':
+          handleShowMenu(false)
           graph.redo();
           break;
         case 'delete':
+          handleShowMenu(false)
           graph.clearCells();
           break;
         case 'save-PNG':
+          handleShowMenu(false)
           graph.toPNG(
             (dataUri: string) => {
               DataUri.downloadDataUri(dataUri, 'chartx.png');
@@ -86,29 +90,31 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
           );
           break;
         case 'save-SVG':
+          handleShowMenu(false)
           graph.toSVG((dataUri: string) => {
             // 下载
             DataUri.downloadDataUri(DataUri.svgToDataUrl(dataUri), 'chart.svg');
           });
           break;
         case 'save-JPEG':
+          handleShowMenu(false)
           graph.toJPEG((dataUri: string) => {
             // 下载
             DataUri.downloadDataUri(dataUri, 'chart.jpeg');
           });
           break;
-        case 'print':
-          // graph.printPreview();
-          break;
         case 'copy':
+          handleShowMenu(false)
           copy();
           setIsDisablePaste(false);
           break;
         case 'cut':
+          handleShowMenu(false)
           cut();
           setIsDisablePaste(false);
           break;
         case 'paste':
+          handleShowMenu(false)
           paste();
           setIsDisablePaste(true);
           break;
@@ -126,11 +132,9 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
 
           // graph.fromJSON({cells:[graph.toJSON().cells[0],graph.toJSON().cells[1]]})
           break;
-        case 'add-port':
-          
+        case 'add-port':         
           handleShowMenu(false)
           break
-
         default:
           break;
       }
