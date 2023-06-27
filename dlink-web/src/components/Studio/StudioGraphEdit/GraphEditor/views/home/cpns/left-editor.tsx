@@ -19,7 +19,6 @@ import { message } from 'antd';
 import AddModalPort from '../../../components/add-port-modal';
 import {
   changeCurrentSelectNode,
-  changeCurrentSelectNodeName
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import localCache from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/localStorage"
 
@@ -343,7 +342,7 @@ const LeftEditor = memo(() => {
                   top={showMenuInfo.top}
                   left={showMenuInfo.left}
                   node={showMenuInfo.node}
-                  graph={graphRef.current}
+                  graph={graphRef.current!}
                   show={showMenuInfo.show}
                   handleShowMenu={handleShowMenu}
                 />
@@ -360,7 +359,7 @@ const LeftEditor = memo(() => {
 
       {showMenuInfo.node ? <AddModalPort onSubmit={(value: any) => handleSubmitPort(value)}
         onCancel={() => handleCancelPort()}
-        modalVisible={!showMenuInfo.show}
+        modalVisible={!showMenuInfo.show && showMenuInfo.node.shape === "DuplicateOperator"}
         values={showMenuInfo.node} /> : null}
 
     </>
