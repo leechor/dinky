@@ -89,11 +89,11 @@ const LeftEditor = memo(() => {
     if (isOutputs) {
       edges = graph.model.getOutgoingEdges(node)
       if (!edges) return false;
-      return edges.some(edge=>edge.getSourcePortId()===id)
+      return edges.some(edge => edge.getSourcePortId() === id)
     } else {
       edges = graph.model.getIncomingEdges(node)
       if (!edges) return false;
-      return edges.some(edge=>edge.getTargetPortId()===id)
+      return edges.some(edge => edge.getTargetPortId() === id)
     }
   }
   const handleNodeConfigSet = (graph: Graph) => {
@@ -106,6 +106,8 @@ const LeftEditor = memo(() => {
       }
       // 输出  由editor配置
       if (node.getPort(port)?.group === portType.outputs) {
+
+        //修改（如果是DuplicateOperator则需要从输入节点的config里读取）
         const parametersConfig: ParametersConfigType[] = node.getData()?.parameters.columns;
         setParametersConfig({
           isOutputs: true,
@@ -194,7 +196,7 @@ const LeftEditor = memo(() => {
 
 
   const handleSubmit = (value: CompareCheckProps) => {
-    
+
     value.origin.forEach(item => {
       if (value.parameters.includes(item.name)) {
         item.flag = true;
