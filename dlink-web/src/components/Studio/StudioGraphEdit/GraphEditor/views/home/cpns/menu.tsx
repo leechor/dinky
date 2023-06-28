@@ -296,19 +296,19 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
       { node?.shape == CustomShape.TEXT_NODE &&<>
         <SubMenu name="align" icon={<RadiusSettingOutlined/>} text="Text alignment">
           <Radio.Group name="horizontal" onChange={horizontalAlignHandler} value={horizontalAlign}>
-            <Space direction="vertical">
+            <Space.Compact direction="vertical">
               <Radio value={HorizontalAlignState.LEFT}>Left</Radio>
               <Radio value={HorizontalAlignState.CENTER}>H-Center</Radio>
               <Radio value={HorizontalAlignState.RIGHT}>Right</Radio>
-            </Space>
+            </Space.Compact>
           </Radio.Group>
           <Divider/>
           <Radio.Group name="vertical" onChange={verticalAlignHandler} value={verticalAlign}>
-            <Space direction="vertical">
+            <Space.Compact direction="vertical">
               <Radio value={VerticalAlignState.TOP}>Top</Radio>
               <Radio value={VerticalAlignState.CENTER}>V-Center</Radio>
               <Radio value={VerticalAlignState.BOTTOM}>Bottom</Radio>
-            </Space>
+            </Space.Compact>
           </Radio.Group>
         </SubMenu>
         <SubMenu name="color" icon={<RadiusSettingOutlined/>} text="Note Color">
