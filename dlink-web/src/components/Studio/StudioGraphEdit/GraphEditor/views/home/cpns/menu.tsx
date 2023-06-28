@@ -47,6 +47,17 @@ enum NoteTextColor {
   TRANSPARENT,
 }
 
+const NoteTextColorValue: {[key in NoteTextColor]: string} = {
+  [NoteTextColor.YELLOW]: "#fcf987",
+  [NoteTextColor.RED]: "#ffe9dc",
+  [NoteTextColor.ORANGE]: "#fffad2",
+  [NoteTextColor.PURPLE]: "#f6deed",
+  [NoteTextColor.GREEN]: "#ddeed2",
+  [NoteTextColor.BLUE]: "#e3dff1",
+  [NoteTextColor.GRAY]: "#d1d1d1",
+  [NoteTextColor.TRANSPARENT]: "transparent",
+}
+
 const DuplicateOperatorMenu = () => {
   return <Menu.Item icon={<EditOutlined />} name="add-port" text="添加输出桩" />
 }
@@ -171,26 +182,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
 
    const noteTextColorHandler = (e: RadioChangeEvent) => {
      const noteTextColor = e.target.value as number;
-     const color = ((value: number) => {
-       switch (value) {
-         case NoteTextColor.YELLOW:
-           return "#fcf987";
-         case NoteTextColor.ORANGE:
-           return "#fffad2";
-         case NoteTextColor.RED:
-           return "#ffe9dc";
-         case NoteTextColor.PURPLE:
-           return "#f6deed";
-         case NoteTextColor.GREEN:
-           return "#ddeed2";
-         case NoteTextColor.BLUE:
-           return "#e3dff1";
-         case NoteTextColor.GRAY:
-           return "#d1d1d1";
-         default:
-           return "transparent";
-       }
-     })(noteTextColor);
+     const color = noteTextColor ? NoteTextColorValue[noteTextColor] : NoteTextColorValue[NoteTextColor.TRANSPARENT]
      const cc= graph.getSelectedCells()?.filter(c => c.shape == CustomShape.TEXT_NODE)
      cc.forEach(c => c.setData({...c.getData(), 'backgroundColor': color}))
      setNoteTextColor(noteTextColor)
@@ -313,27 +305,16 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
         </SubMenu>
         <SubMenu name="color" icon={<RadiusSettingOutlined/>} text="Note Color">
           <Radio.Group name="color" size="small" onChange={noteTextColorHandler} value={noteTextColor}>
-            <style>
-              {`
-               .ant-radio > input#radio-yellow + span.ant-radio-inner {background-color: #fcf987}
-               .ant-radio > input#radio-orange + span.ant-radio-inner {background-color: #fffad2}
-               .ant-radio > input#radio-red + span.ant-radio-inner {background-color: #ffe9dc}
-               .ant-radio > input#radio-purple + span.ant-radio-inner {background-color: #f6deed}
-               .ant-radio > input#radio-green + span.ant-radio-inner {background-color: #ddeed2}
-               .ant-radio > input#radio-blue + span.ant-radio-inner {background-color: #e3dff1}
-               .ant-radio > input#radio-gray + span.ant-radio-inner {background-color: #d1d1d1}
-               .ant-radio > input#radio-transparent + span.ant-radio-inner {background-color: transparent}
-            `}
-            </style>
             <Space.Compact direction="horizontal">
-              <Radio id="radio-yellow" value={NoteTextColor.YELLOW} />
-              <Radio id="radio-orange" value={NoteTextColor.ORANGE} />
-              <Radio id="radio-red" value={NoteTextColor.RED} />
-              <Radio id="radio-purple" value={NoteTextColor.PURPLE} />
-              <Radio id="radio-green" value={NoteTextColor.GREEN} />
-              <Radio id="radio-blue" value={NoteTextColor.BLUE} />
-              <Radio id="radio-gray" value={NoteTextColor.GRAY} />
-              <Radio id="radio-transparent" value={NoteTextColor.TRANSPARENT} />
+              {Object.keys(NoteTextColor).filter(key => !isNaN(Number(NoteTextColor[key]))).map(
+                (key) =>
+                  (
+                    <>
+                      <style>{`.ant-radio > input#radio-text-${key} + span.ant-radio-inner {background-color: ${NoteTextColorValue[NoteTextColor[key]]}}`}</style>
+                      <Radio id={`radio-text-${key}`} value={NoteTextColor[key]}/>
+                    </>
+                  )
+              )}
             </Space.Compact>
           </Radio.Group>
         </SubMenu>
