@@ -21,7 +21,7 @@
 import React from 'react';
 import { FormInstance } from "antd/es/form/hooks/useForm";
 import { Values } from "async-validator";
-import { Checkbox, Form, Row, Col } from "antd"
+import {Checkbox, Form, Space} from "antd"
 import { ParametersConfigType } from "../../../views/home/cpns/left-editor"
 type NodeProFormProps = {
     values: ParametersConfigType[];
@@ -37,20 +37,22 @@ const NodeForm: React.FC<NodeProFormProps> = (props) => {
     const { values, form ,initValue} = props;
     console.log(initValue,"initValue");
 
-
     /**
      * construct role form
      * @constructor
      */
     const renderRoleForm = () => {
-        return <>
-            <Form.Item name="parameters" initialValue={initValue}>
-                <Checkbox.Group>{values && values.map(value =>
-                    <Checkbox key={value.name} value={value.name} style={{ lineHeight: "32px" }}>{value.name}</Checkbox>
-                )}</Checkbox.Group>
-            </Form.Item>
-
-        </>
+        return (<>
+          <Form.Item name="parameters" initialValue={initValue}>
+            <Checkbox.Group>
+              <Space.Compact direction="vertical">
+                {values?.map(value =>
+                  <Checkbox key={value.name} value={value.name} style={{lineHeight: "32px"}}>{value.name}</Checkbox>
+                )}
+              </Space.Compact>
+            </Checkbox.Group>
+          </Form.Item>
+        </>)
     };
 
     /**
@@ -63,7 +65,6 @@ const NodeForm: React.FC<NodeProFormProps> = (props) => {
             layout={'horizontal'}
             preserve={false}
         >
-
             {renderRoleForm()}
         </Form>
     </>
