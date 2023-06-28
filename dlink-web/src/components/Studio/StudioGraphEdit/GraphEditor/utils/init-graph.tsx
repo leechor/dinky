@@ -50,7 +50,7 @@ export const initGraph = (
       },
       //连接的过程中创建新的边
       createEdge() {
-        return new Shape.Edge({
+        let edge= new Shape.Edge({
           attrs: {
             line: {
               stroke: '#b2a2e9',
@@ -62,6 +62,8 @@ export const initGraph = (
             },
           },
         });
+        edge.toFront()
+        return edge
       },
 
       // 在移动边的时候判断连接是否有效，如果返回 false，当鼠标放开的时候，不会连接到当前元素，否则会连接到当前元素

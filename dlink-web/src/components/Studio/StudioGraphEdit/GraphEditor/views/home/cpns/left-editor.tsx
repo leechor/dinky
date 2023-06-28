@@ -92,19 +92,6 @@ const LeftEditor = memo(() => {
     for (let newKey in config) {
       oldConifg[newKey] = config[newKey]
     }
-
-    // for (let oldkey in oldConifg) {
-    //   for (let newkey in config) {
-
-    //     if (oldkey === newkey) {
-    //       //修改
-    //       newConfigObj[oldkey] = oldConifg[oldkey]
-    //     } else {
-    //       //新增
-    //       newConfigObj[newkey] = config
-    //     }
-    //   }
-    // }
     return oldConifg
   }
   const isConnected = (graph: Graph, node: Cell, id: string, isOutputs: boolean) => {
@@ -124,11 +111,12 @@ const LeftEditor = memo(() => {
       dispatch(changeCurrentSelectNode(node))
 
       if (!node.getData()&&node.shape!=="DuplicateOperator") {
-        message.warning("请先设置节点参数！")
+        message.warning("请设置节点参数！")
         return
       }
       if(!node.getData()&&node.shape==="DuplicateOperator"){
-        message.warning("请先连接输入源！")
+        message.warning("请检查输入源或连线！")
+        return
       }
       // 输出  由editor配置
       if (node.getPort(port)?.group === portType.outputs) {
@@ -149,7 +137,7 @@ const LeftEditor = memo(() => {
         const edges = graph.model.getIncomingEdges(node)
         console.log(edges, ".....");
         if (!edges || !isConnected(graphRef.current!, node, port, false)) {
-          message.warning("请先选择连线！");
+          message.warning("请选择连线！");
           return
         }
         for (let edge of edges) {
@@ -163,7 +151,7 @@ const LeftEditor = memo(() => {
             let id = `${sourceCell!.id}&${sourcePortId} ${targetCell!.id}&${targetPortId}`
             //获取最新输出配置
             if (targetCell?.getData().config) {
-              readConfigFromData(targetCell, sourceCell!, sourcePortId!, sourcePortId!, id)
+              readConfigFromData(targetCell, sourceCell!, sourcePortId!, targetPortId!, id)
             }
           }
         }
@@ -194,6 +182,7 @@ const LeftEditor = memo(() => {
 
         //修改（如果是DuplicateOperator则需要从输入节点的config里读取 ）
         let parametersConfig: ParametersConfigType[] = sourceCell?.getData()?.parameters.columns;
+        if (parametersConfig.some(config => !config.name)) { message.warning("节点参数名称不能为空！"); return }
         //将输出数据筛选后设置给输入【flag为true】
         parametersConfig = parametersConfig.filter(item => item.flag)
         if (!parametersConfig) return
@@ -262,6 +251,8 @@ const LeftEditor = memo(() => {
       }
     } else {
       const flag = isConnected(graphRef.current!, value.readConfigData.currentCell, value.readConfigData.currentPort, value.isOutputs)
+      console.log(flag);
+      
       if (!flag) return
       //如果是输入则修改config
       let configMap: Map<string, ParametersConfigType[]> = new Map();
