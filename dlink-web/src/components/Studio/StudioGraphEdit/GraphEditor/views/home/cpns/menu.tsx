@@ -313,16 +313,28 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
         </SubMenu>
         <SubMenu name="color" icon={<RadiusSettingOutlined/>} text="Note Color">
           <Radio.Group name="color" size="small" onChange={noteTextColorHandler} value={noteTextColor}>
-            <Space direction="horizontal">
-              <Radio value={NoteTextColor.YELLOW} style={{backgroundColor: "yellow"}}/>
-              <Radio value={NoteTextColor.ORANGE} style={{backgroundColor: "orange"}}/>
-              <Radio value={NoteTextColor.RED} style={{backgroundColor: "red"}}/>
-              <Radio value={NoteTextColor.PURPLE} style={{backgroundColor: "purple"}}/>
-              <Radio value={NoteTextColor.GREEN} style={{backgroundColor: "green"}}/>
-              <Radio value={NoteTextColor.BLUE} style={{backgroundColor: "blue"}}/>
-              <Radio value={NoteTextColor.GRAY} style={{backgroundColor: "gray"}}/>
-              <Radio value={NoteTextColor.TRANSPARENT} style={{backgroundColor: "transparent"}}/>
-            </Space>
+            <style>
+              {`
+               .ant-radio > input#radio-yellow + span.ant-radio-inner {background-color: yellow}
+               .ant-radio > input#radio-orange + span.ant-radio-inner {background-color: orange}
+               .ant-radio > input#radio-red + span.ant-radio-inner {background-color: red}
+               .ant-radio > input#radio-purple + span.ant-radio-inner {background-color: purple}
+               .ant-radio > input#radio-green + span.ant-radio-inner {background-color: green}
+               .ant-radio > input#radio-blue + span.ant-radio-inner {background-color: blue}
+               .ant-radio > input#radio-gray + span.ant-radio-inner {background-color: gray}
+               .ant-radio > input#radio-transparent + span.ant-radio-inner {background-color: transparent}
+            `}
+            </style>
+            <Space.Compact direction="horizontal">
+              <Radio id="radio-yellow" value={NoteTextColor.YELLOW} />
+              <Radio id="radio-orange" value={NoteTextColor.ORANGE} />
+              <Radio id="radio-red" value={NoteTextColor.RED} />
+              <Radio id="radio-purple" value={NoteTextColor.PURPLE} />
+              <Radio id="radio-green" value={NoteTextColor.GREEN} />
+              <Radio id="radio-blue" value={NoteTextColor.BLUE} />
+              <Radio id="radio-gray" value={NoteTextColor.GRAY} />
+              <Radio id="radio-transparent" value={NoteTextColor.TRANSPARENT} />
+            </Space.Compact>
           </Radio.Group>
         </SubMenu>
       <Divider/>
