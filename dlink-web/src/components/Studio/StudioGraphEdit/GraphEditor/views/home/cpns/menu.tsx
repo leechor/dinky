@@ -186,7 +186,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
          case NoteTextColor.BLUE:
            return "#e3dff1";
          case NoteTextColor.GRAY:
-           return "#e3dff1";
+           return "#d1d1d1";
          default:
            return "transparent";
        }
@@ -321,7 +321,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
                .ant-radio > input#radio-purple + span.ant-radio-inner {background-color: #f6deed}
                .ant-radio > input#radio-green + span.ant-radio-inner {background-color: #ddeed2}
                .ant-radio > input#radio-blue + span.ant-radio-inner {background-color: #e3dff1}
-               .ant-radio > input#radio-gray + span.ant-radio-inner {background-color: #e3dff1}
+               .ant-radio > input#radio-gray + span.ant-radio-inner {background-color: #d1d1d1}
                .ant-radio > input#radio-transparent + span.ant-radio-inner {background-color: transparent}
             `}
             </style>
