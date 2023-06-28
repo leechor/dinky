@@ -36,6 +36,21 @@ enum VerticalAlignState {
   BOTTOM
 }
 
+enum NoteTextColor {
+  YELLOW=1,
+  ORANGE,
+  RED,
+  PURPLE,
+  GREEN,
+  BLUE,
+  GRAY,
+  TRANSPARENT,
+}
+
+const DuplicateOperatorMenu = () => {
+  return <Menu.Item icon={<EditOutlined />} name="add-port" text="添加输出桩" />
+}
+
 export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, node, handleShowMenu, show }) => {
   const convertHorizontalAlign = (align: string) => {
     switch (align) {
@@ -70,6 +85,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     useState(convertHorizontalAlign(node?.getData()?.horizontalAlign ?? 'left'));
   const [verticalAlign, setVerticalAlign] =
     useState(convertVerticalAlign(node?.getData()?.verticalAlign ?? 'top'));
+  const [noteTextColor, setNoteTextColor] = useState(node?.getData()?.backgroundColor) ?? 'yellow';
 
 
 
@@ -152,6 +168,34 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     cc.forEach(c => c.setData({...c.getData(), 'verticalAlign': align}))
     setVerticalAlign(verticalAlign)
   }
+
+   const noteTextColorHandler = (e: RadioChangeEvent) => {
+     const noteTextColor = e.target.value as number;
+     const color = ((value: number) => {
+       switch (value) {
+         case NoteTextColor.YELLOW:
+           return "yellow";
+         case NoteTextColor.ORANGE:
+           return "orange";
+         case NoteTextColor.RED:
+           return "red";
+         case NoteTextColor.PURPLE:
+           return "purple";
+         case NoteTextColor.GREEN:
+           return "green";
+         case NoteTextColor.BLUE:
+           return "blue";
+         case NoteTextColor.GRAY:
+           return "gray";
+         default:
+           return "transparent";
+       }
+     })(noteTextColor);
+     const cc= graph.getSelectedCells()?.filter(c => c.shape == CustomShape.TEXT_NODE)
+     cc.forEach(c => c.setData({...c.getData(), 'backgroundColor': color}))
+     setNoteTextColor(noteTextColor)
+  }
+
 
   const onMenuClick = (name: string) => {
     messageApi.info(`clicked ${name}`);
@@ -245,6 +289,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
 
   const onMenuItemClick = () => { };
   const blankMenu = () => {
+
     return (<Menu hasIcon={true} onClick={onMenuClick}>
       {(node?.shape === "DuplicateOperator") && DuplicateOperatorMenu()}
 
@@ -263,6 +308,20 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
               <Radio value={VerticalAlignState.TOP}>Top</Radio>
               <Radio value={VerticalAlignState.CENTER}>V-Center</Radio>
               <Radio value={VerticalAlignState.BOTTOM}>Bottom</Radio>
+            </Space>
+          </Radio.Group>
+        </SubMenu>
+        <SubMenu name="color" icon={<RadiusSettingOutlined/>} text="Note Color">
+          <Radio.Group name="color" size="small" onChange={noteTextColorHandler} value={noteTextColor}>
+            <Space direction="horizontal">
+              <Radio value={NoteTextColor.YELLOW} style={{backgroundColor: "yellow"}}/>
+              <Radio value={NoteTextColor.ORANGE} style={{backgroundColor: "orange"}}/>
+              <Radio value={NoteTextColor.RED} style={{backgroundColor: "red"}}/>
+              <Radio value={NoteTextColor.PURPLE} style={{backgroundColor: "purple"}}/>
+              <Radio value={NoteTextColor.GREEN} style={{backgroundColor: "green"}}/>
+              <Radio value={NoteTextColor.BLUE} style={{backgroundColor: "blue"}}/>
+              <Radio value={NoteTextColor.GRAY} style={{backgroundColor: "gray"}}/>
+              <Radio value={NoteTextColor.TRANSPARENT} style={{backgroundColor: "transparent"}}/>
             </Space>
           </Radio.Group>
         </SubMenu>
@@ -310,10 +369,6 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
        <MenuItem name="backward" icon={<RadiusSettingOutlined/>} hotkey="Cmd+B" text="Bring Backward"/>
       </SubMenu>
     </Menu>)
-  }
-
-  const DuplicateOperatorMenu = () => {
-    return <MenuItem icon={<EditOutlined />} name="add-port" text="添加输出桩" />
   }
 
   const styleObj: any = {
