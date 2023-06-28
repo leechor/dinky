@@ -174,19 +174,19 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
      const color = ((value: number) => {
        switch (value) {
          case NoteTextColor.YELLOW:
-           return "yellow";
+           return "#fcf987";
          case NoteTextColor.ORANGE:
-           return "orange";
+           return "#fffad2";
          case NoteTextColor.RED:
-           return "red";
+           return "#ffe9dc";
          case NoteTextColor.PURPLE:
-           return "purple";
+           return "#f6deed";
          case NoteTextColor.GREEN:
-           return "green";
+           return "#ddeed2";
          case NoteTextColor.BLUE:
-           return "blue";
+           return "#e3dff1";
          case NoteTextColor.GRAY:
-           return "gray";
+           return "#e3dff1";
          default:
            return "transparent";
        }
@@ -315,13 +315,13 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
           <Radio.Group name="color" size="small" onChange={noteTextColorHandler} value={noteTextColor}>
             <style>
               {`
-               .ant-radio > input#radio-yellow + span.ant-radio-inner {background-color: yellow}
-               .ant-radio > input#radio-orange + span.ant-radio-inner {background-color: orange}
-               .ant-radio > input#radio-red + span.ant-radio-inner {background-color: red}
-               .ant-radio > input#radio-purple + span.ant-radio-inner {background-color: purple}
-               .ant-radio > input#radio-green + span.ant-radio-inner {background-color: green}
-               .ant-radio > input#radio-blue + span.ant-radio-inner {background-color: blue}
-               .ant-radio > input#radio-gray + span.ant-radio-inner {background-color: gray}
+               .ant-radio > input#radio-yellow + span.ant-radio-inner {background-color: #fcf987}
+               .ant-radio > input#radio-orange + span.ant-radio-inner {background-color: #fffad2}
+               .ant-radio > input#radio-red + span.ant-radio-inner {background-color: #ffe9dc}
+               .ant-radio > input#radio-purple + span.ant-radio-inner {background-color: #f6deed}
+               .ant-radio > input#radio-green + span.ant-radio-inner {background-color: #ddeed2}
+               .ant-radio > input#radio-blue + span.ant-radio-inner {background-color: #e3dff1}
+               .ant-radio > input#radio-gray + span.ant-radio-inner {background-color: #e3dff1}
                .ant-radio > input#radio-transparent + span.ant-radio-inner {background-color: transparent}
             `}
             </style>
