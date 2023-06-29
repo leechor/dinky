@@ -22,7 +22,7 @@ export const handleInitPort = () => {
           }
         },
         attrs: {
-          circle: {
+          path: {
             r: 8,
             magnet: true,
             style: {
@@ -46,7 +46,7 @@ export const handleInitPort = () => {
           }
         },
         attrs: {
-          circle: {
+          path: {
             r: 8,
             magnet: true,
             style: {
