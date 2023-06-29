@@ -47,7 +47,7 @@ export const handleInitPort = () => {
         },
         attrs: {
           path: {
-            r: 8,
+            r: 10,
             magnet: true,
             style: {
               visibility: 'hidden',
