@@ -10,13 +10,21 @@ export const handleInitPort = () => {
       outputs: {
         zIndex: 999,
         position: 'right',
+        markup: {
+          tagName: "path",
+          selector: "path",
+          attrs: {
+            d: "m0,0,a5,5.5 0 0 1 12,0",
+            fill: "#b2a2e9",
+            transform: "rotate(90)",
+            strokeWidth: 1,
+            stroke: "null",
+          }
+        },
         attrs: {
-          circle: {
+          path: {
             r: 8,
             magnet: true,
-            stroke: '#818181',
-            strokeWidth: 1,
-            fill: '#b2a2e9',
             style: {
               visibility: 'hidden',
             },
@@ -26,13 +34,21 @@ export const handleInitPort = () => {
       inputs: {
         zIndex:999,
         position: 'left',
+        markup: {
+          tagName: "path",
+          selector: "path",
+          attrs: {
+            d: "m0,0,a5,5.5 0 0 1 12,0",
+            fill: "#b2a2e9",
+            transform: "rotate(-90)",
+            strokeWidth: 1,
+            stroke: "null",
+          }
+        },
         attrs: {
-          circle: {
+          path: {
             r: 8,
             magnet: true,
-            stroke: '#818181',
-            strokeWidth: 1,
-            fill: '#915dac',
             style: {
               visibility: 'hidden',
             },

@@ -36,6 +36,32 @@ enum VerticalAlignState {
   BOTTOM
 }
 
+enum NoteTextColor {
+  YELLOW=1,
+  ORANGE,
+  RED,
+  PURPLE,
+  GREEN,
+  BLUE,
+  GRAY,
+  TRANSPARENT,
+}
+
+const NoteTextColorValue: {[key in NoteTextColor]: string} = {
+  [NoteTextColor.YELLOW]: "#fcf987",
+  [NoteTextColor.RED]: "#ffe9dc",
+  [NoteTextColor.ORANGE]: "#fffad2",
+  [NoteTextColor.PURPLE]: "#f6deed",
+  [NoteTextColor.GREEN]: "#ddeed2",
+  [NoteTextColor.BLUE]: "#e3dff1",
+  [NoteTextColor.GRAY]: "#d1d1d1",
+  [NoteTextColor.TRANSPARENT]: "transparent",
+}
+
+const DuplicateOperatorMenu = () => {
+  return <Menu.Item icon={<EditOutlined />} name="add-port" text="添加输出桩" />
+}
+
 export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, node, handleShowMenu, show }) => {
   
   const convertHorizontalAlign = (align: string) => {
@@ -70,13 +96,8 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
   const [horizontalAlign, setHorizontalAlign] =
     useState(convertHorizontalAlign( 'left'));
   const [verticalAlign, setVerticalAlign] =
-    useState(convertVerticalAlign( 'top'));
-
-  //   const [horizontalAlign, setHorizontalAlign] =
-  //   useState(convertHorizontalAlign(node?.getData()?.horizontalAlign ?? 'left'));
-  // const [verticalAlign, setVerticalAlign] =
-  //   useState(convertVerticalAlign(node?.getData()?.verticalAlign ?? 'top'));
-
+    useState(convertVerticalAlign(node?.getData()?.verticalAlign ?? 'top'));
+  const [noteTextColor, setNoteTextColor] = useState(node?.getData()?.backgroundColor) ?? 'yellow';
   const copy = () => {
     const cells = graph.getSelectedCells();
     if (cells.length) {
@@ -156,6 +177,15 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     cc.forEach(c => c.setData({...c.getData(), 'verticalAlign': align}))
     setVerticalAlign(verticalAlign)
   }
+
+   const noteTextColorHandler = (e: RadioChangeEvent) => {
+     const noteTextColor = e.target.value as number;
+     const color = noteTextColor ? NoteTextColorValue[noteTextColor] : NoteTextColorValue[NoteTextColor.TRANSPARENT]
+     const cc= graph.getSelectedCells()?.filter(c => c.shape == CustomShape.TEXT_NODE)
+     cc.forEach(c => c.setData({...c.getData(), 'backgroundColor': color}))
+     setNoteTextColor(noteTextColor)
+  }
+
 
   const onMenuClick = (name: string) => {
     messageApi.info(`clicked ${name}`);
@@ -249,25 +279,41 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
 
   const onMenuItemClick = () => { };
   const blankMenu = () => {
+
     return (<Menu hasIcon={true} onClick={onMenuClick}>
       {(node?.shape === "DuplicateOperator") && DuplicateOperatorMenu()}
 
       { node?.shape == CustomShape.TEXT_NODE &&<>
         <SubMenu name="align" icon={<RadiusSettingOutlined/>} text="Text alignment">
           <Radio.Group name="horizontal" onChange={horizontalAlignHandler} value={horizontalAlign}>
-            <Space direction="vertical">
+            <Space.Compact direction="vertical">
               <Radio value={HorizontalAlignState.LEFT}>Left</Radio>
               <Radio value={HorizontalAlignState.CENTER}>H-Center</Radio>
               <Radio value={HorizontalAlignState.RIGHT}>Right</Radio>
-            </Space>
+            </Space.Compact>
           </Radio.Group>
           <Divider/>
           <Radio.Group name="vertical" onChange={verticalAlignHandler} value={verticalAlign}>
-            <Space direction="vertical">
+            <Space.Compact direction="vertical">
               <Radio value={VerticalAlignState.TOP}>Top</Radio>
               <Radio value={VerticalAlignState.CENTER}>V-Center</Radio>
               <Radio value={VerticalAlignState.BOTTOM}>Bottom</Radio>
-            </Space>
+            </Space.Compact>
+          </Radio.Group>
+        </SubMenu>
+        <SubMenu name="color" icon={<RadiusSettingOutlined/>} text="Note Color">
+          <Radio.Group name="color" size="small" onChange={noteTextColorHandler} value={noteTextColor}>
+            <Space.Compact direction="horizontal">
+              {Object.keys(NoteTextColor).filter(key => !isNaN(Number(NoteTextColor[key]))).map(
+                (key) =>
+                  (
+                    <>
+                      <style>{`.ant-radio > input#radio-text-${key} + span.ant-radio-inner {background-color: ${NoteTextColorValue[NoteTextColor[key]]}}`}</style>
+                      <Radio id={`radio-text-${key}`} value={NoteTextColor[key]}/>
+                    </>
+                  )
+              )}
+            </Space.Compact>
           </Radio.Group>
         </SubMenu>
       <Divider/>
@@ -314,10 +360,6 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
        <MenuItem name="backward" icon={<RadiusSettingOutlined/>} hotkey="Cmd+B" text="Bring Backward"/>
       </SubMenu>
     </Menu>)
-  }
-
-  const DuplicateOperatorMenu = () => {
-    return <MenuItem icon={<EditOutlined />} name="add-port" text="添加输出桩" />
   }
 
   const styleObj: any = {

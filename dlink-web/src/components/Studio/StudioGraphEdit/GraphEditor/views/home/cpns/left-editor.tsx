@@ -118,6 +118,7 @@ const LeftEditor = memo(() => {
         message.warning("请检查输入源或连线！")
         return
       }
+
       // 输出  由editor配置
       if (node.getPort(port)?.group === portType.outputs) {
         if (node.shape === "DuplicateOperator") {
@@ -173,10 +174,12 @@ const LeftEditor = memo(() => {
       } else {
         const edges = graph.model.getIncomingEdges(node)
         console.log(edges, ".....");
+
         if (!edges || !isConnected(graphRef.current!, node, port, false)) {
           message.warning("请选择连线！");
           return
         }
+
         for (let edge of edges) {
           const targetPortId = edge.getTargetPortId();
           const targetCell = edge.getTargetCell();
@@ -194,11 +197,12 @@ const LeftEditor = memo(() => {
         }
       }
     })
+
     //读取target-config配置，界面回显
     function readConfigFromData(currentCell: Cell, sourceCell: Cell, sourcePortId: string, currentPort: string, id: string) {
-      let paramersByOutPortConfig = currentCell.getData().config[0]
-      if (!paramersByOutPortConfig[id]) { message.warning("请设置输入参数配置!"); return }
-      let parametersConfig: ParametersConfigType[] = paramersByOutPortConfig[id]
+      let parametersByOutPortConfig = currentCell.getData().config[0]
+      if (!parametersByOutPortConfig[id]) { message.warning("请设置输入参数配置!"); return }
+      let parametersConfig: ParametersConfigType[] = parametersByOutPortConfig[id]
       //c从config读取，是否筛选出flag true,第一次连线，config里均为true,点击确定修改配置后config有false,但也应该显示，所以不删选字段
       // parametersConfig = parametersConfig.filter(item => item.flag)
       setParametersConfig({
@@ -208,6 +212,7 @@ const LeftEditor = memo(() => {
       })
       handlemodalVisible(true)
     }
+
     graph.on("edge:connected", ({ isNew, edge, currentCell, currentPort }) => {
       //创建新边
       if (isNew) {
