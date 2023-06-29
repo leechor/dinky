@@ -248,23 +248,6 @@ const LeftEditor = memo(() => {
         }
       }
     })
-
-
-    graph.on("cell:removed", ({ cell }) => {
-      debugger
-      //删除本节点直连所有节点config
-
-      let edges = graphRef.current!.model.removeConnectedEdges(cell);
-      
-      if (!edges) {
-        return
-      } else {
-        for (let edge of edges) {
-          let targetNode = edge.getTargetNode()
-          targetNode?.setData({ ...(targetNode?.getData() ? targetNode.getData() : {}), config: [] }, { overwrite: true })
-        }
-      }
-    })
   }
   const handleCancel = () => {
     isModalVisible(false);
