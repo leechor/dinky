@@ -37,6 +37,7 @@ enum VerticalAlignState {
 }
 
 export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, node, handleShowMenu, show }) => {
+  
   const convertHorizontalAlign = (align: string) => {
     switch (align) {
       case 'left':
@@ -67,11 +68,14 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
   const [messageApi, contextHolder] = message.useMessage();
   const [isDisablePaste, setIsDisablePaste] = useState(true);
   const [horizontalAlign, setHorizontalAlign] =
-    useState(convertHorizontalAlign(node?.getData()?.horizontalAlign ?? 'left'));
+    useState(convertHorizontalAlign( 'left'));
   const [verticalAlign, setVerticalAlign] =
-    useState(convertVerticalAlign(node?.getData()?.verticalAlign ?? 'top'));
+    useState(convertVerticalAlign( 'top'));
 
-
+  //   const [horizontalAlign, setHorizontalAlign] =
+  //   useState(convertHorizontalAlign(node?.getData()?.horizontalAlign ?? 'left'));
+  // const [verticalAlign, setVerticalAlign] =
+  //   useState(convertVerticalAlign(node?.getData()?.verticalAlign ?? 'top'));
 
   const copy = () => {
     const cells = graph.getSelectedCells();
