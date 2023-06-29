@@ -338,7 +338,7 @@ const LeftEditor = memo(() => {
 
   }
   const handleSubmitPort = (value: any) => {
-    debugger
+    
     const node = showMenuInfo.node
     // 添加连接桩
     node!.addPort({
