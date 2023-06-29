@@ -14,7 +14,7 @@ export const handleInitPort = () => {
           tagName: "path",
           selector: "path",
           attrs: {
-            d: "m0,0,a5,5.5 0 0 1 12,0",
+            d: "m-6,0,a5,5.5 0 0 1 12,0",
             fill: "#b2a2e9",
             transform: "rotate(90)",
             strokeWidth: 1,
@@ -38,7 +38,7 @@ export const handleInitPort = () => {
           tagName: "path",
           selector: "path",
           attrs: {
-            d: "m0,0,a5,5.5 0 0 1 12,0",
+            d: "m-6,0,a5,5.5 0 0 1 12,0",
             fill: "#b2a2e9",
             transform: "rotate(-90)",
             strokeWidth: 1,

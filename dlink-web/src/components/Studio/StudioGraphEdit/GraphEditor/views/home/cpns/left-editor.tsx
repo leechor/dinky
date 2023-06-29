@@ -122,38 +122,38 @@ const LeftEditor = memo(() => {
       // 输出  由editor配置
       if (node.getPort(port)?.group === portType.outputs) {
         if (node.shape === "DuplicateOperator") {
-          //读取该节点输入和上一个节点所组成的id 对应config 然后存入节点单输出id的config
-          const edges = graph.model.getIncomingEdges(node)
-          if (!edges) {
-            message.warning("请选择连线！");
-            return
-          }
-          for (let edge of edges) {
-            const targetPortId = edge.getTargetPortId();
-            const targetCell = edge.getTargetCell();
-            const sourcePortId = edge.getSourcePortId()
-            const sourceCell = edge.getSourceCell()
-            //连接边的终点portid 与 当前点击id一致
-            //获取config
-            let id = `${sourceCell!.id}&${sourcePortId} ${targetCell!.id}&${targetPortId}`
-            //获取最新输出配置
-            if (targetCell?.getData().config) {
-              // readConfigFromData(targetCell, sourceCell!, sourcePortId!, targetPortId!, id)
+          const flag = isConnected(graphRef.current!, node, port, true)
+          if (flag) {
+            const edges = graph.model.getOutgoingEdges(node)
+            for (let edge of edges!) {
+              let targetPortId = edge.getTargetPortId()
+              let targetNode = edge.getTargetNode()
+              let sourcePortId = edge.getSourcePortId();
+              if (sourcePortId == port) {
+                let id = `${node.id}&${port} ${targetNode!.id}&${targetPortId}`
+                let paramersByOutPortConfig = node.getData().config[0]
+                if (!paramersByOutPortConfig[id]) { message.warning("请设置输入参数配置!"); return }
+                let parametersConfig: ParametersConfigType[] = paramersByOutPortConfig[id]
+                setParametersConfig({
+                  isOutputs: true,
+                  parametersConfig: parametersConfig,
+                  readConfigData: { currentCell: node, currentPort: port, id }
+                })
+                isModalVisible(true)
 
-
-              let paramersByOutPortConfig = targetCell.getData().config[0]
-              if (!paramersByOutPortConfig[id]) { message.warning("请设置输入参数配置!"); return }
-              let parametersConfig: ParametersConfigType[] = paramersByOutPortConfig[id]
-              //c从config读取，是否筛选出flag true,第一次连线，config里均为true,点击确定修改配置后config有false,但也应该显示，所以不删选字段
-              // parametersConfig = parametersConfig.filter(item => item.flag)
-              setParametersConfig({
-                isOutputs: true,
-                parametersConfig: parametersConfig,
-                readConfigData: { currentCell: targetCell, currentPort: port, id }
-              })
-              isModalVisible(true)
+              }
             }
-
+          } else {
+            //没连线 修改自身连接装config
+            let paramersByOutPortConfig = node.getData().config[0]
+            if (!paramersByOutPortConfig[port]) { message.warning("请设置输入参数配置!"); return }
+            let parametersConfig: ParametersConfigType[] = paramersByOutPortConfig[port]
+            setParametersConfig({
+              isOutputs: true,
+              parametersConfig: parametersConfig,
+              readConfigData: { currentCell: node, currentPort: port, id: port }
+            })
+            isModalVisible(true)
           }
         } else {
 
@@ -173,8 +173,6 @@ const LeftEditor = memo(() => {
 
       } else {
         const edges = graph.model.getIncomingEdges(node)
-        console.log(edges, ".....");
-
         if (!edges || !isConnected(graphRef.current!, node, port, false)) {
           message.warning("请选择连线！");
           return
@@ -221,9 +219,14 @@ const LeftEditor = memo(() => {
         const sourceCell = edge.getSourceCell()
         //获取source的columns
         if (!sourceCell?.getData()) return
+        let parametersConfig: ParametersConfigType[];
+        if (sourceCell.shape === "DuplicateOperator") {
+          //修改（如果是DuplicateOperator则需要从输入节点的config里读取 ）
+          parametersConfig = sourceCell?.getData()["config"][0][sourcePortId!]
 
-        //修改（如果是DuplicateOperator则需要从输入节点的config里读取 ）
-        let parametersConfig: ParametersConfigType[] = sourceCell?.getData()?.parameters.columns;
+        } else {
+          parametersConfig = sourceCell?.getData()?.parameters.columns;
+        }
         if (parametersConfig.some(config => !config.name)) { message.warning("节点参数名称不能为空！"); return }
         //将输出数据筛选后设置给输入【flag为true】
         parametersConfig = parametersConfig.filter(item => item.flag)
@@ -236,7 +239,13 @@ const LeftEditor = memo(() => {
           let config = strMapToObj(configMap)
           let newConfigObj = getNewConfig(currentCell, config)
           currentCell.setData({ ...(currentCell.getData() ? currentCell.getData() : {}), config: [newConfigObj] }, { overwrite: true });
+          if (sourceCell.shape === "DuplicateOperator") {
+            //把input-output config 设置进自定义节点config
+            let oldConfigObj = sourceCell.getData()["config"][0]
+            oldConfigObj[id] = parametersConfig
+            sourceCell.setData({ ...(sourceCell.getData() ? sourceCell.getData() : {}), config: [cloneDeep(oldConfigObj)] }, { overwrite: true })
 
+          }
           //从node-data 读取config
           readConfigFromData(currentCell, sourceCell, sourcePortId, currentPort, id)
         }
@@ -264,11 +273,15 @@ const LeftEditor = memo(() => {
       const flag = isConnected(graphRef.current!, value.readConfigData.currentCell, value.readConfigData.currentPort, value.isOutputs)
       //同步选中节点信息   修改columns
       // value.readConfigData.currentCell.setData({ parameters: { columns: value.origin } });
-      value.readConfigData.currentCell.getData().parameters.columns = value.origin;
-      //同步jsoneditor
-      jsonEditor.setValue(value.readConfigData.currentCell.getData()?.parameters)
-      if (flag) {
+      if (value.readConfigData.currentCell.shape !== "DuplicateOperator") {
+        value.readConfigData.currentCell.getData().parameters.columns = value.origin;
+        //同步jsoneditor
+        jsonEditor.setValue(value.readConfigData.currentCell.getData()?.parameters)
+      }
 
+
+      if (flag) {
+        let node = value.readConfigData.currentCell
         //找到对应targetCell 设置config
         let edges = graphRef.current!.model.getOutgoingEdges(value.readConfigData.currentCell);
         for (let edge of edges!) {
@@ -280,23 +293,27 @@ const LeftEditor = memo(() => {
             let configMap: Map<string, ParametersConfigType[]> = new Map();
             let id = `${value.readConfigData.currentCell.id}&${sourcePortId} ${targetCell!.id}&${targetPortId}`
             let filterConfigMap = value.origin.filter(item => item.flag)
-            if (targetCell?.shape === "DuplicateOperator") {
-              const outPortIds = targetCell.getPortsByGroup("outputs").map(data => data.id)
-              let newConfigObj = {};
-              //将下个节点的所有连接装都重置
+            if (value.readConfigData.currentCell.shape === "DuplicateOperator") {
+              //修改自身config   同步下个cell config
+              let oldConfigObj = value.readConfigData.currentCell.getData()["config"][0]
+              oldConfigObj[id] = cloneDeep(value.origin)
 
-              newConfigObj[id] = filterConfigMap;
-              for (const addPortId of outPortIds!) {
-                newConfigObj[addPortId!] = cloneDeep(filterConfigMap)
-              }
-              targetCell?.setData({ ...(targetCell.getData() ? targetCell.getData() : {}), config: [newConfigObj] }, { overwrite: true })
-            } else {
-              configMap.set(id, filterConfigMap);
-              let config = strMapToObj(configMap)
-              let newConfigObj = getNewConfig(targetCell!, config)
-              targetCell!.setData({ ... (targetCell?.getData() ? targetCell.getData() : {}), config: [newConfigObj] }, { overwrite: true });
+              node.setData({ ... (node?.getData() ? node.getData() : {}), config: [cloneDeep(oldConfigObj)] }, { overwrite: true })
+
+
             }
+            configMap.set(id, filterConfigMap);
+            let config = strMapToObj(configMap)
+            let newConfigObj = getNewConfig(targetCell!, config)
+            targetCell!.setData({ ... (targetCell?.getData() ? targetCell.getData() : {}), config: [newConfigObj] }, { overwrite: true });
+
           }
+        }
+      } else {
+        //没连线
+        if (value.readConfigData.currentCell.shape === "DuplicateOperator") {
+          //修改自身的节点config
+          value.readConfigData.currentCell.getData()["config"][0][value.readConfigData.currentPort] = cloneDeep(value.origin)
         }
       }
     } else {
@@ -311,11 +328,11 @@ const LeftEditor = memo(() => {
           let currentNode = edge.getTargetNode();
           const outPortIds = currentNode!.getPortsByGroup("outputs").map(data => data.id)
           let newConfigObj = {};
-          //将下个节点的所有连接装都重置
-
-          newConfigObj[value.readConfigData.id!] = cloneDeep(value.origin);
+          //将下个节点的所有连接装都重置(不影响前节点config保持input-output config不变)
+          let newConfig = value.origin.filter(config => config.flag)
+          newConfigObj[value.readConfigData.id!] = cloneDeep(value.readConfigData.currentCell.getData()["config"][0][value.readConfigData.id!])
           for (const addPortId of outPortIds!) {
-            newConfigObj[addPortId!] = cloneDeep(value.origin)
+            newConfigObj[addPortId!] = cloneDeep(newConfig)
           }
           currentNode?.setData({ ...(currentNode.getData() ? currentNode.getData() : {}), config: [newConfigObj] }, { overwrite: true })
         }
@@ -395,7 +412,7 @@ const LeftEditor = memo(() => {
 
   }
   const handleShowMenu = (value: boolean) => {
-    setShowMenuInfo({ ...showMenuInfo, show: value})
+    setShowMenuInfo({ ...showMenuInfo, show: value })
   }
   const changeNode = (node: Cell) => {
     dispatch(changeCurrentSelectNode(node))
