@@ -27,9 +27,11 @@ const Editor = memo(() => {
       currentSelectNode: state.home.currentSelectNode,
     }),
   );
+  let isTextNode: boolean = currentSelectNode.shape === "custom-text-node";
+  const textNodeSchema = isTextNode ? {} : null
   const currentNodeDes = operatorParameters.find((item: any) => item.code === currentSelectNode.shape);
   const config: JSONEditorOptions<any> = {
-    schema: currentNodeDes?.specification ?? null,
+    schema: isTextNode ? textNodeSchema : (currentNodeDes?.specification ?? null),
     //设置主题,可以是bootstrap或者jqueryUI等
     theme: 'spectre',
     //设置字体
@@ -62,7 +64,7 @@ const Editor = memo(() => {
         }
       });
       editor.on('change', function () {
-        
+
         //先恢复初始值
         dispatch(changeCurrentSelectNodeParamsData([]));
         //设置当前属性值

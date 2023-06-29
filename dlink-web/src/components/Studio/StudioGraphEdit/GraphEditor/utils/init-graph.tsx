@@ -1,6 +1,6 @@
 import { Cell, Dom, Edge, Graph, Model, Node, Shape } from '@antv/x6';
 import loadPlugin from './plugin';
-
+import removeBtnRegister from './remove-btn-register';
 import {
   changeCurrentSelectNode,
   changeCurrentSelectNodeName,
@@ -50,7 +50,7 @@ export const initGraph = (
       },
       //连接的过程中创建新的边
       createEdge() {
-        let edge= new Shape.Edge({
+        let edge = new Shape.Edge({
           attrs: {
             line: {
               stroke: '#b2a2e9',
@@ -125,6 +125,8 @@ export const initGraph = (
     },
     grid: true,
   });
+  //自定义删除按钮
+  removeBtnRegister(graph)
 
   //加载相关插件
   loadPlugin(graph);
@@ -145,21 +147,21 @@ export const initGraph = (
   function showAllPorts(show: boolean) {
     //显示连接桩
     const ports = container.querySelectorAll(".x6-port-body");
-    const labels=container.querySelectorAll(".x6-port-label")
+    const labels = container.querySelectorAll(".x6-port-label")
     showPortsOrLabels(ports, show);
     showPortsOrLabels(labels, show);
 
   }
 
   graph.on('node:mouseenter', ({ cell }) => {
-    if(cell.isNode()&&cell.hasPorts()){
+    if (cell.isNode() && cell.hasPorts()) {
       showAllPorts(true);
     }
 
     //显示删除按钮
     cell.addTools([
       {
-        name: 'button-remove',
+        name: 'rm-btn',
         args: {
           x: 0,
           y: 0,
@@ -229,7 +231,7 @@ export const initGraph = (
 
   //群组大小自适应处理
   let ctrlPressed = false;
-  graph.on('node:embedding', ({ e }: { e: Dom.MouseMoveEvent }) => {});
+  graph.on('node:embedding', ({ e }: { e: Dom.MouseMoveEvent }) => { });
 
   graph.on('node:embedded', ({ node, currentParent }) => {
     ctrlPressed = false;

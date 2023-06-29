@@ -106,6 +106,20 @@ const LeftEditor = memo(() => {
       return edges.some(edge => edge.getTargetPortId() === id)
     }
   }
+
+  const readConfigFromData = (currentCell: Cell, sourceCell: Cell, sourcePortId: string, currentPort: string, id: string) => {
+    let parametersByOutPortConfig = currentCell.getData().config[0]
+    if (!parametersByOutPortConfig[id]) { message.warning("请设置输入参数配置!"); return }
+    let parametersConfig: ParametersConfigType[] = parametersByOutPortConfig[id]
+    //c从config读取，是否筛选出flag true,第一次连线，config里均为true,点击确定修改配置后config有false,但也应该显示，所以不删选字段
+    // parametersConfig = parametersConfig.filter(item => item.flag)
+    setParametersConfig({
+      isOutputs: false,
+      parametersConfig: parametersConfig,
+      readConfigData: { currentCell, currentPort, id }
+    })
+    isModalVisible(true)
+  }
   const handleNodeConfigSet = (graph: Graph) => {
     graph.on("node:port:click", ({ node, port }: { node: Node, port: string }) => {
       dispatch(changeCurrentSelectNode(node))
@@ -118,8 +132,7 @@ const LeftEditor = memo(() => {
         message.warning("请检查输入源或连线！")
         return
       }
-
-      // 输出  由editor配置
+      // 输出连接桩点击
       if (node.getPort(port)?.group === portType.outputs) {
         if (node.shape === "DuplicateOperator") {
           const flag = isConnected(graphRef.current!, node, port, true)
@@ -156,7 +169,6 @@ const LeftEditor = memo(() => {
             isModalVisible(true)
           }
         } else {
-
           //修改（如果是DuplicateOperator则需要从输入节点的config里读取 ）
           const parametersConfig: ParametersConfigType[] = node.getData()?.parameters.columns;
           if (parametersConfig.some(config => !config.name)) { message.warning("节点参数名称不能为空！"); return }
@@ -196,20 +208,7 @@ const LeftEditor = memo(() => {
       }
     })
 
-    //读取target-config配置，界面回显
-    function readConfigFromData(currentCell: Cell, sourceCell: Cell, sourcePortId: string, currentPort: string, id: string) {
-      let parametersByOutPortConfig = currentCell.getData().config[0]
-      if (!parametersByOutPortConfig[id]) { message.warning("请设置输入参数配置!"); return }
-      let parametersConfig: ParametersConfigType[] = parametersByOutPortConfig[id]
-      //c从config读取，是否筛选出flag true,第一次连线，config里均为true,点击确定修改配置后config有false,但也应该显示，所以不删选字段
-      // parametersConfig = parametersConfig.filter(item => item.flag)
-      setParametersConfig({
-        isOutputs: false,
-        parametersConfig: parametersConfig,
-        readConfigData: { currentCell, currentPort, id }
-      })
-      isModalVisible(true)
-    }
+
 
     graph.on("edge:connected", ({ isNew, edge, currentCell, currentPort }) => {
       //创建新边
@@ -223,7 +222,6 @@ const LeftEditor = memo(() => {
         if (sourceCell.shape === "DuplicateOperator") {
           //修改（如果是DuplicateOperator则需要从输入节点的config里读取 ）
           parametersConfig = sourceCell?.getData()["config"][0][sourcePortId!]
-
         } else {
           parametersConfig = sourceCell?.getData()?.parameters.columns;
         }
@@ -244,17 +242,30 @@ const LeftEditor = memo(() => {
             let oldConfigObj = sourceCell.getData()["config"][0]
             oldConfigObj[id] = parametersConfig
             sourceCell.setData({ ...(sourceCell.getData() ? sourceCell.getData() : {}), config: [cloneDeep(oldConfigObj)] }, { overwrite: true })
-
           }
           //从node-data 读取config
           readConfigFromData(currentCell, sourceCell, sourcePortId, currentPort, id)
         }
       }
-
     })
 
-  }
 
+    graph.on("cell:removed", ({ cell }) => {
+      debugger
+      //删除本节点直连所有节点config
+
+      let edges = graphRef.current!.model.removeConnectedEdges(cell);
+      
+      if (!edges) {
+        return
+      } else {
+        for (let edge of edges) {
+          let targetNode = edge.getTargetNode()
+          targetNode?.setData({ ...(targetNode?.getData() ? targetNode.getData() : {}), config: [] }, { overwrite: true })
+        }
+      }
+    })
+  }
   const handleCancel = () => {
     isModalVisible(false);
   }
@@ -264,7 +275,6 @@ const LeftEditor = memo(() => {
 
 
   const handleSubmit = (value: CompareCheckProps) => {
-
     value.origin.forEach(item => {
       item.flag = value.parameters.includes(item.name);
     })
@@ -278,8 +288,6 @@ const LeftEditor = memo(() => {
         //同步jsoneditor
         jsonEditor.setValue(value.readConfigData.currentCell.getData()?.parameters)
       }
-
-
       if (flag) {
         let node = value.readConfigData.currentCell
         //找到对应targetCell 设置config
@@ -297,16 +305,12 @@ const LeftEditor = memo(() => {
               //修改自身config   同步下个cell config
               let oldConfigObj = value.readConfigData.currentCell.getData()["config"][0]
               oldConfigObj[id] = cloneDeep(value.origin)
-
               node.setData({ ... (node?.getData() ? node.getData() : {}), config: [cloneDeep(oldConfigObj)] }, { overwrite: true })
-
-
             }
             configMap.set(id, filterConfigMap);
             let config = strMapToObj(configMap)
             let newConfigObj = getNewConfig(targetCell!, config)
             targetCell!.setData({ ... (targetCell?.getData() ? targetCell.getData() : {}), config: [newConfigObj] }, { overwrite: true });
-
           }
         }
       } else {
@@ -319,9 +323,7 @@ const LeftEditor = memo(() => {
     } else {
       const flag = isConnected(graphRef.current!, value.readConfigData.currentCell, value.readConfigData.currentPort, value.isOutputs)
       console.log(flag);
-
       if (!flag) return
-      // "....................................."
       if (value.readConfigData.currentCell.shape === "DuplicateOperator") {
         const edges = graphRef.current!.model.getIncomingEdges(value.readConfigData.currentCell)
         for (let edge of edges!) {
@@ -346,12 +348,9 @@ const LeftEditor = memo(() => {
       }
 
     }
-
     console.log(graphRef.current?.toJSON(), "confirm");
-
   }
   const handleSubmitPort = (value: any) => {
-
     const node = showMenuInfo.node
     // 添加连接桩
     node!.addPort({
@@ -422,14 +421,13 @@ const LeftEditor = memo(() => {
       const editorContentContainer: HTMLElement = editorContentRef.current;
 
       //1、初始化画布
+
       graphRef.current = initGraph(
         editorContentContainer,
         selectedNodes,
         setSelectedNodes,
         dispatch,
       );
-
-
       initMenu(graphRef.current, setShowMenuInfo, changeNode);
 
       if (stencilRef.current) {

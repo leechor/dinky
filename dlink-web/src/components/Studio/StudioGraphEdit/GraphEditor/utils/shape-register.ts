@@ -9,6 +9,7 @@ import { GroupNode } from '@/components/Studio/StudioGraphEdit/GraphEditor/compo
 import unRegisterShape from "./shape-unregister"
 import CustomShape from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
 
+
 function registerTextNode() {
   //注册文本节点
   register({
@@ -59,7 +60,7 @@ export default (
   ports: Partial<PortManager.Metadata> | PortManager.PortMetadata[],
   operatorParameters: Parameter[],
 ) => {
-  
+  debugger
   //取消已注册，重新注册
   unRegisterShape(operatorParameters)
   operatorParameters?.forEach((param) => {
@@ -90,7 +91,7 @@ export default (
     portItem.push(
       ...param.ports.outputs.map((item: { id: string }) => ({
         group: 'outputs',
-        zIndex:999,
+        zIndex: 999,
         id: item.id,
         attrs: {
           text: {
@@ -109,11 +110,12 @@ export default (
     );
 
     //保存组和节点关系
-    registerOperatorNode(param.code, ports, OperatorNode(param.icon,param.name), portItem);
+    registerOperatorNode(param.code, ports, OperatorNode(param.icon, param.name), portItem);
 
   });
   registerTextNode();
   Graph.registerNode('package', GroupNode);
+
 
 
 };
