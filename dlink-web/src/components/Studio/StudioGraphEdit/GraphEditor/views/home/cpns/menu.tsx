@@ -1,6 +1,6 @@
 import { Menu } from '@antv/x6-react-components';
 import { FC, memo, useState } from 'react';
-import {message, Radio, RadioChangeEvent, Space} from 'antd';
+import { message, Radio, RadioChangeEvent, Space } from 'antd';
 import { DataUri, Graph, Node } from '@antv/x6';
 import '@antv/x6-react-components/es/menu/style/index.css';
 import {
@@ -37,7 +37,7 @@ enum VerticalAlignState {
 }
 
 enum NoteTextColor {
-  YELLOW=1,
+  YELLOW = 1,
   ORANGE,
   RED,
   PURPLE,
@@ -47,7 +47,7 @@ enum NoteTextColor {
   TRANSPARENT,
 }
 
-const NoteTextColorValue: {[key in NoteTextColor]: string} = {
+const NoteTextColorValue: { [key in NoteTextColor]: string } = {
   [NoteTextColor.YELLOW]: "#fcf987",
   [NoteTextColor.RED]: "#ffe9dc",
   [NoteTextColor.ORANGE]: "#fffad2",
@@ -63,6 +63,7 @@ const DuplicateOperatorMenu = () => {
 }
 
 export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, node, handleShowMenu, show }) => {
+
   const convertHorizontalAlign = (align: string) => {
     switch (align) {
       case 'left':
@@ -89,7 +90,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     }
   }
 
-  const {Item: MenuItem, SubMenu, Divider} = Menu;
+  const { Item: MenuItem, SubMenu, Divider } = Menu;
   const [messageApi, contextHolder] = message.useMessage();
   const [isDisablePaste, setIsDisablePaste] = useState(true);
   const [horizontalAlign, setHorizontalAlign] =
@@ -97,9 +98,6 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
   const [verticalAlign, setVerticalAlign] =
     useState(convertVerticalAlign(node?.getData()?.verticalAlign ?? 'top'));
   const [noteTextColor, setNoteTextColor] = useState(node?.getData()?.backgroundColor) ?? 'yellow';
-
-
-
   const copy = () => {
     const cells = graph.getSelectedCells();
     if (cells.length) {
@@ -134,12 +132,12 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
 
   const forward = () => {
     const cells = graph.getSelectedCells();
-    cells?.forEach(c => {c.setZIndex((c.getZIndex() ?? 0 ) + 1)});
+    cells?.forEach(c => { c.setZIndex((c.getZIndex() ?? 0) + 1) });
   };
 
   const backward = () => {
     const cells = graph.getSelectedCells();
-    cells?.forEach(c => {c.setZIndex((c.getZIndex() ?? 0) - 1)});
+    cells?.forEach(c => { c.setZIndex((c.getZIndex() ?? 0) - 1) });
   };
 
   const horizontalAlignHandler = (e: RadioChangeEvent) => {
@@ -157,7 +155,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
       }
     })(horizontalAlign);
     graph.getSelectedCells()?.filter(c => c.shape == CustomShape.TEXT_NODE)
-      .forEach(c => c.setData({...c.getData(), 'horizontalAlign': align}))
+      .forEach(c => c.setData({ ...c.getData(), 'horizontalAlign': align }))
     setHorizontalAlign(horizontalAlign)
   }
 
@@ -175,17 +173,17 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
           return 'top'
       }
     })(verticalAlign);
-    const cc= graph.getSelectedCells()?.filter(c => c.shape == CustomShape.TEXT_NODE)
-    cc.forEach(c => c.setData({...c.getData(), 'verticalAlign': align}))
+    const cc = graph.getSelectedCells()?.filter(c => c.shape == CustomShape.TEXT_NODE)
+    cc.forEach(c => c.setData({ ...c.getData(), 'verticalAlign': align }))
     setVerticalAlign(verticalAlign)
   }
 
-   const noteTextColorHandler = (e: RadioChangeEvent) => {
-     const noteTextColor = e.target.value as number;
-     const color = noteTextColor ? NoteTextColorValue[noteTextColor] : NoteTextColorValue[NoteTextColor.TRANSPARENT]
-     const cc= graph.getSelectedCells()?.filter(c => c.shape == CustomShape.TEXT_NODE)
-     cc.forEach(c => c.setData({...c.getData(), 'backgroundColor': color}))
-     setNoteTextColor(noteTextColor)
+  const noteTextColorHandler = (e: RadioChangeEvent) => {
+    const noteTextColor = e.target.value as number;
+    const color = noteTextColor ? NoteTextColorValue[noteTextColor] : NoteTextColorValue[NoteTextColor.TRANSPARENT]
+    const cc = graph.getSelectedCells()?.filter(c => c.shape == CustomShape.TEXT_NODE)
+    cc.forEach(c => c.setData({ ...c.getData(), 'backgroundColor': color }))
+    setNoteTextColor(noteTextColor)
   }
 
 
@@ -249,7 +247,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
         break;
       case 'save-JSON':
         let data = JSON.stringify(graph.toJSON(), null, 4);
-        const blob = new Blob([data], {type: 'text/json'}),
+        const blob = new Blob([data], { type: 'text/json' }),
           e = new MouseEvent('click'),
           a = document.createElement('a');
 
@@ -285,8 +283,8 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     return (<Menu hasIcon={true} onClick={onMenuClick}>
       {(node?.shape === "DuplicateOperator") && DuplicateOperatorMenu()}
 
-      { node?.shape == CustomShape.TEXT_NODE &&<>
-        <SubMenu name="align" icon={<RadiusSettingOutlined/>} text="Text alignment">
+      {node?.shape == CustomShape.TEXT_NODE && <>
+        <SubMenu name="align" icon={<RadiusSettingOutlined />} text="Text alignment">
           <Radio.Group name="horizontal" onChange={horizontalAlignHandler} value={horizontalAlign}>
             <Space.Compact direction="vertical">
               <Radio value={HorizontalAlignState.LEFT}>Left</Radio>
@@ -294,7 +292,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
               <Radio value={HorizontalAlignState.RIGHT}>Right</Radio>
             </Space.Compact>
           </Radio.Group>
-          <Divider/>
+          <Divider />
           <Radio.Group name="vertical" onChange={verticalAlignHandler} value={verticalAlign}>
             <Space.Compact direction="vertical">
               <Radio value={VerticalAlignState.TOP}>Top</Radio>
@@ -303,22 +301,22 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
             </Space.Compact>
           </Radio.Group>
         </SubMenu>
-        <SubMenu name="color" icon={<RadiusSettingOutlined/>} text="Note Color">
+        <SubMenu name="color" icon={<RadiusSettingOutlined />} text="Note Color">
           <Radio.Group name="color" size="small" onChange={noteTextColorHandler} value={noteTextColor}>
             <Space.Compact direction="horizontal">
               {Object.keys(NoteTextColor).filter(key => !isNaN(Number(NoteTextColor[key]))).map(
                 (key) =>
-                  (
-                    <>
-                      <style>{`.ant-radio > input#radio-text-${key} + span.ant-radio-inner {background-color: ${NoteTextColorValue[NoteTextColor[key]]}}`}</style>
-                      <Radio id={`radio-text-${key}`} value={NoteTextColor[key]}/>
-                    </>
-                  )
+                (
+                  <>
+                    <style>{`.ant-radio > input#radio-text-${key} + span.ant-radio-inner {background-color: ${NoteTextColorValue[NoteTextColor[key]]}}`}</style>
+                    <Radio id={`radio-text-${key}`} value={NoteTextColor[key]} />
+                  </>
+                )
               )}
             </Space.Compact>
           </Radio.Group>
         </SubMenu>
-      <Divider/>
+        <Divider />
       </>
       }
 
@@ -355,11 +353,11 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
       <Divider />
 
       <SubMenu name="order" icon={<RadiusSettingOutlined />} text="Change Order">
-       <MenuItem name="front" icon={<RadiusSettingOutlined/>} hotkey="Cmd+Shift+F" text="Bring to Front"/>
-       <MenuItem name="back" icon={<RadiusSettingOutlined/>} hotkey="Cmd+Shift+B" text="Bring to Back"/>
-        <Divider/>
-       <MenuItem name="forward" icon={<RadiusSettingOutlined/>} hotkey="Cmd+F" text="Bring Forward"/>
-       <MenuItem name="backward" icon={<RadiusSettingOutlined/>} hotkey="Cmd+B" text="Bring Backward"/>
+        <MenuItem name="front" icon={<RadiusSettingOutlined />} hotkey="Cmd+Shift+F" text="Bring to Front" />
+        <MenuItem name="back" icon={<RadiusSettingOutlined />} hotkey="Cmd+Shift+B" text="Bring to Back" />
+        <Divider />
+        <MenuItem name="forward" icon={<RadiusSettingOutlined />} hotkey="Cmd+F" text="Bring Forward" />
+        <MenuItem name="backward" icon={<RadiusSettingOutlined />} hotkey="Cmd+B" text="Bring Backward" />
       </SubMenu>
     </Menu>)
   }

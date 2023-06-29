@@ -27,7 +27,7 @@ function registerTextNode() {
 }
 
 function registerOperatorNode(
-  name: string,
+  code: string,
   ports: Partial<PortManager.Metadata> | PortManager.PortMetadata[],
   registerCpn: React.ComponentType<{
     node: Node;
@@ -48,7 +48,7 @@ function registerOperatorNode(
         },
       },
     },
-    shape: name,
+    shape: code,
     component: registerCpn,
     ports: { ...ports, items: portItem },
   });
@@ -59,7 +59,7 @@ export default (
   ports: Partial<PortManager.Metadata> | PortManager.PortMetadata[],
   operatorParameters: Parameter[],
 ) => {
-
+  
   //取消已注册，重新注册
   unRegisterShape(operatorParameters)
   operatorParameters?.forEach((param) => {
@@ -109,7 +109,7 @@ export default (
     );
 
     //保存组和节点关系
-    registerOperatorNode(param.name, ports, OperatorNode(param.icon), portItem);
+    registerOperatorNode(param.code, ports, OperatorNode(param.icon,param.name), portItem);
 
   });
   registerTextNode();

@@ -2,16 +2,18 @@ import { Tooltip } from 'antd';
 import styles from './index.less';
 import CpnShape, { NodeType } from './cpn-shape';
 
-const BaseNode = (props: { nodeType: NodeType; iconPath: string }) => {
+const BaseNode = (props: { nodeType: NodeType; iconPath: string,name:string }) => {
   const {
     nodeType: { node },
     iconPath,
+    name,
   } = props;
+  
   return (
     <div className={styles['custom-calcu-node']}>
       {node && (
-        <Tooltip title={node.shape}>
-          <div className={styles['custom-calcu-node-label']}>{node.shape}</div>
+        <Tooltip title={name}>
+          <div className={styles['custom-calcu-node-label']}>{name}</div>
         </Tooltip>
       )}
       <div className={styles['custom-calcu-node-svg']}>

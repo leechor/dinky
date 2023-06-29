@@ -16,13 +16,13 @@ const RightDetail = memo(() => {
     console.log(currentSelectNode, operatorParameters);
 
     if (currentSelectNode && currentSelectNode.shape) {
-      const found = operatorParameters.find((item: any) => item.name === currentSelectNode.shape)
+      const found = operatorParameters.find((item: any) => item.code === currentSelectNode.shape)
       if (found) {
         return (<>
           <CpnShape iconPath={found.icon} />
-          <span>{currentSelectNode.shape}</span>
+          <span>{found.name}</span>
         </>)
-      } else {
+      } else {199
         return <span>节点信息</span>
       }
     } else {

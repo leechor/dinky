@@ -27,7 +27,7 @@ const Editor = memo(() => {
       currentSelectNode: state.home.currentSelectNode,
     }),
   );
-  const currentNodeDes = operatorParameters.find((item: any) => item.name === currentSelectNode.shape);
+  const currentNodeDes = operatorParameters.find((item: any) => item.code === currentSelectNode.shape);
   const config: JSONEditorOptions<any> = {
     schema: currentNodeDes?.specification ?? null,
     //设置主题,可以是bootstrap或者jqueryUI等

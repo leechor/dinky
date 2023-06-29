@@ -8,6 +8,7 @@ export const initStencil = (
   stencilRef: HTMLElement,
   operatorParameters: Parameter[],
 ) => {
+  
   const groupsName: { [key: string]: string[] } = {};
   //根据算子节点参数整理需注册的stencil组
   operatorParameters?.forEach((param) => {
