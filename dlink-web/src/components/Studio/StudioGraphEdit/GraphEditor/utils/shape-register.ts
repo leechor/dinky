@@ -60,7 +60,6 @@ export default (
   ports: Partial<PortManager.Metadata> | PortManager.PortMetadata[],
   operatorParameters: Parameter[],
 ) => {
-  debugger
   //取消已注册，重新注册
   unRegisterShape(operatorParameters)
   operatorParameters?.forEach((param) => {
