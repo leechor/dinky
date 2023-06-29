@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef, useState, FC } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { Graph, Node, Cell, Edge } from '@antv/x6';
 import { handleInitPort } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/ports-register';
 import { initGraph } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/init-graph';
@@ -151,7 +151,7 @@ const LeftEditor = memo(() => {
                 parametersConfig: parametersConfig,
                 readConfigData: { currentCell: targetCell, currentPort: port, id }
               })
-              handlemodalVisible(true)
+              isModalVisible(true)
             }
 
           }
