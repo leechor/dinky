@@ -69,7 +69,7 @@ const LeftEditor = memo(() => {
     left: 0,
     node: null
   });
-  const [modalVisible, handlemodalVisible] = useState(false)
+  const [modalVisible, isModalVisible] = useState(false)
   const [parametersConfig, setParametersConfig] = useState<ParametersData>({ isOutputs: true, parametersConfig: [], readConfigData: {} as ReadConfigData } as ParametersData)
   const editorContentRef = useRef(null);
   const graphRef = useRef<Graph>();
@@ -134,7 +134,7 @@ const LeftEditor = memo(() => {
             currentPort: port,
           }
         })
-        handlemodalVisible(true)
+        isModalVisible(true)
       } else {
         const edges = graph.model.getIncomingEdges(node)
         console.log(edges, ".....");
@@ -174,7 +174,7 @@ const LeftEditor = memo(() => {
         parametersConfig: parametersConfig,
         readConfigData: { currentCell, currentPort, id }
       })
-      handlemodalVisible(true)
+      isModalVisible(true)
     }
 
     graph.on("edge:connected", ({ isNew, edge, currentCell, currentPort }) => {
@@ -211,21 +211,17 @@ const LeftEditor = memo(() => {
   }
 
   const handleCancel = () => {
-    handlemodalVisible(false);
+    isModalVisible(false);
   }
   const handleCancelPort = () => {
-    setShowMenuInfo({ ...showMenuInfo, show: true, node: {} as Node })
+    setShowMenuInfo({ ...showMenuInfo, show: true, node: null })
   }
 
 
   const handleSubmit = (value: CompareCheckProps) => {
 
     value.origin.forEach(item => {
-      if (value.parameters.includes(item.name)) {
-        item.flag = true;
-      } else {
-        item.flag = false
-      }
+      item.flag = value.parameters.includes(item.name);
     })
     if (value.isOutputs) {
       //判断是否连线
@@ -294,7 +290,7 @@ const LeftEditor = memo(() => {
     message.success("连接桩添加成功！")
   }
   const handleShowMenu = (value: boolean) => {
-    setShowMenuInfo({ ...showMenuInfo, show: value })
+    setShowMenuInfo({ ...showMenuInfo, show: value})
   }
   useEffect(() => {
     if (editorContentRef.current) {
