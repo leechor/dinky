@@ -8,6 +8,9 @@ const TextNode: FC<NodeType> = ({ node }: NodeType) => {
   const verticalAlign = node.getData()?.verticalAlign ?? 'top'
   const backgroundColor = node.getData()?.backgroundColor ?? '#efdbff';
   const fontColor = node.getData()?.fontColor ?? {fontColor: '#000000'};
+  const fontSize = node.getData()?.fontSize ?? {fontSize: 14};
+  const fontWeight = node.getData()?.fontWeight ?? {fontWeight: 14};
+  const fontFamily = node.getData()?.fontFamily ?? {fontFamily: "Arial"};
 
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     node.setData({ parameters: e.target.value, fontColor: fontColor, backgroundColor: backgroundColor });
@@ -25,6 +28,9 @@ const TextNode: FC<NodeType> = ({ node }: NodeType) => {
           color: fontColor,
           resize: "none",
           border: "none",
+          fontSize,
+          fontWeight,
+          fontFamily
         }}
         onChange={onChange}
         placeholder="input..."
