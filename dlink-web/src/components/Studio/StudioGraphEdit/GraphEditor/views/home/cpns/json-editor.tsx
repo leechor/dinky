@@ -2,6 +2,7 @@ import 'spectre.css/dist/spectre.css';
 import 'spectre.css/dist/spectre-exp.css';
 import 'spectre.css/dist/spectre-icons.css';
 import styles from './index.less';
+import { textSchema } from "../../../assets/json-data/text-node-schema"
 
 import { memo, useEffect, useRef, useState } from 'react';
 import { Node } from '@antv/x6';
@@ -28,7 +29,7 @@ const Editor = memo(() => {
     }),
   );
   let isTextNode: boolean = currentSelectNode.shape === "custom-text-node";
-  const textNodeSchema = isTextNode ? {} : null
+  const textNodeSchema = isTextNode ? textSchema : null
   const currentNodeDes = operatorParameters.find((item: any) => item.code === currentSelectNode.shape);
   const config: JSONEditorOptions<any> = {
     schema: isTextNode ? textNodeSchema : (currentNodeDes?.specification ?? null),
@@ -55,6 +56,10 @@ const Editor = memo(() => {
       editor = new JSONEditor<any>(container, config);
       editor.on('ready', function () {
         dispatch(changeJsonEditor(editor))
+        if(currentSelectNode.shape === "custom-text-node"){
+          //解决bug 防止直接将config的值设置
+          editor.setValue(currentSelectNode.getData())
+        }
         if (currentSelectNode instanceof Node) {
           if (currentSelectNode.getData() && currentSelectNode.getData().parameters) {
 
@@ -64,13 +69,17 @@ const Editor = memo(() => {
         }
       });
       editor.on('change', function () {
-
         //先恢复初始值
         dispatch(changeCurrentSelectNodeParamsData([]));
         //设置当前属性值
         console.log(editor.getValue());
 
         dispatch(changeCurrentSelectNodeParamsData(editor.getValue()));
+        if (currentSelectNode.shape === "custom-text-node") {
+          currentSelectNode.setData(editor.getValue())
+          dispatch(changeCurrentSelectNode(currentSelectNode));
+          return
+        }
         if (currentSelectNode instanceof Node) {
 
           let nodeConfig = []
