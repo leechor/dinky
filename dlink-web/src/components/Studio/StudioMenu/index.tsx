@@ -86,6 +86,7 @@ import { l } from '@/utils/intl';
 import { useAppSelector } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
 import { JSONEditor } from '@json-editor/json-editor';
 import localcache from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/localStorage"
+import { Graph } from '@antv/x6';
 
 const StudioMenu = (props: any) => {
   const {
@@ -116,6 +117,7 @@ const StudioMenu = (props: any) => {
 
   const onKeyDown = useCallback(
     (e) => {
+
       if (e.keyCode === 83 && (e.ctrlKey === true || e.metaKey)) {
         e.preventDefault();
         if (current) {
@@ -125,9 +127,13 @@ const StudioMenu = (props: any) => {
       if (e.keyCode === 113) {
         e.preventDefault();
         if (current) {
+          debugger
           // handleEditModalVisible(true);
           props.changeFullScreen(true);
-          localcache.setCache("graphData",graph.toJSON())
+          if (graph instanceof Graph) {
+            localcache.setCache("graphData", graph.toJSON())
+          }
+
         }
       }
     },
@@ -355,7 +361,10 @@ const StudioMenu = (props: any) => {
     if (current) {
       props.changeFullScreen(true);
       //保存当前画布中json信息
-      localcache.setCache("graphData",graph.toJSON())
+      if (graph instanceof Graph) {
+        localcache.setCache("graphData", graph.toJSON())
+      }
+
     }
   };
 
@@ -365,21 +374,28 @@ const StudioMenu = (props: any) => {
 
   const saveSqlAndSettingToTask = () => {
     //校验
-    
-    if (editor instanceof JSONEditor<any>) {
-      const errors = editor.validate()
-      if (errors.length) {
-        console.log(errors, "errors")
-        let errmsg=""
-        errors.forEach(error=>{
-          errmsg+=error.message
-        })
-        message.warning(errmsg+ "-检查算子节点信息")
-      } else {
-        localcache.setCache("graphData",graph.toJSON())
-        props.saveTask(current, JSON.stringify(graph.toJSON()));
+    if (current.task.dialect !== "FlinkSql") {
+      if (editor instanceof JSONEditor<any>) {
+        const errors = editor.validate()
+        if (errors.length) {
+          console.log(errors, "errors")
+          let errmsg = ""
+          errors.forEach(error => {
+            errmsg += error.message
+          })
+          message.warning(errmsg + "-检查算子节点信息")
+        } else {
+          if (graph instanceof Graph) {
+            props.saveTask(current, JSON.stringify(graph.toJSON()));
+          }
+
+        }
       }
+    } else {
+      props.saveTask(current);
     }
+
+
 
 
   };
@@ -895,7 +911,9 @@ const StudioMenu = (props: any) => {
           footer={null}
           onCancel={() => {
             props.changeFullScreen(false);
-            localcache.setCache("graphData",graph.toJSON())
+            if (graph instanceof Graph) {
+              localcache.setCache("graphData", graph.toJSON())
+            }
           }}
         >
           <StudioTabs width={width} height={height} />
@@ -907,10 +925,10 @@ const StudioMenu = (props: any) => {
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   saveTask: (current: any, statement?: string) => {
-    ;
+
     dispatch({
       type: 'Studio/saveTask',
-      payload: { ...current.task, statement },
+      payload: current.task.dialect !== "FlinkSql" ? { ...current.task, statement } : { ...current.task }
     });
   },
 

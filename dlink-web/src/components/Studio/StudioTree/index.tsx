@@ -265,6 +265,7 @@ const StudioTree: React.FC<StudioTreeProps> = (props) => {
 
       const result = getInfoById('/api/task', node.taskId);
       result.then((result) => {
+        
         let newTabs = tabs;
         let newPane: any = {
           title: node.name,

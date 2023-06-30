@@ -107,6 +107,7 @@ const EditorTabs = (props: any) => {
 
   // as different dialet return different Panle
   const getTabPane = (pane, i) => {
+    
     if (pane.task.dialect == DIALECT.KUBERNETES_APPLICATION) {
       return (
         <TabPane tab={Tab(pane)} key={pane.key} closable={pane.closable}>

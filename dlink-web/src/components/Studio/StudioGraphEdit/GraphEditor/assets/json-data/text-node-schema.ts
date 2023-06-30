@@ -1,7 +1,7 @@
 export let textSchema = {
     type: "object",
     title: "custom-text-node",
-    required: ["fontSize", "fontColor", "backgroundColor", "fontFamily", "fontWeight", "horizontalAlign", "tags", "possibleFonts"],
+    required: ["fontSize", "fontColor", "backgroundColor", "fontFamily", "fontWeight", "horizontalAlign", "verticalAlign", "tags", "possibleFonts"],
     properties: {
         fontSize: {
             format: "select2",
@@ -25,7 +25,7 @@ export let textSchema = {
             "type": "string",
             "format": "color",
             "title": "backgroundColor",
-            "default": "#fff"
+            "default": "#efdbff"
         },
         fontFamily: {
             type: "string",
@@ -49,6 +49,14 @@ export let textSchema = {
             enum: ["left", "right", "center"],
             options: {
                 enum_titles: ["left", "right", "center"]
+            }
+        },
+        verticalAlign: {
+            type: "string",
+            format: "select2",
+            enum: ["top", "bottom", "center"],
+            options: {
+                enum_titles: ["top", "bottom", "center"]
             }
         },
         tags: {

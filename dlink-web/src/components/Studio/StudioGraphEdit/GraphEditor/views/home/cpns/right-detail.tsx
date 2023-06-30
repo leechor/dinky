@@ -22,7 +22,7 @@ const RightDetail = memo(() => {
           <CpnShape iconPath={found.icon} />
           <span>{found.name}</span>
         </>)
-      } else {199
+      } else {
         return <span>节点信息</span>
       }
     } else {
