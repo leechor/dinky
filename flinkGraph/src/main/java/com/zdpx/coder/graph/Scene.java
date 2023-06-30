@@ -160,12 +160,12 @@ public class Scene {
         return mapper.readTree(
                         String.format(
                                 "{\"name\": \"%s\",%n"
-                                        + "\"key\":\"%s\",%n"
+                                        + "\"code\":\"%s\",%n"
                                         + "\"icon\":\"%s\",%n"
                                         + "\"group\":\"%s\",%n"
                                         + "\"specification\": %s}",
-                                t.getKey(),
                                 name,
+                                t.getKey(),
                                 operator.getIcon(),
                                 operator.getGroup(),
                                 operator.getSpecification()));

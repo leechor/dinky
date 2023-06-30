@@ -45,19 +45,14 @@
 				"title": "columns",
 				"description": "output field",
 				"required": [
-					"functionName",
-					"name",
-					"parameters"
 				],
 				"properties": {
 					"functionName": {
 						"type": "string",
-						"minLength": 1,
 						"title": "The functionName Schema"
 					},
 					"name": {
 						"type": "string",
-						"minLength": 1,
 						"title": "The outName Schema"
 					},
 					"parameters": {

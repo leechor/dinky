@@ -37,8 +37,11 @@ import com.zdpx.coder.utils.TableDataStreamConverter;
 public abstract class AbstractSqlTable extends Operator {
     public static final String TEMPLATE =
             "CREATE TABLE ${tableName} ("
-                    + "<#list columns as column>${column.name} ${column.type} <#sep>,"
-                    + "</#list>) "
+                    + "<#list columns as column>`${column.name}` ${column.type}<#sep>,"
+                    + "</#list>"
+                    + "<#if watermark??>, WATERMARK FOR `${watermark.column}` AS `${watermark.column}`<#if watermark.timeSpan??> - INTERVAL ' ${watermark.timeSpan} ' ${watermark.timeUnit}</#if></#if>"
+                    + "<#if primary??>, PRIMARY KEY (${primary}) NOT ENFORCED</#if>"
+                    + ")"
                     + "WITH ("
                     + "<#list parameters as key, value>"
                     + "'${(key == \"tableName\")?then(\"table-name\", key)}' = '${value}'<#sep>, "
@@ -46,8 +49,8 @@ public abstract class AbstractSqlTable extends Operator {
 
 
     public static final String INPUT_SQL =
-            "INSERT INTO ${outPutTableName} (<#list columns as column>${column.name}<#sep>,</#sep></#list>) "
-                    + "SELECT <#list tableInfo as column>${column.name}<#sep>, </#list> "
+            "INSERT INTO ${outPutTableName} (<#list columns as column>`${column.name}`<#sep>,</#sep></#list>) "
+                    + "SELECT <#list tableInfo as column>`${column.name}`<#sep>, </#list> "
                     + "FROM ${inPutTableName}";
     protected TableInfo tableInfo;
 
@@ -165,6 +168,22 @@ public abstract class AbstractSqlTable extends Operator {
         if(psFirst.get("tableName")!=null){
             result.put("tableName", psFirst.get("tableName") );
         }
+        String primary = psFirst.get("primary").toString();
+        if(primary!=null&&!primary.equals("")){
+            result.put("primary", primary );
+        }
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> watermark = (Map<String, Object>)psFirst.get("watermark");
+        if(watermark.get("column")!=null&&!watermark.get("column").equals("")){
+            if((Integer)watermark.get("timeSpan")==0){
+                watermark.remove("timeSpan");
+            }
+            result.put("watermark", watermark);
+        }
+
+        psFirst.remove("primary");
+        psFirst.remove("watermark");
 
         for (Map.Entry<String, Object> m : psFirst.entrySet()) {
             if (m.getKey().equals(columns)) {
@@ -181,7 +200,7 @@ public abstract class AbstractSqlTable extends Operator {
         return result;
     }
 
-    //该方法只适用于mysql类型的数据源，其他数据源没有输入tableName
+    //适用于tableName不为空的数据源
     protected String generateTableName(String tableName) {
         return tableName + "_" + this.getId().substring(this.getId().lastIndexOf('-') + 1);
     }
