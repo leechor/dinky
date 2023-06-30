@@ -48,7 +48,7 @@ public class JoinOperator extends Operator {
                             + "${joinType?upper_case} JOIN ${anotherTableName} "
                             + "<#if systemTimeColumn??>FOR SYSTEM_TIME AS OF ${systemTimeColumn}</#if> "
                             + "<#if onLeftColumn??>ON ${onLeftColumn} = ${onRightColumn}</#if>"
-                            + "<#if where??>WHERE ${where}</#if> "
+                            + "<#if where??> WHERE ${where}</#if> "
                             ,
                     Specifications.TEMPLATE_FILE);
 
@@ -97,19 +97,20 @@ public class JoinOperator extends Operator {
 
         Map<String, Object> dataModel = new HashMap<>();
         dataModel.put("tableName", outputTableName);
+        dataModel.put("where", parameters.get("where"));
         dataModel.put("inputTableName", primaryTableName);
         dataModel.put("anotherTableName", secondTableName);
         dataModel.put(Operator.FIELD_FUNCTIONS, ffsPrimary);
         dataModel.put("joinType", joinType);
         dataModel.put(
                 "systemTimeColumn",
-                FieldFunction.insertTableName(primaryTableName, null, forSystemTime));
+                FieldFunction.insertTableName(primaryTableName, null, forSystemTime,false));
         dataModel.put(
                 "onLeftColumn",
-                FieldFunction.insertTableName(primaryTableName, null, onLeftColumn));
+                FieldFunction.insertTableName(primaryTableName, null, onLeftColumn,false));
         dataModel.put(
                 "onRightColumn",
-                FieldFunction.insertTableName(secondTableName, null, onRightColumn));
+                FieldFunction.insertTableName(secondTableName, null, onRightColumn,false));
 
         String sqlStr = TemplateUtils.format(this.getName(), dataModel, TEMPLATE);
         registerUdfFunctions(ffsPrimary);
@@ -141,8 +142,8 @@ public class JoinOperator extends Operator {
                 }
             }
         }
-        ffsPrimary.addAll(FieldFunction.analyzeParameters(primaryTableName,primaryInput));
-        ffsPrimary.addAll(FieldFunction.analyzeParameters(secondTableName,secondInput));
+        ffsPrimary.addAll(FieldFunction.analyzeParameters(primaryTableName,primaryInput,true));
+        ffsPrimary.addAll(FieldFunction.analyzeParameters(secondTableName,secondInput,true));
 
         return ffsPrimary;
 

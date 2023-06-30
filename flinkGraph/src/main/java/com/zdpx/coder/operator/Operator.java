@@ -331,7 +331,7 @@ public abstract class Operator extends Node implements Runnable {
     public static List<FieldFunction> getFieldFunctions(
             String primaryTableName, Map<String, Object> parameters) {
         return FieldFunction.analyzeParameters(
-                primaryTableName, (List<Map<String, Object>>) parameters.get(FIELD_FUNCTIONS));
+                primaryTableName, (List<Map<String, Object>>) parameters.get(FIELD_FUNCTIONS),true);
     }
 
     public static Map<String, Object> getJsonAsMap(JsonNode inputs) {
@@ -340,7 +340,7 @@ public abstract class Operator extends Node implements Runnable {
 
     public static List<Column> getColumnFromFieldFunctions(List<FieldFunction> ffs) {
         return ffs.stream()
-                .map(t -> new Column(getColumnName(t.getOutName()), t.getOutType()))
+                .map(t -> new Column(getColumnName(t.getOutName()==null? t.getParameters().get(0).toString():t.getOutName()), t.getOutType()))
                 .collect(Collectors.toList());
     }
 

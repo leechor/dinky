@@ -1,6 +1,5 @@
 {
   "title": "CepOperator",
-  "description": "CepOperator parameter",
   "type": "object",
 
           "required": [
@@ -16,37 +15,54 @@
             "partition": {
               "type": "string",
               "minLength": 1,
-              "description": "field for partition"
+              "description": "分组，分配计算节点"
             },
             "orderBy": {
               "type": "string",
               "minLength": 1,
-              "description": "field for order"
+              "description": "在窗口内，对事件时间进行排序"
             },
             "outPutMode": {
               "type":"string",
               "enum":["ONE","ALL"],
-              "description": "specify ths output mode after successful matching"
+              "description": "设置匹配成功后的输出策略"
             },
+"skipStrategy": {
+        "type": "object",
+        "title": "skipStrategy",
+        "description": "设置匹配成功后的跳转规则",
+        "required": [
+            "strategy"
+        ],
+        "properties": {
+            "strategy": {
+                "type": "string",
+				"description": "跳转策略",
+                "enum":["LAST_ROW","NEXT_ROW","LAST","FIRST"]
+            },
+            "variable": {
+                "type": "string",
+                "description": "跳过的行数，strategy为‘LAST’或‘FIRST’时需要指定"
+            }
+        }
+},
             "timeSpan":{
               "type":"integer",
-			  "default":10,
 			  "minimum":0,
-              "description": "specify ths length of time"
+              "description": "非标准sql , 指定匹配的事件区间"
             },
             "timeUnit":{
               "type":"string",
               "enum":["SECOND","MINUTE","DAY","MONTH","YEAR"],
-              "description": "set time unit"
+              "description": "非标准sql ,指定时间单位"
             },
 "patterns": {
     "type": "array",
     "minItems": 1,
-    "title": "patterns",
+    "description": "定义事件",
     "items": {
         "type": "object",
         "title": "patterns",
-        "description": "event matching rule",
         "required": [
             "variable",
             "quantifier"
@@ -55,37 +71,16 @@
             "variable": {
                 "type": "string",
                 "minLength": 1,
-                "title": "variable"
+                "description": "定义事件名称"
             },
             "quantifier": {
                 "type": "string",
                 "minLength": 1,
                 "title": "quantifier",
-                "description": "pattern quantifier's quantifier, * + ? {n} {n,} {n,m} {,m}"
+                "description": "定义事件匹配规则： * + ? {n} {n,} {n,m} {,m}"
             }
         }
     }
-},
-"skipStrategy": {
-        "type": "object",
-        "title": "skipStrategy",
-        "description": "jump rule after success",
-        "required": [
-            "strategy",
-            "variable"
-        ],
-        "properties": {
-            "strategy": {
-                "type": "string",
-                "enum":["LAST_ROW","NEXT_ROW","LAST","FIRST"],
-                "title": "strategy"
-            },
-            "variable": {
-                "type": "string",
-                "minLength": 1,
-                "title": "variable"
-            }
-        }
 },
 "columns": {
     "type": "array",
@@ -94,22 +89,18 @@
     "items": {
         "type": "object",
         "title": "columns",
-        "description": "output field",
+        "description": " 设置输出字段 ",
         "required": [
-            "functionName",
-            "name",
             "parameters",
 			"flag"
         ],
         "properties": {
             "functionName": {
                 "type": "string",
-                "minLength": 1,
                 "title": "functionName"
             },
             "name": {
                 "type": "string",
-                "minLength": 1,
                 "title": "outName"
             },
             "parameters": {
@@ -135,7 +126,7 @@
                 "items": {
                     "type": "object",
                     "title": "Schema",
-                    "description": "the specific meaning of the event",
+                    "description": "定义事件的具体含义",
                     "required": [
                         "variable",
                         "condition"
@@ -144,12 +135,12 @@
                         "variable": {
                             "type": "string",
                             "minLength": 1,
-                            "title": "variable"
+                            "description": "事件名称"
                         },
                         "condition": {
                             "type": "string",
                             "minLength": 1,
-                            "title": "condition"
+                            "description": "事件规则"
                         }
                     }
                 }

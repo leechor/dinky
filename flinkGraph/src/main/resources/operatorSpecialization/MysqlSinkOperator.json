@@ -15,7 +15,7 @@
 			"type": "string",
 			"minLength": 1,
 			"title": "tableName",
-			"description": "mysql data sink table name"
+			"description": "数据汇表名称"
 		},
 		"connector": {
 			"type": "string",
@@ -28,10 +28,7 @@
 			"type": "string",
 			"minLength": 1,
 			"title": "jdbc-url",
-			"description": "eg: jdbc:mysql://127.0.0.1:3306",
-			"examples": [
-				"jdbc:mysql://127.0.0.1:3306"
-			]
+			"description": "mysql jdbc url，例如:mysql://127.0.0.1:3306"
 		},
 		"username": {
 			"type": "string",
@@ -66,14 +63,12 @@
 				"key": {
 					"type": "string",
 					"minLength": 1,
-					"description": "custom field name    eg: hostName port ...",
-					"title": "key"
+					"description": "自定义字段的key，与values共同构成：key = values 的结构 "
 				},
 				"values": {
 					"type": "string",
 					"minLength": 1,
-					"description": "custom field name   eg: 225.0.0.1  8000 ...",
-					"title": "values"
+					"description": "自定义字段的values，与key共同构成：key = values 的结构"
 				}
 			}
 		  }
@@ -104,14 +99,14 @@
 							"WATERMARK FOR dt AS dt - INTERVAL '15' SECOND",
 							"PRIMARY KEY(taskId) NOT ENFORCED "
 						],
-						"description": "field name"
+						"description": "字段名名称"
 					},
 					"type": {
 						"type": "string",
 						"minLength": 1,
 						"title": "type",
 						"default": "STRING",
-						"enum":["CHAR","VARCHAR","STRING","BOOLEAN","BINARY","VARBINARY","BYTES","DECIMAL","TINYINT","SMALLINT","INTEGER","BIGINT","FLOAT","DOUBLE","DATE","TIME","TIMESTAMP","TIMESTAMP_LTZ","INTERVAL","ARRAY","MULTISET","MAP","ROW","RAW"],
+						"enum":["CHAR","VARCHAR","STRING","BOOLEAN","BINARY","VARBINARY","BYTES","DECIMAL","TINYINT","SMALLINT","INTEGER","BIGINT","FLOAT","DOUBLE","DATE","TIME","TIMESTAMP(3)","TIMESTAMP_LTZ(3)","INTERVAL","ARRAY","MULTISET","MAP","ROW","RAW"],
 						"examples": [
 							"STRING",
 							"INT",
@@ -121,10 +116,36 @@
 					"flag":{
 						"type": "boolean",
 						"default": true,
-						"title": "checked ?"
+						"title": "是否勾选为输出"
 					}
 				}
 			}
+		},
+		"primary":{
+			"type": "string",
+			"description": "定义表的主键"
+		},
+		
+		"watermark":{
+		  "type": "object",
+		  "properties": {
+			"column": {
+				"type": "string",
+				"description": "指定为watermark的列，需要TIMESTAMP或TIMESTAMP_LTZ类型"
+			},
+			"timeSpan": {
+				"type": "integer",
+				"minimum":0,
+				"description": "指定最大延时时间"
+			},
+			"timeUnit": {
+				"type": "string",
+				"enum":["SECOND","MINUTE","DAY","MONTH","YEAR"],
+				"description": "延时单位"
+			}
+		  },
+		  "additionalProperties":false
 		}
+		
 	}
 }

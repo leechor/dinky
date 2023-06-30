@@ -19,7 +19,7 @@
     <@compress single_line=single>
         <#list fos as fo>
             <#assign x><@fieldFunction fo/></#assign>
-            <#if x?has_content> ${x}</#if> <#if fo.name??> AS ${fo.name}</#if><#sep>,</#sep>
+            <#if x?has_content> ${x}</#if> <#if fo.outName??> AS `${fo.outName?no_esc}`</#if><#sep>,</#sep>
         </#list>
     </@compress>
 </#macro>
@@ -28,8 +28,8 @@
     SELECT *
     FROM ${cep.inputTableName}
     MATCH_RECOGNIZE(
-    <#if cep.partition??>PARTITION BY ${cep.partition} </#if>
-    <#if cep.orderBy??>ORDER BY ${cep.orderBy} </#if>
+    <#if cep.partition??>PARTITION BY `${cep.partition}` </#if>
+    <#if cep.orderBy??>ORDER BY `${cep.orderBy}` </#if>
     MEASURES
     <@fieldsProcess cep.columns false/>
 
@@ -38,7 +38,7 @@
     PATTERN (<#list cep.patterns as pattern>${pattern}<#sep> </#sep><#rt></#list>) <#if cep.timeSpan??>WITHIN INTERVAL '${cep.timeSpan}' ${cep.timeUnit}</#if>
     DEFINE
     <#list cep.defines as define>
-        ${define}<#sep>,</#sep>
+        ${define?no_esc}<#sep>,</#sep>
     </#list>
     )
 </#macro>

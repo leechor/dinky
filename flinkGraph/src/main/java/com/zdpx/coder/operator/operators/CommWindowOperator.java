@@ -45,19 +45,20 @@ public class CommWindowOperator extends Operator {
 
     public static final String TEMPLATE =
             String.format(
-                    "<#import \"%s\" as e>CREATE VIEW ${tableName} SELECT <@e.fieldsProcess columns/> FROM ${inputTableName} " +
+                    "<#import \"%s\" as e>CREATE VIEW ${tableName} AS SELECT <@e.fieldsProcess columns/> FROM ${inputTableName} " +
                             "<#if where??>WHERE ${where}</#if> " +
                             "<#if window??> ${window.windowFunction} ( TABLE ${window.table} , DESCRIPTOR(${window.descriptor}), " +
                                 "<#if window.slide??>INTERVAL '${window.slide.timeSpan}' ${window.slide.timeUnit},</#if> " +
                                 "<#if window.step ??>INTERVAL '${window.step.timeSpan}' ${window.step.timeUnit},</#if>" +
                                 "INTERVAL '${window.size.timeSpan}' ${window.size.timeUnit}) " +
-                            "</#if>" +
+                            "</#if>"+
                             "<#if group??>GROUP BY " +
                                 "<#if (group.aggregation) == \"group\" > ${group.column} " +
                                 "<#elseif (group.aggregation) == \"windowGroup\"> ${group.windowsStart} , ${group.windowEnd} " +
                                 "</#if>" +
-                            "</#if>" +
-                            "<#if order??>ORDER BY ${order}</#if>"
+                            "</#if>"+
+                            "<#if orderBy??>ORDER BY <#list orderBy as o> `${o.order}` ${o.sort} </#list></#if>"+
+                            "<#if limit?? && (limit?size!=0) >limit <#list limit as l> `${l}` <#sep>,</#sep></#list></#if>"
                             ,
                     Specifications.TEMPLATE_FILE);
 
@@ -66,13 +67,14 @@ public class CommWindowOperator extends Operator {
 
     public static final String GROUP = "group";
 
-    public static final String ORDER = "order";
+    public static final String ORDER_BY = "orderBy";
 
     public static final String WINDOW = "window";
 
     public static final String SIZE = "size";
     public static final String SLIDE = "slide";
     public static final String STEP = "step";
+    public static final String LIMIT = "limit";
 
 
     private InputPortObject<TableInfo> inputPortObject;
@@ -113,27 +115,35 @@ public class CommWindowOperator extends Operator {
         p.put(Operator.FIELD_FUNCTIONS, ffs);
         p.put("inputTableName", tableName);
         p.put(WHERE, parameters.get(WHERE));
-        p.put(ORDER, parameters.get(ORDER));
+        p.put(LIMIT, parameters.get(LIMIT));
+
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> order = (List<Map<String, Object>>)parameters.get(ORDER_BY);
+        if(order!=null&&order.size()!=0){
+            p.put(ORDER_BY, order);
+        }
 
         @SuppressWarnings("unchecked")
         Map<String, Object> windowList = (Map<String, Object>)parameters.get(WINDOW);
+        if(windowList!=null&&windowList.size()!=0){
+            @SuppressWarnings("unchecked")
+            Map<String, Object> size = (Map<String, Object>) windowList.get(SIZE);
+            windowList.putAll(size==null ? new HashMap<>():size);
+            @SuppressWarnings("unchecked")
+            Map<String, Object> slide = (Map<String, Object>) windowList.get(SLIDE);
+            windowList.putAll(slide==null ? new HashMap<>():slide);
+            @SuppressWarnings("unchecked")
+            Map<String, Object> step = (Map<String, Object>) windowList.get(STEP);
+            windowList.putAll(step==null ? new HashMap<>():step);
 
-        @SuppressWarnings("unchecked")
-        Map<String, Object> size = (Map<String, Object>) windowList.get(SIZE);
-        windowList.putAll(size==null ? new HashMap<>():size);
-        @SuppressWarnings("unchecked")
-        Map<String, Object> slide = (Map<String, Object>) windowList.get(SLIDE);
-        windowList.putAll(slide==null ? new HashMap<>():slide);
-        @SuppressWarnings("unchecked")
-        Map<String, Object> step = (Map<String, Object>) windowList.get(STEP);
-        windowList.putAll(step==null ? new HashMap<>():step);
-
-        p.put(WINDOW, windowList);
-
+            p.put(WINDOW, windowList);
+        }
 
         @SuppressWarnings("unchecked")
         Map<String, Object> groupList = (Map<String, Object>) parameters.get(GROUP);
-        p.put(GROUP, groupList);
+        if(groupList!=null&&groupList.size()!=0){
+            p.put(GROUP, groupList);
+        }
 
         String sqlStr = TemplateUtils.format("CommWindowFunction", p, TEMPLATE);
         this.getSchemaUtil().getGenerateResult().generate(sqlStr);
