@@ -84,6 +84,7 @@ declare module "@json-editor/json-editor" {
          */
         display_required_only?: boolean | undefined;
         object_layout?: "normal" | "grid" | undefined;
+        compact?: boolean;
     }
     type JSONEditorError = {
         path: string;

@@ -45,6 +45,7 @@ const Editor = memo(() => {
     //属性为object时,属性默认normal,设置grid可以一排多个
     object_layout: 'normal',
     disable_array_delete: false,
+    compact: true,
   };
 
   useEffect(() => {
