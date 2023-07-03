@@ -2,15 +2,12 @@ import 'spectre.css/dist/spectre.css';
 import 'spectre.css/dist/spectre-exp.css';
 import 'spectre.css/dist/spectre-icons.css';
 import styles from './index.less';
-import { textSchema } from "../../../assets/json-data/text-node-schema"
+import {textSchema} from "../../../assets/json-data/text-node-schema"
 
-import { memo, useEffect, useRef, useState } from 'react';
-import { Node } from '@antv/x6';
-import {
-  useAppDispatch,
-  useAppSelector,
-} from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
-import { JSONEditor, JSONEditorOptions } from '@json-editor/json-editor';
+import {memo, useEffect, useRef} from 'react';
+import {Node} from '@antv/x6';
+import {useAppDispatch, useAppSelector,} from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
+import {JSONEditor, JSONEditorOptions} from '@json-editor/json-editor';
 import {
   changeCurrentSelectNode,
   changeCurrentSelectNodeParamsData,
@@ -22,12 +19,13 @@ const Editor = memo(() => {
   const jsonRef = useRef<HTMLDivElement>(null);
   let editor: InstanceType<typeof JSONEditor>
   const dispatch = useAppDispatch();
-  const { operatorParameters, currentSelectNode } = useAppSelector(
+  const {operatorParameters, currentSelectNode} = useAppSelector(
     (state) => ({
       operatorParameters: state.home.operatorParameters,
       currentSelectNode: state.home.currentSelectNode,
     }),
   );
+
   let isTextNode: boolean = currentSelectNode.shape === "custom-text-node";
   const textNodeSchema = isTextNode ? textSchema : null
   const currentNodeDes = operatorParameters.find((item: any) => item.code === currentSelectNode.shape);
@@ -49,55 +47,60 @@ const Editor = memo(() => {
   };
 
   useEffect(() => {
-    if (jsonRef.current) {
-      const container = jsonRef.current;
-      container.innerHTML = '';
-      if (!config.schema) return
-
-      editor = new JSONEditor<any>(container, config);
-      editor.on('ready', function () {
-        dispatch(changeJsonEditor(editor))
-        if(currentSelectNode.shape === "custom-text-node"){
-          //解决bug 防止直接将config的值设置
-          editor.setValue(currentSelectNode.getData())
-        }
-        if (currentSelectNode instanceof Node) {
-          if (currentSelectNode.getData() && currentSelectNode.getData().parameters) {
-
-            //解决bug 防止直接将config的值设置
-            editor.setValue(currentSelectNode.getData().parameters)
-          }
-        }
-      });
-      editor.on('change', function () {
-        //先恢复初始值
-        dispatch(changeCurrentSelectNodeParamsData([]));
-        //设置当前属性值
-        console.log(editor.getValue());
-
-        dispatch(changeCurrentSelectNodeParamsData(editor.getValue()));
-        if (currentSelectNode.shape === "custom-text-node") {
-          currentSelectNode.setData(editor.getValue())
-          dispatch(changeCurrentSelectNode(currentSelectNode));
-          return
-        }
-        if (currentSelectNode instanceof Node) {
-
-          let nodeConfig = []
-          if (currentSelectNode.getData() && currentSelectNode.getData().config) {
-            nodeConfig = currentSelectNode.getData().config
-          }
-          console.log(editor.getValue());
-
-          //判断当前节点是否有变化
-          // 如果是同一个节点，说明只是值发生变化
-          //如果节点发生变化，则不设置，让其读取自己的配置
-          currentSelectNode.setData({ parameters: editor.getValue(), config: nodeConfig }, { overwrite: true });
-          dispatch(changeCurrentSelectNode(currentSelectNode));
-        }
-      });
-
+    if (!jsonRef.current || !config.schema) {
+      return
     }
+
+    const container = jsonRef.current;
+    container.innerHTML = '';
+
+    editor = new JSONEditor<any>(container, config);
+    editor.on('ready', function () {
+      dispatch(changeJsonEditor(editor))
+
+      if (!(currentSelectNode instanceof Node)) {
+        return;
+      }
+
+      if (currentSelectNode.getData()?.parameters) {
+        //解决bug 防止直接将config的值设置
+        editor.setValue(currentSelectNode.getData().parameters)
+      } else if (currentSelectNode.shape === "custom-text-node") {
+        editor.setValue(currentSelectNode.getData())
+      }
+    });
+
+    editor.on('change', function () {
+      //先恢复初始值
+      dispatch(changeCurrentSelectNodeParamsData([]));
+      //设置当前属性值
+      console.log(editor.getValue());
+
+      dispatch(changeCurrentSelectNodeParamsData(editor.getValue()));
+
+
+      if (!(currentSelectNode instanceof Node)) {
+        return
+      }
+
+      if (currentSelectNode.shape === "custom-text-node") {
+        currentSelectNode.setData(editor.getValue())
+        dispatch(changeCurrentSelectNode(currentSelectNode));
+        return
+      }
+
+      //判断当前节点是否有变化
+      // 如果是同一个节点，说明只是值发生变化
+      //如果节点发生变化，则不设置，让其读取自己的配置
+      currentSelectNode.setData(
+        {
+          parameters: editor.getValue(),
+          config: currentSelectNode.getData()?.config ?? []
+        },
+        {overwrite: true});
+      dispatch(changeCurrentSelectNode(currentSelectNode));
+    });
+
     return () => {
       editor.destroy()
     }
