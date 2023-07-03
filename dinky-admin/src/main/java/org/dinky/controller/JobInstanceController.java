@@ -19,6 +19,8 @@
 
 package org.dinky.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.dinky.api.FlinkAPI;
 import org.dinky.assertion.Asserts;
 import org.dinky.data.enums.Status;
@@ -61,6 +63,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/jobInstance")
 @RequiredArgsConstructor
+@Api(value = "JobInstanceController" , description = "任务实例管理相关接口")
 public class JobInstanceController {
 
     private final JobInstanceService jobInstanceService;
@@ -68,12 +71,14 @@ public class JobInstanceController {
 
     /** 动态查询列表 */
     @PostMapping
+    @ApiOperation(value = "查询任务列表(分页)" , notes = "查询任务列表(分页)")
     public ProTableResult<JobInstance> listJobInstances(@RequestBody JsonNode para) {
         return jobInstanceService.listJobInstances(para);
     }
 
     /** 批量删除 */
     @DeleteMapping
+    @ApiOperation(value = "批量删除任务列表" , notes = "批量删除任务列表")
     public Result<Void> deleteMul(@RequestBody JsonNode para) {
         if (para.size() > 0) {
             List<Integer> error = new ArrayList<>();
@@ -95,6 +100,7 @@ public class JobInstanceController {
 
     /** 获取指定ID的信息 */
     @PostMapping("/getOneById")
+    @ApiOperation(value = "获取指定ID的信息" , notes = "获取指定ID的信息")
     public Result<JobInstance> getOneById(@RequestBody JobInstance jobInstance) throws Exception {
         jobInstance = jobInstanceService.getById(jobInstance.getId());
         return Result.succeed(jobInstance, "获取成功");
@@ -102,6 +108,7 @@ public class JobInstanceController {
 
     /** 获取状态统计信息 */
     @GetMapping("/getStatusCount")
+    @ApiOperation(value = "获取状态统计信息" , notes = "获取状态统计信息")
     public Result<Dict> getStatusCount() {
         Dict result =
                 Dict.create()
@@ -112,24 +119,28 @@ public class JobInstanceController {
 
     /** 获取Job实例的所有信息 */
     @GetMapping("/getJobInfoDetail")
+    @ApiOperation(value = "获取Job实例的所有信息" , notes = "获取Job实例的所有信息")
     public Result<JobInfoDetail> getJobInfoDetail(@RequestParam Integer id) {
         return Result.succeed(jobInstanceService.getJobInfoDetail(id));
     }
 
     /** 刷新Job实例的所有信息 */
     @GetMapping("/refreshJobInfoDetail")
+    @ApiOperation(value = "刷新Job实例的所有信息" , notes = "刷新Job实例的所有信息")
     public Result<JobInfoDetail> refreshJobInfoDetail(@RequestParam Integer id) {
         return Result.succeed(taskService.refreshJobInfoDetail(id), Status.RESTART_SUCCESS);
     }
 
     /** 获取单任务实例的血缘分析 */
     @GetMapping("/getLineage")
+    @ApiOperation(value = "获取单任务实例的血缘分析" , notes = "获取单任务实例的血缘分析")
     public Result<LineageResult> getLineage(@RequestParam Integer id) {
         return Result.succeed(jobInstanceService.getLineage(id), Status.RESTART_SUCCESS);
     }
 
     /** 获取 JobManager 的信息 */
     @GetMapping("/getJobManagerInfo")
+    @ApiOperation(value = "获取 JobManager 的信息" , notes = "获取 JobManager 的信息")
     public Result<JobManagerConfiguration> getJobManagerInfo(@RequestParam String address) {
         JobManagerConfiguration jobManagerConfiguration = new JobManagerConfiguration();
         if (Asserts.isNotNullString(address)) {
@@ -141,6 +152,7 @@ public class JobInstanceController {
 
     /** 获取 TaskManager 的信息 */
     @GetMapping("/getTaskManagerInfo")
+    @ApiOperation(value = "获取 TaskManager 的信息" , notes = "获取 TaskManager 的信息")
     public Result<Set<TaskManagerConfiguration>> getTaskManagerInfo(@RequestParam String address) {
         Set<TaskManagerConfiguration> taskManagerConfigurationList = new HashSet<>();
         if (Asserts.isNotNullString(address)) {

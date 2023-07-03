@@ -268,6 +268,7 @@ const Model: ModelType = {
 
   effects: {
     *saveTask({ payload }, { call, put }) {
+      
       const para = payload;
       para.configJson = JSON.stringify(payload.config);
       if (para.dialect == 'GraphSql') {
@@ -308,6 +309,7 @@ const Model: ModelType = {
       };
     },
     saveSql(state, { payload }) {
+      
       const newTabs = state.tabs;
       let newCurrent = state.current;
       newCurrent.value = payload;

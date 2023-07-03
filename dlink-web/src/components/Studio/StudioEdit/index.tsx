@@ -41,6 +41,8 @@ interface ISuggestions {
 }
 
 const FlinkSqlEditor = (props:any) => {
+  console.log("FlinkSqlEditor");
+  
   const {
     tabsKey,
       height = '100%',

@@ -1,99 +1,150 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://dzpx.com/detection",
-  "title": "CepOperator Define",
-  "description": "define the CepOperator parameter",
-  "type": "array",
-  "items": {
-    "properties": {
-      "partition": {
-        "type": "string",
-        "description": "field for partition"
-      },
-      "orderBy": {
-        "type": "string",
-        "description": "field for order"
-      },
-      "patterns": {
-        "type": "array",
-        "description": "define pattern variable and case",
-        "prefixItems": {
-          "type": "object",
+  "title": "CepOperator",
+  "type": "object",
+
+          "required": [
+            "partition",
+            "orderBy",
+            "outPutMode",
+            "patterns",
+            "skipStrategy",
+            "columns",
+            "defines"
+          ],
           "properties": {
-            "variable": {
+            "partition": {
               "type": "string",
-              "description": "pattern variable name"
+              "minLength": 1,
+              "description": "分组，分配计算节点"
+            },
+            "orderBy": {
+              "type": "string",
+              "minLength": 1,
+              "description": "在窗口内，对事件时间进行排序"
+            },
+            "outPutMode": {
+              "type":"string",
+              "enum":["ONE","ALL"],
+              "description": "设置匹配成功后的输出策略"
+            },
+"skipStrategy": {
+        "type": "object",
+        "title": "skipStrategy",
+        "description": "设置匹配成功后的跳转规则",
+        "required": [
+            "strategy"
+        ],
+        "properties": {
+            "strategy": {
+                "type": "string",
+				"description": "跳转策略",
+                "enum":["LAST_ROW","NEXT_ROW","LAST","FIRST"]
+            },
+            "variable": {
+                "type": "string",
+                "description": "跳过的行数，strategy为‘LAST’或‘FIRST’时需要指定"
+            }
+        }
+},
+            "timeSpan":{
+              "type":"integer",
+			  "minimum":0,
+              "description": "非标准sql , 指定匹配的事件区间"
+            },
+            "timeUnit":{
+              "type":"string",
+              "enum":["SECOND","MINUTE","DAY","MONTH","YEAR"],
+              "description": "非标准sql ,指定时间单位"
+            },
+"patterns": {
+    "type": "array",
+    "minItems": 1,
+    "description": "定义事件",
+    "items": {
+        "type": "object",
+        "title": "patterns",
+        "required": [
+            "variable",
+            "quantifier"
+        ],
+        "properties": {
+            "variable": {
+                "type": "string",
+                "minLength": 1,
+                "description": "定义事件名称"
             },
             "quantifier": {
-              "type": "string",
-              "description": "pattern variable\u0027s quantifier, * + ? {n} {n,} {n,m} {,m}"
+                "type": "string",
+                "minLength": 1,
+                "title": "quantifier",
+                "description": "定义事件匹配规则： * + ? {n} {n,} {n,m} {,m}"
             }
-          }
         }
-      },
-      "skipStrategy": {
+    }
+},
+"columns": {
+    "type": "array",
+    "minItems": 1,
+    "title": "columns",
+    "items": {
         "type": "object",
-        "description": "skip strategy",
+        "title": "columns",
+        "description": " 设置输出字段 ",
+        "required": [
+            "parameters",
+			"flag"
+        ],
         "properties": {
-          "strategy": {
-            "type": "string",
-            "description": "strategy model"
-          },
-          "variable": {
-            "type": "string",
-            "description": "pattern variable"
-          }
-        }
-      },
-      "measures": {
-        "type": "array",
-        "description": "define measure",
-        "prefixItems": {
-          "type": "object",
-          "properties": {
             "functionName": {
-              "type": "string",
-              "description": "offsetMethod last n, first n"
+                "type": "string",
+                "title": "functionName"
             },
-            "outName": {
-              "type": "string",
-              "description": "the name after calculate pattern variable\u0027s field"
-            },
-            "delimiter": {
-              "type": "string",
-              "description": "function parameter delimiter, if cast, can set AS, if +-*/ and not functionName, as expression"
+            "name": {
+                "type": "string",
+                "title": "outName"
             },
             "parameters": {
-              "type": "array",
-              "prefixItems": {
-                "type": "string"
-              }
-            }
-          }
-        }
-      },
-      "defines": {
-        "type": "array",
-        "description": "define defines",
-        "prefixItems": {
-          "type": "object",
-          "properties": {
-            "variable": {
-              "type": "string",
-              "description": "define pattern variable"
+                "type": "array",
+                "minItems": 1,
+                "title": "parameters",
+                "items": {
+                   "type": "string"
+                }
             },
-            "condition": {
-              "type": "string",
-              "description": "like sql where statement"
+			"flag":{
+				"type": "boolean",
+				"default": true,
+				"title": "checked ?"
+			}
+        }
+    }
+},
+            "defines": {
+                "type": "array",
+                "minItems": 1,
+                "title": "defines",
+                "items": {
+                    "type": "object",
+                    "title": "Schema",
+                    "description": "定义事件的具体含义",
+                    "required": [
+                        "variable",
+                        "condition"
+                    ],
+                    "properties": {
+                        "variable": {
+                            "type": "string",
+                            "minLength": 1,
+                            "description": "事件名称"
+                        },
+                        "condition": {
+                            "type": "string",
+                            "minLength": 1,
+                            "description": "事件规则"
+                        }
+                    }
+                }
             }
           }
-        }
-      },
-      "required": [
-        "pattern",
-        "measures",
-        "defines"
-      ]
-    }
-  }
+
 }

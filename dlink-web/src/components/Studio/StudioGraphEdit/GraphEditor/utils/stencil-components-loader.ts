@@ -1,6 +1,7 @@
 import { Stencil } from '@antv/x6-plugin-stencil';
 import { Graph, Node } from '@antv/x6';
 import { Parameter } from '@/components/Studio/StudioGraphEdit/GraphEditor/ts-define/parameter';
+import CustomShape from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
 
 /**
  * //注册stencil中的组件
@@ -15,12 +16,14 @@ export const stencilComponentsLoader = (
   stencil: Stencil,
   operatorParameters: Parameter[],
 ) => {
+  
   const registeredStenCpn: { cpn: Node<Node.Properties>; cpnName: string }[] = [];
   const groupsName: { [key: string]: string[] } = {};
   //根据算子参数注册stencil组件
   operatorParameters?.forEach((param: Parameter) => {
     const node = graph.createNode({
-      shape: param.name,
+      name:param.name,
+      shape: param.code,
       width: 70,
       height: 50,
       attrs: {
@@ -35,18 +38,18 @@ export const stencilComponentsLoader = (
       },
     });
 
-    registeredStenCpn.push({ cpn: node, cpnName: param.name });
+    registeredStenCpn.push({ cpn: node, cpnName: param.code });
     //保存组和节点关系
     const groupParamName = param.group.split('.')[0];
     if (!(groupParamName in groupsName)) {
       groupsName[groupParamName] = [];
     }
-    groupsName[groupParamName].push(param.name);
+    groupsName[groupParamName].push(param.code);
   });
 
   //文本节点
   const textAreaNode = graph.createNode({
-    shape: 'custom-text-node',
+    shape: CustomShape.TEXT_NODE,
   });
   stencil.load([textAreaNode], 'textArea');
 

@@ -19,6 +19,8 @@
 
 package org.dinky.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.dinky.assertion.Asserts;
 import org.dinky.data.enums.Status;
 import org.dinky.data.model.ClusterConfiguration;
@@ -52,12 +54,14 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/clusterConfiguration")
 @RequiredArgsConstructor
+@Api(value = "ClusterConfigurationController" , description = "集群配置管理相关接口")
 public class ClusterConfigurationController {
 
     private final ClusterConfigurationService clusterConfigurationService;
 
     /** 新增或者更新 */
     @PutMapping
+    @ApiOperation(value = "新增或者更新集群配置信息" , notes = "新增或者更新集群配置信息")
     public Result<Void> saveOrUpdate(@RequestBody ClusterConfiguration clusterConfiguration) {
         Integer id = clusterConfiguration.getId();
         TestResult testResult = clusterConfigurationService.testGateway(clusterConfiguration);
@@ -71,12 +75,14 @@ public class ClusterConfigurationController {
 
     /** 动态查询列表 */
     @PostMapping
+    @ApiOperation(value = "动态查询集群配置信息列表(分页)" , notes = "动态查询集群配置信息列表(分页)")
     public ProTableResult<ClusterConfiguration> listClusterConfigs(@RequestBody JsonNode para) {
         return clusterConfigurationService.selectForProTable(para);
     }
 
     /** 批量删除 */
     @DeleteMapping
+    @ApiOperation(value = "批量删除集群配置配置" , notes = "批量删除集群配置配置")
     public Result<Void> deleteMul(@RequestBody JsonNode para) {
         if (para.size() > 0) {
             List<Integer> error = new ArrayList<>();
@@ -98,6 +104,7 @@ public class ClusterConfigurationController {
 
     /** 获取指定ID的信息 */
     @PostMapping("/getOneById")
+    @ApiOperation(value = "获取指定id的集群配置信息" , notes = "获取指定id的集群配置信息")
     public Result<ClusterConfiguration> getOneById(
             @RequestBody ClusterConfiguration clusterConfiguration) {
         clusterConfiguration = clusterConfigurationService.getById(clusterConfiguration.getId());
@@ -106,6 +113,7 @@ public class ClusterConfigurationController {
 
     /** 获取可用的集群列表 */
     @GetMapping("/listEnabledAll")
+    @ApiOperation(value = "获取可用的集群配置列表(不分页)" , notes = "获取可用的集群配置列表(不分页)")
     public Result<List<ClusterConfiguration>> listEnabledAll() {
         List<ClusterConfiguration> clusters = clusterConfigurationService.listEnabledAll();
         return Result.succeed(clusters);
@@ -113,6 +121,7 @@ public class ClusterConfigurationController {
 
     /** 测试 */
     @PostMapping("/testConnect")
+    @ApiOperation(value = "测试链接情况" , notes = "测试链接情况")
     public Result<Void> testConnect(@RequestBody ClusterConfiguration clusterConfiguration) {
         TestResult testResult = clusterConfigurationService.testGateway(clusterConfiguration);
         if (testResult.isAvailable()) {

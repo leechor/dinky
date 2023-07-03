@@ -1,6 +1,7 @@
+import { JSONEditor } from '@json-editor/json-editor';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { Parameter } from '@/components/Studio/StudioGraphEdit/GraphEditor/ts-define/parameter';
-import { Graph } from '@antv/x6';
+import { Graph, Node } from '@antv/x6';
 import { getOperatorConfigure } from '../../service/request/test';
 import { message } from 'antd';
 
@@ -22,22 +23,40 @@ export const initFlowDataAction = createAsyncThunk('fetchData', (payload, store)
   //   }
   // });
 });
+interface GraphEditorData {
+  flowData: {},
+  parameters: {},
+  //初始化算子参数，注册算子组件
+  operatorParameters: Parameter[],
+  currentSelectNode: {} | Node,
+  //当前选中的算子节点名称
+  currentSelectNodeName: '',
+  //当前选中的节点参数数据
+  currentSelectNodeParamsData: [],
+  //保存graph在其他组件中调用
+  graph: Graph,
+  editor: {} | InstanceType<typeof JSONEditor>
 
+}
+const initialState: GraphEditorData = {
+  flowData: {},
+  parameters: {},
+  //初始化算子参数，注册算子组件
+  operatorParameters: [] as Parameter[],
+  currentSelectNode: {},
+  //当前选中的算子节点名称
+  currentSelectNodeName: '',
+  //当前选中的节点参数数据
+  currentSelectNodeParamsData: [],
+  //保存graph在其他组件中调用
+  graph: {} as Graph,
+  //保存jsoneditor 示例用作保存校验
+  editor: {},
+
+}
 const homeSlice = createSlice({
   name: 'home',
-  initialState: {
-    flowData: {},
-    parameters: {},
-    //初始化算子参数，注册算子组件
-    operatorParameters: [] as Parameter[],
-    currentSelectNode: {},
-    //当前选中的算子节点名称
-    currentSelectNodeName: '',
-    //当前选中的节点参数数据
-    currentSelectNodeParamsData: [],
-    //保存graph在其他组件中调用
-    graph: Graph,
-  },
+  initialState,
   reducers: {
     initFlowDataInfo(state, { payload }) {
       state.flowData = payload;
@@ -65,6 +84,9 @@ const homeSlice = createSlice({
     changeGraph(state, { payload }) {
       state.graph = payload;
     },
+    changeJsonEditor(state, { payload }){
+      state.editor=payload
+    }
   },
   extraReducers: {},
 });
@@ -77,6 +99,7 @@ export const {
   changeCurrentSelectNodeName,
   changeCurrentSelectNodeParamsData,
   changeGraph,
+  changeJsonEditor
 } = homeSlice.actions;
 
 export default homeSlice.reducer;

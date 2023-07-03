@@ -18,7 +18,7 @@ export const clipboard = (graph: Graph) => {
       movable: true,
       showNodeSelectionBox: true,
       pointerEvents: 'none',
-      showEdgeSelectionBox: true,
+      showEdgeSelectionBox: false,
     }),
   );
 
@@ -129,4 +129,5 @@ export default function loadPlugin(graph: Graph) {
   snapLine(graph);
   keyboard(graph);
   history(graph);
+  transform(graph);
 }

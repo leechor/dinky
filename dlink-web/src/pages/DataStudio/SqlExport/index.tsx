@@ -32,6 +32,7 @@ const SqlExport = (props: any) => {
 
   const refreshStatement = async () => {
     const msg = await getData('api/task/exportSql', {id: id});
+    
     setStatement(msg.datas);
   };
 

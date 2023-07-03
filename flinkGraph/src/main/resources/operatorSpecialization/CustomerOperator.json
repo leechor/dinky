@@ -1,0 +1,194 @@
+{
+  "title": "JoinOperator Define",
+  "description": "define the JoinOperator parameter",
+  "type": "object",
+
+	  "required": [
+		"statementBody",
+		"placeholder"
+	  ],
+	  "properties": {
+		"statementBody": {
+		  "type": "string",
+		  "minLength": 1,
+		  "description": "field for statementBody"
+		},
+		"placeholder": {
+			"type": "array",
+			"minItems": 1,
+			"title": "The placeholder Schema",
+			"items": {
+				"type": "object",
+				"title": "placeholder",
+				"description": "output field",
+				"required": [
+				],
+				"properties": {
+					"type": {
+						"type": "string",
+						"minLength": 1,
+						"title": "The functionName Schema"
+					},
+					"columns": {
+						"type": "string",
+						"minLength": 1,
+						"title": "The outName Schema"
+					},
+					"needBrackets": {
+						"type": "array",
+						"minItems": 1,
+						"title": "The parameters Schema",
+						"items": {
+						   "type": "string"
+						}
+					}
+				}
+			}
+		},
+"properties": {
+  "title": "The properties Schema",
+  "anyOf": [
+	{
+	  "title": "inputTableName",
+	  "type": "object",
+	  "properties": {
+		"type": {
+			"type": "string",
+			"enum":["inputTableName"],
+			"title": "The inputTableName Schema"
+		},
+		"column": {
+			"type": "string",
+			"minLength": 1,
+			"title": "The column Schema"
+		}
+	  },
+	  "additionalProperties":false
+	},
+	{
+	  "title": "outPutTableName",
+	  "type": "object",
+	  "properties": {
+		"type": {
+			"type": "string",
+			"enum":["outPutTableName"],
+			"title": "The outPutTableName Schema"
+		},
+		"column": {
+			"type": "string",
+			"minLength": 1,
+			"title": "The column Schema"
+		}
+	  },
+	  "additionalProperties":false
+	},
+	{
+	  "title": "fieldName",
+	  "type": "object",
+	  "properties": {
+		"type": {
+			"type": "string",
+			"enum":["fieldName"],
+			"title": "The type Schema"
+		},
+		"needBrackets": {
+			"type": "string",
+			"minLength": 1,
+			"enum":["true","false"],
+			"title": "The needBrackets Schema"
+		},
+		"columns": {
+			"type": "array",
+			"minItems": 1,
+			"title": "The measures Schema",
+			"items": {
+				"type": "object",
+				"title": "measures",
+				"description": "output field",
+				"required": [
+					"functionName",
+					"name",
+					"parameters"
+				],
+				"properties": {
+					"functionName": {
+						"type": "string",
+						"minLength": 1,
+						"title": "The functionName Schema"
+					},
+					"name": {
+						"type": "string",
+						"minLength": 1,
+						"title": "The outName Schema"
+					},
+					"parameters": {
+						"type": "array",
+						"minItems": 1,
+						"title": "The parameters Schema",
+						"items": {
+						   "type": "string"
+						}
+					}
+				}
+			}
+		}
+	  },
+	  "additionalProperties":false
+	},
+	{
+	  "title": "outPutFieldName",
+	  "type": "object",
+	  "properties": {
+		"type": {
+			"type": "string",
+			"enum":["outPutFieldName"],
+			"title": "The type Schema"
+		},
+		"needBrackets": {
+			"type": "string",
+			"minLength": 1,
+			"enum":["true","false"],
+			"title": "The needBrackets Schema"
+		},
+		"columns": {
+			"type": "array",
+			"minItems": 1,
+			"title": "The measures Schema",
+			"items": {
+				"type": "object",
+				"title": "measures",
+				"description": "output field",
+				"required": [
+					"functionName",
+					"name",
+					"parameters"
+				],
+				"properties": {
+					"functionName": {
+						"type": "string",
+						"minLength": 1,
+						"title": "The functionName Schema"
+					},
+					"name": {
+						"type": "string",
+						"minLength": 1,
+						"title": "The outName Schema"
+					},
+					"parameters": {
+						"type": "array",
+						"minItems": 1,
+						"title": "The parameters Schema",
+						"items": {
+						   "type": "string"
+						}
+					}
+				}
+			}
+		}
+	  },
+	  "additionalProperties":false
+	}
+  ]
+}
+	  }
+}

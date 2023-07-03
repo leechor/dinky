@@ -19,6 +19,8 @@
 
 package org.dinky.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.dinky.alert.AlertPool;
 import org.dinky.alert.AlertResult;
 import org.dinky.data.enums.Status;
@@ -48,6 +50,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/alertInstance")
 @RequiredArgsConstructor
+@Api(value = "AlertInstanceController" , description = "告警实例相关接口")
 public class AlertInstanceController {
 
     private final AlertInstanceService alertInstanceService;
@@ -60,6 +63,7 @@ public class AlertInstanceController {
      * @throws Exception {@link Exception}
      */
     @PutMapping
+    @ApiOperation(value = "保存告警实例" , notes = "保存告警实例")
     public Result<Void> saveOrUpdate(@RequestBody AlertInstance alertInstance) throws Exception {
         if (alertInstanceService.saveOrUpdate(alertInstance)) {
             AlertPool.remove(alertInstance.getName());
@@ -76,6 +80,7 @@ public class AlertInstanceController {
      * @return {@link ProTableResult} of {@link AlertInstance}
      */
     @PostMapping
+    @ApiOperation(value = "获取告警实例(分页)" , notes = "获取告警实例(分页)")
     public ProTableResult<AlertInstance> listAlertInstances(@RequestBody JsonNode para) {
         return alertInstanceService.selectForProTable(para);
     }
@@ -89,6 +94,7 @@ public class AlertInstanceController {
      */
     @DeleteMapping
     @Deprecated
+    @ApiOperation(value = "批量删除告警实例" , notes = "批量删除告警实例")
     public Result<Void> deleteMul(@RequestBody JsonNode para) {
         return alertInstanceService.deleteAlertInstance(para);
     }
@@ -100,6 +106,7 @@ public class AlertInstanceController {
      * @return {@link Result} of {@link Void}
      */
     @DeleteMapping("/delete")
+    @ApiOperation(value = "根据id删除告警实例" , notes = "根据id删除告警实例")
     public Result<Void> deleteInstanceById(@RequestParam("id") Integer id) {
         if (alertInstanceService.deleteAlertInstance(id)) {
             return Result.succeed(Status.DELETE_SUCCESS);
@@ -108,13 +115,8 @@ public class AlertInstanceController {
         }
     }
 
-    /**
-     * delete AlertInstance by id
-     *
-     * @param id {@link Integer}
-     * @return {@link Result} of {@link Void}
-     */
     @PutMapping("/enable")
+    @ApiOperation(value = "启用或禁用告警实例" , notes = "启用或禁用告警实例")
     public Result<Void> enable(@RequestParam("id") Integer id) {
         if (alertInstanceService.enable(id)) {
             return Result.succeed(Status.MODIFY_SUCCESS);
@@ -124,11 +126,26 @@ public class AlertInstanceController {
     }
 
     /**
+     * get AlertInstance info by id
+     *
+     * @param alertInstance {@link AlertInstance}
+     * @return {@link Result} of {@link AlertInstance}
+     * @throws Exception {@link Exception}
+     */
+    @PostMapping("/getOneById")
+    public Result<AlertInstance> getOneById(@RequestBody AlertInstance alertInstance)
+            throws Exception {
+        alertInstance = alertInstanceService.getById(alertInstance.getId());
+        return Result.succeed(alertInstance, I18nMsgUtils.getMsg("response.get.success"));
+    }
+
+    /**
      * get all enabled AlertInstance
      *
      * @return {@link Result} of {@link AlertInstance}
      */
     @GetMapping("/listEnabledAll")
+    @ApiOperation(value = "获取所有告警实例(不分页)" , notes = "获取所有告警实例(不分页)")
     public Result<List<AlertInstance>> listEnabledAll() {
         return Result.succeed(alertInstanceService.listEnabledAll());
     }
@@ -140,6 +157,7 @@ public class AlertInstanceController {
      * @return {@link Result} of {@link Void}
      */
     @PostMapping("/sendTest")
+    @ApiOperation(value = "发送告警测试消息" , notes = "发送告警测试消息")
     public Result<Void> sendTest(@RequestBody AlertInstance alertInstance) {
         AlertResult alertResult = alertInstanceService.testAlert(alertInstance);
         if (alertResult.getSuccess()) {

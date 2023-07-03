@@ -107,6 +107,7 @@ const EditorTabs = (props: any) => {
 
   // as different dialet return different Panle
   const getTabPane = (pane, i) => {
+    
     if (pane.task.dialect == DIALECT.KUBERNETES_APPLICATION) {
       return (
         <TabPane tab={Tab(pane)} key={pane.key} closable={pane.closable}>
@@ -128,10 +129,7 @@ const EditorTabs = (props: any) => {
           style={{ width: '100%', height: '100%' }}
         >
           <StudioGraphEdit
-            current={pane.task}
-            height={height ? height : toolHeight - 32}
-            width={width}
-            language={getLanguage(current.task.dialect)}
+            
           ></StudioGraphEdit>
         </TabPane>
       );

@@ -71,7 +71,7 @@ const DolphinPush = (props: any) => {
   const setFormValue = () => {
     //是否已有数据
     if (data) {
-      // debugger
+      // 
       setProcessCode(data.processDefinitionCode)
 
       setTimeoutFlagHidden(data.timeoutFlag === 'OPEN');
@@ -80,10 +80,10 @@ const DolphinPush = (props: any) => {
       if (data.timeoutNotifyStrategy === "WARNFAILED") {
         tns = ['WARN', 'FAILED']
       } else {
-        // debugger
+        // 
         tns = data.timeoutNotifyStrategy ? data.timeoutNotifyStrategy.split(',') : []
       }
-      // debugger
+      // 
       //前置任务勾选
       let upstreamCodesTem = [];
       for (let key in data.upstreamTaskMap) {

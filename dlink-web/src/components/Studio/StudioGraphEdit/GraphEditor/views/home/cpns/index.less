@@ -4,7 +4,7 @@
   display: flex;
 
   .leftEditor-stencil {
-    width: 30%;
+    width: 25%;
     position: relative;
     // background-color: pink;
     // z-index: 999;
@@ -48,16 +48,20 @@
 .rightDetail {
   box-sizing: border-box;
   flex: 1;
-  // display: flex;
-  // flex-direction: column;
 
   .rightDetail-header {
+    background-color: #f5f5f5;
+    font-weight: 800;
     height: 40px;
     text-align: center;
     vertical-align: center;
     line-height: 40px;
     border-top: 2px solid #ccc;
     border-left: 2px solid #ccc;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
   }
 
   .rightDetail-content {
@@ -67,8 +71,90 @@
     height: calc(100% - 40px);
 
     .json-editor-content {
+      background-color: #f5f5f5;
       height: 100% !important;
+      width: 100%;
       overflow-y: scroll;
+      overflow-x: scroll;
+
+
+    }
+
+    :global {
+      .je-ready {
+        box-sizing: border-box;
+
+        h4 {
+          font-size: 15px;
+          font-weight: 800;
+        }
+
+        .btn-group {
+          display: flex !important;
+          flex-direction: row !important;
+          flex-wrap: nowrap !important;
+        }
+
+        .je-panel {
+          background-color: #f5f5f5 !important;
+          box-sizing: border-box;
+
+          .columns {
+            &:first-child {
+
+              border-top: 1px solid #ccc !important;
+
+            }
+
+            .column {
+              box-sizing: border-box;
+              border-bottom: 1px solid #ccc !important;
+            }
+
+            .form-group {
+              padding: 4px 0px;
+              display: flex !important;
+              flex-direction: row;
+              justify-content: flex-start;
+              flex-wrap: wrap;
+
+              .form-label {
+                font-size: 12px !important;
+                font-weight: 400 !important;
+                width: 40% !important;
+                word-break: break-word;
+                white-space: pre-wrap;
+              }
+
+              .form-input,
+              .form-select {
+                width: 60% !important;
+
+              }
+
+              .je-desc {
+                flex-wrap: wrap !important;
+                color: #1677ff;
+                font-style: oblique;
+                word-break: break-word;
+                white-space: pre-wrap;
+              }
+            }
+          }
+
+        }
+
+        .btn.btn-primary {
+          background-color: #6c757d !important;
+          border: #6c757d !important;
+          border-radius: 5px !important
+        }
+
+        .je-object__title {
+          font-size: 15px;
+          font-weight: 800;
+        }
+      }
     }
   }
 }

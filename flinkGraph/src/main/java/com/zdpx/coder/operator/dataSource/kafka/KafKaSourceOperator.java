@@ -17,35 +17,32 @@
  *
  */
 
-package com.zdpx.coder.operator.mysql;
-
-import java.util.Map;
+package com.zdpx.coder.operator.dataSource.kafka;
 
 import com.zdpx.coder.graph.OutputPortObject;
 import com.zdpx.coder.operator.TableInfo;
+import com.zdpx.coder.operator.dataSource.AbstractSqlTable;
 import com.zdpx.coder.utils.TableDataStreamConverter;
 import com.zdpx.coder.utils.TemplateUtils;
 
+import java.util.List;
+import java.util.Map;
+
 /** */
-public class MysqlSourceOperator extends MysqlTable {
+public class KafKaSourceOperator extends AbstractSqlTable {
 
     private OutputPortObject<TableInfo> outputPortObject;
 
+    private static final String KAFKA_SOURCE = "KafKaSource";
+
     @Override
     protected void initialize() {
-        outputPortObject = new OutputPortObject<>(this, "output_0");
-        getOutputPorts().put("output_0", outputPortObject);
+        outputPortObject = new OutputPortObject<>(this, OUTPUT_0);
+        getOutputPorts().put(OUTPUT_0, outputPortObject);
     }
 
     @Override
     protected void execute() {
-
-        String sqlStr = TemplateUtils.format("Source", getDataModel(), TEMPLATE);
-        this.getSchemaUtil().getGenerateResult().generate(sqlStr);
-
-        Map<String, Object> parameters = getParameterLists().get(0);
-        final TableInfo ti = TableDataStreamConverter.getTableInfo(parameters);
-        ti.setName(generateTableName(ti.getName()));
-        outputPortObject.setPseudoData(ti);
+        processLogic(KAFKA_SOURCE,false,outputPortObject);
     }
 }

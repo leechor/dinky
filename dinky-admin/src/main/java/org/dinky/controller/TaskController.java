@@ -143,7 +143,7 @@ public class TaskController {
     @GetMapping
     public Result<Task> getOneById(@RequestParam Integer id) {
         Task task = taskService.getTaskInfoById(id);
-        return Result.succeed(task);
+        return Result.succeed(task, "获取成功");
     }
 
     /** 获取所有可用的 FlinkSQLEnv */

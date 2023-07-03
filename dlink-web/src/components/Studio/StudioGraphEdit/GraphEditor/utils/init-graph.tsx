@@ -1,6 +1,6 @@
 import { Cell, Dom, Edge, Graph, Model, Node, Shape } from '@antv/x6';
 import loadPlugin from './plugin';
-
+import removeBtnRegister from './remove-btn-register';
 import {
   changeCurrentSelectNode,
   changeCurrentSelectNodeName,
@@ -50,7 +50,7 @@ export const initGraph = (
       },
       //连接的过程中创建新的边
       createEdge() {
-        return new Shape.Edge({
+        let edge = new Shape.Edge({
           attrs: {
             line: {
               stroke: '#b2a2e9',
@@ -62,6 +62,8 @@ export const initGraph = (
             },
           },
         });
+        edge.toFront()
+        return edge
       },
 
       // 在移动边的时候判断连接是否有效，如果返回 false，当鼠标放开的时候，不会连接到当前元素，否则会连接到当前元素
@@ -123,36 +125,43 @@ export const initGraph = (
     },
     grid: true,
   });
+  //自定义删除按钮
+  removeBtnRegister(graph)
 
   //加载相关插件
   loadPlugin(graph);
 
-  function showPort(port: Element | SVGElement | null, show: boolean) {
+  function showPortOrLabel(port: Element | SVGElement | null, show: boolean) {
     if (port instanceof SVGElement) {
       port.style.visibility = show ? 'visible' : 'hidden';
     }
   }
 
   // 控制连接桩显示/隐藏
-  const showPorts = (ports: NodeListOf<Element>, show: boolean) => {
-    ports.forEach((port) => {
-      showPort(port, show);
+  const showPortsOrLabels = (portsOrLabels: NodeListOf<Element>, show: boolean) => {
+    portsOrLabels.forEach((portOrLabel) => {
+      showPortOrLabel(portOrLabel, show);
     });
   };
 
   function showAllPorts(show: boolean) {
     //显示连接桩
-    const ports = container.querySelectorAll('.x6-port-body');
-    showPorts(ports, show);
+    const ports = container.querySelectorAll(".x6-port-body");
+    const labels = container.querySelectorAll(".x6-port-label")
+    showPortsOrLabels(ports, show);
+    showPortsOrLabels(labels, show);
+
   }
 
   graph.on('node:mouseenter', ({ cell }) => {
-    showAllPorts(true);
+    if (cell.isNode() && cell.hasPorts()) {
+      showAllPorts(true);
+    }
 
     //显示删除按钮
     cell.addTools([
       {
-        name: 'button-remove',
+        name: 'rm-btn',
         args: {
           x: 0,
           y: 0,
@@ -163,7 +172,7 @@ export const initGraph = (
   });
 
   graph.on('node:mouseleave', ({ cell }) => {
-    showAllPorts(false);
+    // showAllPorts(false);
 
     //移除删除工具
     cell.removeTools();
@@ -177,24 +186,26 @@ export const initGraph = (
     edge.getTargetNode()?.setPortProp(edge.getTargetPortId()!, VISIBILITY_PATH, visibility);
   }
 
-  graph.on('edge:mouseenter', ({ e, view, edge, cell }) => {
-    edge.attr(LINE_STOKE_WIDTH, 4);
-    showEdgePorts(edge, true);
+  // graph.on('edge:mouseenter', ({ e, view, edge, cell }) => {
+  //   console.log("enter");
 
-    edge.addTools([
-      {
-        name: 'button-remove',
-        args: {
-          distance: view.path.length() / 2,
-        },
-      },
-    ]);
-  });
-  graph.on('edge:mouseleave', ({ e, view, edge, cell }) => {
-    edge.setAttrByPath(LINE_STOKE_WIDTH, 2);
-    showEdgePorts(edge, false);
-    edge.removeTools();
-  });
+  //   // edge.attr(LINE_STOKE_WIDTH, 4);
+  //   showEdgePorts(edge, true);
+
+  //   edge.addTools([
+  //     {
+  //       name: 'rm-btn',
+  //       args: {
+  //         distance: view.path.length() / 2,
+  //       },
+  //     },
+  //   ]);
+  // });
+  // graph.on('edge:mouseleave', ({ e, view, edge, cell }) => {
+  //   edge.setAttrByPath(LINE_STOKE_WIDTH, 2);
+  //   showEdgePorts(edge, false);
+  //   edge.removeTools();
+  // });
 
   graph.on('node:selected', ({ node }) => {
     dispatch(changeCurrentSelectNode(node));
@@ -220,7 +231,7 @@ export const initGraph = (
 
   //群组大小自适应处理
   let ctrlPressed = false;
-  graph.on('node:embedding', ({ e }: { e: Dom.MouseMoveEvent }) => {});
+  graph.on('node:embedding', ({ e }: { e: Dom.MouseMoveEvent }) => { });
 
   graph.on('node:embedded', ({ node, currentParent }) => {
     ctrlPressed = false;
@@ -259,7 +270,7 @@ export const initGraph = (
   graph.on('cell:selected', (cell: Cell, options: Model.SetOptions) => {
     //节点被选中时隐藏连接桩
     const ports = container.querySelectorAll('.x6-port-body');
-    showPorts(ports, false);
+    showPortsOrLabels(ports, false);
   });
 
   graph.on('cell:added', ({ cell, index, options }) => {
@@ -286,6 +297,12 @@ export const initGraph = (
       },
     });
   });
+  // graph.on("node:port:mousedown",({node,port})=>{
+  //   console.log("port",node.getPort(port!));
+  //   node.setPortProp(port!,"attrs/circle",{
+  //     r:8,
+  //   })
+  // })
   dispatch(changeGraph(graph));
   return graph;
 };

@@ -19,6 +19,8 @@
 
 package com.zdpx.coder.operator;
 
+import org.apache.logging.log4j.util.Strings;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -107,33 +109,34 @@ public class FieldFunction {
 
     /**
      * 解析字段处理方法配置, 生成{@link FieldFunction}定义
+     * 所有字段的通用方法，可仅指定parameters，表示该字段不做任何处理
      *
      * @param fos 字段配置信息
      * @return 方法定义
      */
-    static FieldFunction processFieldConfigure(String tableName, Map<String, Object> fos) {
+    static FieldFunction processFieldConfigure(String tableName, Map<String, Object> fos , boolean flag) {
         FieldFunction fo = new FieldFunction();
-        fo.setOutName((String) fos.get("outName"));
-        fo.setFunctionName((String) fos.get("functionName"));
+        fo.setOutName(fos.get("name").equals("")? null:(String) fos.get("name"));
+        fo.setFunctionName(fos.get("functionName").equals("") ? null :(String) fos.get("functionName") );
         fo.setDelimiter((String) fos.get("delimiter"));
         @SuppressWarnings("unchecked")
         List<Object> fieldParameters = (List<Object>) fos.get("parameters");
 
         if (fieldParameters == null) {
-            fo.setOutName(insertTableName(tableName, fo, fo.getOutName()));
+            fo.setOutName(insertTableName(tableName, fo, fo.getOutName(),flag));
             return fo;
         }
 
         List<Object> result = new ArrayList<>();
         for (Object fieldParameter : fieldParameters) {
             if (fieldParameter instanceof Map) {
-                // 表示函数需要递归处理
+                // 表示函数需要递归处理 todo 未实现递归
                 @SuppressWarnings("unchecked")
                 Map<String, Object> fp = (Map<String, Object>) fieldParameter;
-                result.add(processFieldConfigure(tableName, fp));
+                result.add(processFieldConfigure(tableName, fp,flag));
             } else if (fieldParameter instanceof String) {
                 String field = (String) fieldParameter;
-                field = insertTableName(tableName, fo, field);
+                field = insertTableName(tableName, fo, field,flag);
                 result.add(field);
             } else {
                 result.add(fieldParameter);
@@ -144,31 +147,47 @@ public class FieldFunction {
         return fo;
     }
 
-    public static String insertTableName(String primaryTableName, FieldFunction fo, String param) {
-        if (param.startsWith("@")
-                || fo == null
-                || fo.getFunctionName() == null
-                || fo.getFunctionName().isEmpty()) {
-            if (param.startsWith("@")) {
-                param = param.substring(1);
-            }
-            param = primaryTableName + "." + param;
+    public static String insertTableName(String primaryTableName, FieldFunction fo, String param , boolean flag) {
+        boolean notAt = !param.startsWith("@")
+                && fo != null
+                && Strings.isNotEmpty(fo.getFunctionName());
+
+        if (notAt || Strings.isBlank(primaryTableName)) {
+            return param;
         }
-        return param;
+
+        if (param.startsWith("@")) {
+            param = param.substring(1);
+        }
+        if(flag){
+            return primaryTableName + "." + modifyName(param);
+        }
+        return modifyName(param);
+    }
+    //字段名加单引号
+    public static String modifyName(String param){
+        String[] split = param.split("\\.");
+        if(split.length>1){
+            return split[0]+".`"+split[1]+"`";
+        }
+        return "`"+split[0]+"`";
     }
 
     /**
      * 分析字段配置, 转软化为{@link FieldFunction} 形式.
      *
      * @param funcs 字段处理函数配置
+     * @param flag 是否需要在列明前添加表名称 ,true：需要  false 不需要
      * @return {@link FieldFunction}形式的字段处理定义
      */
     public static List<FieldFunction> analyzeParameters(
-            String primaryTableName, List<Map<String, Object>> funcs) {
+            String primaryTableName, List<Map<String, Object>> funcs ,boolean flag) {
         List<FieldFunction> fieldFunctions = new ArrayList<>();
-        for (Map<String, Object> fos : funcs) {
-            FieldFunction fo = processFieldConfigure(primaryTableName, fos);
-            fieldFunctions.add(fo);
+        for (Map<String, Object> fos : funcs) {//此处过滤掉未选中的节点
+            if((boolean)fos.get("flag")){
+                FieldFunction fo = processFieldConfigure(primaryTableName, fos ,flag);
+                fieldFunctions.add(fo);
+            }
         }
         return fieldFunctions;
     }

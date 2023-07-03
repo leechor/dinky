@@ -1,12 +1,14 @@
 import { Stencil } from '@antv/x6-plugin-stencil';
 import { Graph } from '@antv/x6';
 import { Parameter } from '@/components/Studio/StudioGraphEdit/GraphEditor/ts-define/parameter';
+import CustomShape from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
 
 export const initStencil = (
   graph: Graph,
   stencilRef: HTMLElement,
   operatorParameters: Parameter[],
 ) => {
+  
   const groupsName: { [key: string]: string[] } = {};
   //根据算子节点参数整理需注册的stencil组
   operatorParameters?.forEach((param) => {
@@ -30,7 +32,7 @@ export const initStencil = (
   const otherGroups = [
     {
       name: 'groupNode',
-      title: 'groupNode',
+      title: '分组',
       collapsable: true,
       collapsed: true,
       layoutOptions: {
@@ -41,7 +43,7 @@ export const initStencil = (
     },
     {
       name: 'textArea',
-      title: 'textArea',
+      title: '文本',
       collapsable: true,
       collapsed: true,
       layoutOptions: {
@@ -51,13 +53,13 @@ export const initStencil = (
   ];
 
   const stencil = new Stencil({
-    title: 'Calculate Flow Components',
+    title: '组件信息',
     target: graph,
     search(cell, keyword) {
       return cell.shape.indexOf(keyword) !== -1;
     },
     getDropNode(node) {
-      if (node.shape === 'custom-text-node') {
+      if (node.shape === CustomShape.TEXT_NODE) {
         const { width, height } = node.size();
         // 返回一个新的节点作为实际放置到画布上的节点
         return node.clone().size(width * 3, height * 3);
@@ -65,7 +67,7 @@ export const initStencil = (
         return node.clone();
       }
     },
-    placeholder: 'Search by shape name',
+    placeholder: '查找',
     notFoundText: 'Not Found',
     collapsable: true,
     stencilGraphWidth: 180,

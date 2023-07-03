@@ -23,12 +23,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.flink.table.functions.UserDefinedFunction;
 
 import java.security.InvalidParameterException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -64,7 +59,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public abstract class Operator extends Node implements Runnable {
-    public static final String FIELD_FUNCTIONS = "fieldFunctions";
+    public static final String FIELD_FUNCTIONS = "columns";//保证输出名称的一致性
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private Map<String, InputPort<? extends PseudoData<?>>> inputPorts = new HashMap<>();
@@ -97,16 +92,21 @@ public abstract class Operator extends Node implements Runnable {
         return reflections.getSubTypesOf(Operator.class);
     }
 
+    //处理两种类型的数据，对象或数组
     protected static List<Map<String, Object>> getParameterLists(@Nullable String parametersStr) {
-        List<Map<String, Object>> parametersLocal = Collections.emptyList();
+        List<Map<String, Object>> parametersLocal = new ArrayList<>();
+
         if (Strings.isNullOrEmpty(parametersStr)) {
             return parametersLocal;
         }
-
         try {
-            parametersLocal =
-                    objectMapper.readValue(
-                            parametersStr, new TypeReference<List<Map<String, Object>>>() {});
+            if(!parametersStr.subSequence(0,1).equals("[")){
+                parametersLocal.add(objectMapper.readValue(parametersStr, new TypeReference<Map<String, Object>>() {}));
+
+            }else{
+                parametersLocal=objectMapper.readValue(parametersStr, new TypeReference<List<Map<String, Object>>>() {});
+            }
+
         } catch (JsonProcessingException e) {
             log.error(e.toString());
         }
@@ -193,7 +193,12 @@ public abstract class Operator extends Node implements Runnable {
     protected abstract boolean applies();
 
     protected Map<String, Object> getFirstParameterMap() {
-        return getParameterLists().get(0);
+        List<Map<String, Object>> parameterLists = getParameterLists();//增加config中的字段
+        Map<String, Object> map = new HashMap<>();
+        for(Map<String, Object> p:parameterLists){
+            map.putAll(p);
+        }
+        return map;
     }
 
     /** 逻辑执行函数 */
@@ -278,7 +283,13 @@ public abstract class Operator extends Node implements Runnable {
      * @return 非结构化参数信息
      */
     protected List<Map<String, Object>> getParameterLists() {
-        return getParameterLists(this.nodeWrapper.getParameters());
+        List<Map<String, Object>> parameterLists = getParameterLists(this.nodeWrapper.getParameters());
+        if(this.nodeWrapper.getConfig()!=null){
+            Map<String, Object> map = new HashMap<>();
+            map.put("config",getParameterLists(this.nodeWrapper.getConfig()));
+            parameterLists.add(map);
+        }
+        return parameterLists;
     }
 
     public String getParametersString() {
@@ -320,7 +331,7 @@ public abstract class Operator extends Node implements Runnable {
     public static List<FieldFunction> getFieldFunctions(
             String primaryTableName, Map<String, Object> parameters) {
         return FieldFunction.analyzeParameters(
-                primaryTableName, (List<Map<String, Object>>) parameters.get(FIELD_FUNCTIONS));
+                primaryTableName, (List<Map<String, Object>>) parameters.get(FIELD_FUNCTIONS),true);
     }
 
     public static Map<String, Object> getJsonAsMap(JsonNode inputs) {
@@ -329,7 +340,7 @@ public abstract class Operator extends Node implements Runnable {
 
     public static List<Column> getColumnFromFieldFunctions(List<FieldFunction> ffs) {
         return ffs.stream()
-                .map(t -> new Column(getColumnName(t.getOutName()), t.getOutType()))
+                .map(t -> new Column(getColumnName(t.getOutName()==null? t.getParameters().get(0).toString():t.getOutName()), t.getOutType()))
                 .collect(Collectors.toList());
     }
 
