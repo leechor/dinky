@@ -127,7 +127,7 @@ const StudioMenu = (props: any) => {
       if (e.keyCode === 113) {
         e.preventDefault();
         if (current) {
-          debugger
+          
           // handleEditModalVisible(true);
           props.changeFullScreen(true);
           if (graph instanceof Graph) {

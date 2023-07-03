@@ -189,12 +189,12 @@ export const initGraph = (
   // graph.on('edge:mouseenter', ({ e, view, edge, cell }) => {
   //   console.log("enter");
 
-  //   edge.attr(LINE_STOKE_WIDTH, 4);
+  //   // edge.attr(LINE_STOKE_WIDTH, 4);
   //   showEdgePorts(edge, true);
 
   //   edge.addTools([
   //     {
-  //       name: 'button-remove',
+  //       name: 'rm-btn',
   //       args: {
   //         distance: view.path.length() / 2,
   //       },

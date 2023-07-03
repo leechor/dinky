@@ -121,6 +121,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
   };
 
   const front = () => {
+    
     const cells = graph.getSelectedCells();
     cells?.forEach(c => c.toFront())
   };
