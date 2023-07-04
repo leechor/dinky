@@ -108,7 +108,7 @@ const StudioMenu = (props: any) => {
   // const [editModalVisible, handleEditModalVisible] = useState<boolean>(false);
   const [graphData, setGraphData] = useState();
   const [dolphinData, setDolphinData] = useState();
-
+  
   const menu = (
     <Menu>
       <Menu.Item>{l('global.stay.tuned')}</Menu.Item>
@@ -131,7 +131,7 @@ const StudioMenu = (props: any) => {
           // handleEditModalVisible(true);
           props.changeFullScreen(true);
           if (graph instanceof Graph) {
-            localcache.setCache("graphData", graph.toJSON())
+            localcache.setCache(`${current.task.name}graphData`, graph.toJSON())
           }
 
         }
@@ -362,7 +362,7 @@ const StudioMenu = (props: any) => {
       props.changeFullScreen(true);
       //保存当前画布中json信息
       if (graph instanceof Graph) {
-        localcache.setCache("graphData", graph.toJSON())
+        localcache.setCache(`${current.task.name}graphData`, graph.toJSON())
       }
 
     }
@@ -373,6 +373,7 @@ const StudioMenu = (props: any) => {
   };
 
   const saveSqlAndSettingToTask = () => {
+    
     //校验
     if (current.task.dialect !== "FlinkSql") {
       if (editor instanceof JSONEditor<any>) {
@@ -912,7 +913,7 @@ const StudioMenu = (props: any) => {
           onCancel={() => {
             props.changeFullScreen(false);
             if (graph instanceof Graph) {
-              localcache.setCache("graphData", graph.toJSON())
+              localcache.setCache(`${current.task.name}graphData`, graph.toJSON())
             }
           }}
         >

@@ -1,5 +1,6 @@
 .custom-calcu-node-label {
-
+  position: absolute;
+  z-index: 100;
   width: 100%;
   font-size: 12px;
   text-align: center;
@@ -33,6 +34,42 @@
 
 }
 
-.text-area:focus{
+.custom-calcu-node-process {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  
+
+  .custom-calcu-node-process-top {
+    position: absolute;
+    width: 90%;
+    height: 90%;
+    transform: translate(-50%, 0);
+    background-color: #fde4d7;
+    left: 50%;
+    top: 0;
+    z-index: 10;
+    border:1px solid #f8b979;
+    .custom-calcu-node-svg-top{
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  .custom-calcu-node-process-bottom {
+    position: absolute;
+    width: 90%;
+    height: 80%;
+    z-index: 8;
+    bottom: 0;
+    background-color: #fde4d7;
+    border:1px solid #f8b979
+  }
+}
+
+.text-area:focus {
   outline: none;
 }

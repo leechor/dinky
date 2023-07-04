@@ -12,7 +12,7 @@ export type DispatchMenuInfo = React.Dispatch<
 export function initMenu(graph: Graph, isShowMenuInfo: DispatchMenuInfo,changeNode:(node:Cell)=>void) {
   //右键菜单点击node时
   graph.on("node:contextmenu", ({ cell, e }) => {
-
+    
     const p = graph.clientToGraph(e.clientX, e.clientY);
     changeNode(cell)
     isShowMenuInfo({
@@ -26,6 +26,7 @@ export function initMenu(graph: Graph, isShowMenuInfo: DispatchMenuInfo,changeNo
 
   //画图区域右键
   graph.on("blank:contextmenu", ({ e }) => {
+    
     const p = graph.clientToGraph(e.clientX, e.clientY);
     isShowMenuInfo({
       show: true,

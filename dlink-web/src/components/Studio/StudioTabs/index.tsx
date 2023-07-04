@@ -33,6 +33,7 @@ import StudioGraphEdit from '@/components/Studio/StudioGraphEdit';
 const { TabPane } = Tabs;
 
 const EditorTabs = (props: any) => {
+  
   const { tabs, current, toolHeight, width, height } = props;
   const onChange = (activeKey: any) => {
     props.saveToolHeight(toolHeight);
@@ -77,6 +78,7 @@ const EditorTabs = (props: any) => {
   };
 
   const menu = (pane) => (
+  
     <Menu onClick={(e) => handleClickMenu(e, pane)}>
       <Menu.Item key="CLOSE_ALL">
         <span>{l('right.menu.closeAll')}</span>

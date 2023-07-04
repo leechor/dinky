@@ -58,7 +58,7 @@ import { CatalogueTableListItem } from '@/components/Studio/StudioTree/data';
 import {
   useAppDispatch,
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
-import { initFlowDataInfo } from "@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home"
+import { initFlowDataInfo,initTaskName } from "@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home"
 import { useAppSelector } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
 import localcache from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/localStorage"
 
@@ -370,7 +370,8 @@ const StudioTree: React.FC<StudioTreeProps> = (props) => {
           payload: newTabs,
         });
       graphDispatch && graphDispatch(initFlowDataInfo(result.datas.graphJson ? JSON.parse(result.datas.graphJson) : {}))
-      localcache.setCache("graphData", result.datas.graphJson ? JSON.parse(result.datas.graphJson) : {})
+      graphDispatch && graphDispatch(initTaskName(node.name))
+      localcache.setCache(`${node.name}graphData`, result.datas.graphJson ? JSON.parse(result.datas.graphJson) : {})
       showMetaStoreCatalogs(result.datas, dispatch);
     });
   };

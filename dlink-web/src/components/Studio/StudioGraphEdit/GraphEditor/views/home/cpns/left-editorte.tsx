@@ -18,15 +18,14 @@ import styles from './index.less';
 import { message, Tabs, Dropdown, Menu } from 'antd';
 import AddModalPort from '../../../components/add-port-modal';
 import {
-  changeCurrentSelectNode, addGraphTabs
+  changeCurrentSelectNode,
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import localCache from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/localStorage"
 import { cloneDeep } from 'lodash';
 import TabPane from 'antd/lib/tabs/TabPane';
 import { l } from '@/utils/intl';
 import GroupNode from './group-node';
-import type { GraphTabsItem, GraphTabs } from "@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home"
-
+import type {GraphTabsItem,GraphTabs} from "@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home"
 
 export interface ParametersConfigType {
   name: string,
@@ -82,20 +81,16 @@ const LeftEditor = memo(() => {
   const stencilRef = useRef(null);
 
   const dispatch = useAppDispatch();
+  
 
-
-  const { flowData, operatorParameters: operatorParameters, jsonEditor, taskName, tabs } = useAppSelector((state) => ({
+  const { flowData, operatorParameters: operatorParameters, jsonEditor, taskName ,tabs} = useAppSelector((state) => ({
     flowData: state.home.flowData,
     operatorParameters: state.home.operatorParameters,
     currentSelectNode: state.home.currentSelectNode,
     jsonEditor: state.home.editor,
     taskName: state.home.taskName,
-    tabs: state.home.graphTabs,
+    tabs:state.home.graphTabs,
   }));
-
-
-  
-
   const getNewConfig = (cell: Cell, config: any) => {
 
     if (!cell.getData() || !cell.getData()["config"][0]) {
@@ -416,7 +411,7 @@ const LeftEditor = memo(() => {
     
 
   };
-  const menu = (pane: GraphTabsItem) => (
+  const menu = (pane:) => (
     <Menu onClick={(e) => handleClickMenu(e, pane)}>
       <Menu.Item key="CLOSE_ALL">
         <span>{l('right.menu.closeAll')}</span>
@@ -426,7 +421,7 @@ const LeftEditor = memo(() => {
       </Menu.Item>
     </Menu>
   );
-  const Tab = (pane: GraphTabsItem) => (
+  const Tab = (pane: any) => (
 
     <span>
       {pane.key === "0" ? (
@@ -446,9 +441,9 @@ const LeftEditor = memo(() => {
   );
   const onChange = () => { }
   const onEdit = () => { }
-  const getTabPane = (pane: GraphTabsItem, i: number) => {
+  const getTabPane = (pane:GraphTabsItem, i:number) => {
     
-    if (pane.key === "0") {
+    if (pane.key+"" === "0") {
       return (<TabPane tab={Tab(pane)} key={pane.key} closable={pane.closable}>
         <div ref={editorContentRef} className={styles['x6-graph']}>
           {showMenuInfo.show && (
@@ -516,7 +511,7 @@ const LeftEditor = memo(() => {
       }
       if (timer) {
         clearTimeout(timer)
-      } 
+      }
     };
   }, [dispatch, flowData, operatorParameters]);
 
@@ -534,13 +529,13 @@ const LeftEditor = memo(() => {
               type="editable-card"
               size="small"
               onChange={onChange}
-              activeKey={tabs.activeKey}
+              activeKey={tabs.activeKey + ''}
               onEdit={onEdit}
               className={styles['edit-tabs']}
               style={{ width: "100%", height: "100%" }}
 
             >
-              {tabs.panes.map((pane: GraphTabsItem, i: number) => getTabPane(pane, i))}
+              {tabs.panes.map((pane:GraphTabsItem, i:number) => getTabPane(pane, i))}
             </Tabs>
           </div>
         </div>

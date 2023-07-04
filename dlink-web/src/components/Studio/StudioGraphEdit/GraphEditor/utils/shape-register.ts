@@ -8,6 +8,7 @@ import React from 'react';
 import { GroupNode } from '@/components/Studio/StudioGraphEdit/GraphEditor/components/group-node';
 import unRegisterShape from "./shape-unregister"
 import CustomShape from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
+import GroupProcess from '@/components/Studio/StudioGraphEdit/GraphEditor/components/group-process';
 
 
 function registerTextNode() {
@@ -25,6 +26,61 @@ function registerTextNode() {
     },
     zIndex: 20,
   });
+}
+
+function registerGroupProgress(ports: Partial<PortManager.Metadata> | PortManager.PortMetadata[],) {
+  register({
+    width: 80,
+    height: 50,
+    attrs: {
+      body: {
+        style: {
+          'background-color': 'none',
+          border: 'none',
+        },
+      },
+    },
+    shape: CustomShape.GROUP_PROCESS,
+    component: GroupProcess,
+    ports: {
+      ...ports, items: [
+        {
+          group: 'inputs',
+          zIndex: 999,
+          attrs: {
+            text: {
+              text: `input`,
+              style: {
+                visibility: "hidden",
+                fontSize: 10,
+                fill: "#3B4351",
+              },
+            },
+          },
+          label: {
+            position: "bottom",
+          }
+        }, {
+          group: 'outputs',
+          zIndex: 999,
+
+          attrs: {
+            text: {
+              text: `output`,
+              style: {
+                visibility: "hidden",
+                fontSize: 10,
+                fill: "#3B4351",
+              },
+            },
+          },
+          label: {
+            position: "bottom",
+          }
+        }
+      ]
+    },
+  })
 }
 
 function registerOperatorNode(
@@ -113,6 +169,7 @@ export default (
 
   });
   registerTextNode();
+  registerGroupProgress(ports)
   Graph.registerNode('package', GroupNode);
 
 

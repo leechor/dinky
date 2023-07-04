@@ -11,9 +11,15 @@ import {
   ScissorOutlined,
   DeleteOutlined,
   ExportOutlined,
-  EditOutlined, RadiusSettingOutlined
+  EditOutlined,
+  RadiusSettingOutlined,
+  GroupOutlined,
+  AlignCenterOutlined,
+  BgColorsOutlined
 } from '@ant-design/icons';
 import CustomShape from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
+import { useAppSelector } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
+import { formatDate } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/math"
 
 type MenuPropsType = {
   top: number;
@@ -64,6 +70,9 @@ const DuplicateOperatorMenu = () => {
 
 export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, node, handleShowMenu, show }) => {
 
+  const { taskName } = useAppSelector((state) => ({
+    taskName: state.home.taskName,
+  }));
   const convertHorizontalAlign = (align: string) => {
     switch (align) {
       case 'left':
@@ -121,7 +130,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
   };
 
   const front = () => {
-    
+
     const cells = graph.getSelectedCells();
     cells?.forEach(c => c.toFront())
   };
@@ -251,8 +260,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
         const blob = new Blob([data], { type: 'text/json' }),
           e = new MouseEvent('click'),
           a = document.createElement('a');
-
-        a.download = '流程数据';
+        a.download = `${taskName}_${formatDate(Date.now())}`;
         a.href = window.URL.createObjectURL(blob);
         a.dataset.downloadurl = ['text/json', a.download, a.href].join(':');
         a.dispatchEvent(e);
@@ -273,11 +281,35 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
       case 'backward':
         backward();
         break;
+      case "createProcess":
+        createProcess();
       default:
         break;
     }
   };
+  const createProcess = () => {
 
+    const node = graph.createNode({
+      name: "param.name",
+      shape: CustomShape.GROUP_PROCESS,
+      width: 70,
+      height: 50,
+      attrs: {
+        body: {
+          rx: 7,
+          ry: 6,
+        },
+        text: {
+          text: " param.name",
+          fontSize: 2,
+        },
+      },
+    });
+    const group = graph.addNode(node);
+    const cells = graph.getSelectedCells();
+    cells?.forEach(c => { c.hide(); group.addChild(c); graph.resetSelection(group) })
+
+  }
   const onMenuItemClick = () => { };
   const blankMenu = () => {
 
@@ -285,7 +317,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
       {(node?.shape === "DuplicateOperator") && DuplicateOperatorMenu()}
 
       {node?.shape == CustomShape.TEXT_NODE && <>
-        <SubMenu name="align" icon={<RadiusSettingOutlined />} text="Text alignment">
+        <SubMenu name="align" icon={<AlignCenterOutlined />} text="Text alignment">
           <Radio.Group name="horizontal" onChange={horizontalAlignHandler} value={horizontalAlign}>
             <Space.Compact direction="vertical">
               <Radio value={HorizontalAlignState.LEFT}>Left</Radio>
@@ -302,7 +334,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
             </Space.Compact>
           </Radio.Group>
         </SubMenu>
-        <SubMenu name="color" icon={<RadiusSettingOutlined />} text="Note Color">
+        <SubMenu name="color" icon={<BgColorsOutlined />} text="Note Color">
           <Radio.Group name="color" size="small" onChange={noteTextColorHandler} value={noteTextColor}>
             <Space.Compact direction="horizontal">
               {Object.keys(NoteTextColor).filter(key => !isNaN(Number(NoteTextColor[key]))).map(
@@ -320,7 +352,14 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
         <Divider />
       </>
       }
-
+      {node && <>
+        <MenuItem
+          onClick={onMenuItemClick}
+          name="createProcess"
+          icon={<GroupOutlined />}
+          text="Move into new subprocess"
+        />
+      </>}
       <MenuItem
         onClick={onMenuItemClick}
         name="undo"

@@ -26,16 +26,11 @@ export const initFlowDataAction = createAsyncThunk('fetchData', (payload, store)
   //   }
   // });
 });
-export type GraphTabs = {
-  activeKey: string,
-  panes: GraphTabsItem[]
-}
 export type GraphTabsItem = {
-  title: string,
+  label: string,
+  children: ReactNode,
   key: string,
-  closable: boolean,
-  icon?: any,
-  value?: any
+  closeable: boolean
 }
 
 interface GraphEditorData {
@@ -52,7 +47,7 @@ interface GraphEditorData {
   //保存graph在其他组件中调用
   graph: Graph,
   editor: {} | InstanceType<typeof JSONEditor>,
-  graphTabs: GraphTabs,
+  graphTabsItem: GraphTabsItem,
 
 }
 const initialState: GraphEditorData = {
@@ -70,15 +65,7 @@ const initialState: GraphEditorData = {
   graph: {} as Graph,
   //保存jsoneditor 示例用作保存校验
   editor: {},
-  graphTabs: {
-    activeKey: "0", panes: [{
-      title: "process",
-      key: "0",
-      closable: false,
-      icon: null,
-      value: null
-    }]
-  }
+  graphTabsItem: { label: "process", key: "0", children: null, closeable: false }
 
 }
 const homeSlice = createSlice({
@@ -116,17 +103,7 @@ const homeSlice = createSlice({
       state.editor = payload
     },
     changeActiveKey(state, { payload }) {
-
-    },
-    addGraphTabs(state, { payload }) {
       
-      let old = state.graphTabs.panes
-      let newpanes:GraphTabsItem[]= [...old]
-      newpanes.push(payload)
-      state.graphTabs = {
-        activeKey: payload.key,
-        panes: newpanes
-      }
     }
   },
   extraReducers: {},
@@ -142,8 +119,7 @@ export const {
   changeCurrentSelectNodeParamsData,
   changeGraph,
   changeJsonEditor,
-  changeActiveKey,
-  addGraphTabs
+  changeActiveKey
 } = homeSlice.actions;
 
 export default homeSlice.reducer;
