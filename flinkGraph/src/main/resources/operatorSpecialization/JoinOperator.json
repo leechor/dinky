@@ -1,40 +1,49 @@
 {
-  "title": "JoinOperator Define",
-  "description": "define the JoinOperator parameter",
+  "title": "JoinOperator",
+  "description": "处理两表的连接，包含多种连接方式，操作中不需要对表起别名",
   "type": "object",
 	  "required": [
 		"joinType",
-		"systemTimeColumn",
-		"onLeftColumn",
-		"onRightColumn",
-		"where",
+		"columnList",
 		"columns"
 	  ],
 	  "properties": {
 		"joinType": {
 		  "type": "string",
 		  "enum":["INNER","LEFT","RIGHT","FULL OUTER","LEFT OUTER","RIGHT OUTER","CROSS",""],
-		  "description": "field for joinType"
+		  "description": "选择连接方式"
 		},
 		"systemTimeColumn": {
 		  "type": "string",
-		  "minLength": 1,
-		  "description": "field for systemTimeColumn"
+		  "description": "设置时间基准列，需要时间属性字段"
 		},
-		"onLeftColumn": {
-		  "type":"string",
-		  "minLength": 1,
-		  "description": "field for onLeftColumn"
+		"columnList": {
+			"type": "array",
+			"minItems": 1,
+			"items": {
+				"type": "object",
+				"description": "设置连接字段",
+				"required": [
+					"onLeftColumn",
+					"onRightColumn"
+				],
+				"properties": {
+					"onLeftColumn": {
+						"type": "string",
+						"description": "左表的连接字段"
+					},
+					"onRightColumn": {
+						"type": "string",
+						"description": "右表的连接字段"
+					}
+				}
+			}
 		},
-		"onRightColumn":{
-		  "type":"string",
-		  "minLength": 1,
-		  "description": "field for onRightColumn"
-		},
+		
+		
 		"where":{
 		  "type":"string",
-		  "minLength": 1,
-		  "description": "field for where"
+		  "description": "过滤条件"
 		},
 		"columns": {
 			"type": "array",

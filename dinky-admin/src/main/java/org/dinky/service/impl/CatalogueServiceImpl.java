@@ -22,6 +22,8 @@ package org.dinky.service.impl;
 import static org.dinky.assertion.Asserts.isNotNull;
 import static org.dinky.assertion.Asserts.isNull;
 
+import com.zdpx.mapper.FlowGraphScriptMapper;
+import com.zdpx.model.FlowGraph;
 import org.dinky.assertion.Asserts;
 import org.dinky.data.dto.CatalogueTaskDTO;
 import org.dinky.data.enums.JobLifeCycle;
@@ -73,6 +75,8 @@ public class CatalogueServiceImpl extends SuperServiceImpl<CatalogueMapper, Cata
     private final HistoryService historyService;
 
     private final StatementService statementService;
+
+    private final FlowGraphScriptMapper flowGraphScriptMapper;
 
     @Override
     public List<Catalogue> getAllData() {
@@ -187,6 +191,9 @@ public class CatalogueServiceImpl extends SuperServiceImpl<CatalogueMapper, Cata
                 }
             }
         }
+
+        //删除graph中的数据
+        flowGraphScriptMapper.delete(new QueryWrapper<FlowGraph>().eq("task_id",id));
 
         return errors;
     }

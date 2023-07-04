@@ -40,4 +40,16 @@ public class TableDataStreamConverter {
 
         return TableInfo.newBuilder().name((String) dataModel.get("tableName")).columns(cs).build();
     }
+
+    //根据原有的TableInfo和config中的字段构建新的TableInfo
+    public static TableInfo assembleNewTableInfo(TableInfo old,List<Map<String, Object>> count){
+        List<Column> cs = new ArrayList<>();
+        for (Map<String, Object> dm : count) {
+            if((Boolean)dm.get("flag")){
+                cs.add(new Column(dm.get("name").toString(), dm.get("type").toString()));
+            }
+        }
+        return TableInfo.newBuilder().name(old.getName()).columns(cs).build();
+    }
+
 }

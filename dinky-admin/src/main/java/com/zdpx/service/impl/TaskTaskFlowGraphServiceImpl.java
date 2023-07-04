@@ -54,14 +54,18 @@ public class TaskTaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScri
     private final TaskService taskService;
     private final StatementService statementService;
 
-    public TaskTaskFlowGraphServiceImpl(TaskService taskService,StatementService statementService) {
+    private final FlowGraphScriptMapper flowGraphScriptMapper;
+
+    public TaskTaskFlowGraphServiceImpl(TaskService taskService, StatementService statementService, FlowGraphScriptMapper flowGraphScriptMapper) {
         this.taskService = taskService;
         this.statementService=statementService;
+        this.flowGraphScriptMapper = flowGraphScriptMapper;
     }
 
     @Override
     public boolean insert(FlowGraph statement) {
-        return false;
+        flowGraphScriptMapper.insert(statement);
+        return true;
     }
 
     @Override
@@ -90,7 +94,6 @@ public class TaskTaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScri
         //保存json
         Statement statement = new Statement();
         statement.setId(task.getId());
-        statement.setGraphJson(task.getStatement());
         Statement old = statementService.selectById(task.getId());
         if(old!=null){
             statement.setStatement(old.getStatement());
@@ -102,7 +105,13 @@ public class TaskTaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScri
         FlowGraph flowGraph = new FlowGraph();
         flowGraph.setTaskId(task.getId());
         flowGraph.setScript(flowGraphScript);
-        this.saveOrUpdate(flowGraph);
+
+        FlowGraph oldGraph = this.getOne(new QueryWrapper<FlowGraph>().eq("task_id", task.getId()));
+        if(oldGraph==null){
+            this.insert(flowGraph);
+        }else{
+            this.update(flowGraph,new QueryWrapper<FlowGraph>().eq("task_id", oldGraph.getTaskId()));
+        }
         return sql;
     }
 
