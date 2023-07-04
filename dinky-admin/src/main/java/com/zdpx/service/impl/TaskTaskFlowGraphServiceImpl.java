@@ -54,14 +54,18 @@ public class TaskTaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScri
     private final TaskService taskService;
     private final StatementService statementService;
 
-    public TaskTaskFlowGraphServiceImpl(TaskService taskService,StatementService statementService) {
+    private final FlowGraphScriptMapper flowGraphScriptMapper;
+
+    public TaskTaskFlowGraphServiceImpl(TaskService taskService, StatementService statementService, FlowGraphScriptMapper flowGraphScriptMapper) {
         this.taskService = taskService;
         this.statementService=statementService;
+        this.flowGraphScriptMapper = flowGraphScriptMapper;
     }
 
     @Override
     public boolean insert(FlowGraph statement) {
-        return false;
+        flowGraphScriptMapper.insert(statement);
+        return true;
     }
 
     @Override
