@@ -209,9 +209,11 @@ public final class X6ToInternalConvert implements ToInternalConvert {
 
                     JsonNode data = tn.getNode().get("data");
                     if (data != null) {
-                        String parameters = data.get("parameters").toPrettyString();
                         NodeWrapper nodeWrapper = t.getNodeWrapper();
-                        nodeWrapper.setParameters(parameters);
+                        if(data.get("parameters")!=null){
+                            String parameters = data.get("parameters").toPrettyString();
+                            nodeWrapper.setParameters(parameters);
+                        }
                         if(data.get("config")!=null){
                             String config = data.get("config").toPrettyString();
                             nodeWrapper.setConfig(config);

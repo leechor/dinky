@@ -1,5 +1,6 @@
 {
   "title": "CepOperator",
+  "description": "复杂事件处理算子",
   "type": "object",
 
           "required": [

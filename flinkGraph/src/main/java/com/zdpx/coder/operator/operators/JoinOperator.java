@@ -47,7 +47,7 @@ public class JoinOperator extends Operator {
                             + "FROM ${inputTableName} "
                             + "${joinType?upper_case} JOIN ${anotherTableName} "
                             + "<#if systemTimeColumn??>FOR SYSTEM_TIME AS OF ${systemTimeColumn}</#if> "
-                            + "<#if onLeftColumn??>ON ${onLeftColumn} = ${onRightColumn}</#if>"
+                            + "<#if columnList??>ON <#list columnList as list>${list.onLeftColumn} = ${list.onRightColumn}<#sep> and </#sep></#list></#if>"
                             + "<#if where??> WHERE ${where}</#if> "
                             ,
                     Specifications.TEMPLATE_FILE);
@@ -84,42 +84,55 @@ public class JoinOperator extends Operator {
         Map<String, Object> parameters = getFirstParameterMap();
         String joinType = (String) parameters.get("joinType");
         String forSystemTime = (String) parameters.get("systemTimeColumn");
-        String onLeftColumn = (String) parameters.get("onLeftColumn");
-        String onRightColumn = (String) parameters.get("onRightColumn");
+        String where = (String) parameters.get("where");
+        @SuppressWarnings("unchecked")
+        List<Map<String, String>> columnList = (List<Map<String, String>>)parameters.get("columnList");
+
+
 
         String outputTableName = NameHelper.generateVariableName("JoinOperator");
         String primaryTableName = primaryInput.getOutputPseudoData().getName();
         String secondTableName = secondInput.getOutputPseudoData().getName();
-
         //根据config中的字段，确定columns中的字段属于哪张表
         List<FieldFunction> ffsPrimary = outPutFieldFunction(parameters, primaryTableName, secondTableName);
 
 
         Map<String, Object> dataModel = new HashMap<>();
         dataModel.put("tableName", outputTableName);
-        dataModel.put("where", parameters.get("where"));
         dataModel.put("inputTableName", primaryTableName);
         dataModel.put("anotherTableName", secondTableName);
         dataModel.put(Operator.FIELD_FUNCTIONS, ffsPrimary);
         dataModel.put("joinType", joinType);
-        dataModel.put(
-                "systemTimeColumn",
-                FieldFunction.insertTableName(primaryTableName, null, forSystemTime,false));
-        dataModel.put(
-                "onLeftColumn",
-                FieldFunction.insertTableName(primaryTableName, null, onLeftColumn,false));
-        dataModel.put(
-                "onRightColumn",
-                FieldFunction.insertTableName(secondTableName, null, onRightColumn,false));
+        if(forSystemTime!=null&&!forSystemTime.equals("")){
+            dataModel.put(
+                    "systemTimeColumn",
+                    FieldFunction.insertTableName(primaryTableName, null, forSystemTime,true));
+        }
+        if(where!=null&&!where.equals("")){
+            dataModel.put("where", where);
+        }
+
+
+        //修改连接字段的字段名称
+        for(Map<String, String> l:columnList){
+            setUpTableName(l,primaryTableName,"onLeftColumn");
+            setUpTableName(l,secondTableName,"onRightColumn");
+        }
+        dataModel.put("columnList",columnList);
 
         String sqlStr = TemplateUtils.format(this.getName(), dataModel, TEMPLATE);
         registerUdfFunctions(ffsPrimary);
 
         List<Column> cls = Operator.getColumnFromFieldFunctions(ffsPrimary);
         generate(sqlStr);
-
         OperatorUtil.postTableOutput(outputPort, outputTableName, cls);
     }
+
+    public void setUpTableName(Map<String, String> l,String tableName,String column){
+        String onLeftColumn = FieldFunction.insertTableName(tableName, null, l.get(column), true);
+        l.put(column,onLeftColumn);
+    }
+
 
     public List<FieldFunction> outPutFieldFunction (Map<String, Object> parameters,String primaryTableName,String secondTableName){
 

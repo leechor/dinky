@@ -19,6 +19,8 @@
 
 package org.dinky.service.impl;
 
+import com.zdpx.mapper.FlowGraphScriptMapper;
+import com.zdpx.model.FlowGraph;
 import org.dinky.alert.Alert;
 import org.dinky.alert.AlertConfig;
 import org.dinky.alert.AlertMsg;
@@ -181,6 +183,8 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
     private final UDFTemplateService udfTemplateService;
     private final DataSourceProperties dataSourceProperties;
     private final UserService userService;
+
+    private final FlowGraphScriptMapper flowGraphScriptMapper;
 
     @Resource @Lazy private CatalogueService catalogueService;
 
@@ -419,10 +423,12 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
         }
 
         Statement statement = statementService.getById(id);
+        FlowGraph graph = flowGraphScriptMapper.selectOne(new QueryWrapper<FlowGraph>().eq("task_id", id));
+
         if (statement != null) {
             task.setStatement(statement.getStatement());
-            if(statement.getGraphJson()!=null){
-                task.setGraphJson(statement.getGraphJson());
+            if(graph!=null){
+                task.setGraphJson(graph.getScript());
             }
         }
 

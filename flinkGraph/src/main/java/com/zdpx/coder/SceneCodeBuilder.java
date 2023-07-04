@@ -102,8 +102,15 @@ public class SceneCodeBuilder {
         Deque<Operator> ops = new ArrayDeque<>();
 
         bft(new HashSet<>(sinks), ops::push);
+        //特殊节点的执行顺序调整
+        Operator addJarOperator = sinks.stream().filter(item -> item.getName().equals("AddJarOperator")).findFirst().orElse(null);
+        if(addJarOperator!=null){
+            ops.remove(addJarOperator);
+            ops.addFirst(addJarOperator);
+        }
         ops.stream().distinct().forEach(this::operate);
     }
+
 
     /**
      * 广度优先遍历计算节点, 执行call 函数

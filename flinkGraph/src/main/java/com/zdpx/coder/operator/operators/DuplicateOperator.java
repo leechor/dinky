@@ -23,9 +23,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.zdpx.coder.graph.OutputPort;
 import com.zdpx.coder.graph.OutputPortObject;
+import com.zdpx.coder.graph.PseudoData;
 import com.zdpx.coder.operator.Operator;
 import com.zdpx.coder.operator.TableInfo;
+
+import static com.zdpx.coder.utils.TableDataStreamConverter.assembleNewTableInfo;
 
 /** 用于端口数据复制, 转为多路输出 */
 public class DuplicateOperator extends Operator {
@@ -37,15 +41,15 @@ public class DuplicateOperator extends Operator {
 
     @Override
     protected void handleParameters(String parameters) {
-        if (getOutputPorts().isEmpty() && this.nodeWrapper != null) {
-            List<Map<String, Object>> outputInfo = Operator.getParameterLists(parameters);
-
-            for (Map<String, Object> oi : outputInfo) {//此处过滤选中的节点
-                OutputPortObject<TableInfo> opi =
-                        registerOutputObjectPort(oi.get("outputName").toString());
-                getOutputPorts().put(opi.getName(), opi);
-            }
-        }
+//        if (getOutputPorts().isEmpty() && this.nodeWrapper != null) {
+//            List<Map<String, Object>> outputInfo = Operator.getParameterLists(parameters);
+//
+//            for (Map<String, Object> oi : outputInfo) {//此处过滤选中的节点
+//                OutputPortObject<TableInfo> opi =
+//                        registerOutputObjectPort(oi.get("outputName").toString());
+//                getOutputPorts().put(opi.getName(), opi);
+//            }
+//        }
     }
 
     @Override
@@ -66,8 +70,17 @@ public class DuplicateOperator extends Operator {
                         .map(t -> (TableInfo) t.getConnection().getFromPort().getPseudoData())
                         .findAny()
                         .orElse(null);
+
+        //从config中获取输出字段,数组的长度只可能是1
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> firstParameterMap = (List<Map<String, Object>>)getFirstParameterMap().get("config");
+
         getOutputPorts()
                 .values()
-                .forEach(t -> ((OutputPortObject<TableInfo>) t).setPseudoData(pseudoData));
+                .forEach(t -> {
+                    @SuppressWarnings("unchecked")
+                    List<Map<String, Object>> count = (List<Map<String, Object>>)(firstParameterMap.get(0).get(t.getName()));
+                    ((OutputPortObject<TableInfo>) t).setPseudoData(assembleNewTableInfo(pseudoData, count));
+                });
     }
 }

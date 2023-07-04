@@ -147,6 +147,9 @@ public class FieldFunction {
         return fo;
     }
 
+    /**
+     * @param flag 是否需要在列明前增加表名
+     * */
     public static String insertTableName(String primaryTableName, FieldFunction fo, String param , boolean flag) {
         boolean notAt = !param.startsWith("@")
                 && fo != null

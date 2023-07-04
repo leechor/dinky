@@ -90,7 +90,6 @@ public class TaskTaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScri
         //保存json
         Statement statement = new Statement();
         statement.setId(task.getId());
-        statement.setGraphJson(task.getStatement());
         Statement old = statementService.selectById(task.getId());
         if(old!=null){
             statement.setStatement(old.getStatement());
@@ -102,7 +101,13 @@ public class TaskTaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScri
         FlowGraph flowGraph = new FlowGraph();
         flowGraph.setTaskId(task.getId());
         flowGraph.setScript(flowGraphScript);
-        this.saveOrUpdate(flowGraph);
+
+        FlowGraph oldGraph = this.getOne(new QueryWrapper<FlowGraph>().eq("task_id", task.getId()));
+        if(oldGraph==null){
+            this.insert(flowGraph);
+        }else{
+            this.update(flowGraph,new QueryWrapper<FlowGraph>().eq("task_id", oldGraph.getTaskId()));
+        }
         return sql;
     }
 

@@ -1,14 +1,16 @@
 {
     "type": "object",
-    "title": "MySQLSourceOperator",
-	"description": "MySQL源算子",
+    "title": "OracleSinkOperator",
+	"description": "Oracle输出算子",
 	"minItems": 1,
         "required": [
 			"tableName",
 			"connector",
-			"url",
+			"hostname",
+			"port",
 			"username",
-			"password"
+			"password",
+			"database-name"
         ],
         "properties": {
 
@@ -22,31 +24,30 @@
 			"default": "jdbc",
 			"minLength": 1,
 			"title": "connector",
-			"enum":["jdbc"]
+			"enum":["oracle-cdc"]
 		},
-		"url": {
+		"hostname": {
 			"type": "string",
 			"minLength": 1,
-			"title": "jdbc-url",
-			"description": "mysql jdbc url，eg :mysql://127.0.0.1:3306"
+			"description": "localhost"
+		},
+		"port": {
+			"type": "integer",
+			"default": "1521",
+			"minimum": 1,
+			"maximum ": 65535
 		},
 		"username": {
 			"type": "string",
-			"default": "root",
-			"minLength": 1,
-			"title": "username",
-			"examples": [
-				"root"
-			]
+			"minLength": 1
 		},
 		"password": {
 			"type": "string",
-			"default": "123456",
-			"minLength": 1,
-			"title": "password",
-			"examples": [
-				"123456"
-			]
+			"minLength": 1
+		},
+		"database-name": {
+			"type": "string",
+			"minLength": 1
 		},
 		
 	   "other":{
@@ -63,12 +64,14 @@
 				"key": {
 					"type": "string",
 					"minLength": 1,
-					"description": "自定义字段的key，与values共同构成：key = values 的结构 "
+					"description": "自定义字段的key，与values共同构成：key = values 的结构 ",
+					"title": "key"
 				},
 				"values": {
 					"type": "string",
 					"minLength": 1,
-					"description": "自定义字段的values，与key共同构成：key = values 的结构"
+					"description": "自定义字段的values，与key共同构成：key = values 的结构",
+					"title": "values"
 				}
 			}
 		  }
@@ -99,7 +102,7 @@
 							"WATERMARK FOR dt AS dt - INTERVAL '15' SECOND",
 							"PRIMARY KEY(taskId) NOT ENFORCED "
 						],
-						"description": "字段名名称"
+						"description": "field name"
 					},
 					"type": {
 						"type": "string",
@@ -116,7 +119,7 @@
 					"flag":{
 						"type": "boolean",
 						"default": true,
-						"title": "是否勾选为输出"
+						"title": "checked ?"
 					}
 				}
 			}
@@ -125,7 +128,6 @@
 			"type": "string",
 			"description": "设置主键"
 		},
-		
 		"watermark":{
 		  "type": "object",
 		  "properties": {
@@ -146,31 +148,5 @@
 		  },
 		  "additionalProperties":false
 		}
-		
-	},
-			"test": {
-			"type": "array",
-			"description": "数据为ROW类型时，在该部分嵌套",
-			"items": {
-				"type": "object",
-				"title": "schema",
-				"required": [
-					"name",
-					"type"
-				],
-				"properties": {
-					"name": {
-						"type": "string",
-						"minLength": 1,
-						"description": "字段名名称"
-					},
-					"type": {
-						"type": "string",
-						"minLength": 1,
-						"default": "STRING",
-						"enum":["CHAR","VARCHAR","STRING","BOOLEAN","BINARY","VARBINARY","BYTES","DECIMAL","TINYINT","SMALLINT","INTEGER","BIGINT","FLOAT","DOUBLE","DATE","TIME","TIMESTAMP(3)","TIMESTAMP_LTZ(3)","INTERVAL","ARRAY","MULTISET","MAP"]
-					}
-				}
-			}
-		}
+	}
 }

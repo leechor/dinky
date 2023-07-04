@@ -22,8 +22,8 @@ class X6ToInternalConvertTest {
                     "    \"cells\": [\n" +
                     "        {\n" +
                     "            \"position\": {\n" +
-                    "                \"x\": -140,\n" +
-                    "                \"y\": -100\n" +
+                    "                \"x\": -290,\n" +
+                    "                \"y\": -10\n" +
                     "            },\n" +
                     "            \"size\": {\n" +
                     "                \"width\": 70,\n" +
@@ -36,11 +36,11 @@ class X6ToInternalConvertTest {
                     "                    \"ry\": 6\n" +
                     "                },\n" +
                     "                \"text\": {\n" +
-                    "                    \"text\": \"CustomerSourceOperator\",\n" +
+                    "                    \"text\": \"MySQL数据源\",\n" +
                     "                    \"fontSize\": 2\n" +
                     "                }\n" +
                     "            },\n" +
-                    "            \"shape\": \"CustomerSourceOperator\",\n" +
+                    "            \"shape\": \"MysqlSourceOperator\",\n" +
                     "            \"ports\": {\n" +
                     "                \"groups\": {\n" +
                     "                    \"outputs\": {\n" +
@@ -113,78 +113,32 @@ class X6ToInternalConvertTest {
                     "                    }\n" +
                     "                ]\n" +
                     "            },\n" +
-                    "            \"id\": \"da6ed1e3-a37f-4bd9-a074-df3826b6ac38\",\n" +
-                    "            \"name\": \"CustomerSourceOperator\",\n" +
+                    "            \"id\": \"5fc5a34a-ff18-4509-9d20-3149f8cf0c18\",\n" +
+                    "            \"name\": \"MySQL数据源\",\n" +
                     "            \"zIndex\": 1,\n" +
                     "            \"data\": {\n" +
                     "                \"parameters\": {\n" +
-                    "                    \"other\": [\n" +
-                    "                        {\n" +
-                    "                            \"key\": \"connector\",\n" +
-                    "                            \"values\": \"udp\"\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"key\": \"format\",\n" +
-                    "                            \"values\": \"json\"\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"key\": \"hostName\",\n" +
-                    "                            \"values\": \"225.0.0.1\"\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"key\": \"port\",\n" +
-                    "                            \"values\": \"6001\"\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"key\": \"json.timestamp-format.standard\",\n" +
-                    "                            \"values\": \"ISO-8601\"\n" +
-                    "                        }\n" +
-                    "                    ],\n" +
+                    "                    \"tableName\": \"asdasas\",\n" +
+                    "                    \"connector\": \"jdbc\",\n" +
+                    "                    \"url\": \"asad\",\n" +
+                    "                    \"username\": \"root\",\n" +
+                    "                    \"password\": \"123456\",\n" +
+                    "                    \"other\": [],\n" +
                     "                    \"columns\": [\n" +
                     "                        {\n" +
-                    "                            \"name\": \"protocal\",\n" +
+                    "                            \"name\": \"a\",\n" +
                     "                            \"type\": \"STRING\",\n" +
                     "                            \"flag\": true\n" +
                     "                        },\n" +
                     "                        {\n" +
-                    "                            \"name\": \"type\",\n" +
-                    "                            \"type\": \"STRING\",\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"name\": \"subtype\",\n" +
-                    "                            \"type\": \"STRING\",\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"name\": \"time\",\n" +
-                    "                            \"type\": \"TIMESTAMP_LTZ(3)\",\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"name\": \"group_id\",\n" +
-                    "                            \"type\": \"INTEGER\",\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"name\": \"train_uuid\",\n" +
-                    "                            \"type\": \"STRING\",\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"name\": \"description\",\n" +
-                    "                            \"type\": \"STRING\",\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"name\": \"data\",\n" +
+                    "                            \"name\": \"b\",\n" +
                     "                            \"type\": \"STRING\",\n" +
                     "                            \"flag\": true\n" +
                     "                        }\n" +
                     "                    ],\n" +
-                    "                    \"primary\": \"train_uuid\",\n" +
+                    "                    \"primary\": \"\",\n" +
                     "                    \"watermark\": {\n" +
-                    "                        \"column\": \"time\",\n" +
+                    "                        \"column\": \"\",\n" +
                     "                        \"timeSpan\": 0,\n" +
                     "                        \"timeUnit\": \"SECOND\"\n" +
                     "                    }\n" +
@@ -194,8 +148,8 @@ class X6ToInternalConvertTest {
                     "        },\n" +
                     "        {\n" +
                     "            \"position\": {\n" +
-                    "                \"x\": 23,\n" +
-                    "                \"y\": -100\n" +
+                    "                \"x\": -141,\n" +
+                    "                \"y\": -10\n" +
                     "            },\n" +
                     "            \"size\": {\n" +
                     "                \"width\": 70,\n" +
@@ -208,11 +162,11 @@ class X6ToInternalConvertTest {
                     "                    \"ry\": 6\n" +
                     "                },\n" +
                     "                \"text\": {\n" +
-                    "                    \"text\": \"CommWindowOperator\",\n" +
+                    "                    \"text\": \"DuplicateOperator\",\n" +
                     "                    \"fontSize\": 2\n" +
                     "                }\n" +
                     "            },\n" +
-                    "            \"shape\": \"CommWindowOperator\",\n" +
+                    "            \"shape\": \"DuplicateOperator\",\n" +
                     "            \"ports\": {\n" +
                     "                \"groups\": {\n" +
                     "                    \"outputs\": {\n" +
@@ -286,10 +240,28 @@ class X6ToInternalConvertTest {
                     "                    {\n" +
                     "                        \"group\": \"outputs\",\n" +
                     "                        \"zIndex\": 999,\n" +
-                    "                        \"id\": \"output_0\",\n" +
+                    "                        \"id\": \"out1\",\n" +
                     "                        \"attrs\": {\n" +
                     "                            \"text\": {\n" +
-                    "                                \"text\": \"output_0\",\n" +
+                    "                                \"text\": \"out1\",\n" +
+                    "                                \"style\": {\n" +
+                    "                                    \"visibility\": \"hidden\",\n" +
+                    "                                    \"fontSize\": 10,\n" +
+                    "                                    \"fill\": \"#3B4351\"\n" +
+                    "                                }\n" +
+                    "                            }\n" +
+                    "                        },\n" +
+                    "                        \"label\": {\n" +
+                    "                            \"position\": \"bottom\"\n" +
+                    "                        }\n" +
+                    "                    },\n" +
+                    "                    {\n" +
+                    "                        \"group\": \"outputs\",\n" +
+                    "                        \"zIndex\": 999,\n" +
+                    "                        \"id\": \"out2\",\n" +
+                    "                        \"attrs\": {\n" +
+                    "                            \"text\": {\n" +
+                    "                                \"text\": \"out2\",\n" +
                     "                                \"style\": {\n" +
                     "                                    \"visibility\": \"hidden\",\n" +
                     "                                    \"fontSize\": 10,\n" +
@@ -303,133 +275,68 @@ class X6ToInternalConvertTest {
                     "                    }\n" +
                     "                ]\n" +
                     "            },\n" +
-                    "            \"id\": \"32d2811f-bc0d-4e5e-9e99-ab312772d422\",\n" +
-                    "            \"name\": \"CommWindowOperator\",\n" +
+                    "            \"id\": \"3ea62dc9-cab4-49a0-a3e2-608eaf960ab2\",\n" +
+                    "            \"name\": \"DuplicateOperator\",\n" +
                     "            \"zIndex\": 2,\n" +
                     "            \"data\": {\n" +
-                    "                \"parameters\": {\n" +
-                    "                    \"orderBy\": [],\n" +
-                    "                    \"where\": \"subtype='uav_crash'\",\n" +
-                    "                    \"limit\": [],\n" +
-                    "                    \"group\": null,\n" +
-                    "                    \"window\": null,\n" +
-                    "                    \"columns\": [\n" +
-                    "                        {\n" +
-                    "                            \"functionName\": \"\",\n" +
-                    "                            \"name\": \"protocal\",\n" +
-                    "                            \"parameters\": [\n" +
-                    "                                \"protocal\"\n" +
-                    "                            ],\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"functionName\": \"\",\n" +
-                    "                            \"name\": \"type\",\n" +
-                    "                            \"parameters\": [\n" +
-                    "                                \"type\"\n" +
-                    "                            ],\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"functionName\": \"\",\n" +
-                    "                            \"name\": \"subtype\",\n" +
-                    "                            \"parameters\": [\n" +
-                    "                                \"subtype\"\n" +
-                    "                            ],\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"functionName\": \"\",\n" +
-                    "                            \"name\": \"time\",\n" +
-                    "                            \"parameters\": [\n" +
-                    "                                \"time\"\n" +
-                    "                            ],\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"functionName\": \"\",\n" +
-                    "                            \"name\": \"group_id\",\n" +
-                    "                            \"parameters\": [\n" +
-                    "                                \"group_id\"\n" +
-                    "                            ],\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"functionName\": \"\",\n" +
-                    "                            \"name\": \"train_uuid\",\n" +
-                    "                            \"parameters\": [\n" +
-                    "                                \"train_uuid\"\n" +
-                    "                            ],\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"functionName\": \"\",\n" +
-                    "                            \"name\": \"description\",\n" +
-                    "                            \"parameters\": [\n" +
-                    "                                \"description\"\n" +
-                    "                            ],\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"functionName\": \"JSON_VALUE\",\n" +
-                    "                            \"name\": \"ttime\",\n" +
-                    "                            \"parameters\": [\n" +
-                    "                                \"`data`\",\n" +
-                    "                                \"'$.ttime'\"\n" +
-                    "                            ],\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"functionName\": \"JSON_VALUE\",\n" +
-                    "                            \"name\": \"crash_time\",\n" +
-                    "                            \"parameters\": [\n" +
-                    "                                \"`data`\",\n" +
-                    "                                \"'$.crash_time'\"\n" +
-                    "                            ],\n" +
-                    "                            \"flag\": true\n" +
-                    "                        }\n" +
-                    "                    ]\n" +
-                    "                },\n" +
                     "                \"config\": [\n" +
                     "                    {\n" +
-                    "                        \"da6ed1e3-a37f-4bd9-a074-df3826b6ac38&output_0 32d2811f-bc0d-4e5e-9e99-ab312772d422&input_0\": [\n" +
+                    "                        \"5fc5a34a-ff18-4509-9d20-3149f8cf0c18&output_0 3ea62dc9-cab4-49a0-a3e2-608eaf960ab2&input_0\": [\n" +
                     "                            {\n" +
-                    "                                \"name\": \"protocal\",\n" +
+                    "                                \"name\": \"a\",\n" +
                     "                                \"type\": \"STRING\",\n" +
                     "                                \"flag\": true\n" +
                     "                            },\n" +
                     "                            {\n" +
-                    "                                \"name\": \"type\",\n" +
+                    "                                \"name\": \"b\",\n" +
+                    "                                \"type\": \"STRING\",\n" +
+                    "                                \"flag\": true\n" +
+                    "                            }\n" +
+                    "                        ],\n" +
+                    "                        \"out1\": [\n" +
+                    "                            {\n" +
+                    "                                \"name\": \"a\",\n" +
                     "                                \"type\": \"STRING\",\n" +
                     "                                \"flag\": true\n" +
                     "                            },\n" +
                     "                            {\n" +
-                    "                                \"name\": \"subtype\",\n" +
+                    "                                \"name\": \"b\",\n" +
+                    "                                \"type\": \"STRING\",\n" +
+                    "                                \"flag\": false\n" +
+                    "                            }\n" +
+                    "                        ],\n" +
+                    "                        \"out2\": [\n" +
+                    "                            {\n" +
+                    "                                \"name\": \"a\",\n" +
                     "                                \"type\": \"STRING\",\n" +
                     "                                \"flag\": true\n" +
                     "                            },\n" +
                     "                            {\n" +
-                    "                                \"name\": \"time\",\n" +
-                    "                                \"type\": \"TIMESTAMP_LTZ(3)\",\n" +
+                    "                                \"name\": \"b\",\n" +
+                    "                                \"type\": \"STRING\",\n" +
                     "                                \"flag\": true\n" +
-                    "                            },\n" +
+                    "                            }\n" +
+                    "                        ],\n" +
+                    "                        \"3ea62dc9-cab4-49a0-a3e2-608eaf960ab2&out1 30144850-cc01-4841-bc4f-e8e14a47cf2b&input_0\": [\n" +
                     "                            {\n" +
-                    "                                \"name\": \"group_id\",\n" +
+                    "                                \"name\": \"a\",\n" +
                     "                                \"type\": \"STRING\",\n" +
                     "                                \"flag\": true\n" +
                     "                            },\n" +
                     "                            {\n" +
-                    "                                \"name\": \"train_uuid\",\n" +
+                    "                                \"name\": \"b\",\n" +
+                    "                                \"type\": \"STRING\",\n" +
+                    "                                \"flag\": false\n" +
+                    "                            }\n" +
+                    "                        ],\n" +
+                    "                        \"3ea62dc9-cab4-49a0-a3e2-608eaf960ab2&out2 a6f09551-d13a-452d-8494-5f7f031c5ac8&input_0\": [\n" +
+                    "                            {\n" +
+                    "                                \"name\": \"a\",\n" +
                     "                                \"type\": \"STRING\",\n" +
                     "                                \"flag\": true\n" +
                     "                            },\n" +
                     "                            {\n" +
-                    "                                \"name\": \"description\",\n" +
-                    "                                \"type\": \"STRING\",\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"name\": \"data`\",\n" +
+                    "                                \"name\": \"b\",\n" +
                     "                                \"type\": \"STRING\",\n" +
                     "                                \"flag\": true\n" +
                     "                            }\n" +
@@ -439,501 +346,117 @@ class X6ToInternalConvertTest {
                     "            }\n" +
                     "        },\n" +
                     "        {\n" +
-                    "            \"shape\": \"edge\",\n" +
+                    "            \"position\": {\n" +
+                    "                \"x\": 40,\n" +
+                    "                \"y\": -60\n" +
+                    "            },\n" +
+                    "            \"size\": {\n" +
+                    "                \"width\": 70,\n" +
+                    "                \"height\": 50\n" +
+                    "            },\n" +
+                    "            \"view\": \"react-shape-view\",\n" +
                     "            \"attrs\": {\n" +
-                    "                \"line\": {\n" +
-                    "                    \"stroke\": \"#b2a2e9\",\n" +
-                    "                    \"targetMarker\": {\n" +
-                    "                        \"name\": \"classic\",\n" +
-                    "                        \"size\": 10\n" +
-                    "                    }\n" +
+                    "                \"body\": {\n" +
+                    "                    \"rx\": 7,\n" +
+                    "                    \"ry\": 6\n" +
+                    "                },\n" +
+                    "                \"text\": {\n" +
+                    "                    \"text\": \"MysqlSink\",\n" +
+                    "                    \"fontSize\": 2\n" +
                     "                }\n" +
                     "            },\n" +
-                    "            \"id\": \"febb16af-aa7a-45e9-bb57-e8b4b1099394\",\n" +
+                    "            \"shape\": \"MysqlSinkOperator\",\n" +
+                    "            \"ports\": {\n" +
+                    "                \"groups\": {\n" +
+                    "                    \"outputs\": {\n" +
+                    "                        \"zIndex\": 999,\n" +
+                    "                        \"position\": \"right\",\n" +
+                    "                        \"markup\": {\n" +
+                    "                            \"tagName\": \"path\",\n" +
+                    "                            \"selector\": \"path\",\n" +
+                    "                            \"attrs\": {\n" +
+                    "                                \"d\": \"m-6,0,a5,5.5 0 0 1 12,0\",\n" +
+                    "                                \"fill\": \"#b2a2e9\",\n" +
+                    "                                \"transform\": \"rotate(90)\",\n" +
+                    "                                \"strokeWidth\": 1,\n" +
+                    "                                \"stroke\": \"null\"\n" +
+                    "                            }\n" +
+                    "                        },\n" +
+                    "                        \"attrs\": {\n" +
+                    "                            \"path\": {\n" +
+                    "                                \"r\": 8,\n" +
+                    "                                \"magnet\": true,\n" +
+                    "                                \"style\": {\n" +
+                    "                                    \"visibility\": \"hidden\"\n" +
+                    "                                }\n" +
+                    "                            }\n" +
+                    "                        }\n" +
+                    "                    },\n" +
+                    "                    \"inputs\": {\n" +
+                    "                        \"zIndex\": 999,\n" +
+                    "                        \"position\": \"left\",\n" +
+                    "                        \"markup\": {\n" +
+                    "                            \"tagName\": \"path\",\n" +
+                    "                            \"selector\": \"path\",\n" +
+                    "                            \"attrs\": {\n" +
+                    "                                \"d\": \"m-6,0,a5,5.5 0 0 1 12,0\",\n" +
+                    "                                \"fill\": \"#b2a2e9\",\n" +
+                    "                                \"transform\": \"rotate(-90)\",\n" +
+                    "                                \"strokeWidth\": 1,\n" +
+                    "                                \"stroke\": \"null\"\n" +
+                    "                            }\n" +
+                    "                        },\n" +
+                    "                        \"attrs\": {\n" +
+                    "                            \"path\": {\n" +
+                    "                                \"r\": 10,\n" +
+                    "                                \"magnet\": true,\n" +
+                    "                                \"style\": {\n" +
+                    "                                    \"visibility\": \"hidden\"\n" +
+                    "                                }\n" +
+                    "                            }\n" +
+                    "                        }\n" +
+                    "                    }\n" +
+                    "                },\n" +
+                    "                \"items\": [\n" +
+                    "                    {\n" +
+                    "                        \"group\": \"inputs\",\n" +
+                    "                        \"id\": \"input_0\",\n" +
+                    "                        \"zIndex\": 999,\n" +
+                    "                        \"attrs\": {\n" +
+                    "                            \"text\": {\n" +
+                    "                                \"text\": \"input_0\",\n" +
+                    "                                \"style\": {\n" +
+                    "                                    \"visibility\": \"hidden\",\n" +
+                    "                                    \"fontSize\": 10,\n" +
+                    "                                    \"fill\": \"#3B4351\"\n" +
+                    "                                }\n" +
+                    "                            }\n" +
+                    "                        },\n" +
+                    "                        \"label\": {\n" +
+                    "                            \"position\": \"bottom\"\n" +
+                    "                        }\n" +
+                    "                    }\n" +
+                    "                ]\n" +
+                    "            },\n" +
+                    "            \"id\": \"30144850-cc01-4841-bc4f-e8e14a47cf2b\",\n" +
+                    "            \"name\": \"MysqlSink\",\n" +
                     "            \"zIndex\": 3,\n" +
-                    "            \"source\": {\n" +
-                    "                \"cell\": \"da6ed1e3-a37f-4bd9-a074-df3826b6ac38\",\n" +
-                    "                \"port\": \"output_0\"\n" +
-                    "            },\n" +
-                    "            \"target\": {\n" +
-                    "                \"cell\": \"32d2811f-bc0d-4e5e-9e99-ab312772d422\",\n" +
-                    "                \"port\": \"input_0\"\n" +
-                    "            }\n" +
-                    "        },\n" +
-                    "        {\n" +
-                    "            \"position\": {\n" +
-                    "                \"x\": -140,\n" +
-                    "                \"y\": 48\n" +
-                    "            },\n" +
-                    "            \"size\": {\n" +
-                    "                \"width\": 70,\n" +
-                    "                \"height\": 50\n" +
-                    "            },\n" +
-                    "            \"view\": \"react-shape-view\",\n" +
-                    "            \"attrs\": {\n" +
-                    "                \"body\": {\n" +
-                    "                    \"rx\": 7,\n" +
-                    "                    \"ry\": 6\n" +
-                    "                },\n" +
-                    "                \"text\": {\n" +
-                    "                    \"text\": \"CepOperator\",\n" +
-                    "                    \"fontSize\": 2\n" +
-                    "                }\n" +
-                    "            },\n" +
-                    "            \"shape\": \"CepOperator\",\n" +
-                    "            \"ports\": {\n" +
-                    "                \"groups\": {\n" +
-                    "                    \"outputs\": {\n" +
-                    "                        \"zIndex\": 999,\n" +
-                    "                        \"position\": \"right\",\n" +
-                    "                        \"markup\": {\n" +
-                    "                            \"tagName\": \"path\",\n" +
-                    "                            \"selector\": \"path\",\n" +
-                    "                            \"attrs\": {\n" +
-                    "                                \"d\": \"m-6,0,a5,5.5 0 0 1 12,0\",\n" +
-                    "                                \"fill\": \"#b2a2e9\",\n" +
-                    "                                \"transform\": \"rotate(90)\",\n" +
-                    "                                \"strokeWidth\": 1,\n" +
-                    "                                \"stroke\": \"null\"\n" +
-                    "                            }\n" +
-                    "                        },\n" +
-                    "                        \"attrs\": {\n" +
-                    "                            \"path\": {\n" +
-                    "                                \"r\": 8,\n" +
-                    "                                \"magnet\": true,\n" +
-                    "                                \"style\": {\n" +
-                    "                                    \"visibility\": \"hidden\"\n" +
-                    "                                }\n" +
-                    "                            }\n" +
-                    "                        }\n" +
-                    "                    },\n" +
-                    "                    \"inputs\": {\n" +
-                    "                        \"zIndex\": 999,\n" +
-                    "                        \"position\": \"left\",\n" +
-                    "                        \"markup\": {\n" +
-                    "                            \"tagName\": \"path\",\n" +
-                    "                            \"selector\": \"path\",\n" +
-                    "                            \"attrs\": {\n" +
-                    "                                \"d\": \"m-6,0,a5,5.5 0 0 1 12,0\",\n" +
-                    "                                \"fill\": \"#b2a2e9\",\n" +
-                    "                                \"transform\": \"rotate(-90)\",\n" +
-                    "                                \"strokeWidth\": 1,\n" +
-                    "                                \"stroke\": \"null\"\n" +
-                    "                            }\n" +
-                    "                        },\n" +
-                    "                        \"attrs\": {\n" +
-                    "                            \"path\": {\n" +
-                    "                                \"r\": 10,\n" +
-                    "                                \"magnet\": true,\n" +
-                    "                                \"style\": {\n" +
-                    "                                    \"visibility\": \"hidden\"\n" +
-                    "                                }\n" +
-                    "                            }\n" +
-                    "                        }\n" +
-                    "                    }\n" +
-                    "                },\n" +
-                    "                \"items\": [\n" +
-                    "                    {\n" +
-                    "                        \"group\": \"inputs\",\n" +
-                    "                        \"id\": \"input_0\",\n" +
-                    "                        \"zIndex\": 999,\n" +
-                    "                        \"attrs\": {\n" +
-                    "                            \"text\": {\n" +
-                    "                                \"text\": \"input_0\",\n" +
-                    "                                \"style\": {\n" +
-                    "                                    \"visibility\": \"hidden\",\n" +
-                    "                                    \"fontSize\": 10,\n" +
-                    "                                    \"fill\": \"#3B4351\"\n" +
-                    "                                }\n" +
-                    "                            }\n" +
-                    "                        },\n" +
-                    "                        \"label\": {\n" +
-                    "                            \"position\": \"bottom\"\n" +
-                    "                        }\n" +
-                    "                    },\n" +
-                    "                    {\n" +
-                    "                        \"group\": \"outputs\",\n" +
-                    "                        \"zIndex\": 999,\n" +
-                    "                        \"id\": \"output_0\",\n" +
-                    "                        \"attrs\": {\n" +
-                    "                            \"text\": {\n" +
-                    "                                \"text\": \"output_0\",\n" +
-                    "                                \"style\": {\n" +
-                    "                                    \"visibility\": \"hidden\",\n" +
-                    "                                    \"fontSize\": 10,\n" +
-                    "                                    \"fill\": \"#3B4351\"\n" +
-                    "                                }\n" +
-                    "                            }\n" +
-                    "                        },\n" +
-                    "                        \"label\": {\n" +
-                    "                            \"position\": \"bottom\"\n" +
-                    "                        }\n" +
-                    "                    }\n" +
-                    "                ]\n" +
-                    "            },\n" +
-                    "            \"id\": \"d266f0b5-60fe-4258-8436-871bee2d5dd9\",\n" +
-                    "            \"name\": \"CepOperator\",\n" +
-                    "            \"zIndex\": 4,\n" +
                     "            \"data\": {\n" +
                     "                \"parameters\": {\n" +
-                    "                    \"partition\": \"group_id\",\n" +
-                    "                    \"orderBy\": \"time\",\n" +
-                    "                    \"outPutMode\": \"ONE\",\n" +
-                    "                    \"skipStrategy\": {\n" +
-                    "                        \"strategy\": \"LAST_ROW\",\n" +
-                    "                        \"variable\": \"\"\n" +
-                    "                    },\n" +
-                    "                    \"timeSpan\": 0,\n" +
-                    "                    \"timeUnit\": \"SECOND\",\n" +
-                    "                    \"patterns\": [\n" +
-                    "                        {\n" +
-                    "                            \"variable\": \"e1\",\n" +
-                    "                            \"quantifier\": \"{2}\"\n" +
-                    "                        }\n" +
-                    "                    ],\n" +
+                    "                    \"tableName\": \"asdasas\",\n" +
+                    "                    \"connector\": \"jdbc\",\n" +
+                    "                    \"url\": \"asad\",\n" +
+                    "                    \"username\": \"root\",\n" +
+                    "                    \"password\": \"123456\",\n" +
+                    "                    \"other\": [],\n" +
                     "                    \"columns\": [\n" +
                     "                        {\n" +
-                    "                            \"functionName\": \"\",\n" +
-                    "                            \"name\": \"protocal\",\n" +
-                    "                            \"parameters\": [\n" +
-                    "                                \"e1.protocal\"\n" +
-                    "                            ],\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"functionName\": \"\",\n" +
-                    "                            \"name\": \"type\",\n" +
-                    "                            \"parameters\": [\n" +
-                    "                                \"e1.type\"\n" +
-                    "                            ],\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"functionName\": \"CONCAT\",\n" +
-                    "                            \"name\": \"subtype\",\n" +
-                    "                            \"parameters\": [\n" +
-                    "                                \"'mark_report'\"\n" +
-                    "                            ],\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"functionName\": \"\",\n" +
-                    "                            \"name\": \"time\",\n" +
-                    "                            \"parameters\": [\n" +
-                    "                                \"e1.time\"\n" +
-                    "                            ],\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"functionName\": \"\",\n" +
-                    "                            \"name\": \"train_uuid\",\n" +
-                    "                            \"parameters\": [\n" +
-                    "                                \"e1.train_uuid\"\n" +
-                    "                            ],\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"functionName\": \"\",\n" +
-                    "                            \"name\": \"description\",\n" +
-                    "                            \"parameters\": [\n" +
-                    "                                \"e1.description\"\n" +
-                    "                            ],\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"functionName\": \"\",\n" +
-                    "                            \"name\": \"data\",\n" +
-                    "                            \"parameters\": [\n" +
-                    "                                \"e1.crash_time\"\n" +
-                    "                            ],\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"functionName\": \"\",\n" +
-                    "                            \"name\": \"group_id\",\n" +
-                    "                            \"parameters\": [\n" +
-                    "                                \"e1.group_id\"\n" +
-                    "                            ],\n" +
-                    "                            \"flag\": true\n" +
-                    "                        }\n" +
-                    "                    ],\n" +
-                    "                    \"defines\": [\n" +
-                    "                        {\n" +
-                    "                            \"variable\": \"e1\",\n" +
-                    "                            \"condition\": \"description = 'down'\"\n" +
-                    "                        }\n" +
-                    "                    ]\n" +
-                    "                },\n" +
-                    "                \"config\": [\n" +
-                    "                    {\n" +
-                    "                        \"32d2811f-bc0d-4e5e-9e99-ab312772d422&output_0 d266f0b5-60fe-4258-8436-871bee2d5dd9&input_0\": [\n" +
-                    "                            {\n" +
-                    "                                \"functionName\": \"\",\n" +
-                    "                                \"name\": \"protocal\",\n" +
-                    "                                \"parameters\": [\n" +
-                    "                                    \"protocal\"\n" +
-                    "                                ],\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"functionName\": \"\",\n" +
-                    "                                \"name\": \"type\",\n" +
-                    "                                \"parameters\": [\n" +
-                    "                                    \"type\"\n" +
-                    "                                ],\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"functionName\": \"\",\n" +
-                    "                                \"name\": \"subtype\",\n" +
-                    "                                \"parameters\": [\n" +
-                    "                                    \"subtype\"\n" +
-                    "                                ],\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"functionName\": \"\",\n" +
-                    "                                \"name\": \"time\",\n" +
-                    "                                \"parameters\": [\n" +
-                    "                                    \"time\"\n" +
-                    "                                ],\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"functionName\": \"\",\n" +
-                    "                                \"name\": \"group_id\",\n" +
-                    "                                \"parameters\": [\n" +
-                    "                                    \"group_id\"\n" +
-                    "                                ],\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"functionName\": \"\",\n" +
-                    "                                \"name\": \"train_uuid\",\n" +
-                    "                                \"parameters\": [\n" +
-                    "                                    \"train_uuid\"\n" +
-                    "                                ],\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"functionName\": \"\",\n" +
-                    "                                \"name\": \"description\",\n" +
-                    "                                \"parameters\": [\n" +
-                    "                                    \"description\"\n" +
-                    "                                ],\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"functionName\": \"JSON_VALUE\",\n" +
-                    "                                \"name\": \"ttime\",\n" +
-                    "                                \"parameters\": [\n" +
-                    "                                    \"data\",\n" +
-                    "                                    \"$.ttime\"\n" +
-                    "                                ],\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"functionName\": \"JSON_VALUE\",\n" +
-                    "                                \"name\": \"crash_time\",\n" +
-                    "                                \"parameters\": [\n" +
-                    "                                    \"data\",\n" +
-                    "                                    \"$.crash_time\"\n" +
-                    "                                ],\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "\t\t\t\t\t\t\t{\n" +
-                    "                                \"functionName\": \"\",\n" +
-                    "                                \"name\": \"group_id\",\n" +
-                    "                                \"parameters\": [\n" +
-                    "                                    \"e1.group_id\"\n" +
-                    "                                ],\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "                        ]\n" +
-                    "                    }\n" +
-                    "                ]\n" +
-                    "            }\n" +
-                    "        },\n" +
-                    "        {\n" +
-                    "            \"shape\": \"edge\",\n" +
-                    "            \"attrs\": {\n" +
-                    "                \"line\": {\n" +
-                    "                    \"stroke\": \"#b2a2e9\",\n" +
-                    "                    \"targetMarker\": {\n" +
-                    "                        \"name\": \"classic\",\n" +
-                    "                        \"size\": 10\n" +
-                    "                    }\n" +
-                    "                }\n" +
-                    "            },\n" +
-                    "            \"id\": \"de74bfeb-3922-4772-a43b-7d599dc4706f\",\n" +
-                    "            \"zIndex\": 5,\n" +
-                    "            \"source\": {\n" +
-                    "                \"cell\": \"32d2811f-bc0d-4e5e-9e99-ab312772d422\",\n" +
-                    "                \"port\": \"output_0\"\n" +
-                    "            },\n" +
-                    "            \"target\": {\n" +
-                    "                \"cell\": \"d266f0b5-60fe-4258-8436-871bee2d5dd9\",\n" +
-                    "                \"port\": \"input_0\"\n" +
-                    "            }\n" +
-                    "        },\n" +
-                    "        {\n" +
-                    "            \"position\": {\n" +
-                    "                \"x\": 36,\n" +
-                    "                \"y\": 48\n" +
-                    "            },\n" +
-                    "            \"size\": {\n" +
-                    "                \"width\": 70,\n" +
-                    "                \"height\": 50\n" +
-                    "            },\n" +
-                    "            \"view\": \"react-shape-view\",\n" +
-                    "            \"attrs\": {\n" +
-                    "                \"body\": {\n" +
-                    "                    \"rx\": 7,\n" +
-                    "                    \"ry\": 6\n" +
-                    "                },\n" +
-                    "                \"text\": {\n" +
-                    "                    \"text\": \"CustomerSinkOperator\",\n" +
-                    "                    \"fontSize\": 2\n" +
-                    "                }\n" +
-                    "            },\n" +
-                    "            \"shape\": \"CustomerSinkOperator\",\n" +
-                    "            \"ports\": {\n" +
-                    "                \"groups\": {\n" +
-                    "                    \"outputs\": {\n" +
-                    "                        \"zIndex\": 999,\n" +
-                    "                        \"position\": \"right\",\n" +
-                    "                        \"markup\": {\n" +
-                    "                            \"tagName\": \"path\",\n" +
-                    "                            \"selector\": \"path\",\n" +
-                    "                            \"attrs\": {\n" +
-                    "                                \"d\": \"m-6,0,a5,5.5 0 0 1 12,0\",\n" +
-                    "                                \"fill\": \"#b2a2e9\",\n" +
-                    "                                \"transform\": \"rotate(90)\",\n" +
-                    "                                \"strokeWidth\": 1,\n" +
-                    "                                \"stroke\": \"null\"\n" +
-                    "                            }\n" +
-                    "                        },\n" +
-                    "                        \"attrs\": {\n" +
-                    "                            \"path\": {\n" +
-                    "                                \"r\": 8,\n" +
-                    "                                \"magnet\": true,\n" +
-                    "                                \"style\": {\n" +
-                    "                                    \"visibility\": \"hidden\"\n" +
-                    "                                }\n" +
-                    "                            }\n" +
-                    "                        }\n" +
-                    "                    },\n" +
-                    "                    \"inputs\": {\n" +
-                    "                        \"zIndex\": 999,\n" +
-                    "                        \"position\": \"left\",\n" +
-                    "                        \"markup\": {\n" +
-                    "                            \"tagName\": \"path\",\n" +
-                    "                            \"selector\": \"path\",\n" +
-                    "                            \"attrs\": {\n" +
-                    "                                \"d\": \"m-6,0,a5,5.5 0 0 1 12,0\",\n" +
-                    "                                \"fill\": \"#b2a2e9\",\n" +
-                    "                                \"transform\": \"rotate(-90)\",\n" +
-                    "                                \"strokeWidth\": 1,\n" +
-                    "                                \"stroke\": \"null\"\n" +
-                    "                            }\n" +
-                    "                        },\n" +
-                    "                        \"attrs\": {\n" +
-                    "                            \"path\": {\n" +
-                    "                                \"r\": 10,\n" +
-                    "                                \"magnet\": true,\n" +
-                    "                                \"style\": {\n" +
-                    "                                    \"visibility\": \"hidden\"\n" +
-                    "                                }\n" +
-                    "                            }\n" +
-                    "                        }\n" +
-                    "                    }\n" +
-                    "                },\n" +
-                    "                \"items\": [\n" +
-                    "                    {\n" +
-                    "                        \"group\": \"inputs\",\n" +
-                    "                        \"id\": \"input_0\",\n" +
-                    "                        \"zIndex\": 999,\n" +
-                    "                        \"attrs\": {\n" +
-                    "                            \"text\": {\n" +
-                    "                                \"text\": \"input_0\",\n" +
-                    "                                \"style\": {\n" +
-                    "                                    \"visibility\": \"hidden\",\n" +
-                    "                                    \"fontSize\": 10,\n" +
-                    "                                    \"fill\": \"#3B4351\"\n" +
-                    "                                }\n" +
-                    "                            }\n" +
-                    "                        },\n" +
-                    "                        \"label\": {\n" +
-                    "                            \"position\": \"bottom\"\n" +
-                    "                        }\n" +
-                    "                    }\n" +
-                    "                ]\n" +
-                    "            },\n" +
-                    "            \"id\": \"f363374b-8a85-49bf-90be-b61f45a4c690\",\n" +
-                    "            \"name\": \"CustomerSinkOperator\",\n" +
-                    "            \"zIndex\": 6,\n" +
-                    "            \"data\": {\n" +
-                    "                \"parameters\": {\n" +
-                    "                    \"other\": [\n" +
-                    "                        {\n" +
-                    "                            \"key\": \"connector\",\n" +
-                    "                            \"values\": \"udp\"\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"key\": \"format\",\n" +
-                    "                            \"values\": \"json\"\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"key\": \"hostName\",\n" +
-                    "                            \"values\": \"225.0.0.1\"\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"key\": \"port\",\n" +
-                    "                            \"values\": \"6001\"\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"key\": \"sink.parallelism\",\n" +
-                    "                            \"values\": \"1\"\n" +
-                    "                        }\n" +
-                    "                    ],\n" +
-                    "                    \"columns\": [\n" +
-                    "                        {\n" +
-                    "                            \"name\": \"protocal\",\n" +
+                    "                            \"name\": \"aa1\",\n" +
                     "                            \"type\": \"STRING\",\n" +
                     "                            \"flag\": true\n" +
                     "                        },\n" +
                     "                        {\n" +
-                    "                            \"name\": \"type\",\n" +
-                    "                            \"type\": \"STRING\",\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"name\": \"subtype\",\n" +
-                    "                            \"type\": \"STRING\",\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"name\": \"time\",\n" +
-                    "                            \"type\": \"TIMESTAMP_LTZ(3)\",\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"name\": \"group_id\",\n" +
-                    "                            \"type\": \"INTEGER\",\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"name\": \"train_uuid\",\n" +
-                    "                            \"type\": \"STRING\",\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"name\": \"description\",\n" +
-                    "                            \"type\": \"STRING\",\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"name\": \"data\",\n" +
+                    "                            \"name\": \"bb1\",\n" +
                     "                            \"type\": \"STRING\",\n" +
                     "                            \"flag\": true\n" +
                     "                        }\n" +
@@ -947,61 +470,156 @@ class X6ToInternalConvertTest {
                     "                },\n" +
                     "                \"config\": [\n" +
                     "                    {\n" +
-                    "                        \"d266f0b5-60fe-4258-8436-871bee2d5dd9&output_0 f363374b-8a85-49bf-90be-b61f45a4c690&input_0\": [\n" +
+                    "                        \"3ea62dc9-cab4-49a0-a3e2-608eaf960ab2&out1 30144850-cc01-4841-bc4f-e8e14a47cf2b&input_0\": [\n" +
                     "                            {\n" +
-                    "                                \"functionName\": \"\",\n" +
-                    "                                \"name\": \"protocal\",\n" +
-                    "                                \"parameters\": [\n" +
-                    "                                    \"e1.protocal\"\n" +
-                    "                                ],\n" +
+                    "                                \"name\": \"a\",\n" +
+                    "                                \"type\": \"STRING\",\n" +
                     "                                \"flag\": true\n" +
                     "                            },\n" +
                     "                            {\n" +
-                    "                                \"functionName\": \"\",\n" +
-                    "                                \"name\": \"type\",\n" +
-                    "                                \"parameters\": [\n" +
-                    "                                    \"e1.type\"\n" +
-                    "                                ],\n" +
+                    "                                \"name\": \"b\",\n" +
+                    "                                \"type\": \"STRING\",\n" +
+                    "                                \"flag\": false\n" +
+                    "                            }\n" +
+                    "                        ]\n" +
+                    "                    }\n" +
+                    "                ]\n" +
+                    "            }\n" +
+                    "        },\n" +
+                    "        {\n" +
+                    "            \"position\": {\n" +
+                    "                \"x\": 40,\n" +
+                    "                \"y\": 40\n" +
+                    "            },\n" +
+                    "            \"size\": {\n" +
+                    "                \"width\": 70,\n" +
+                    "                \"height\": 50\n" +
+                    "            },\n" +
+                    "            \"view\": \"react-shape-view\",\n" +
+                    "            \"attrs\": {\n" +
+                    "                \"body\": {\n" +
+                    "                    \"rx\": 7,\n" +
+                    "                    \"ry\": 6\n" +
+                    "                },\n" +
+                    "                \"text\": {\n" +
+                    "                    \"text\": \"MysqlSink\",\n" +
+                    "                    \"fontSize\": 2\n" +
+                    "                }\n" +
+                    "            },\n" +
+                    "            \"shape\": \"MysqlSinkOperator\",\n" +
+                    "            \"ports\": {\n" +
+                    "                \"groups\": {\n" +
+                    "                    \"outputs\": {\n" +
+                    "                        \"zIndex\": 999,\n" +
+                    "                        \"position\": \"right\",\n" +
+                    "                        \"markup\": {\n" +
+                    "                            \"tagName\": \"path\",\n" +
+                    "                            \"selector\": \"path\",\n" +
+                    "                            \"attrs\": {\n" +
+                    "                                \"d\": \"m-6,0,a5,5.5 0 0 1 12,0\",\n" +
+                    "                                \"fill\": \"#b2a2e9\",\n" +
+                    "                                \"transform\": \"rotate(90)\",\n" +
+                    "                                \"strokeWidth\": 1,\n" +
+                    "                                \"stroke\": \"null\"\n" +
+                    "                            }\n" +
+                    "                        },\n" +
+                    "                        \"attrs\": {\n" +
+                    "                            \"path\": {\n" +
+                    "                                \"r\": 8,\n" +
+                    "                                \"magnet\": true,\n" +
+                    "                                \"style\": {\n" +
+                    "                                    \"visibility\": \"hidden\"\n" +
+                    "                                }\n" +
+                    "                            }\n" +
+                    "                        }\n" +
+                    "                    },\n" +
+                    "                    \"inputs\": {\n" +
+                    "                        \"zIndex\": 999,\n" +
+                    "                        \"position\": \"left\",\n" +
+                    "                        \"markup\": {\n" +
+                    "                            \"tagName\": \"path\",\n" +
+                    "                            \"selector\": \"path\",\n" +
+                    "                            \"attrs\": {\n" +
+                    "                                \"d\": \"m-6,0,a5,5.5 0 0 1 12,0\",\n" +
+                    "                                \"fill\": \"#b2a2e9\",\n" +
+                    "                                \"transform\": \"rotate(-90)\",\n" +
+                    "                                \"strokeWidth\": 1,\n" +
+                    "                                \"stroke\": \"null\"\n" +
+                    "                            }\n" +
+                    "                        },\n" +
+                    "                        \"attrs\": {\n" +
+                    "                            \"path\": {\n" +
+                    "                                \"r\": 10,\n" +
+                    "                                \"magnet\": true,\n" +
+                    "                                \"style\": {\n" +
+                    "                                    \"visibility\": \"hidden\"\n" +
+                    "                                }\n" +
+                    "                            }\n" +
+                    "                        }\n" +
+                    "                    }\n" +
+                    "                },\n" +
+                    "                \"items\": [\n" +
+                    "                    {\n" +
+                    "                        \"group\": \"inputs\",\n" +
+                    "                        \"id\": \"input_0\",\n" +
+                    "                        \"zIndex\": 999,\n" +
+                    "                        \"attrs\": {\n" +
+                    "                            \"text\": {\n" +
+                    "                                \"text\": \"input_0\",\n" +
+                    "                                \"style\": {\n" +
+                    "                                    \"visibility\": \"hidden\",\n" +
+                    "                                    \"fontSize\": 10,\n" +
+                    "                                    \"fill\": \"#3B4351\"\n" +
+                    "                                }\n" +
+                    "                            }\n" +
+                    "                        },\n" +
+                    "                        \"label\": {\n" +
+                    "                            \"position\": \"bottom\"\n" +
+                    "                        }\n" +
+                    "                    }\n" +
+                    "                ]\n" +
+                    "            },\n" +
+                    "            \"id\": \"a6f09551-d13a-452d-8494-5f7f031c5ac8\",\n" +
+                    "            \"name\": \"MysqlSink\",\n" +
+                    "            \"zIndex\": 4,\n" +
+                    "            \"data\": {\n" +
+                    "                \"parameters\": {\n" +
+                    "                    \"tableName\": \"asdasd\",\n" +
+                    "                    \"connector\": \"jdbc\",\n" +
+                    "                    \"url\": \"asad\",\n" +
+                    "                    \"username\": \"root\",\n" +
+                    "                    \"password\": \"123456\",\n" +
+                    "                    \"other\": [],\n" +
+                    "                    \"columns\": [\n" +
+                    "                        {\n" +
+                    "                            \"name\": \"aa2\",\n" +
+                    "                            \"type\": \"STRING\",\n" +
+                    "                            \"flag\": true\n" +
+                    "                        },\n" +
+                    "                        {\n" +
+                    "                            \"name\": \"bb2\",\n" +
+                    "                            \"type\": \"STRING\",\n" +
+                    "                            \"flag\": true\n" +
+                    "                        }\n" +
+                    "                    ],\n" +
+                    "                    \"primary\": \"\",\n" +
+                    "                    \"watermark\": {\n" +
+                    "                        \"column\": \"\",\n" +
+                    "                        \"timeSpan\": 0,\n" +
+                    "                        \"timeUnit\": \"SECOND\"\n" +
+                    "                    }\n" +
+                    "                },\n" +
+                    "                \"config\": [\n" +
+                    "                    {\n" +
+                    "                        \"3ea62dc9-cab4-49a0-a3e2-608eaf960ab2&out2 a6f09551-d13a-452d-8494-5f7f031c5ac8&input_0\": [\n" +
+                    "                            {\n" +
+                    "                                \"name\": \"a\",\n" +
+                    "                                \"type\": \"STRING\",\n" +
                     "                                \"flag\": true\n" +
                     "                            },\n" +
                     "                            {\n" +
-                    "                                \"functionName\": \"CONCAT\",\n" +
-                    "                                \"name\": \"subtype\",\n" +
-                    "                                \"parameters\": [\n" +
-                    "                                    \"mark_report\"\n" +
-                    "                                ],\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"functionName\": \"\",\n" +
-                    "                                \"name\": \"time\",\n" +
-                    "                                \"parameters\": [\n" +
-                    "                                    \"e1.time\"\n" +
-                    "                                ],\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"functionName\": \"\",\n" +
-                    "                                \"name\": \"train_uuid\",\n" +
-                    "                                \"parameters\": [\n" +
-                    "                                    \"e1.train_uuid\"\n" +
-                    "                                ],\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"functionName\": \"\",\n" +
-                    "                                \"name\": \"description\",\n" +
-                    "                                \"parameters\": [\n" +
-                    "                                    \"e1.description\"\n" +
-                    "                                ],\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"functionName\": \"\",\n" +
-                    "                                \"name\": \"data\",\n" +
-                    "                                \"parameters\": [\n" +
-                    "                                    \"e1.crash_time\"\n" +
-                    "                                ],\n" +
+                    "                                \"name\": \"b\",\n" +
+                    "                                \"type\": \"STRING\",\n" +
                     "                                \"flag\": true\n" +
                     "                            }\n" +
                     "                        ]\n" +
@@ -1020,16 +638,60 @@ class X6ToInternalConvertTest {
                     "                    }\n" +
                     "                }\n" +
                     "            },\n" +
-                    "            \"id\": \"865348d1-c594-497f-bb36-a4e7ad985fda\",\n" +
-                    "            \"zIndex\": 7,\n" +
+                    "            \"id\": \"1b017035-2b4b-4e3d-bbc4-51c2c65ba20e\",\n" +
                     "            \"source\": {\n" +
-                    "                \"cell\": \"d266f0b5-60fe-4258-8436-871bee2d5dd9\",\n" +
+                    "                \"cell\": \"5fc5a34a-ff18-4509-9d20-3149f8cf0c18\",\n" +
                     "                \"port\": \"output_0\"\n" +
                     "            },\n" +
                     "            \"target\": {\n" +
-                    "                \"cell\": \"f363374b-8a85-49bf-90be-b61f45a4c690\",\n" +
+                    "                \"cell\": \"3ea62dc9-cab4-49a0-a3e2-608eaf960ab2\",\n" +
                     "                \"port\": \"input_0\"\n" +
-                    "            }\n" +
+                    "            },\n" +
+                    "            \"zIndex\": 5\n" +
+                    "        },\n" +
+                    "        {\n" +
+                    "            \"shape\": \"edge\",\n" +
+                    "            \"attrs\": {\n" +
+                    "                \"line\": {\n" +
+                    "                    \"stroke\": \"#b2a2e9\",\n" +
+                    "                    \"targetMarker\": {\n" +
+                    "                        \"name\": \"classic\",\n" +
+                    "                        \"size\": 10\n" +
+                    "                    }\n" +
+                    "                }\n" +
+                    "            },\n" +
+                    "            \"id\": \"59329704-e65a-4742-bbfe-9cf5bd239d2a\",\n" +
+                    "            \"source\": {\n" +
+                    "                \"cell\": \"3ea62dc9-cab4-49a0-a3e2-608eaf960ab2\",\n" +
+                    "                \"port\": \"out1\"\n" +
+                    "            },\n" +
+                    "            \"target\": {\n" +
+                    "                \"cell\": \"30144850-cc01-4841-bc4f-e8e14a47cf2b\",\n" +
+                    "                \"port\": \"input_0\"\n" +
+                    "            },\n" +
+                    "            \"zIndex\": 6\n" +
+                    "        },\n" +
+                    "        {\n" +
+                    "            \"shape\": \"edge\",\n" +
+                    "            \"attrs\": {\n" +
+                    "                \"line\": {\n" +
+                    "                    \"stroke\": \"#b2a2e9\",\n" +
+                    "                    \"targetMarker\": {\n" +
+                    "                        \"name\": \"classic\",\n" +
+                    "                        \"size\": 10\n" +
+                    "                    }\n" +
+                    "                }\n" +
+                    "            },\n" +
+                    "            \"id\": \"19705152-3e8d-415c-9c2b-524d70ddd564\",\n" +
+                    "            \"source\": {\n" +
+                    "                \"cell\": \"3ea62dc9-cab4-49a0-a3e2-608eaf960ab2\",\n" +
+                    "                \"port\": \"out2\"\n" +
+                    "            },\n" +
+                    "            \"target\": {\n" +
+                    "                \"cell\": \"a6f09551-d13a-452d-8494-5f7f031c5ac8\",\n" +
+                    "                \"port\": \"input_0\"\n" +
+                    "            },\n" +
+                    "            \"zIndex\": 7\n" +
                     "        }\n" +
                     "    ]\n" +
                     "}";

@@ -1,0 +1,292 @@
+{
+    "type": "object",
+    "title": "CommWindowOperator",
+        "type": "object",
+        "required": [
+			"columns"
+        ],
+		"description": "基础转换算子，将输入数据转换为一个新视图",
+        "properties": {
+			
+			"orderBy": {
+				"type": "array",
+				"description": "指定字段升序或降序",
+				"items": {
+					"type": "object",
+					"title": "orderBy",
+					"required": [
+						"order",
+						"sort"
+					],
+					"properties": {
+						"order": {
+							"description": "字段名称",
+							"type": "string"
+						},
+						"sort": {
+							"type": "string",
+							"description": "排序规则",
+							"enum":["ACS","DESC"]
+						}
+					}
+				}
+			},
+			
+			"where": {
+				"description": "过滤条件",
+                "type": "string"
+            },
+			"limit": {
+				"type": "array",
+				"description": "分页",
+				"maxItems": 2,
+				"items": {
+				   "type": "string",
+				   "minLength": 1
+				}
+			},
+			"group": {
+			  "anyOf": [
+				{
+				  "title": "none",
+				  "description": "不分组",
+				  "type": "null"
+				},
+				{
+				  "title": "GROUP",
+				  "type": "object",
+				  "description": "指定字段名称分组",
+				  "properties": {
+					"aggregation": {
+						"type": "string",
+						"minLength": 1,
+						"enum":["group"]
+					},
+					"column": {
+						"type": "string",
+						"minLength": 1
+					}
+				  },
+				  "additionalProperties":false
+				},
+				{
+				  "title": "WINDOWS_GROUP",
+				  "type": "object",
+				  "description": "窗口聚合",
+				  "properties": {
+					"aggregation": {
+						"type": "string",
+						"minLength": 1,
+						"enum":["windowGroup"]
+					},
+					"windowsStart": {
+						"type": "string",
+						"description": "窗口开始时间",
+						"minLength": 1
+					},
+					"windowEnd": {
+						"type": "string",
+						"description": "窗口结束时间",
+						"minLength": 1
+					}
+				  },
+				  "additionalProperties":false
+				}
+			  ]
+			},
+			"window": {
+			  "anyOf": [
+				{
+				  "title": "none",
+				  "description": "无开窗操作",
+				  "type": "null"
+				},
+				{
+				  "title": "TUMBLE",
+				  "type": "object",
+				  "description": "滚动窗口 TUMBLE",
+				  "properties": {
+					"windowFunction": {
+						"type": "string",
+						"enum":["TUMBLE"]
+					},
+					"table": {
+						"type": "string",
+						"description": "需要查询的表名称",
+						"enum":["current table"]
+					},
+					"descriptor": {
+						"type": "string",
+						"description": "时间列名称，需要时间属性字段",
+						"minLength": 1
+					},
+					"size":{
+						"type": "object",
+						"description": "窗口大小定义",
+						"properties": {
+						"timeSpan": {
+							"type": "integer",
+							"description": "窗口持续时间",
+							"minimum":0,
+							"default":10
+						},
+						"timeUnit": {
+							"type": "string",
+							"description": "时间单位",
+							"enum":["SECOND","MINUTE","DAY","MONTH","YEAR"]
+						}
+					  }
+					}
+				  },
+				  "additionalProperties":false
+				},
+				{
+				  "title": "HOP",
+				  "type": "object",
+				  "description": "滑动窗口 HOP",
+				  "properties": {
+				  "windowFunction": {
+						"type": "string",
+						"enum":["HOP"]
+					},
+					"table": {
+						"type": "string",
+						"description": "需要查询的表名称",
+						"enum":["current table"]
+					},
+					"descriptor": {
+						"type": "string",
+						"description": "时间列名称，需要时间属性字段",
+						"minLength": 1
+					},
+					"slide":{
+						"type": "object",
+						"description": "窗口滑动定义",
+						"properties": {
+						"timeSpan": {
+							"type": "integer",
+							"description": "窗口滑动步伐",
+							"minimum":0,
+							"default":10
+						},
+						"timeUnit": {
+							"type": "string",
+							"description": "时间单位",
+							"enum":["SECOND","MINUTE","DAY","MONTH","YEAR"]
+						}
+					  }
+					},
+					"size":{
+						"type": "object",
+						"description": "窗口大小定义",
+						"properties": {
+						"timeSpan": {
+							"type": "integer",
+							"description": "窗口持续时间",
+							"minimum":0,
+							"default":10
+						},
+						"timeUnit": {
+							"type": "string",
+							"description": "时间单位",
+							"enum":["SECOND","MINUTE","DAY","MONTH","YEAR"]
+						}
+					  }
+					}
+				  },
+				  "additionalProperties":false
+				},
+				{
+				  "title": "CUMULATE",
+				  "description": "累积窗口 CUMULATE",
+				  "type": "object",
+				  "properties": {
+				  "windowFunction": {
+						"type": "string",
+						"enum":["CUMULATE"]
+					},
+					"table": {
+						"type": "string",
+						"description": "需要查询的表名称",
+						"enum":["current table"]
+					},
+					"descriptor": {
+						"type": "string",
+						"description": "时间列名称，需要时间属性字段",
+						"minLength": 1
+					},
+					"step":{
+						"type": "object",
+						"description": "窗口步长定义",
+						"properties": {
+						"timeSpan": {
+							"type": "integer",
+							"description": "窗口步长定义",
+							"minimum":0,
+							"default":10
+						},
+						"timeUnit": {
+							"type": "string",
+							"description": "时间单位",
+							"enum":["SECOND","MINUTE","DAY","MONTH","YEAR"]
+						}
+					  }
+					},
+					"size":{
+						"type": "object",
+						"description": "窗口大小定义",
+						"properties": {
+						"timeSpan": {
+							"type": "integer",
+							"description": "窗口持续时间",
+							"minimum":0,
+							"default":10
+						},
+						"timeUnit": {
+							"type": "string",
+							"description": "时间单位",
+							"enum":["SECOND","MINUTE","DAY","MONTH","YEAR"]
+						}
+					  }
+					}
+				  },
+				  "additionalProperties":false
+				}
+			  ]
+			},
+            "columns": {
+				"type": "array",
+				"minItems": 1,
+				"items": {
+					"type": "object",
+					"title": "columns",
+					"description": "output field",
+					"required": [
+						"parameters",
+						"flag"
+					],
+					"properties": {
+						"functionName": {
+							"type": "string"
+						},
+						"name": {
+							"type": "string"
+						},
+						"parameters": {
+							"type": "array",
+							"minItems": 1,
+							"items": {
+							   "type": "string",
+							   "minLength": 1
+							}
+						},
+						"flag":{
+							"type": "boolean",
+							"default": true,
+							"title": "checked ?"
+						}
+					}
+				}
+            }
+        }
+}

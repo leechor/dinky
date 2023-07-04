@@ -1,79 +1,37 @@
 {
     "type": "object",
-    "title": "MySQLSinkOperator",
-	"description": "MySQL输出算子",
+    "title": "CustomerSinkOperator",
+	"description": "自定义输出算子，通过添加自定义参数，实现对任意输出方式的兼容",
 	"minItems": 1,
-        "required": [
-			"tableName",
-			"connector",
-			"url",
-			"username",
-			"password"
-        ],
         "properties": {
 
-		"tableName": {
-			"type": "string",
-			"minLength": 1,
-			"title": "tableName"
-		},
-		"connector": {
-			"type": "string",
-			"default": "jdbc",
-			"minLength": 1,
-			"title": "connector",
-			"enum":["jdbc"]
-		},
-		"url": {
-			"type": "string",
-			"minLength": 1,
-			"title": "jdbc-url",
-			"description": "mysql jdbc url， eg :mysql://127.0.0.1:3306"
-		},
-		"username": {
-			"type": "string",
-			"default": "root",
-			"minLength": 1,
-			"title": "username",
-			"examples": [
-				"root"
-			]
-		},
-		"password": {
-			"type": "string",
-			"default": "123456",
-			"minLength": 1,
-			"title": "password",
-			"examples": [
-				"123456"
-			]
-		},
-		
-	   "other":{
-		 "title": "otherConnect",
-		  "type": "array",
-		  "items": {
-			"type": "object",
-			"title": "otherConfig",
-			"required": [
-				"key",
-				"values"
-			],
-			"properties": {
-				"key": {
-					"type": "string",
-					"minLength": 1,
-					"description": "自定义字段的key，与values共同构成：key = values 的结构 "
-				},
-				"values": {
-					"type": "string",
-					"minLength": 1,
-					"description": "自定义字段的values，与key共同构成：key = values 的结构"
+		   "other":{
+			 "title": "customerConnect",
+			  "type": "array",
+			  "items": {
+				"type": "object",
+				"title": "config",
+				"required": [
+					"key",
+					"values"
+				],
+				"properties": {
+					"key": {
+						"type": "string",
+						"minLength": 1,
+						"description": "自定义字段的key，与values共同构成：key = values 的结构 ",
+						"title": "key"
+					},
+					"values": {
+						"type": "string",
+						"minLength": 1,
+						"description": "自定义字段的values，与key共同构成：key = values 的结构",
+						"title": "values"
+					}
 				}
-			}
-		  }
-	   },
-		
+			  }
+		   },
+
 		"columns": {
 			"type": "array",
 			"minItems": 1,
@@ -99,7 +57,7 @@
 							"WATERMARK FOR dt AS dt - INTERVAL '15' SECOND",
 							"PRIMARY KEY(taskId) NOT ENFORCED "
 						],
-						"description": "字段名名称"
+						"description": "field name"
 					},
 					"type": {
 						"type": "string",
@@ -116,7 +74,7 @@
 					"flag":{
 						"type": "boolean",
 						"default": true,
-						"title": "是否勾选为输出"
+						"title": "checked ?"
 					}
 				}
 			}
@@ -125,7 +83,6 @@
 			"type": "string",
 			"description": "设置主键"
 		},
-		
 		"watermark":{
 		  "type": "object",
 		  "properties": {
@@ -146,6 +103,5 @@
 		  },
 		  "additionalProperties":false
 		}
-		
 	}
 }
