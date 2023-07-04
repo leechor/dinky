@@ -88,15 +88,30 @@
           font-size: 0.8rem;
           margin: 0;
           line-height: 1;
+          display: flex !important;
+          flex-direction: row;
+          align-items: center;
         }
 
         label.je-label {
           display: flex;
           flex-direction: row;
+          flex: auto;
         }
 
         div.form-group {
           align-items: center;
+        }
+
+
+        .je-panel .columns .form-group {
+          label {
+            + .form-select {
+              box-sizing: content-box;
+              width: auto;
+            }
+
+          }
         }
 
         select.form-select, input.form-input {
