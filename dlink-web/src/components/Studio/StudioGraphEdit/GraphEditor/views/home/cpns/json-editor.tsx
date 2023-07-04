@@ -13,6 +13,15 @@ import {
   changeCurrentSelectNodeParamsData,
   changeJsonEditor,
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
+import {Button, Space, Tooltip} from "antd";
+import {QuestionCircleOutlined} from "@ant-design/icons";
+import {createRoot} from "react-dom/client";
+
+const EditorTip = (title: string) => {
+  return (<Tooltip title={title}>
+    <QuestionCircleOutlined/>
+  </Tooltip>)
+};
 
 const Editor = memo(() => {
 
@@ -55,6 +64,7 @@ const Editor = memo(() => {
     container.innerHTML = '';
 
     editor = new JSONEditor<any>(container, config);
+
     editor.on('ready', function () {
       dispatch(changeJsonEditor(editor))
 
@@ -73,11 +83,7 @@ const Editor = memo(() => {
     editor.on('change', function () {
       //先恢复初始值
       dispatch(changeCurrentSelectNodeParamsData([]));
-      //设置当前属性值
-      console.log(editor.getValue());
-
       dispatch(changeCurrentSelectNodeParamsData(editor.getValue()));
-
 
       if (!(currentSelectNode instanceof Node)) {
         return
@@ -88,6 +94,34 @@ const Editor = memo(() => {
         dispatch(changeCurrentSelectNode(currentSelectNode));
         return
       }
+
+      const labels = document.querySelectorAll('.je-panel label')
+      labels.forEach((item: Element) => {
+        const desc: HTMLElement | null | undefined = item.parentElement?.querySelector('p.je-desc')
+        if (!desc) {
+          return
+        }
+
+        const dev = document.createElement('div')
+        const root = createRoot(dev);
+        root.render(<>{EditorTip(desc.textContent ?? '')}</>)
+        item.append(dev)
+        desc.remove()
+      })
+
+      const h4Label = document.querySelectorAll('.je-panel h4')
+      h4Label.forEach((item: Element) => {
+        const desc: HTMLElement | null | undefined = item.parentElement?.querySelector('h4 + span + div + p, h4 + div + p')
+        if (!desc) {
+          return
+        }
+
+        const dev = document.createElement('div')
+        const root = createRoot(dev);
+        root.render(<>{EditorTip(desc.textContent ?? '')}</>)
+        item.append(dev)
+        desc.remove()
+      })
 
       //判断当前节点是否有变化
       // 如果是同一个节点，说明只是值发生变化
@@ -109,5 +143,7 @@ const Editor = memo(() => {
 
   return <div className={styles['json-editor-content']} ref={jsonRef}></div>;
 });
+
+
 
 export default Editor;
