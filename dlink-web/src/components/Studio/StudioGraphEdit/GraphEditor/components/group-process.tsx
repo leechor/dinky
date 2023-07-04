@@ -5,7 +5,7 @@ import CpnShape, { NodeType } from './cpn-shape';
 const GroupProcess = (props: any) => {
 
     const node = props.node;
-    debugger
+    
     return (
         <div className={styles['custom-calcu-node-process']}>
             {node && (
