@@ -31,7 +31,6 @@ export default {
   'menu.account.logout': '退出登录',
   'menu.account.changePassword': '修改密码',
   'menu.account.checkTenant': '切换租户',
-  'menu.tenants': '租户：',
   'menu.account.checkTenantConfirm': '你确定切换租户【{tenantCode}】吗？',
 
   'menu.datastudio': '数据开发',
@@ -52,6 +51,7 @@ export default {
   'menu.registration.fragment': '全局变量',
   'menu.registration.gitprojects': 'Git 项目(Beta)',
   'menu.registration.udf': 'UDF 模板',
+  'menu.registration.resource': '资源',
   'menu.auth': '认证中心',
   'menu.auth.user': '用户',
   'menu.auth.role': '角色',

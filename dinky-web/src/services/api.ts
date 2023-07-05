@@ -18,7 +18,7 @@
 import {request} from '@umijs/max';
 
 import {METHOD_CONSTANTS} from "@/services/constants";
-
+import proxy from "../../config/proxy";
 
 
 // ============================ CRUD REQUEST ============================
@@ -85,6 +85,14 @@ export async function removeData(url: string, params: [any]) {
     },
   });
 }
+export  function getSseData(url: string) {
+  const {REACT_APP_ENV = 'dev'} = process.env;
+
+  // @ts-ignore
+  const address = proxy[REACT_APP_ENV]["/api/"].target || ""
+
+  return new EventSource(address + url);
+}
 
 
 
@@ -96,7 +104,12 @@ export async function putData(url: string, params: any) {
     },
   });
 }
-
+export async function putDataAsArray(url: string, data: any[]) {
+  return request(url, {
+    method: METHOD_CONSTANTS.PUT,
+    data: data,
+  });
+}
 
 
 export async function postDataArray(url: string, params: number[]) {
@@ -111,9 +124,7 @@ export async function postDataArray(url: string, params: number[]) {
 export async function postAll(url: string, params?: any) {
   return request(url, {
     method: METHOD_CONSTANTS.POST,
-    data: {
-      ...params,
-    },
+    data: params,
   });
 }
 

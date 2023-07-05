@@ -22,6 +22,7 @@ package org.dinky.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.dinky.assertion.Asserts;
+import org.dinky.data.enums.Status;
 import org.dinky.data.model.ClusterConfiguration;
 import org.dinky.data.result.ProTableResult;
 import org.dinky.data.result.Result;
@@ -107,7 +108,7 @@ public class ClusterConfigurationController {
     public Result<ClusterConfiguration> getOneById(
             @RequestBody ClusterConfiguration clusterConfiguration) {
         clusterConfiguration = clusterConfigurationService.getById(clusterConfiguration.getId());
-        return Result.succeed(clusterConfiguration, "获取成功");
+        return Result.succeed(clusterConfiguration);
     }
 
     /** 获取可用的集群列表 */
@@ -115,7 +116,7 @@ public class ClusterConfigurationController {
     @ApiOperation(value = "获取可用的集群配置列表(不分页)" , notes = "获取可用的集群配置列表(不分页)")
     public Result<List<ClusterConfiguration>> listEnabledAll() {
         List<ClusterConfiguration> clusters = clusterConfigurationService.listEnabledAll();
-        return Result.succeed(clusters, "获取成功");
+        return Result.succeed(clusters);
     }
 
     /** 测试 */
@@ -124,7 +125,7 @@ public class ClusterConfigurationController {
     public Result<Void> testConnect(@RequestBody ClusterConfiguration clusterConfiguration) {
         TestResult testResult = clusterConfigurationService.testGateway(clusterConfiguration);
         if (testResult.isAvailable()) {
-            return Result.succeed("测试链接成功");
+            return Result.succeed(Status.TEST_CONNECTION_SUCCESS);
         } else {
             return Result.failed(testResult.getError());
         }
