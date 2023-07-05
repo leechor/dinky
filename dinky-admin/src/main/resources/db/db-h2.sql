@@ -1655,3 +1655,34 @@ VALUES (2, 1, 'python-udf', 'https://github.com/zackyoungh/dinky-quickstart-pyth
        , NULL, NULL, NULL, NULL, ''
        , 2, 1, NULL, NULL, 0
        , 0, 1, '[]', 2);
+
+DROP TABLE IF EXISTS dinky_metrics;
+CREATE TABLE `dinky_metrics` (
+                                 `id` int(11) NOT NULL AUTO_INCREMENT,
+                                 `task_id` int(255) DEFAULT NULL,
+                                 `vertices` varchar(255) DEFAULT NULL,
+                                 `metrics` varchar(255) DEFAULT NULL,
+                                 `position` int(11) DEFAULT NULL,
+                                 `show_type` varchar(255) DEFAULT NULL,
+                                 `show_size` varchar(255) DEFAULT NULL,
+                                 `title` varchar(255) DEFAULT NULL,
+                                 `layout_name` varchar(255) DEFAULT NULL,
+                                 `create_time` datetime DEFAULT NULL,
+                                 `update_time` datetime DEFAULT NULL
+) ENGINE = InnoDB;
+
+DROP TABLE IF EXISTS dinky_resources;
+CREATE TABLE `dinky_resources` (
+                                   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'key',
+                                   `file_name` varchar(64) DEFAULT NULL COMMENT 'file name',
+                                   `description` varchar(255) DEFAULT NULL,
+                                   `user_id` int(11) DEFAULT NULL COMMENT 'user id',
+                                   `type` tinyint(4) DEFAULT NULL COMMENT 'resource type,0:FILE，1:UDF',
+                                   `size` bigint(20) DEFAULT NULL COMMENT 'resource size',
+                                   `pid` int(11) DEFAULT NULL,
+                                   `full_name` varchar(128) DEFAULT NULL,
+                                   `is_directory` tinyint(4) DEFAULT NULL,
+                                   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+                                   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time'
+) ENGINE = InnoDB;
+INSERT INTO `dinky_resources` (`id`, `file_name`, `description`, `user_id`, `type`, `size`, `pid`, `full_name`, `is_directory`) VALUES (0, 'Root', 'main folder', 1, 0, 0, -1, '/', 1);

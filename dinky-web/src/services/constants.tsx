@@ -87,6 +87,12 @@ export const API_CONSTANTS = {
   CLUSTER_INSTANCE_DELETE: "/api/cluster/delete",
   CLUSTER_INSTANCE_HEARTBEATS: "/api/cluster/heartbeats",
   CLUSTER_INSTANCE_RECYCLE: "/api/cluster/recycle",
+  CLUSTER_CONFIGURATION_START: "/api/cluster/deploySessionClusterInstance",
+  // cluster configuration list
+  CLUSTER_CONFIGURATION: "/api/clusterConfiguration",
+  CLUSTER_CONFIGURATION_DELETE: "/api/clusterConfiguration/delete",
+  CLUSTER_CONFIGURATION_ENABLE: "/api/clusterConfiguration/enable",
+  CLUSTER_CONFIGURATION_TEST: "/api/clusterConfiguration/testConnect",
 
 
   // datasource registries list
@@ -202,11 +208,20 @@ export const API_CONSTANTS = {
   MONITOR_GET_SYSTEM_DATA:"/api/monitor/getSysData",
   MONITOR_GET_LAST_DATA:"/api/monitor/getLastUpdateData",
   JOB_METRICS: "/api/monitor/jobMetrics",
+
   SAVE_FLINK_METRICS: "/api/monitor/saveFlinkMetrics",
   GET_METRICS_LAYOUT: "/api/monitor/getMetricsLayout",
 
   // flink
-  FLINK_PROXY: "/api/flink"
+  FLINK_PROXY: "/api/flink",
+
+  // resource
+  RESOURCE_SHOW_TREE:'/api/resource/showByTree',
+  RESOURCE_GET_CONTENT_BY_ID:'/api/resource/getContentByResourceId',
+  RESOURCE_REMOVE:'/api/resource/remove',
+  RESOURCE_CREATE_FOLDER:'/api/resource/createFolder',
+  RESOURCE_RENAME:'/api/resource/rename',
+  RESOURCE_UPLOAD:'/api/resource/uploadFile',
 };
 
 
@@ -338,7 +353,7 @@ export const PROTABLE_OPTIONS_PUBLIC : any = {
     y: "auto",
   },
   search: {
-    labelWidth: 80, // must be number
+    labelWidth: 100, // must be number
     span: 4,
   },
 };

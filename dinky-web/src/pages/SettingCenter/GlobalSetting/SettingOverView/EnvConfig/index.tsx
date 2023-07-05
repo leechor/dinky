@@ -31,28 +31,19 @@ interface EnvConfigProps {
 export const EnvConfig = ({data, onSave}: EnvConfigProps) => {
   const [loading, setLoading] = React.useState(false);
 
-  const onSaveHandler = (data: BaseConfigProperties) => {
+  const onSaveHandler =async (data: BaseConfigProperties) => {
     setLoading(true);
-    onSave(data);
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    await onSave(data);
+    setLoading(false);
   };
 
   return <>
-    <ProCard
-      title={l('sys.setting.dinky')}
-      tooltip={l('sys.setting.dinky.tooltip')}
-      size="small"
-      headerBordered collapsible ghost
-      defaultCollapsed={false}
-    >
+      {/*tooltip={l('sys.setting.dinky.tooltip')}*/}
       <GeneralConfig
         loading={loading}
         onSave={onSaveHandler}
         tag={<><Tag color={'error'}>{l('sys.setting.tag.system')}</Tag></>}
         data={data}
       />
-    </ProCard>
   </>;
 };

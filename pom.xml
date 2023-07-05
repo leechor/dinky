@@ -49,7 +49,6 @@
         <module>flinkGraph</module>
         <module>dinky-admin</module>
         <module>dinky-assembly</module>
-        <module>dinky-web-flink</module>
     </modules>
 
     <properties>
