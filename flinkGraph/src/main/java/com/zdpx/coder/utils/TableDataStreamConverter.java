@@ -46,7 +46,7 @@ public class TableDataStreamConverter {
         List<Column> cs = new ArrayList<>();
         for (Map<String, Object> dm : count) {
             if((Boolean)dm.get("flag")){
-                cs.add(new Column(dm.get("name").toString(), dm.get("type").toString()));
+                cs.add(new Column(dm.get("name").toString(), dm.get("type")==null? "":dm.get("type").toString()));
             }
         }
         return TableInfo.newBuilder().name(old.getName()).columns(cs).build();

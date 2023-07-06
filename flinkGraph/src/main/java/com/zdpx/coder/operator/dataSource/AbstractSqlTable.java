@@ -40,7 +40,7 @@ public abstract class AbstractSqlTable extends Operator {
                     + "<#list columns as column>`${column.name}` ${column.type}<#sep>,"
                     + "</#list>"
                     + "<#if watermark??>, WATERMARK FOR `${watermark.column}` AS `${watermark.column}`<#if watermark.timeSpan??> - INTERVAL ' ${watermark.timeSpan} ' ${watermark.timeUnit}</#if></#if>"
-                    + "<#if primary??>, PRIMARY KEY (${primary}) NOT ENFORCED</#if>"
+                    + "<#if primary??>, PRIMARY KEY (`${primary}`) NOT ENFORCED</#if>"
                     + ")"
                     + "WITH ("
                     + "<#list parameters as key, value>"

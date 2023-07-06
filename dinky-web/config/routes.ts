@@ -155,6 +155,12 @@ export default [
         icon: 'ToolOutlined',
         component: './RegCenter/UDF',
       },
+      {
+        path: '/registration/resource',
+        name: 'resource',
+        icon: 'FileZipOutlined',
+        component: './RegCenter/Resource',
+      },
     ],
   },
   {
@@ -230,7 +236,7 @@ export default [
     name: 'metrics',
     icon: 'DashboardOutlined',
     footerRender: false,
-    // component: './Metrics',
+    component: './Metrics',
   },
   {
     path: '/about',
@@ -238,6 +244,11 @@ export default [
     icon: 'SmileOutlined',
     footerRender: false,
     component: './Other/About',
+  },
+  {
+    path: '/account/center',
+    footerRender: false,
+    component: './Other/PersonCenter',
   },
   {
     path: '*',

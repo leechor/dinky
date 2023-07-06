@@ -23,14 +23,15 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.dinky.alert.AlertPool;
 import org.dinky.alert.AlertResult;
+import org.dinky.data.enums.Status;
 import org.dinky.data.model.AlertInstance;
 import org.dinky.data.result.ProTableResult;
 import org.dinky.data.result.Result;
 import org.dinky.service.AlertInstanceService;
-import org.dinky.utils.I18nMsgUtils;
 
 import java.util.List;
 
+import org.dinky.utils.I18nMsgUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -67,9 +68,9 @@ public class AlertInstanceController {
     public Result<Void> saveOrUpdate(@RequestBody AlertInstance alertInstance) throws Exception {
         if (alertInstanceService.saveOrUpdate(alertInstance)) {
             AlertPool.remove(alertInstance.getName());
-            return Result.succeed(I18nMsgUtils.getMsg("save.success"));
+            return Result.succeed(Status.SAVE_SUCCESS);
         } else {
-            return Result.failed(I18nMsgUtils.getMsg("save.failed"));
+            return Result.failed(Status.SAVE_FAILED);
         }
     }
 
@@ -109,9 +110,9 @@ public class AlertInstanceController {
     @ApiOperation(value = "根据id删除告警实例" , notes = "根据id删除告警实例")
     public Result<Void> deleteInstanceById(@RequestParam("id") Integer id) {
         if (alertInstanceService.deleteAlertInstance(id)) {
-            return Result.succeed(I18nMsgUtils.getMsg("delete.success"));
+            return Result.succeed(Status.DELETE_SUCCESS);
         } else {
-            return Result.failed(I18nMsgUtils.getMsg("delete.failed"));
+            return Result.failed(Status.DELETE_FAILED);
         }
     }
 
@@ -119,9 +120,9 @@ public class AlertInstanceController {
     @ApiOperation(value = "启用或禁用告警实例" , notes = "启用或禁用告警实例")
     public Result<Void> enable(@RequestParam("id") Integer id) {
         if (alertInstanceService.enable(id)) {
-            return Result.succeed(I18nMsgUtils.getMsg("modify.success"));
+            return Result.succeed(Status.MODIFY_SUCCESS);
         } else {
-            return Result.failed(I18nMsgUtils.getMsg("modify.failed"));
+            return Result.failed(Status.MODIFY_FAILED);
         }
     }
 
@@ -133,7 +134,6 @@ public class AlertInstanceController {
      * @throws Exception {@link Exception}
      */
     @PostMapping("/getOneById")
-    @ApiOperation(value = "根据id获取告警实例" , notes = "根据id获取告警实例")
     public Result<AlertInstance> getOneById(@RequestBody AlertInstance alertInstance)
             throws Exception {
         alertInstance = alertInstanceService.getById(alertInstance.getId());
@@ -148,8 +148,7 @@ public class AlertInstanceController {
     @GetMapping("/listEnabledAll")
     @ApiOperation(value = "获取所有告警实例(不分页)" , notes = "获取所有告警实例(不分页)")
     public Result<List<AlertInstance>> listEnabledAll() {
-        return Result.succeed(
-                alertInstanceService.listEnabledAll(), I18nMsgUtils.getMsg("response.get.success"));
+        return Result.succeed(alertInstanceService.listEnabledAll());
     }
 
     /**
@@ -163,9 +162,9 @@ public class AlertInstanceController {
     public Result<Void> sendTest(@RequestBody AlertInstance alertInstance) {
         AlertResult alertResult = alertInstanceService.testAlert(alertInstance);
         if (alertResult.getSuccess()) {
-            return Result.succeed(I18nMsgUtils.getMsg("send.success"));
+            return Result.succeed(Status.SEND_TEST_SUCCESS);
         } else {
-            return Result.failed(I18nMsgUtils.getMsg("send.failed"));
+            return Result.failed(Status.SEND_TEST_FAILED);
         }
     }
 }

@@ -35,7 +35,6 @@ import org.dinky.context.TenantContextHolder;
 import org.dinky.daemon.task.DaemonFactory;
 import org.dinky.daemon.task.DaemonTaskConfig;
 import org.dinky.data.constant.FlinkRestResultConstant;
-import org.dinky.data.constant.NetConstant;
 import org.dinky.data.dto.SqlDTO;
 import org.dinky.data.dto.TaskRollbackVersionDTO;
 import org.dinky.data.dto.TaskVersionConfigureDTO;
@@ -57,7 +56,9 @@ import org.dinky.data.model.Jar;
 import org.dinky.data.model.JobHistory;
 import org.dinky.data.model.JobInfoDetail;
 import org.dinky.data.model.JobInstance;
-import org.dinky.data.model.RoleSelectPermissions;
+import org.dinky.data.model.JobModelOverview;
+import org.dinky.data.model.JobTypeOverView;
+import org.dinky.data.model.RowPermissions;
 import org.dinky.data.model.Savepoints;
 import org.dinky.data.model.Statement;
 import org.dinky.data.model.SystemConfiguration;
@@ -118,8 +119,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -623,6 +622,16 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
     }
 
     @Override
+    public List<JobTypeOverView> getTaskOnlineRate() {
+        return baseMapper.getTaskOnlineRate();
+    }
+
+    @Override
+    public JobModelOverview getJobStreamingOrBatchModelOverview() {
+        return baseMapper.getJobStreamingOrBatchModelOverview();
+    }
+
+    @Override
     public String exportSql(Integer id) {
         Task task = getTaskInfoById(id);
         Asserts.checkNull(task, Status.TASK_NOT_EXIST.getMsg());
@@ -1043,11 +1052,11 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
                 config.setSavePointPath(null);
         }
         config.setVariables(fragmentVariableService.listEnabledVariables());
-        List<RoleSelectPermissions> currentRoleSelectPermissions =
+        List<RowPermissions> currentRoleSelectPermissions =
                 userService.getCurrentRoleSelectPermissions();
         if (Asserts.isNotNullCollection(currentRoleSelectPermissions)) {
             ConcurrentHashMap<String, String> permission = new ConcurrentHashMap<>();
-            for (RoleSelectPermissions roleSelectPermissions : currentRoleSelectPermissions) {
+            for (RowPermissions roleSelectPermissions : currentRoleSelectPermissions) {
                 if (Asserts.isAllNotNullString(
                         roleSelectPermissions.getTableName(),
                         roleSelectPermissions.getExpression())) {
@@ -1173,15 +1182,7 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
 
     @Override
     public String getTaskAPIAddress() {
-        try {
-            InetAddress inetAddress = InetAddress.getLocalHost();
-            if (inetAddress != null) {
-                return inetAddress.getHostAddress() + NetConstant.COLON + serverPort;
-            }
-        } catch (UnknownHostException e) {
-            log.error(e.getMessage());
-        }
-        return "127.0.0.1:" + serverPort;
+        return SystemConfiguration.getInstances().getDinkyAddr().getValue();
     }
 
     @Override

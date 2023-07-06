@@ -136,6 +136,8 @@ public class CommWindowOperator extends Operator {
             Map<String, Object> step = (Map<String, Object>) windowList.get(STEP);
             windowList.putAll(step==null ? new HashMap<>():step);
 
+            //将 window.table 改为输入表名称
+            windowList.put("table",tableName);
             p.put(WINDOW, windowList);
         }
 

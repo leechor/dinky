@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.Lists;
+import com.zdpx.coder.graph.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,15 +17,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.zdpx.coder.graph.Connection;
-import com.zdpx.coder.graph.InputPort;
-import com.zdpx.coder.graph.InputPortObject;
-import com.zdpx.coder.graph.Node;
-import com.zdpx.coder.graph.NodeWrapper;
-import com.zdpx.coder.graph.OutputPort;
-import com.zdpx.coder.graph.OutputPortObject;
-import com.zdpx.coder.graph.ProcessPackage;
-import com.zdpx.coder.graph.Scene;
 import com.zdpx.coder.json.ToInternalConvert;
 import com.zdpx.coder.operator.Operator;
 import com.zdpx.coder.utils.InstantiationUtil;
@@ -67,22 +60,20 @@ public final class X6ToInternalConvert implements ToInternalConvert {
 
             Map<String, Node> nodes = createNodesWithPackage(tempNodeMap);
 
-            processPackage(nodes, tempNodeMap);
+            processPackageAndGroup(nodes, tempNodeMap);
             processOperators(nodes, tempNodeMap);
             processConnections(nodes, tempNodeMap);
 
             ProcessPackage processPackage = new ProcessPackage();
             processPackage.setNodeWrapper(new X6NodeWrapper());
-            List<Node> processPackages =
-                    nodes.values().stream()
-                            .filter(node -> node.getNodeWrapper().getParent() == null)
-                            .collect(Collectors.toList());
 
-            processPackages.forEach(
-                    t -> {
-                        t.getNodeWrapper().setParent(processPackage);
-                        processPackage.getNodeWrapper().getChildren().add(t);
-                    });
+            nodes.values().stream()
+                    .filter(node -> node.getNodeWrapper().getParent() == null)
+                    .collect(Collectors.toList()).forEach(
+                            t -> {
+                                t.getNodeWrapper().setParent(processPackage);
+                                processPackage.getNodeWrapper().getChildren().add(t);
+                            });
             Scene scene = new Scene();
             scene.setProcessPackage(processPackage);
             return scene;
@@ -111,6 +102,9 @@ public final class X6ToInternalConvert implements ToInternalConvert {
                 case "package":
                     node = new ProcessPackage();
                     break;
+                case "group":
+                    node = new ProcessGroup();
+                    break;
                 default:
                     node = createOperatorByCode(cellShape);
             }
@@ -121,12 +115,20 @@ public final class X6ToInternalConvert implements ToInternalConvert {
         return nodes;
     }
 
-    private static void processPackage(Map<String, Node> nodes, Map<String, TempNode> tempNodeMap) {
+    private static void processPackageAndGroup(Map<String, Node> nodes, Map<String, TempNode> tempNodeMap) {
         List<ProcessPackage> processPackages =
                 nodes.values().stream()
                         .filter(ProcessPackage.class::isInstance)
                         .map(ProcessPackage.class::cast)
                         .collect(Collectors.toList());
+
+        List<ProcessGroup> processGroups =
+                nodes.values().stream()
+                        .filter(ProcessGroup.class::isInstance)
+                        .map(ProcessGroup.class::cast)
+                        .collect(Collectors.toList());
+
+//        List<NodeCollection> nodeCollections = Lists.asList(processPackages, processGroups);
 
         processPackages.forEach(
                 t -> {
@@ -167,30 +169,27 @@ public final class X6ToInternalConvert implements ToInternalConvert {
                 t -> {
                     TempNode tn = tempNodeMap.get(t.getId());
                     JsonNode cell = tn.getNode();
+                    Connection connection = t;
 
                     JsonNode source = cell.get("source");
                     String sourceCell = source.get("cell").asText();
                     String sourcePort = source.get("port").asText();
-                    Operator sourceOperator = (Operator) nodes.get(sourceCell);
-                    OutputPort<?> outputPort = null;
-                    if (sourceOperator.getOutputPorts().containsKey(sourcePort)) {
-                        outputPort = sourceOperator.getOutputPorts().get(sourcePort);
-                    } else {
-                        outputPort = new OutputPortObject<>(sourceOperator, sourcePort);
-                    }
-                    outputPort.setConnection((Connection) t);
+                    Node sourceNode =nodes.get(sourceCell);
 
                     JsonNode target = cell.get("target");
                     String targetCell = target.get("cell").asText();
                     String targetPort = target.get("port").asText();
-                    Operator targetOperator = (Operator) nodes.get(targetCell);
-                    InputPort<?> inputPort = null;
-                    if (targetOperator.getInputPorts().containsKey(targetPort)) {
-                        inputPort = targetOperator.getInputPorts().get(targetPort);
-                    } else {
-                        inputPort = new InputPortObject<>(targetOperator, targetPort);
-                    }
-                    inputPort.setConnection((Connection) t);
+                    Node targetNode = nodes.get(targetCell);
+
+                    Operator sourceOperator = (Operator) sourceNode;
+                    sourceOperator.getOutputPorts()
+                            .getOrDefault(sourcePort, new OutputPortObject<>(sourceOperator, sourcePort))
+                            .setConnection(connection);
+
+                    Operator targetOperator =(Operator)targetNode;
+                    targetOperator.getInputPorts()
+                            .getOrDefault(targetPort, new InputPortObject<>(targetOperator, targetPort))
+                            .setConnection(connection);
                 });
     }
 
