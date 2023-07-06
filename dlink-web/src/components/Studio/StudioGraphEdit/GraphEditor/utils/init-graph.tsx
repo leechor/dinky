@@ -1,6 +1,7 @@
 import { Cell, Dom, Edge, Graph, Model, Node, Shape } from '@antv/x6';
 import loadPlugin from './plugin';
 import removeBtnRegister from './remove-btn-register';
+import CustomShape from './cons';
 import {
   changeCurrentSelectNode,
   changeCurrentSelectNodeName,
@@ -283,19 +284,38 @@ export const initGraph = (
   graph.on('cell:removed', ({ cell, index, options }) => {
     // updateGraphData(graph);
   });
-  graph.on('cell:dblclick', ({ cell, e }) => {
-    const isNode = cell.isNode();
-    const name = cell.isNode() ? 'node-editor' : 'edge-editor';
-    cell.removeTool(name);
-    cell.addTools({
-      name,
-      args: {
-        event: e,
-        attrs: {
-          backgroundColor: isNode ? '#EFF4FF' : '#FFF',
-        },
-      },
-    });
+  graph.on('cell:dblclick', ({ cell, e ,view}) => {
+    
+    graph.getGraphArea()
+    // const isNode = cell.isNode();
+    // const name = cell.isNode() ? 'node-editor' : 'edge-editor';
+    // cell.removeTool(name);
+    // cell.addTools({
+    //   name,
+    //   args: {
+    //     event: e,
+    //     attrs: {
+    //       backgroundColor: isNode ? '#EFF4FF' : '#FFF',
+    //     },
+    //   },
+    // });
+    if (cell.isNode() && cell.shape === CustomShape.GROUP_PROCESS) {
+      
+      const toggleVisibleInner = (cells: Cell[], visible: boolean, graph: Graph) => {
+        cells.forEach((cell) => {
+          const view = graph.findViewByCell(cell)?.container as HTMLElement;
+          view.style.visibility = visible ? 'visible' : 'hidden';
+        });
+      };
+      const children = cell.getChildren()?.filter((n) => n.isNode()) as Node[];
+      children?.forEach((item) => {
+        const innerEdges = graph.getConnectedEdges(item).filter((edge) => {
+          return children.includes(edge.getSourceNode()!) && children.includes(edge.getTargetNode()!);
+        });
+        item.setVisible(true)
+      });
+      cell.setVisible(false)
+    }
   });
   // graph.on("node:port:mousedown",({node,port})=>{
   //   console.log("port",node.getPort(port!));

@@ -1,6 +1,7 @@
 import { Menu } from '@antv/x6-react-components';
 import { FC, memo, useState } from 'react';
-import { message, Radio, RadioChangeEvent, Space } from 'antd';
+import { message, Radio, RadioChangeEvent, Space, Upload } from 'antd';
+import type { UploadProps } from 'antd/es/upload/interface';
 import { DataUri, Graph, Node } from '@antv/x6';
 import '@antv/x6-react-components/es/menu/style/index.css';
 import {
@@ -15,7 +16,8 @@ import {
   RadiusSettingOutlined,
   GroupOutlined,
   AlignCenterOutlined,
-  BgColorsOutlined
+  BgColorsOutlined,
+  UploadOutlined
 } from '@ant-design/icons';
 import CustomShape from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
 import { useAppSelector } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
@@ -260,7 +262,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
         const blob = new Blob([data], { type: 'text/json' }),
           e = new MouseEvent('click'),
           a = document.createElement('a');
-        a.download = `${taskName}_${formatDate(Date.now())}`;
+        a.download = `${taskName}_${formatDate(Date.now())}.json`;
         a.href = window.URL.createObjectURL(blob);
         a.dataset.downloadurl = ['text/json', a.download, a.href].join(':');
         a.dispatchEvent(e);
@@ -283,7 +285,10 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
         break;
       case "createProcess":
         createProcess();
+        break;
       default:
+      case "import":
+        uploadFileClick()
         break;
     }
   };
@@ -307,8 +312,47 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     });
     const group = graph.addNode(node);
     const cells = graph.getSelectedCells();
-    cells?.forEach(c => { c.hide(); group.addChild(c); graph.resetSelection(group) })
+    cells?.forEach(c => {
+      //隐藏选中的节点
+      c.toggleVisible();
+      //将隐藏的节点添加进组节点
+      group.addChild(c);
+      // graph.resetSelection(group)
+      graph.cleanSelection()
+    })
 
+  }
+  const uploadFileClick = () => {
+    const fileIput = document.createElement("input")
+    fileIput.type = "file"
+    fileIput.accept = ".json"
+    fileIput.style.display = "none"
+    fileIput.addEventListener("change", handleFileChange);
+    fileIput.click()
+  }
+  const handleFileChange = (event: any) => {
+    const selectFiles = event.target.files;
+    if (selectFiles.length === 1) {
+      const selectFile = selectFiles[0];
+      if (selectFile && selectFile.type == "application/json") {
+        const reader = new FileReader()
+        reader.onload = (event: any) => {
+          const fileContent = event.target.result;
+          const jsonData = JSON.parse(fileContent);
+          try {
+            graph.fromJSON(jsonData)
+          } catch (error) {
+            message.error("导入数据失败！")
+          }
+        }
+        reader.readAsText(selectFile)
+
+      } else {
+        message.warning("文件类型为json")
+      }
+    } else {
+      message.warning("每次只能上传一个文件！")
+    }
   }
   const onMenuItemClick = () => { };
   const blankMenu = () => {
@@ -368,7 +412,13 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
         text="Undo"
       />
       <MenuItem name="redo" icon={<RedoOutlined />} hotkey="Cmd+Shift+Z" text="Redo" />
-
+      <MenuItem
+        onClick={onMenuItemClick}
+        name="import"
+        icon={<UploadOutlined />}
+        // text={<Upload maxCount={1} onChange={onFileChange} beforeUpload={beforeUpload}>import</Upload>}
+        text={"import"}
+      />
       {!node && <SubMenu text="Export" icon={<ExportOutlined />}>
         <MenuItem name="save-PNG" text="Save As PNG" />
         <MenuItem name="save-SVG" text="Save As SVG" />

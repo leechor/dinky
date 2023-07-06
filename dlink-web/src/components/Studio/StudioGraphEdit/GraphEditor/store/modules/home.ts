@@ -4,10 +4,6 @@ import { Parameter } from '@/components/Studio/StudioGraphEdit/GraphEditor/ts-de
 import { Graph, Node } from '@antv/x6';
 import { getOperatorConfigure } from '../../service/request/test';
 import { message } from 'antd';
-import {
-  DeleteTwoTone,
-} from '@ant-design/icons';
-import { ReactNode } from 'react';
 export const initFlowDataAction = createAsyncThunk('fetchData', (payload, store) => {
   getOperatorConfigure().then((res: any) => {
     if (res.status !== 200) {

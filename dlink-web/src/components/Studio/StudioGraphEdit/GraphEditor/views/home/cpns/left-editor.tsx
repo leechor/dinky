@@ -94,7 +94,7 @@ const LeftEditor = memo(() => {
   }));
 
 
-  
+
 
   const getNewConfig = (cell: Cell, config: any) => {
 
@@ -249,6 +249,30 @@ const LeftEditor = memo(() => {
           configMap.set(id, parametersConfig);
           let config = strMapToObj(configMap)
           let newConfigObj = getNewConfig(currentCell, config)
+          if (currentCell.shape === "DuplicateOperator") {
+            //连接的是自定义节点遍历节点config,重新赋值
+            //设置前节点和当前节点连接config
+            let currentNode = edge.getTargetNode()
+            newConfigObj = getNewConfig(currentCell, config)
+            const outPortIds = currentNode?.getPortsByGroup("outputs").map(data => data.id)
+            if (outPortIds) {
+              for (let key of outPortIds) {
+                newConfigObj[key!] = cloneDeep(config)
+              }
+            }
+            const edges = graph.model.getOutgoingEdges(currentCell);
+            if (edges) {
+              for (let edge of edges) {
+                let targetNode = edge.getTargetNode();
+                let targetPortId = edge.getTargetPortId();
+                let sourcePortId = edge.getSourcePortId();
+                let id = `${currentNode!.id}&${sourcePortId} ${targetNode!.id}&${targetPortId}`
+                newConfigObj[id] = cloneDeep(config)
+              }
+            }
+
+
+          }
           currentCell.setData({ ...(currentCell.getData() ? currentCell.getData() : {}), config: [newConfigObj] }, { overwrite: true });
           if (sourceCell.shape === "DuplicateOperator") {
             //把input-output config 设置进自定义节点config
@@ -324,14 +348,25 @@ const LeftEditor = memo(() => {
         const edges = graphRef.current!.model.getIncomingEdges(value.readConfigData.currentCell)
         for (let edge of edges!) {
           let currentNode = edge.getTargetNode();
-          const outPortIds = currentNode!.getPortsByGroup("outputs").map(data => data.id)
+          // const outPortIds = currentNode!.getPortsByGroup("outputs").map(data => data.id)
           let newConfigObj = {};
           //将下个节点的所有连接装都重置(不影响前节点config保持input-output config不变)
           let newConfig = value.origin.filter(config => config.flag)
-          newConfigObj[value.readConfigData.id!] = cloneDeep(value.readConfigData.currentCell.getData()["config"][0][value.readConfigData.id!])
-          for (const addPortId of outPortIds!) {
-            newConfigObj[addPortId!] = cloneDeep(newConfig)
+
+
+          // newConfigObj[value.readConfigData.id!] = cloneDeep(value.readConfigData.currentCell.getData()["config"][0][value.readConfigData.id!])
+          // for (const addPortId of outPortIds!) {
+          //   newConfigObj[addPortId!] = cloneDeep(newConfig)
+          // }
+          for (let key in value.readConfigData.currentCell.getData()["config"][0]) {
+            if (key !== value.readConfigData.id) {
+              newConfigObj[key] = cloneDeep(newConfig)
+            } else {
+              newConfigObj[key] = cloneDeep(value.readConfigData.currentCell.getData()["config"][0][key])
+            }
+
           }
+
           currentNode?.setData({ ...(currentNode.getData() ? currentNode.getData() : {}), config: [newConfigObj] }, { overwrite: true })
         }
       } else {
@@ -412,8 +447,8 @@ const LeftEditor = memo(() => {
   const changeNode = (node: Cell) => {
     dispatch(changeCurrentSelectNode(node))
   }
-  const handleClickMenu = (e: any, current) => {
-    
+  const handleClickMenu = (e: any, current: any) => {
+
 
   };
   const menu = (pane: GraphTabsItem) => (
@@ -447,7 +482,7 @@ const LeftEditor = memo(() => {
   const onChange = () => { }
   const onEdit = () => { }
   const getTabPane = (pane: GraphTabsItem, i: number) => {
-    
+
     if (pane.key === "0") {
       return (<TabPane tab={Tab(pane)} key={pane.key} closable={pane.closable}>
         <div ref={editorContentRef} className={styles['x6-graph']}>
@@ -500,7 +535,7 @@ const LeftEditor = memo(() => {
         stencilComponentsLoader(graphRef.current, stencil, operatorParameters);
 
         // 6、加载数据
-        
+
         const data = localCache.getCache(`${taskName}graphData`)
         timer = handleInitNodes(graphRef.current, data);
 
@@ -516,7 +551,7 @@ const LeftEditor = memo(() => {
       }
       if (timer) {
         clearTimeout(timer)
-      } 
+      }
     };
   }, [dispatch, flowData, operatorParameters]);
 

@@ -1,3 +1,4 @@
+import { cloneDeep } from 'lodash';
 import { Graph, Node } from '@antv/x6';
 import { register } from '@antv/x6-react-shape';
 import TextNode from '@/components/Studio/StudioGraphEdit/GraphEditor/components/text-node';
@@ -56,6 +57,9 @@ function registerGroupProgress(ports: Partial<PortManager.Metadata> | PortManage
                 fill: "#3B4351",
               },
             },
+            path: {
+              d: "m-6,2,a5,5.5 0 0 1 12,0"
+            }
           },
           label: {
             position: "bottom",
@@ -73,6 +77,9 @@ function registerGroupProgress(ports: Partial<PortManager.Metadata> | PortManage
                 fill: "#3B4351",
               },
             },
+            path: {
+              d: "m-6,2,a5,5.5 0 0 1 12,0",
+            }
           },
           label: {
             position: "bottom",
