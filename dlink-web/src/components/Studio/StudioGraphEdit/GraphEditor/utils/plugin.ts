@@ -102,7 +102,8 @@ export const history = (graph: Graph) => {
 export const scroller = (graph: Graph) => {
   graph.use(
     new Scroller({
-      enabled: true,
+      pannable: true,
+      modifiers:["ctrl","alt"]
     }),
   );
   graph.centerContent();
@@ -130,4 +131,5 @@ export default function loadPlugin(graph: Graph) {
   keyboard(graph);
   history(graph);
   transform(graph);
+  scroller(graph)
 }

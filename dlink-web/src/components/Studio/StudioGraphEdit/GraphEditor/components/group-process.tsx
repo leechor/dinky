@@ -10,7 +10,7 @@ const GroupProcess = (props: any) => {
         <div className={styles['custom-calcu-node-process']}>
             {node && (
                 <Tooltip title={"subProcess"}>
-                    <div className={styles['custom-calcu-node-label']}></div>
+                    <div className={styles['custom-calcu-node-label']}>subProcess</div>
                 </Tooltip>
             )}
             <div className={styles['custom-calcu-node-process-top']}>
