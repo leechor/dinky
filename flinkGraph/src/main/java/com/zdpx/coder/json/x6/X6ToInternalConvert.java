@@ -153,7 +153,7 @@ public final class X6ToInternalConvert implements ToInternalConvert {
                                                 .path("text")
                                                 .asText();
                                 node.setName(name);
-                                node.getNodeWrapper().setParent(t);
+                                node.getNodeWrapper().setParent((Node)t);
                             });
                     t.getNodeWrapper().setChildren(childrenNode);
                 });
