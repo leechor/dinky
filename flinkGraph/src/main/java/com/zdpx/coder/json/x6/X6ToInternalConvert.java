@@ -128,9 +128,11 @@ public final class X6ToInternalConvert implements ToInternalConvert {
                         .map(ProcessGroup.class::cast)
                         .collect(Collectors.toList());
 
-//        List<NodeCollection> nodeCollections = Lists.asList(processPackages, processGroups);
+        List<NodeCollection> nodeCollections = new ArrayList<>();
+        nodeCollections.addAll(processPackages);
+        nodeCollections.addAll(processGroups);
 
-        processPackages.forEach(
+        nodeCollections.forEach(
                 t -> {
                     String parentId = tempNodeMap.get(t.getId()).getParent();
                     t.getNodeWrapper().setParent(nodes.get(parentId));
