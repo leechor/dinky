@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 import com.zdpx.coder.operator.Operator;
 
 /** 过程类,相当于一个节点集合, 不参与计算图, 主要用于分组. */
-public class ProcessPackage extends Node {
+public class ProcessPackage extends Node implements NodeCollection {
     /** 该过程在界面上是否可以展开 */
     private boolean expanded;
 
