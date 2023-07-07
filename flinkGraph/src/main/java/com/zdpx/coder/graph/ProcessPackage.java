@@ -48,10 +48,17 @@ public class ProcessPackage extends Node implements NodeCollection {
                 .collect(Collectors.toSet());
     }
 
-    public Set<ProcessPackage> getProcessPackages() {
+    public Set<NodeCollection> getProcessPackages() {
         return getNodeWrapper().getChildren().stream()
                 .filter(ProcessPackage.class::isInstance)
                 .map(t -> (ProcessPackage) t)
+                .collect(Collectors.toSet());
+    }
+
+    public Set<NodeCollection> getProcessGroup() {
+        return getNodeWrapper().getChildren().stream()
+                .filter(ProcessGroup.class::isInstance)
+                .map(t -> (ProcessGroup) t)
                 .collect(Collectors.toSet());
     }
 
