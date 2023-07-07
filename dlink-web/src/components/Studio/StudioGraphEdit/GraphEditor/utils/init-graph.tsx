@@ -37,9 +37,21 @@ export const initGraph = (
       connector: {
         name: 'rounded',
       },
-      router: 'manhattan',
-      anchor: 'center',
-      connectionPoint: 'anchor',
+      router: {
+        name: 'manhattan',
+        args:{
+          step: 5,
+        }
+      },
+      anchor: {
+        name: 'orth',
+        args: {
+        }
+      },
+      connectionPoint: {
+        name: 'anchor',
+      },
+
       // 是否允许连接到画布空白位置的点
       allowBlank: false,
       //是否允许在相同的起始节点和终止之间创建多条边
@@ -285,7 +297,7 @@ export const initGraph = (
     // updateGraphData(graph);
   });
   graph.on('cell:dblclick', ({ cell, e ,view}) => {
-    
+
     graph.getGraphArea()
     // const isNode = cell.isNode();
     // const name = cell.isNode() ? 'node-editor' : 'edge-editor';
@@ -300,7 +312,7 @@ export const initGraph = (
     //   },
     // });
     if (cell.isNode() && cell.shape === CustomShape.GROUP_PROCESS) {
-      
+
       const toggleVisibleInner = (cells: Cell[], visible: boolean, graph: Graph) => {
         cells.forEach((cell) => {
           const view = graph.findViewByCell(cell)?.container as HTMLElement;
