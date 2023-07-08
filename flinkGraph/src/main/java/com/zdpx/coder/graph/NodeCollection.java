@@ -13,7 +13,8 @@ public interface NodeCollection extends Identifier {
 
     Set<Operator> getOperators();
 
-    Set<ProcessPackage> getProcessPackages();
+    Set<NodeCollection> getProcessPackages();
+    Set<NodeCollection> getProcessGroup();
 
     void setChildren(Set<Node> originOperatorWrappers);
 

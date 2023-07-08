@@ -57,7 +57,7 @@ public class Scene {
     public static final Map<String, String> USER_DEFINED_FUNCTION = getUserDefinedFunctionMaps();
     private static final ObjectMapper mapper = new ObjectMapper();
     private Environment environment = new Environment();
-    private ProcessPackage processPackage;
+    private NodeCollection process;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
@@ -70,8 +70,8 @@ public class Scene {
         return SceneCodeBuilder.getCodeClassMap(operators);
     }
 
-    public static List<Operator> getSinkOperatorNodes(ProcessPackage processPackage) {
-        List<Operator> originOperator = getAllOperator(processPackage);
+    public static List<Operator> getSinkOperatorNodes(NodeCollection process) {
+        List<Operator> originOperator = getAllOperator(process);
         return originOperator.stream()
                 .filter(t -> CollectionUtils.isEmpty(t.getOutputPorts().values()))
                 .collect(Collectors.toList());
@@ -80,15 +80,16 @@ public class Scene {
     /**
      * 获取所有节点的包裹类
      *
-     * @param processPackage 计算图的过程信息
+     * @param process 计算图的过程信息
      * @return 所有节点的包裹类
      */
-    public static List<Operator> getAllOperator(ProcessPackage processPackage) {
-        Set<Operator> operators = processPackage.getOperators();
+    public static List<Operator> getAllOperator(NodeCollection process) {
+        Set<Operator> operators = process.getOperators();
         List<Operator> originOperatorAllNodes = new ArrayList<>(operators);
-        Set<ProcessPackage> processPackages = processPackage.getProcessPackages();
-        if (processPackages != null && !processPackages.isEmpty()) {
-            for (ProcessPackage pp : processPackages) {
+        Set<NodeCollection> packages = process.getProcessPackages();
+        packages.addAll(process.getProcessGroup());
+        if (!packages.isEmpty()) {
+            for (NodeCollection pp : packages) {
                 originOperatorAllNodes.addAll(getAllOperator(pp));
             }
         }

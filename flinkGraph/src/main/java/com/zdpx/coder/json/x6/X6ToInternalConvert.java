@@ -2,10 +2,7 @@ package com.zdpx.coder.json.x6;
 
 import static com.zdpx.coder.graph.Scene.OPERATOR_MAP;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.Lists;
@@ -75,7 +72,7 @@ public final class X6ToInternalConvert implements ToInternalConvert {
                                 processPackage.getNodeWrapper().getChildren().add(t);
                             });
             Scene scene = new Scene();
-            scene.setProcessPackage(processPackage);
+            scene.setProcess(processPackage);
             return scene;
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());
@@ -105,6 +102,8 @@ public final class X6ToInternalConvert implements ToInternalConvert {
                 case "group":
                     node = new ProcessGroup();
                     break;
+                case "custom-text-node":
+                    continue;
                 default:
                     node = createOperatorByCode(cellShape);
             }
@@ -167,32 +166,55 @@ public final class X6ToInternalConvert implements ToInternalConvert {
                         .map(node -> (Connection<?>) node)
                         .collect(Collectors.toList());
 
-        connections.forEach(
-                t -> {
-                    TempNode tn = tempNodeMap.get(t.getId());
-                    JsonNode cell = tn.getNode();
-                    Connection connection = t;
+        List<Connection<?>> copyConnections = new ArrayList<>(connections);
 
-                    JsonNode source = cell.get("source");
-                    String sourceCell = source.get("cell").asText();
-                    String sourcePort = source.get("port").asText();
-                    Node sourceNode =nodes.get(sourceCell);
+        Map<String, String> jump = new HashMap<>();//不删除原集合中的数据，如果有问题后续再删除
+        connections.forEach(t->{
 
-                    JsonNode target = cell.get("target");
-                    String targetCell = target.get("cell").asText();
-                    String targetPort = target.get("port").asText();
-                    Node targetNode = nodes.get(targetCell);
+            if(jump.get(t.getId())==null){
+                TempNode tn = tempNodeMap.get(t.getId());
+                JsonNode cell = tn.getNode();
 
-                    Operator sourceOperator = (Operator) sourceNode;
-                    sourceOperator.getOutputPorts()
-                            .getOrDefault(sourcePort, new OutputPortObject<>(sourceOperator, sourcePort))
-                            .setConnection(connection);
+                //分组的特殊逻辑，对正常节点没有影响
+                Map<String, String> sourceConnect = findConnect(copyConnections, tempNodeMap, cell.get("source"), new HashMap<>(),false);
+                String sourceCell = sourceConnect.get("cell");
+                String sourcePort = sourceConnect.get("port");
 
-                    Operator targetOperator =(Operator)targetNode;
-                    targetOperator.getInputPorts()
-                            .getOrDefault(targetPort, new InputPortObject<>(targetOperator, targetPort))
-                            .setConnection(connection);
-                });
+//                System.out.println(tn.getId()+": 处理前 "+"source: "+cell.get("source").get("cell")+" ------------ "+cell.get("source").get("port"));
+//                System.out.println(tn.getId()+": 处理hou "+"source: "+sourceConnect.get("cell")+" ------------ "+sourceConnect.get("port"));
+                jump.putAll(sourceConnect);
+
+                //分组的特殊逻辑，对正常节点没有影响
+                Map<String, String> targetConnect = findConnect(copyConnections, tempNodeMap, cell.get("target"), new HashMap<>(),true);
+                String targetCell = targetConnect.get("cell");
+                String targetPort = targetConnect.get("port");
+
+//                System.out.println(tn.getId()+": 处理前 "+"target: "+cell.get("target").get("cell")+" ------------ "+cell.get("target").get("port"));
+//                System.out.println(tn.getId()+": 处理hou "+"target: "+targetConnect.get("cell")+" ------------ "+targetConnect.get("port")+"\n");
+                jump.putAll(targetConnect);
+
+
+                Operator sourceOperator = (Operator) nodes.get(sourceCell);
+                OutputPort<?> outputPort = null;
+                if (sourceOperator.getOutputPorts().containsKey(sourcePort)) {
+                    outputPort = sourceOperator.getOutputPorts().get(sourcePort);
+                } else {
+                    outputPort = new OutputPortObject<>(sourceOperator, sourcePort);
+                }
+                outputPort.setConnection((Connection) t);
+
+                Operator targetOperator = (Operator) nodes.get(targetCell);
+                InputPort<?> inputPort = null;
+                if (targetOperator.getInputPorts().containsKey(targetPort)) {
+                    inputPort = targetOperator.getInputPorts().get(targetPort);
+                } else {
+                    inputPort = new InputPortObject<>(targetOperator, targetPort);
+                }
+                inputPort.setConnection((Connection) t);
+            }
+
+        });
+
     }
 
     private void processOperators(Map<String, Node> nodes, Map<String, TempNode> tempNodeMap) {
@@ -250,4 +272,39 @@ public final class X6ToInternalConvert implements ToInternalConvert {
             this.children = children;
         }
     }
+    /**
+     * 分组
+     * 存在 源节点 id等于当前目标节点的id时，递归获取下一源节点指向的目标节点（跳过），直到找不到符合条件的源节点
+     * 存在 目标节点 id等于当前源节点的id时，递归获取上一目标节点指向的源节点（跳过），直到找不到符合条件的目标节点
+     * */
+    public static Map<String,String> findConnect(List<Connection<?>> copyConnections, Map<String, TempNode> tempNodeMap, JsonNode node, Map<String, String> map, Boolean direction){
+        String cell = node.get("cell").asText();// node：当遍历后没有匹配时，认为该节点是最终节点
+        String port = node.get("port").asText();
+
+        for(int i=0;i<copyConnections.size();i++){
+
+            JsonNode text = tempNodeMap.get(copyConnections.get(i).getId()).getNode();
+            //direction: 寻找的方向
+            JsonNode t1 = text.get(direction? "source":"target"); //：正向获取
+            if(cell.equals(t1.get("cell").asText()) && port.equals(t1.get("port").asText())){//todo 对应关系的逻辑需要重写
+                //存在连接节点的情况
+                Map<String, String> connect = findConnect(copyConnections, tempNodeMap, text.get(!direction? "source":"target"), map,direction);//反向获取
+                //进入到这里的线都需要删除
+                connect.put(copyConnections.get(i).getId(),copyConnections.get(i).getId());
+                //一条线只可能链接一个节点，所以成功匹配一次后，可以直接退出
+                return connect;
+            }
+
+            if(i==copyConnections.size()-1){
+                //当遍历后 还没有匹配时，认为获取到了最终的节点指向，此条件只可能被执行一次
+                map.put("cell",node.get("cell").asText());
+                map.put("port",node.get("port").asText());
+                return map;
+            }
+        }
+        return null;
+    }
+
+
+
 }

@@ -77,6 +77,13 @@ spring:
 #     # Connection timeout (milliseconds)
 #     timeout: 5000
 
+management:
+   health:
+     redis:
+       enabled: false
+     ldap:
+       enabled: false
+
 #################################################################################################################
 ################################################# Mybatis Config ################################################
 ######### Please note: that the following configurations are not recommended to be modified #####################

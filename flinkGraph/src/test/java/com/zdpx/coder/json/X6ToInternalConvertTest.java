@@ -12,8 +12,7 @@ import com.zdpx.coder.SceneCodeBuilder;
 import com.zdpx.coder.graph.Scene;
 import com.zdpx.coder.json.x6.X6ToInternalConvert;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 class X6ToInternalConvertTest {
 
@@ -22,8 +21,45 @@ class X6ToInternalConvertTest {
                     "    \"cells\": [\n" +
                     "        {\n" +
                     "            \"position\": {\n" +
-                    "                \"x\": -290,\n" +
-                    "                \"y\": -10\n" +
+                    "                \"x\": -170,\n" +
+                    "                \"y\": -160\n" +
+                    "            },\n" +
+                    "            \"size\": {\n" +
+                    "                \"width\": 250,\n" +
+                    "                \"height\": 240\n" +
+                    "            },\n" +
+                    "            \"shape\": \"group\",\n" +
+                    "            \"attrs\": {\n" +
+                    "                \"image\": {\n" +
+                    "                    \"width\": 250,\n" +
+                    "                    \"height\": 240\n" +
+                    "                },\n" +
+                    "                \"text\": {\n" +
+                    "                    \"text\": \"Group Name\"\n" +
+                    "                },\n" +
+                    "                \"buttonSign\": {\n" +
+                    "                    \"d\": \"M 2 5 8 5\"\n" +
+                    "                }\n" +
+                    "            },\n" +
+                    "            \"id\": \"9a1d04da-6e02-4a26-aaa1-820920e88179\",\n" +
+                    "            \"data\": {},\n" +
+                    "            \"zIndex\": -1,\n" +
+                    "            \"previousSize\": {\n" +
+                    "                \"width\": 150,\n" +
+                    "                \"height\": 40\n" +
+                    "            },\n" +
+                    "            \"children\": [\n" +
+                    "                \"3665293d-6e7b-4eb9-bc82-316c3c43adf0\",\n" +
+                    "                \"e8ed4082-5dbc-4597-ab72-b8c85cc1c81a\",\n" +
+                    "                \"1975bce5-bae2-42ba-b20c-8ec1503d57f2\",\n" +
+                    "                \"2e8ad85a-6d0f-4c33-9f68-b4e4244c0c70\",\n" +
+                    "                \"afe6a8b5-8be6-4c75-914c-95595be071be\"\n" +
+                    "            ]\n" +
+                    "        },\n" +
+                    "        {\n" +
+                    "            \"position\": {\n" +
+                    "                \"x\": -310,\n" +
+                    "                \"y\": -90\n" +
                     "            },\n" +
                     "            \"size\": {\n" +
                     "                \"width\": 70,\n" +
@@ -113,7 +149,7 @@ class X6ToInternalConvertTest {
                     "                    }\n" +
                     "                ]\n" +
                     "            },\n" +
-                    "            \"id\": \"5fc5a34a-ff18-4509-9d20-3149f8cf0c18\",\n" +
+                    "            \"id\": \"03500f88-5ae0-4aef-ab6d-b4ae13163c8c\",\n" +
                     "            \"name\": \"MySQL数据源\",\n" +
                     "            \"zIndex\": 1,\n" +
                     "            \"data\": {\n" +
@@ -148,8 +184,155 @@ class X6ToInternalConvertTest {
                     "        },\n" +
                     "        {\n" +
                     "            \"position\": {\n" +
-                    "                \"x\": -141,\n" +
-                    "                \"y\": -10\n" +
+                    "                \"x\": 150,\n" +
+                    "                \"y\": -100\n" +
+                    "            },\n" +
+                    "            \"size\": {\n" +
+                    "                \"width\": 70,\n" +
+                    "                \"height\": 50\n" +
+                    "            },\n" +
+                    "            \"view\": \"react-shape-view\",\n" +
+                    "            \"attrs\": {\n" +
+                    "                \"body\": {\n" +
+                    "                    \"rx\": 7,\n" +
+                    "                    \"ry\": 6\n" +
+                    "                },\n" +
+                    "                \"text\": {\n" +
+                    "                    \"text\": \"MysqlSink\",\n" +
+                    "                    \"fontSize\": 2\n" +
+                    "                }\n" +
+                    "            },\n" +
+                    "            \"shape\": \"MysqlSinkOperator\",\n" +
+                    "            \"ports\": {\n" +
+                    "                \"groups\": {\n" +
+                    "                    \"outputs\": {\n" +
+                    "                        \"zIndex\": 999,\n" +
+                    "                        \"position\": \"right\",\n" +
+                    "                        \"markup\": {\n" +
+                    "                            \"tagName\": \"path\",\n" +
+                    "                            \"selector\": \"path\",\n" +
+                    "                            \"attrs\": {\n" +
+                    "                                \"d\": \"m-6,0,a5,5.5 0 0 1 12,0\",\n" +
+                    "                                \"fill\": \"#b2a2e9\",\n" +
+                    "                                \"transform\": \"rotate(90)\",\n" +
+                    "                                \"strokeWidth\": 1,\n" +
+                    "                                \"stroke\": \"null\"\n" +
+                    "                            }\n" +
+                    "                        },\n" +
+                    "                        \"attrs\": {\n" +
+                    "                            \"path\": {\n" +
+                    "                                \"r\": 8,\n" +
+                    "                                \"magnet\": true,\n" +
+                    "                                \"style\": {\n" +
+                    "                                    \"visibility\": \"hidden\"\n" +
+                    "                                }\n" +
+                    "                            }\n" +
+                    "                        }\n" +
+                    "                    },\n" +
+                    "                    \"inputs\": {\n" +
+                    "                        \"zIndex\": 999,\n" +
+                    "                        \"position\": \"left\",\n" +
+                    "                        \"markup\": {\n" +
+                    "                            \"tagName\": \"path\",\n" +
+                    "                            \"selector\": \"path\",\n" +
+                    "                            \"attrs\": {\n" +
+                    "                                \"d\": \"m-6,0,a5,5.5 0 0 1 12,0\",\n" +
+                    "                                \"fill\": \"#b2a2e9\",\n" +
+                    "                                \"transform\": \"rotate(-90)\",\n" +
+                    "                                \"strokeWidth\": 1,\n" +
+                    "                                \"stroke\": \"null\"\n" +
+                    "                            }\n" +
+                    "                        },\n" +
+                    "                        \"attrs\": {\n" +
+                    "                            \"path\": {\n" +
+                    "                                \"r\": 10,\n" +
+                    "                                \"magnet\": true,\n" +
+                    "                                \"style\": {\n" +
+                    "                                    \"visibility\": \"hidden\"\n" +
+                    "                                }\n" +
+                    "                            }\n" +
+                    "                        }\n" +
+                    "                    }\n" +
+                    "                },\n" +
+                    "                \"items\": [\n" +
+                    "                    {\n" +
+                    "                        \"group\": \"inputs\",\n" +
+                    "                        \"id\": \"input_0\",\n" +
+                    "                        \"zIndex\": 999,\n" +
+                    "                        \"attrs\": {\n" +
+                    "                            \"text\": {\n" +
+                    "                                \"text\": \"input_0\",\n" +
+                    "                                \"style\": {\n" +
+                    "                                    \"visibility\": \"hidden\",\n" +
+                    "                                    \"fontSize\": 10,\n" +
+                    "                                    \"fill\": \"#3B4351\"\n" +
+                    "                                }\n" +
+                    "                            }\n" +
+                    "                        },\n" +
+                    "                        \"label\": {\n" +
+                    "                            \"position\": \"bottom\"\n" +
+                    "                        }\n" +
+                    "                    }\n" +
+                    "                ]\n" +
+                    "            },\n" +
+                    "            \"id\": \"bceee3e8-8830-4305-bcbb-4f98e079b3ec\",\n" +
+                    "            \"name\": \"MysqlSink\",\n" +
+                    "            \"zIndex\": 2,\n" +
+                    "            \"data\": {\n" +
+                    "                \"parameters\": {\n" +
+                    "                    \"tableName\": \"asdasas\",\n" +
+                    "                    \"connector\": \"jdbc\",\n" +
+                    "                    \"url\": \"asad\",\n" +
+                    "                    \"username\": \"root\",\n" +
+                    "                    \"password\": \"123456\",\n" +
+                    "                    \"other\": [],\n" +
+                    "                    \"columns\": [\n" +
+                    "                        {\n" +
+                    "                            \"name\": \"o1\",\n" +
+                    "                            \"type\": \"STRING\",\n" +
+                    "                            \"flag\": true\n" +
+                    "                        },\n" +
+                    "                        {\n" +
+                    "                            \"name\": \"o2\",\n" +
+                    "                            \"type\": \"STRING\",\n" +
+                    "                            \"flag\": true\n" +
+                    "                        }\n" +
+                    "                    ],\n" +
+                    "                    \"primary\": \"\",\n" +
+                    "                    \"watermark\": {\n" +
+                    "                        \"column\": \"\",\n" +
+                    "                        \"timeSpan\": 0,\n" +
+                    "                        \"timeUnit\": \"SECOND\"\n" +
+                    "                    }\n" +
+                    "                },\n" +
+                    "                \"config\": [\n" +
+                    "                    {\n" +
+                    "                        \"3665293d-6e7b-4eb9-bc82-316c3c43adf0&output_0 bceee3e8-8830-4305-bcbb-4f98e079b3ec&input_0\": [\n" +
+                    "                            {\n" +
+                    "                                \"functionName\": \"\",\n" +
+                    "                                \"name\": \"out1\",\n" +
+                    "                                \"parameters\": [\n" +
+                    "                                    \"a\"\n" +
+                    "                                ],\n" +
+                    "                                \"flag\": true\n" +
+                    "                            },\n" +
+                    "                            {\n" +
+                    "                                \"functionName\": \"\",\n" +
+                    "                                \"name\": \"out2\",\n" +
+                    "                                \"parameters\": [\n" +
+                    "                                    \"b\"\n" +
+                    "                                ],\n" +
+                    "                                \"flag\": true\n" +
+                    "                            }\n" +
+                    "                        ]\n" +
+                    "                    }\n" +
+                    "                ]\n" +
+                    "            }\n" +
+                    "        },\n" +
+                    "        {\n" +
+                    "            \"position\": {\n" +
+                    "                \"x\": -140,\n" +
+                    "                \"y\": -90.00000000000006\n" +
                     "            },\n" +
                     "            \"size\": {\n" +
                     "                \"width\": 70,\n" +
@@ -275,13 +458,14 @@ class X6ToInternalConvertTest {
                     "                    }\n" +
                     "                ]\n" +
                     "            },\n" +
-                    "            \"id\": \"3ea62dc9-cab4-49a0-a3e2-608eaf960ab2\",\n" +
+                    "            \"id\": \"e8ed4082-5dbc-4597-ab72-b8c85cc1c81a\",\n" +
                     "            \"name\": \"DuplicateOperator\",\n" +
-                    "            \"zIndex\": 2,\n" +
+                    "            \"zIndex\": 4,\n" +
                     "            \"data\": {\n" +
+                    "                \"parameters\": {},\n" +
                     "                \"config\": [\n" +
                     "                    {\n" +
-                    "                        \"5fc5a34a-ff18-4509-9d20-3149f8cf0c18&output_0 3ea62dc9-cab4-49a0-a3e2-608eaf960ab2&input_0\": [\n" +
+                    "                        \"03500f88-5ae0-4aef-ab6d-b4ae13163c8c&output_0 e8ed4082-5dbc-4597-ab72-b8c85cc1c81a&input_0\": [\n" +
                     "                            {\n" +
                     "                                \"name\": \"a\",\n" +
                     "                                \"type\": \"STRING\",\n" +
@@ -302,7 +486,7 @@ class X6ToInternalConvertTest {
                     "                            {\n" +
                     "                                \"name\": \"b\",\n" +
                     "                                \"type\": \"STRING\",\n" +
-                    "                                \"flag\": false\n" +
+                    "                                \"flag\": true\n" +
                     "                            }\n" +
                     "                        ],\n" +
                     "                        \"out2\": [\n" +
@@ -317,7 +501,7 @@ class X6ToInternalConvertTest {
                     "                                \"flag\": true\n" +
                     "                            }\n" +
                     "                        ],\n" +
-                    "                        \"3ea62dc9-cab4-49a0-a3e2-608eaf960ab2&out1 30144850-cc01-4841-bc4f-e8e14a47cf2b&input_0\": [\n" +
+                    "                        \"e8ed4082-5dbc-4597-ab72-b8c85cc1c81a&out1 3665293d-6e7b-4eb9-bc82-316c3c43adf0&input_0\": [\n" +
                     "                            {\n" +
                     "                                \"name\": \"a\",\n" +
                     "                                \"type\": \"STRING\",\n" +
@@ -326,10 +510,22 @@ class X6ToInternalConvertTest {
                     "                            {\n" +
                     "                                \"name\": \"b\",\n" +
                     "                                \"type\": \"STRING\",\n" +
-                    "                                \"flag\": false\n" +
+                    "                                \"flag\": true\n" +
                     "                            }\n" +
                     "                        ],\n" +
-                    "                        \"3ea62dc9-cab4-49a0-a3e2-608eaf960ab2&out2 a6f09551-d13a-452d-8494-5f7f031c5ac8&input_0\": [\n" +
+                    "                        \"e8ed4082-5dbc-4597-ab72-b8c85cc1c81a&out2 c317798a-4f7b-435f-a68a-d8b5ef0d4cb5&input_0\": [\n" +
+                    "                            {\n" +
+                    "                                \"name\": \"a\",\n" +
+                    "                                \"type\": \"STRING\",\n" +
+                    "                                \"flag\": true\n" +
+                    "                            },\n" +
+                    "                            {\n" +
+                    "                                \"name\": \"b\",\n" +
+                    "                                \"type\": \"STRING\",\n" +
+                    "                                \"flag\": true\n" +
+                    "                            }\n" +
+                    "                        ],\n" +
+                    "                        \"e8ed4082-5dbc-4597-ab72-b8c85cc1c81a&out2 2e8ad85a-6d0f-4c33-9f68-b4e4244c0c70&input_0\": [\n" +
                     "                            {\n" +
                     "                                \"name\": \"a\",\n" +
                     "                                \"type\": \"STRING\",\n" +
@@ -343,12 +539,430 @@ class X6ToInternalConvertTest {
                     "                        ]\n" +
                     "                    }\n" +
                     "                ]\n" +
+                    "            },\n" +
+                    "            \"parent\": \"9a1d04da-6e02-4a26-aaa1-820920e88179\"\n" +
+                    "        },\n" +
+                    "        {\n" +
+                    "            \"shape\": \"edge\",\n" +
+                    "            \"attrs\": {\n" +
+                    "                \"line\": {\n" +
+                    "                    \"stroke\": \"#b2a2e9\",\n" +
+                    "                    \"targetMarker\": {\n" +
+                    "                        \"name\": \"classic\",\n" +
+                    "                        \"size\": 10\n" +
+                    "                    }\n" +
+                    "                }\n" +
+                    "            },\n" +
+                    "            \"id\": \"6b0b756e-787f-47f6-b81c-53f21b3e6af9\",\n" +
+                    "            \"zIndex\": 5,\n" +
+                    "            \"source\": {\n" +
+                    "                \"cell\": \"03500f88-5ae0-4aef-ab6d-b4ae13163c8c\",\n" +
+                    "                \"port\": \"output_0\"\n" +
+                    "            },\n" +
+                    "            \"target\": {\n" +
+                    "                \"cell\": \"e8ed4082-5dbc-4597-ab72-b8c85cc1c81a\",\n" +
+                    "                \"port\": \"input_0\"\n" +
                     "            }\n" +
                     "        },\n" +
                     "        {\n" +
                     "            \"position\": {\n" +
-                    "                \"x\": 40,\n" +
-                    "                \"y\": -60\n" +
+                    "                \"x\": -22,\n" +
+                    "                \"y\": -110.00000000000006\n" +
+                    "            },\n" +
+                    "            \"size\": {\n" +
+                    "                \"width\": 70,\n" +
+                    "                \"height\": 50\n" +
+                    "            },\n" +
+                    "            \"view\": \"react-shape-view\",\n" +
+                    "            \"attrs\": {\n" +
+                    "                \"body\": {\n" +
+                    "                    \"rx\": 7,\n" +
+                    "                    \"ry\": 6\n" +
+                    "                },\n" +
+                    "                \"text\": {\n" +
+                    "                    \"text\": \"CommWindowOperator\",\n" +
+                    "                    \"fontSize\": 2\n" +
+                    "                }\n" +
+                    "            },\n" +
+                    "            \"shape\": \"CommWindowOperator\",\n" +
+                    "            \"ports\": {\n" +
+                    "                \"groups\": {\n" +
+                    "                    \"outputs\": {\n" +
+                    "                        \"zIndex\": 999,\n" +
+                    "                        \"position\": \"right\",\n" +
+                    "                        \"markup\": {\n" +
+                    "                            \"tagName\": \"path\",\n" +
+                    "                            \"selector\": \"path\",\n" +
+                    "                            \"attrs\": {\n" +
+                    "                                \"d\": \"m-6,0,a5,5.5 0 0 1 12,0\",\n" +
+                    "                                \"fill\": \"#b2a2e9\",\n" +
+                    "                                \"transform\": \"rotate(90)\",\n" +
+                    "                                \"strokeWidth\": 1,\n" +
+                    "                                \"stroke\": \"null\"\n" +
+                    "                            }\n" +
+                    "                        },\n" +
+                    "                        \"attrs\": {\n" +
+                    "                            \"path\": {\n" +
+                    "                                \"r\": 8,\n" +
+                    "                                \"magnet\": true,\n" +
+                    "                                \"style\": {\n" +
+                    "                                    \"visibility\": \"hidden\"\n" +
+                    "                                }\n" +
+                    "                            }\n" +
+                    "                        }\n" +
+                    "                    },\n" +
+                    "                    \"inputs\": {\n" +
+                    "                        \"zIndex\": 999,\n" +
+                    "                        \"position\": \"left\",\n" +
+                    "                        \"markup\": {\n" +
+                    "                            \"tagName\": \"path\",\n" +
+                    "                            \"selector\": \"path\",\n" +
+                    "                            \"attrs\": {\n" +
+                    "                                \"d\": \"m-6,0,a5,5.5 0 0 1 12,0\",\n" +
+                    "                                \"fill\": \"#b2a2e9\",\n" +
+                    "                                \"transform\": \"rotate(-90)\",\n" +
+                    "                                \"strokeWidth\": 1,\n" +
+                    "                                \"stroke\": \"null\"\n" +
+                    "                            }\n" +
+                    "                        },\n" +
+                    "                        \"attrs\": {\n" +
+                    "                            \"path\": {\n" +
+                    "                                \"r\": 10,\n" +
+                    "                                \"magnet\": true,\n" +
+                    "                                \"style\": {\n" +
+                    "                                    \"visibility\": \"hidden\"\n" +
+                    "                                }\n" +
+                    "                            }\n" +
+                    "                        }\n" +
+                    "                    }\n" +
+                    "                },\n" +
+                    "                \"items\": [\n" +
+                    "                    {\n" +
+                    "                        \"group\": \"inputs\",\n" +
+                    "                        \"id\": \"input_0\",\n" +
+                    "                        \"zIndex\": 999,\n" +
+                    "                        \"attrs\": {\n" +
+                    "                            \"text\": {\n" +
+                    "                                \"text\": \"input_0\",\n" +
+                    "                                \"style\": {\n" +
+                    "                                    \"visibility\": \"hidden\",\n" +
+                    "                                    \"fontSize\": 10,\n" +
+                    "                                    \"fill\": \"#3B4351\"\n" +
+                    "                                }\n" +
+                    "                            }\n" +
+                    "                        },\n" +
+                    "                        \"label\": {\n" +
+                    "                            \"position\": \"bottom\"\n" +
+                    "                        }\n" +
+                    "                    },\n" +
+                    "                    {\n" +
+                    "                        \"group\": \"outputs\",\n" +
+                    "                        \"zIndex\": 999,\n" +
+                    "                        \"id\": \"output_0\",\n" +
+                    "                        \"attrs\": {\n" +
+                    "                            \"text\": {\n" +
+                    "                                \"text\": \"output_0\",\n" +
+                    "                                \"style\": {\n" +
+                    "                                    \"visibility\": \"hidden\",\n" +
+                    "                                    \"fontSize\": 10,\n" +
+                    "                                    \"fill\": \"#3B4351\"\n" +
+                    "                                }\n" +
+                    "                            }\n" +
+                    "                        },\n" +
+                    "                        \"label\": {\n" +
+                    "                            \"position\": \"bottom\"\n" +
+                    "                        }\n" +
+                    "                    }\n" +
+                    "                ]\n" +
+                    "            },\n" +
+                    "            \"id\": \"3665293d-6e7b-4eb9-bc82-316c3c43adf0\",\n" +
+                    "            \"name\": \"CommWindowOperator\",\n" +
+                    "            \"zIndex\": 6,\n" +
+                    "            \"data\": {\n" +
+                    "                \"parameters\": {\n" +
+                    "                    \"orderBy\": [],\n" +
+                    "                    \"where\": \"1=1\",\n" +
+                    "                    \"limit\": [],\n" +
+                    "                    \"group\": null,\n" +
+                    "                    \"window\": null,\n" +
+                    "                    \"columns\": [\n" +
+                    "                        {\n" +
+                    "                            \"functionName\": \"\",\n" +
+                    "                            \"name\": \"out1\",\n" +
+                    "                            \"parameters\": [\n" +
+                    "                                \"a\"\n" +
+                    "                            ],\n" +
+                    "                            \"flag\": true\n" +
+                    "                        },\n" +
+                    "                        {\n" +
+                    "                            \"functionName\": \"\",\n" +
+                    "                            \"name\": \"out2\",\n" +
+                    "                            \"parameters\": [\n" +
+                    "                                \"b\"\n" +
+                    "                            ],\n" +
+                    "                            \"flag\": true\n" +
+                    "                        }\n" +
+                    "                    ]\n" +
+                    "                },\n" +
+                    "                \"config\": [\n" +
+                    "                    {\n" +
+                    "                        \"e8ed4082-5dbc-4597-ab72-b8c85cc1c81a&out1 3665293d-6e7b-4eb9-bc82-316c3c43adf0&input_0\": [\n" +
+                    "                            {\n" +
+                    "                                \"name\": \"a\",\n" +
+                    "                                \"type\": \"STRING\",\n" +
+                    "                                \"flag\": true\n" +
+                    "                            },\n" +
+                    "                            {\n" +
+                    "                                \"name\": \"b\",\n" +
+                    "                                \"type\": \"STRING\",\n" +
+                    "                                \"flag\": true\n" +
+                    "                            }\n" +
+                    "                        ]\n" +
+                    "                    }\n" +
+                    "                ]\n" +
+                    "            },\n" +
+                    "            \"parent\": \"9a1d04da-6e02-4a26-aaa1-820920e88179\"\n" +
+                    "        },\n" +
+                    "        {\n" +
+                    "            \"shape\": \"edge\",\n" +
+                    "            \"attrs\": {\n" +
+                    "                \"line\": {\n" +
+                    "                    \"stroke\": \"#b2a2e9\",\n" +
+                    "                    \"targetMarker\": {\n" +
+                    "                        \"name\": \"classic\",\n" +
+                    "                        \"size\": 10\n" +
+                    "                    }\n" +
+                    "                }\n" +
+                    "            },\n" +
+                    "            \"id\": \"1975bce5-bae2-42ba-b20c-8ec1503d57f2\",\n" +
+                    "            \"zIndex\": 7,\n" +
+                    "            \"source\": {\n" +
+                    "                \"cell\": \"e8ed4082-5dbc-4597-ab72-b8c85cc1c81a\",\n" +
+                    "                \"port\": \"out1\"\n" +
+                    "            },\n" +
+                    "            \"target\": {\n" +
+                    "                \"cell\": \"3665293d-6e7b-4eb9-bc82-316c3c43adf0\",\n" +
+                    "                \"port\": \"input_0\"\n" +
+                    "            },\n" +
+                    "            \"parent\": \"9a1d04da-6e02-4a26-aaa1-820920e88179\"\n" +
+                    "        },\n" +
+                    "        {\n" +
+                    "            \"shape\": \"edge\",\n" +
+                    "            \"attrs\": {\n" +
+                    "                \"line\": {\n" +
+                    "                    \"stroke\": \"#b2a2e9\",\n" +
+                    "                    \"targetMarker\": {\n" +
+                    "                        \"name\": \"classic\",\n" +
+                    "                        \"size\": 10\n" +
+                    "                    }\n" +
+                    "                }\n" +
+                    "            },\n" +
+                    "            \"id\": \"a4dc82ef-8d50-4107-989f-8b884718213f\",\n" +
+                    "            \"zIndex\": 8,\n" +
+                    "            \"source\": {\n" +
+                    "                \"cell\": \"3665293d-6e7b-4eb9-bc82-316c3c43adf0\",\n" +
+                    "                \"port\": \"output_0\"\n" +
+                    "            },\n" +
+                    "            \"target\": {\n" +
+                    "                \"cell\": \"bceee3e8-8830-4305-bcbb-4f98e079b3ec\",\n" +
+                    "                \"port\": \"input_0\"\n" +
+                    "            }\n" +
+                    "        },\n" +
+                    "        {\n" +
+                    "            \"position\": {\n" +
+                    "                \"x\": -22,\n" +
+                    "                \"y\": -25.000000000000057\n" +
+                    "            },\n" +
+                    "            \"size\": {\n" +
+                    "                \"width\": 70,\n" +
+                    "                \"height\": 50\n" +
+                    "            },\n" +
+                    "            \"view\": \"react-shape-view\",\n" +
+                    "            \"attrs\": {\n" +
+                    "                \"body\": {\n" +
+                    "                    \"rx\": 7,\n" +
+                    "                    \"ry\": 6\n" +
+                    "                },\n" +
+                    "                \"text\": {\n" +
+                    "                    \"text\": \"CommWindowOperator\",\n" +
+                    "                    \"fontSize\": 2\n" +
+                    "                }\n" +
+                    "            },\n" +
+                    "            \"shape\": \"CommWindowOperator\",\n" +
+                    "            \"ports\": {\n" +
+                    "                \"groups\": {\n" +
+                    "                    \"outputs\": {\n" +
+                    "                        \"zIndex\": 999,\n" +
+                    "                        \"position\": \"right\",\n" +
+                    "                        \"markup\": {\n" +
+                    "                            \"tagName\": \"path\",\n" +
+                    "                            \"selector\": \"path\",\n" +
+                    "                            \"attrs\": {\n" +
+                    "                                \"d\": \"m-6,0,a5,5.5 0 0 1 12,0\",\n" +
+                    "                                \"fill\": \"#b2a2e9\",\n" +
+                    "                                \"transform\": \"rotate(90)\",\n" +
+                    "                                \"strokeWidth\": 1,\n" +
+                    "                                \"stroke\": \"null\"\n" +
+                    "                            }\n" +
+                    "                        },\n" +
+                    "                        \"attrs\": {\n" +
+                    "                            \"path\": {\n" +
+                    "                                \"r\": 8,\n" +
+                    "                                \"magnet\": true,\n" +
+                    "                                \"style\": {\n" +
+                    "                                    \"visibility\": \"hidden\"\n" +
+                    "                                }\n" +
+                    "                            }\n" +
+                    "                        }\n" +
+                    "                    },\n" +
+                    "                    \"inputs\": {\n" +
+                    "                        \"zIndex\": 999,\n" +
+                    "                        \"position\": \"left\",\n" +
+                    "                        \"markup\": {\n" +
+                    "                            \"tagName\": \"path\",\n" +
+                    "                            \"selector\": \"path\",\n" +
+                    "                            \"attrs\": {\n" +
+                    "                                \"d\": \"m-6,0,a5,5.5 0 0 1 12,0\",\n" +
+                    "                                \"fill\": \"#b2a2e9\",\n" +
+                    "                                \"transform\": \"rotate(-90)\",\n" +
+                    "                                \"strokeWidth\": 1,\n" +
+                    "                                \"stroke\": \"null\"\n" +
+                    "                            }\n" +
+                    "                        },\n" +
+                    "                        \"attrs\": {\n" +
+                    "                            \"path\": {\n" +
+                    "                                \"r\": 10,\n" +
+                    "                                \"magnet\": true,\n" +
+                    "                                \"style\": {\n" +
+                    "                                    \"visibility\": \"hidden\"\n" +
+                    "                                }\n" +
+                    "                            }\n" +
+                    "                        }\n" +
+                    "                    }\n" +
+                    "                },\n" +
+                    "                \"items\": [\n" +
+                    "                    {\n" +
+                    "                        \"group\": \"inputs\",\n" +
+                    "                        \"id\": \"input_0\",\n" +
+                    "                        \"zIndex\": 999,\n" +
+                    "                        \"attrs\": {\n" +
+                    "                            \"text\": {\n" +
+                    "                                \"text\": \"input_0\",\n" +
+                    "                                \"style\": {\n" +
+                    "                                    \"visibility\": \"hidden\",\n" +
+                    "                                    \"fontSize\": 10,\n" +
+                    "                                    \"fill\": \"#3B4351\"\n" +
+                    "                                }\n" +
+                    "                            }\n" +
+                    "                        },\n" +
+                    "                        \"label\": {\n" +
+                    "                            \"position\": \"bottom\"\n" +
+                    "                        }\n" +
+                    "                    },\n" +
+                    "                    {\n" +
+                    "                        \"group\": \"outputs\",\n" +
+                    "                        \"zIndex\": 999,\n" +
+                    "                        \"id\": \"output_0\",\n" +
+                    "                        \"attrs\": {\n" +
+                    "                            \"text\": {\n" +
+                    "                                \"text\": \"output_0\",\n" +
+                    "                                \"style\": {\n" +
+                    "                                    \"visibility\": \"hidden\",\n" +
+                    "                                    \"fontSize\": 10,\n" +
+                    "                                    \"fill\": \"#3B4351\"\n" +
+                    "                                }\n" +
+                    "                            }\n" +
+                    "                        },\n" +
+                    "                        \"label\": {\n" +
+                    "                            \"position\": \"bottom\"\n" +
+                    "                        }\n" +
+                    "                    }\n" +
+                    "                ]\n" +
+                    "            },\n" +
+                    "            \"id\": \"2e8ad85a-6d0f-4c33-9f68-b4e4244c0c70\",\n" +
+                    "            \"name\": \"CommWindowOperator\",\n" +
+                    "            \"zIndex\": 9,\n" +
+                    "            \"data\": {\n" +
+                    "                \"parameters\": {\n" +
+                    "                    \"orderBy\": [\n" +
+                    "                        {\n" +
+                    "                            \"order\": \"a\",\n" +
+                    "                            \"sort\": \"ACS\"\n" +
+                    "                        },\n" +
+                    "                        {\n" +
+                    "                            \"order\": \"b\",\n" +
+                    "                            \"sort\": \"DESC\"\n" +
+                    "                        }\n" +
+                    "                    ],\n" +
+                    "                    \"where\": \"2=2\",\n" +
+                    "                    \"limit\": [],\n" +
+                    "                    \"group\": null,\n" +
+                    "                    \"window\": null,\n" +
+                    "                    \"columns\": [\n" +
+                    "                        {\n" +
+                    "                            \"functionName\": \"\",\n" +
+                    "                            \"name\": \"s2\",\n" +
+                    "                            \"parameters\": [\n" +
+                    "                                \"a\"\n" +
+                    "                            ],\n" +
+                    "                            \"flag\": true\n" +
+                    "                        },\n" +
+                    "                        {\n" +
+                    "                            \"functionName\": \"\",\n" +
+                    "                            \"name\": \"s3\",\n" +
+                    "                            \"parameters\": [\n" +
+                    "                                \"b\"\n" +
+                    "                            ],\n" +
+                    "                            \"flag\": true\n" +
+                    "                        }\n" +
+                    "                    ]\n" +
+                    "                },\n" +
+                    "                \"config\": [\n" +
+                    "                    {\n" +
+                    "                        \"e8ed4082-5dbc-4597-ab72-b8c85cc1c81a&out2 2e8ad85a-6d0f-4c33-9f68-b4e4244c0c70&input_0\": [\n" +
+                    "                            {\n" +
+                    "                                \"name\": \"a\",\n" +
+                    "                                \"type\": \"STRING\",\n" +
+                    "                                \"flag\": true\n" +
+                    "                            },\n" +
+                    "                            {\n" +
+                    "                                \"name\": \"b\",\n" +
+                    "                                \"type\": \"STRING\",\n" +
+                    "                                \"flag\": true\n" +
+                    "                            }\n" +
+                    "                        ]\n" +
+                    "                    }\n" +
+                    "                ]\n" +
+                    "            },\n" +
+                    "            \"parent\": \"9a1d04da-6e02-4a26-aaa1-820920e88179\"\n" +
+                    "        },\n" +
+                    "        {\n" +
+                    "            \"shape\": \"edge\",\n" +
+                    "            \"attrs\": {\n" +
+                    "                \"line\": {\n" +
+                    "                    \"stroke\": \"#b2a2e9\",\n" +
+                    "                    \"targetMarker\": {\n" +
+                    "                        \"name\": \"classic\",\n" +
+                    "                        \"size\": 10\n" +
+                    "                    }\n" +
+                    "                }\n" +
+                    "            },\n" +
+                    "            \"id\": \"afe6a8b5-8be6-4c75-914c-95595be071be\",\n" +
+                    "            \"zIndex\": 10,\n" +
+                    "            \"source\": {\n" +
+                    "                \"cell\": \"e8ed4082-5dbc-4597-ab72-b8c85cc1c81a\",\n" +
+                    "                \"port\": \"out2\"\n" +
+                    "            },\n" +
+                    "            \"target\": {\n" +
+                    "                \"cell\": \"2e8ad85a-6d0f-4c33-9f68-b4e4244c0c70\",\n" +
+                    "                \"port\": \"input_0\"\n" +
+                    "            },\n" +
+                    "            \"parent\": \"9a1d04da-6e02-4a26-aaa1-820920e88179\"\n" +
+                    "        },\n" +
+                    "        {\n" +
+                    "            \"position\": {\n" +
+                    "                \"x\": 150,\n" +
+                    "                \"y\": -25\n" +
                     "            },\n" +
                     "            \"size\": {\n" +
                     "                \"width\": 70,\n" +
@@ -438,9 +1052,9 @@ class X6ToInternalConvertTest {
                     "                    }\n" +
                     "                ]\n" +
                     "            },\n" +
-                    "            \"id\": \"30144850-cc01-4841-bc4f-e8e14a47cf2b\",\n" +
+                    "            \"id\": \"ecf35703-61c4-4582-aa83-47010691740b\",\n" +
                     "            \"name\": \"MysqlSink\",\n" +
-                    "            \"zIndex\": 3,\n" +
+                    "            \"zIndex\": 11,\n" +
                     "            \"data\": {\n" +
                     "                \"parameters\": {\n" +
                     "                    \"tableName\": \"asdasas\",\n" +
@@ -451,12 +1065,12 @@ class X6ToInternalConvertTest {
                     "                    \"other\": [],\n" +
                     "                    \"columns\": [\n" +
                     "                        {\n" +
-                    "                            \"name\": \"aa1\",\n" +
+                    "                            \"name\": \"oo1\",\n" +
                     "                            \"type\": \"STRING\",\n" +
                     "                            \"flag\": true\n" +
                     "                        },\n" +
                     "                        {\n" +
-                    "                            \"name\": \"bb1\",\n" +
+                    "                            \"name\": \"oo2\",\n" +
                     "                            \"type\": \"STRING\",\n" +
                     "                            \"flag\": true\n" +
                     "                        }\n" +
@@ -470,156 +1084,21 @@ class X6ToInternalConvertTest {
                     "                },\n" +
                     "                \"config\": [\n" +
                     "                    {\n" +
-                    "                        \"3ea62dc9-cab4-49a0-a3e2-608eaf960ab2&out1 30144850-cc01-4841-bc4f-e8e14a47cf2b&input_0\": [\n" +
+                    "                        \"2e8ad85a-6d0f-4c33-9f68-b4e4244c0c70&output_0 ecf35703-61c4-4582-aa83-47010691740b&input_0\": [\n" +
                     "                            {\n" +
-                    "                                \"name\": \"a\",\n" +
-                    "                                \"type\": \"STRING\",\n" +
+                    "                                \"functionName\": \"\",\n" +
+                    "                                \"name\": \"s2\",\n" +
+                    "                                \"parameters\": [\n" +
+                    "                                    \"a\"\n" +
+                    "                                ],\n" +
                     "                                \"flag\": true\n" +
                     "                            },\n" +
                     "                            {\n" +
-                    "                                \"name\": \"b\",\n" +
-                    "                                \"type\": \"STRING\",\n" +
-                    "                                \"flag\": false\n" +
-                    "                            }\n" +
-                    "                        ]\n" +
-                    "                    }\n" +
-                    "                ]\n" +
-                    "            }\n" +
-                    "        },\n" +
-                    "        {\n" +
-                    "            \"position\": {\n" +
-                    "                \"x\": 40,\n" +
-                    "                \"y\": 40\n" +
-                    "            },\n" +
-                    "            \"size\": {\n" +
-                    "                \"width\": 70,\n" +
-                    "                \"height\": 50\n" +
-                    "            },\n" +
-                    "            \"view\": \"react-shape-view\",\n" +
-                    "            \"attrs\": {\n" +
-                    "                \"body\": {\n" +
-                    "                    \"rx\": 7,\n" +
-                    "                    \"ry\": 6\n" +
-                    "                },\n" +
-                    "                \"text\": {\n" +
-                    "                    \"text\": \"MysqlSink\",\n" +
-                    "                    \"fontSize\": 2\n" +
-                    "                }\n" +
-                    "            },\n" +
-                    "            \"shape\": \"MysqlSinkOperator\",\n" +
-                    "            \"ports\": {\n" +
-                    "                \"groups\": {\n" +
-                    "                    \"outputs\": {\n" +
-                    "                        \"zIndex\": 999,\n" +
-                    "                        \"position\": \"right\",\n" +
-                    "                        \"markup\": {\n" +
-                    "                            \"tagName\": \"path\",\n" +
-                    "                            \"selector\": \"path\",\n" +
-                    "                            \"attrs\": {\n" +
-                    "                                \"d\": \"m-6,0,a5,5.5 0 0 1 12,0\",\n" +
-                    "                                \"fill\": \"#b2a2e9\",\n" +
-                    "                                \"transform\": \"rotate(90)\",\n" +
-                    "                                \"strokeWidth\": 1,\n" +
-                    "                                \"stroke\": \"null\"\n" +
-                    "                            }\n" +
-                    "                        },\n" +
-                    "                        \"attrs\": {\n" +
-                    "                            \"path\": {\n" +
-                    "                                \"r\": 8,\n" +
-                    "                                \"magnet\": true,\n" +
-                    "                                \"style\": {\n" +
-                    "                                    \"visibility\": \"hidden\"\n" +
-                    "                                }\n" +
-                    "                            }\n" +
-                    "                        }\n" +
-                    "                    },\n" +
-                    "                    \"inputs\": {\n" +
-                    "                        \"zIndex\": 999,\n" +
-                    "                        \"position\": \"left\",\n" +
-                    "                        \"markup\": {\n" +
-                    "                            \"tagName\": \"path\",\n" +
-                    "                            \"selector\": \"path\",\n" +
-                    "                            \"attrs\": {\n" +
-                    "                                \"d\": \"m-6,0,a5,5.5 0 0 1 12,0\",\n" +
-                    "                                \"fill\": \"#b2a2e9\",\n" +
-                    "                                \"transform\": \"rotate(-90)\",\n" +
-                    "                                \"strokeWidth\": 1,\n" +
-                    "                                \"stroke\": \"null\"\n" +
-                    "                            }\n" +
-                    "                        },\n" +
-                    "                        \"attrs\": {\n" +
-                    "                            \"path\": {\n" +
-                    "                                \"r\": 10,\n" +
-                    "                                \"magnet\": true,\n" +
-                    "                                \"style\": {\n" +
-                    "                                    \"visibility\": \"hidden\"\n" +
-                    "                                }\n" +
-                    "                            }\n" +
-                    "                        }\n" +
-                    "                    }\n" +
-                    "                },\n" +
-                    "                \"items\": [\n" +
-                    "                    {\n" +
-                    "                        \"group\": \"inputs\",\n" +
-                    "                        \"id\": \"input_0\",\n" +
-                    "                        \"zIndex\": 999,\n" +
-                    "                        \"attrs\": {\n" +
-                    "                            \"text\": {\n" +
-                    "                                \"text\": \"input_0\",\n" +
-                    "                                \"style\": {\n" +
-                    "                                    \"visibility\": \"hidden\",\n" +
-                    "                                    \"fontSize\": 10,\n" +
-                    "                                    \"fill\": \"#3B4351\"\n" +
-                    "                                }\n" +
-                    "                            }\n" +
-                    "                        },\n" +
-                    "                        \"label\": {\n" +
-                    "                            \"position\": \"bottom\"\n" +
-                    "                        }\n" +
-                    "                    }\n" +
-                    "                ]\n" +
-                    "            },\n" +
-                    "            \"id\": \"a6f09551-d13a-452d-8494-5f7f031c5ac8\",\n" +
-                    "            \"name\": \"MysqlSink\",\n" +
-                    "            \"zIndex\": 4,\n" +
-                    "            \"data\": {\n" +
-                    "                \"parameters\": {\n" +
-                    "                    \"tableName\": \"asdasd\",\n" +
-                    "                    \"connector\": \"jdbc\",\n" +
-                    "                    \"url\": \"asad\",\n" +
-                    "                    \"username\": \"root\",\n" +
-                    "                    \"password\": \"123456\",\n" +
-                    "                    \"other\": [],\n" +
-                    "                    \"columns\": [\n" +
-                    "                        {\n" +
-                    "                            \"name\": \"aa2\",\n" +
-                    "                            \"type\": \"STRING\",\n" +
-                    "                            \"flag\": true\n" +
-                    "                        },\n" +
-                    "                        {\n" +
-                    "                            \"name\": \"bb2\",\n" +
-                    "                            \"type\": \"STRING\",\n" +
-                    "                            \"flag\": true\n" +
-                    "                        }\n" +
-                    "                    ],\n" +
-                    "                    \"primary\": \"\",\n" +
-                    "                    \"watermark\": {\n" +
-                    "                        \"column\": \"\",\n" +
-                    "                        \"timeSpan\": 0,\n" +
-                    "                        \"timeUnit\": \"SECOND\"\n" +
-                    "                    }\n" +
-                    "                },\n" +
-                    "                \"config\": [\n" +
-                    "                    {\n" +
-                    "                        \"3ea62dc9-cab4-49a0-a3e2-608eaf960ab2&out2 a6f09551-d13a-452d-8494-5f7f031c5ac8&input_0\": [\n" +
-                    "                            {\n" +
-                    "                                \"name\": \"a\",\n" +
-                    "                                \"type\": \"STRING\",\n" +
-                    "                                \"flag\": true\n" +
-                    "                            },\n" +
-                    "                            {\n" +
-                    "                                \"name\": \"b\",\n" +
-                    "                                \"type\": \"STRING\",\n" +
+                    "                                \"functionName\": \"\",\n" +
+                    "                                \"name\": \"s3\",\n" +
+                    "                                \"parameters\": [\n" +
+                    "                                    \"b\"\n" +
+                    "                                ],\n" +
                     "                                \"flag\": true\n" +
                     "                            }\n" +
                     "                        ]\n" +
@@ -638,65 +1117,21 @@ class X6ToInternalConvertTest {
                     "                    }\n" +
                     "                }\n" +
                     "            },\n" +
-                    "            \"id\": \"1b017035-2b4b-4e3d-bbc4-51c2c65ba20e\",\n" +
+                    "            \"id\": \"92e7fbf8-dbb5-4a14-b839-29967d276d3c\",\n" +
+                    "            \"zIndex\": 12,\n" +
                     "            \"source\": {\n" +
-                    "                \"cell\": \"5fc5a34a-ff18-4509-9d20-3149f8cf0c18\",\n" +
+                    "                \"cell\": \"2e8ad85a-6d0f-4c33-9f68-b4e4244c0c70\",\n" +
                     "                \"port\": \"output_0\"\n" +
                     "            },\n" +
                     "            \"target\": {\n" +
-                    "                \"cell\": \"3ea62dc9-cab4-49a0-a3e2-608eaf960ab2\",\n" +
+                    "                \"cell\": \"ecf35703-61c4-4582-aa83-47010691740b\",\n" +
                     "                \"port\": \"input_0\"\n" +
-                    "            },\n" +
-                    "            \"zIndex\": 5\n" +
-                    "        },\n" +
-                    "        {\n" +
-                    "            \"shape\": \"edge\",\n" +
-                    "            \"attrs\": {\n" +
-                    "                \"line\": {\n" +
-                    "                    \"stroke\": \"#b2a2e9\",\n" +
-                    "                    \"targetMarker\": {\n" +
-                    "                        \"name\": \"classic\",\n" +
-                    "                        \"size\": 10\n" +
-                    "                    }\n" +
-                    "                }\n" +
-                    "            },\n" +
-                    "            \"id\": \"59329704-e65a-4742-bbfe-9cf5bd239d2a\",\n" +
-                    "            \"source\": {\n" +
-                    "                \"cell\": \"3ea62dc9-cab4-49a0-a3e2-608eaf960ab2\",\n" +
-                    "                \"port\": \"out1\"\n" +
-                    "            },\n" +
-                    "            \"target\": {\n" +
-                    "                \"cell\": \"30144850-cc01-4841-bc4f-e8e14a47cf2b\",\n" +
-                    "                \"port\": \"input_0\"\n" +
-                    "            },\n" +
-                    "            \"zIndex\": 6\n" +
-                    "        },\n" +
-                    "        {\n" +
-                    "            \"shape\": \"edge\",\n" +
-                    "            \"attrs\": {\n" +
-                    "                \"line\": {\n" +
-                    "                    \"stroke\": \"#b2a2e9\",\n" +
-                    "                    \"targetMarker\": {\n" +
-                    "                        \"name\": \"classic\",\n" +
-                    "                        \"size\": 10\n" +
-                    "                    }\n" +
-                    "                }\n" +
-                    "            },\n" +
-                    "            \"id\": \"19705152-3e8d-415c-9c2b-524d70ddd564\",\n" +
-                    "            \"source\": {\n" +
-                    "                \"cell\": \"3ea62dc9-cab4-49a0-a3e2-608eaf960ab2\",\n" +
-                    "                \"port\": \"out2\"\n" +
-                    "            },\n" +
-                    "            \"target\": {\n" +
-                    "                \"cell\": \"a6f09551-d13a-452d-8494-5f7f031c5ac8\",\n" +
-                    "                \"port\": \"input_0\"\n" +
-                    "            },\n" +
-                    "            \"zIndex\": 7\n" +
+                    "            }\n" +
                     "        }\n" +
                     "    ]\n" +
                     "}";
 
-        @SneakyThrows
+
         public static void main(String [] args){
 
             X6ToInternalConvert x6 = new X6ToInternalConvert();
@@ -705,5 +1140,6 @@ class X6ToInternalConvertTest {
             SceneCodeBuilder su = new SceneCodeBuilder(result);
             final String build = su.build();
             System.out.println(build);
-    }
+
+        }
 }

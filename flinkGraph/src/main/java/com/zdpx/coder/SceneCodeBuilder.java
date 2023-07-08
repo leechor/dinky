@@ -97,7 +97,7 @@ public class SceneCodeBuilder {
     /** 广度优先遍历计算节点, 生成相对应的源码 */
     private void createOperatorsCode() {
         List<Operator> sinkOperatorNodes =
-                Scene.getSinkOperatorNodes(this.scene.getProcessPackage());
+                Scene.getSinkOperatorNodes(this.scene.getProcess());
         List<Operator> sinks = new ArrayList<>(sinkOperatorNodes);
         Deque<Operator> ops = new ArrayDeque<>();
 

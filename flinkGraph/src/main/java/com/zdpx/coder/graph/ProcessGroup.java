@@ -2,14 +2,12 @@ package com.zdpx.coder.graph;
 
 import com.zdpx.coder.operator.Operator;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class ProcessGroup extends Operator implements NodeCollection {
+public class ProcessGroup extends Operator  implements NodeCollection {
     private boolean expanded;
-    ProcessPackage processPackage = new ProcessPackage();
+
     // region getter/setter
 
 
@@ -22,27 +20,44 @@ public class ProcessGroup extends Operator implements NodeCollection {
     }
 
     public Set<Operator> getOperators() {
-        return processPackage.getOperators();
+        return getNodeWrapper().getChildren().stream()
+                .filter(Operator.class::isInstance)
+                .map(t -> (Operator) t)
+                .collect(Collectors.toSet());
     }
 
-    public Set<ProcessPackage> getProcessPackages() {
-        return processPackage.getProcessPackages();
+    public Set<NodeCollection> getProcessPackages() {
+        return getNodeWrapper().getChildren().stream()
+                .filter(ProcessPackage.class::isInstance)
+                .map(t -> (ProcessPackage) t)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<NodeCollection> getProcessGroup() {
+        return getNodeWrapper().getChildren().stream()
+                .filter(ProcessGroup.class::isInstance)
+                .map(t -> (ProcessGroup) t)
+                .collect(Collectors.toSet());
     }
 
     public void setChildren(Set<Node> originOperatorWrappers) {
-        processPackage.setChildren(originOperatorWrappers);
+        getNodeWrapper().setChildren(new ArrayList<>(originOperatorWrappers));
     }
 
     public void addOperator(Operator operator) {
-        processPackage.addOperator(operator);
+        getNodeWrapper().getChildren().add(operator);
     }
 
     public List<Node> getChildren() {
-        return processPackage.getChildren();
+        return getNodeWrapper().getChildren();
     }
 
     public List<Connection> getConnects() {
-        return processPackage.getConnects();
+        return getNodeWrapper().getChildren().stream()
+                .filter(Connection.class::isInstance)
+                .map(t -> (Connection) t)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -64,4 +79,5 @@ public class ProcessGroup extends Operator implements NodeCollection {
     protected void execute() {
 
     }
+
 }
