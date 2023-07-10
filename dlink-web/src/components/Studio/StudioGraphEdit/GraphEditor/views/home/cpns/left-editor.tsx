@@ -15,18 +15,16 @@ import { CustomMenu } from './menu';
 import { initMenu } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/init-menu';
 import NodeModalForm from '@/components/Studio/StudioGraphEdit/GraphEditor/components/node-modal-form';
 import styles from './index.less';
-import { message, Tabs, Dropdown, Menu } from 'antd';
+import { message, Breadcrumb } from 'antd';
+import { CaretRightOutlined } from '@ant-design/icons';
 import AddModalPort from '../../../components/add-port-modal';
 import {
-  changeCurrentSelectNode, addGraphTabs
+  changeCurrentSelectNode,
+  removeGraphTabs,
+  changePositon
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import localCache from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/localStorage"
 import { cloneDeep } from 'lodash';
-import TabPane from 'antd/lib/tabs/TabPane';
-import { l } from '@/utils/intl';
-import GroupNode from './group-node';
-import type { GraphTabsItem, GraphTabs } from "@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home"
-
 
 export interface ParametersConfigType {
   name: string,
@@ -447,64 +445,24 @@ const LeftEditor = memo(() => {
   const changeNode = (node: Cell) => {
     dispatch(changeCurrentSelectNode(node))
   }
+  const changePosition = (x:number,y:number) => {
+    dispatch(changePositon({ x, y }))
+  }
   const handleClickMenu = (e: any, current: any) => {
 
 
   };
-  const menu = (pane: GraphTabsItem) => (
-    <Menu onClick={(e) => handleClickMenu(e, pane)}>
-      <Menu.Item key="CLOSE_ALL">
-        <span>{l('right.menu.closeAll')}</span>
-      </Menu.Item>
-      <Menu.Item key="CLOSE_OTHER">
-        <span>{l('right.menu.closeOther')}</span>
-      </Menu.Item>
-    </Menu>
-  );
-  const Tab = (pane: GraphTabsItem) => (
-
-    <span>
-      {pane.key === "0" ? (
-        <>
-          {pane.title}
-        </>
-      ) : (
-        <Dropdown overlay={menu(pane)} trigger={['contextMenu']}>
-          <span className="ant-dropdown-link">
-            <>
-              {pane.title}
-            </>
-          </span>
-        </Dropdown>
-      )}
-    </span>
-  );
-  const onChange = () => { }
-  const onEdit = () => { }
-  const getTabPane = (pane: GraphTabsItem, i: number) => {
-
-    if (pane.key === "0") {
-      return (<TabPane tab={Tab(pane)} key={pane.key} closable={pane.closable}>
-        <div ref={editorContentRef} className={styles['x6-graph']}>
-          {showMenuInfo.show && (
-            <CustomMenu
-              top={showMenuInfo.top}
-              left={showMenuInfo.left}
-              node={showMenuInfo.node!}
-              graph={graphRef.current!}
-              show={showMenuInfo.show}
-              handleShowMenu={handleShowMenu}
-            />
-          )}
-        </div>
-      </TabPane>)
-    } else {
-      return (<TabPane tab={Tab(pane)} key={pane.key} closable={pane.closable}>
-        <GroupNode></GroupNode>
-      </TabPane>)
+  const tabClick = (tabId: string) => {
+    
+    dispatch(removeGraphTabs(tabId))
+  }
+  const getSubprocess = () => {
+    if (tabs.length !== 0) {
+      return tabs.map((tabId: string, index: number) => { return <Breadcrumb.Item onClick={() => (tabClick(tabId))}>{`subprocess${index}`}<CaretRightOutlined /></Breadcrumb.Item> })
     }
 
   }
+
   useEffect(() => {
     if (editorContentRef.current) {
       const editorContentContainer: HTMLElement = editorContentRef.current;
@@ -517,7 +475,7 @@ const LeftEditor = memo(() => {
         setSelectedNodes,
         dispatch,
       );
-      initMenu(graphRef.current, setShowMenuInfo, changeNode);
+      initMenu(graphRef.current, setShowMenuInfo, changeNode, changePosition);
 
       if (stencilRef.current) {
         const cloneRef: HTMLElement = stencilRef.current;
@@ -564,19 +522,22 @@ const LeftEditor = memo(() => {
         <div className={styles['leftEditor-editor']}>
 
           <div className={styles['editor-content']}>
-            <Tabs
-              hideAdd
-              type="editable-card"
-              size="small"
-              onChange={onChange}
-              activeKey={tabs.activeKey}
-              onEdit={onEdit}
-              className={styles['edit-tabs']}
-              style={{ width: "100%", height: "100%" }}
-
-            >
-              {tabs.panes.map((pane: GraphTabsItem, i: number) => getTabPane(pane, i))}
-            </Tabs>
+            <Breadcrumb>
+              {<Breadcrumb.Item onClick={() => { tabClick("0") }} >process<CaretRightOutlined /></Breadcrumb.Item>}
+              {getSubprocess()}
+            </Breadcrumb>
+            <div ref={editorContentRef} className={styles['x6-graph']}>
+              {showMenuInfo.show && (
+                <CustomMenu
+                  top={showMenuInfo.top}
+                  left={showMenuInfo.left}
+                  node={showMenuInfo.node!}
+                  graph={graphRef.current!}
+                  show={showMenuInfo.show}
+                  handleShowMenu={handleShowMenu}
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>

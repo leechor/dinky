@@ -2,7 +2,7 @@ import { Menu } from '@antv/x6-react-components';
 import { FC, memo, useState } from 'react';
 import { message, Radio, RadioChangeEvent, Space, Upload } from 'antd';
 import type { UploadProps } from 'antd/es/upload/interface';
-import { DataUri, Graph, Node } from '@antv/x6';
+import { DataUri, Graph, Node, Cell, Edge } from '@antv/x6';
 import '@antv/x6-react-components/es/menu/style/index.css';
 import {
   CopyOutlined,
@@ -20,8 +20,10 @@ import {
   UploadOutlined
 } from '@ant-design/icons';
 import CustomShape from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
-import { useAppSelector } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
+import { useAppSelector, useAppDispatch } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
 import { formatDate } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/math"
+import { changeUnselectedCells } from "@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home"
+import { edge } from '@antv/g2plot/lib/adaptor/geometries';
 
 type MenuPropsType = {
   top: number;
@@ -72,9 +74,14 @@ const DuplicateOperatorMenu = () => {
 
 export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, node, handleShowMenu, show }) => {
 
-  const { taskName } = useAppSelector((state) => ({
+  const { taskName, unSelectedCellIds, position } = useAppSelector((state) => ({
     taskName: state.home.taskName,
+    unSelectedCellIds: state.home.unSelectedCellIds,
+    position: state.home.position
   }));
+  console.log(position, ">>>>>>>>>>>>>>>>>pos");
+
+  const dispatch = useAppDispatch();
   const convertHorizontalAlign = (align: string) => {
     switch (align) {
       case 'left':
@@ -292,8 +299,64 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
         break;
     }
   };
+  const toggleVisibleInner = (cells: Cell[], visible: boolean, graph: Graph) => {
+    cells.forEach((cell) => {
+      const view = graph.findViewByCell(cell)?.container as HTMLElement;
+      view.style.visibility = visible ? 'visible' : 'hidden';
+    });
+  };
   const createProcess = () => {
+    
+    //获取选中包围盒的位置信息
+    // const selectedBox = document.getElementsByClassName("x6-widget-selection-inner")
+    // const rect = selectedBox[0].getBoundingClientRect();
+    // console.log(rect, 'rect');
+    // graph.positionRect(rect, "center")
+    // console.log(left, top, "left-top");
 
+    const cells = graph.getSelectedCells()
+    if (cells.length === 0) return
+    //查找框选中的节点与外界连线情况决定输入与输出连接桩
+
+    //查找桩个数
+    //查找所有连线
+    const allNodes = graph.getNodes();
+    const unSelectedNodes = allNodes.filter(allNode =>
+      !cells.some(select => select.id === allNode.id)
+    )
+    let unSelectOutGoEdges: Edge[] = [];
+    let unSelectInComingEdegs: Edge[] = [];
+    let innerComingEdges: Edge[] = [];
+    let innerOutgoingEdges: Edge[] = []
+    unSelectedNodes.forEach(node => {
+      const oedges = graph.model.getOutgoingEdges(node)
+      const cdges = graph.model.getIncomingEdges(node)
+      if (oedges) {
+        unSelectOutGoEdges = [...unSelectOutGoEdges, ...oedges]
+      }
+      if (cdges) {
+        unSelectInComingEdegs = [...unSelectOutGoEdges, ...cdges]
+      }
+    })
+
+    cells.map(cell => {
+      const cedges = graph.model.getIncomingEdges(cell)
+      const oedges = graph.model.getOutgoingEdges(cell)
+      if (cedges) {
+        innerComingEdges = [...innerComingEdges, ...cedges]
+      }
+      if (oedges) {
+        innerOutgoingEdges = [...innerOutgoingEdges, ...oedges]
+      }
+    })
+    //获取输入所有边
+    const selectedIncommingEdge: (Edge | null)[] = unSelectOutGoEdges.filter(outEdge =>
+      innerComingEdges.some(innerEdge => innerEdge.id === outEdge.id))
+    console.log(selectedIncommingEdge, "selectedIncommingEdge");
+    //获取输出所有边
+    const selectedOutgoingEdge: (Edge | null)[] = unSelectInComingEdegs.filter(incomeEdge =>
+      innerOutgoingEdges.some(innerEdge => innerEdge.id === incomeEdge.id))
+    console.log(selectedOutgoingEdge, "selectedOutgoingEdge");
     const node = graph.createNode({
       name: "param.name",
       shape: CustomShape.GROUP_PROCESS,
@@ -310,17 +373,43 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
         },
       },
     });
+    const childrenId = cells?.map(c => c.id)
     const group = graph.addNode(node);
-    const cells = graph.getSelectedCells();
-    cells?.forEach(c => {
-      //隐藏选中的节点
-      c.toggleVisible();
+
+    //设置组节点位置
+    // let p = graph.pageToLocal(left, top)
+    // let p = graph.clientToLocal(position.x, position.y)
+    // group.setPosition(position.x, position.y)
+    graph.centerCell(group)
+
+    cells?.forEach((c) => {
+      //保存选中之前的位置
+      if (c.isNode()) {
+        c.prop("previousPostion", c.position())
+      }
+      const innerEdges = graph.getConnectedEdges(c).filter((edge) => {
+        return cells.includes(edge.getSourceNode()!) && cells.includes(edge.getTargetNode()!);
+      });
+      //隐藏选中的节点及边
+      [c, ...innerEdges].forEach(cell => {
+        cell.hide();
+      })
+      // toggleVisibleInner([c, ...innerEdges], false, graph);
       //将隐藏的节点添加进组节点
       group.addChild(c);
-      // graph.resetSelection(group)
-      graph.cleanSelection()
+    })
+    //将隐藏的节点设置为不可选
+    graph.setSelectionFilter((cell) => {
+      return !childrenId!.includes(cell.id)
     })
 
+    //将外部节点与组节点连线
+
+    
+    // const selectAbleIds:string:[] = unSelectedNodes.map(node => { id: node.id })
+    // graph.setSelectionFilter(selectAbleIds)
+    // 将该组节点子节点添加进不可选中数组中
+    // dispatch(changeUnselectedCells({ type: "push", data: { groupId: node.id, childrenId } }))
   }
   const uploadFileClick = () => {
     const fileIput = document.createElement("input")
