@@ -1,12 +1,15 @@
 import { Cell, Dom, Edge, Graph, Model, Node, Shape } from '@antv/x6';
 import loadPlugin from './plugin';
-import removeBtnRegister from './remove-btn-register';
+import { removeBtnNodeRegister, removeBtnEdgeRegister } from './remove-btn-register';
 import CustomShape from './cons';
 import {
   changeCurrentSelectNode,
   changeCurrentSelectNodeName,
   changeGraph,
+  addGraphTabs,
+  changeUnselectedCells
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
+import { useAppSelector } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
 import React from 'react';
 
 /**
@@ -126,8 +129,10 @@ export const initGraph = (
     },
     grid: true,
   });
+  graph.center()
   //自定义删除按钮
-  removeBtnRegister(graph)
+  removeBtnNodeRegister(graph)
+  removeBtnEdgeRegister(graph)
 
   //加载相关插件
   loadPlugin(graph);
@@ -187,26 +192,26 @@ export const initGraph = (
     edge.getTargetNode()?.setPortProp(edge.getTargetPortId()!, VISIBILITY_PATH, visibility);
   }
 
-  // graph.on('edge:mouseenter', ({ e, view, edge, cell }) => {
-  //   console.log("enter");
+  graph.on('edge:mouseenter', ({ e, view, edge, cell }) => {
+    console.log("enter");
 
-  //   // edge.attr(LINE_STOKE_WIDTH, 4);
-  //   showEdgePorts(edge, true);
+    // edge.attr(LINE_STOKE_WIDTH, 4);
+    // showEdgePorts(edge, true);
 
-  //   edge.addTools([
-  //     {
-  //       name: 'rm-btn',
-  //       args: {
-  //         distance: view.path.length() / 2,
-  //       },
-  //     },
-  //   ]);
-  // });
-  // graph.on('edge:mouseleave', ({ e, view, edge, cell }) => {
-  //   edge.setAttrByPath(LINE_STOKE_WIDTH, 2);
-  //   showEdgePorts(edge, false);
-  //   edge.removeTools();
-  // });
+    edge.addTools([
+      {
+        name: 'rm-edge-btn',
+        args: {
+          distance: view.path.length() / 2,
+        },
+      },
+    ]);
+  });
+  graph.on('edge:mouseleave', ({ e, view, edge, cell }) => {
+    // edge.setAttrByPath(LINE_STOKE_WIDTH, 2);
+    // showEdgePorts(edge, false);
+    edge.removeTools();
+  });
 
   graph.on('node:selected', ({ node }) => {
     dispatch(changeCurrentSelectNode(node));
@@ -284,9 +289,9 @@ export const initGraph = (
   graph.on('cell:removed', ({ cell, index, options }) => {
     // updateGraphData(graph);
   });
-  graph.on('cell:dblclick', ({ cell, e ,view}) => {
-    
-    graph.getGraphArea()
+  graph.on('node:dblclick', ({ node, e, view }) => {
+    //新增导航
+    dispatch(addGraphTabs(node.id))
     // const isNode = cell.isNode();
     // const name = cell.isNode() ? 'node-editor' : 'edge-editor';
     // cell.removeTool(name);
@@ -299,22 +304,49 @@ export const initGraph = (
     //     },
     //   },
     // });
-    if (cell.isNode() && cell.shape === CustomShape.GROUP_PROCESS) {
-      
-      const toggleVisibleInner = (cells: Cell[], visible: boolean, graph: Graph) => {
-        cells.forEach((cell) => {
-          const view = graph.findViewByCell(cell)?.container as HTMLElement;
-          view.style.visibility = visible ? 'visible' : 'hidden';
-        });
-      };
-      const children = cell.getChildren()?.filter((n) => n.isNode()) as Node[];
+    if (node.isNode() && node.shape === CustomShape.GROUP_PROCESS) {
+      //设置节点大小铺满当前视口
+      const viewportWidth = graph.container.clientWidth
+      const viewportHeight = graph.container.clientHeight;
+      node.resize(viewportWidth, viewportHeight);
+      node.toBack();
+      //改变节点markup
+      node.setMarkup([
+        {
+          tagName: "rect",
+          selector: "body",
+        }
+      ])
+      node.setAttrByPath("body", {
+        fill: "#ffffff",
+        stroke: "#ccc"
+      })
+
+      //当前节点居中显示
+      graph.centerCell(node)
+      graph.cleanSelection();
+      //将当前节点内的节点及连线显示
+      const children = node.getChildren()?.filter((n) => n.isNode()) as Node[];
       children?.forEach((item) => {
         const innerEdges = graph.getConnectedEdges(item).filter((edge) => {
           return children.includes(edge.getSourceNode()!) && children.includes(edge.getTargetNode()!);
         });
-        item.setVisible(true)
+        item.toggleVisible()
+        graph.positionCell(item, "center")
       });
-      cell.setVisible(false)
+      //隐藏其他节点
+      graph.getCells().forEach(cell => {
+        node.children?.forEach(childCell => {
+          if (cell.id !== childCell.id && cell.id !== node.id) {
+            cell.toggleVisible()
+          }
+        })
+      })
+      //将隐藏的节点加入到不可选中数组中
+
+
+
+      // cell.setVisible(false)
     }
   });
   // graph.on("node:port:mousedown",({node,port})=>{

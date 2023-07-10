@@ -131,5 +131,5 @@ export default function loadPlugin(graph: Graph) {
   keyboard(graph);
   history(graph);
   transform(graph);
-  scroller(graph)
+  // scroller(graph)
 }

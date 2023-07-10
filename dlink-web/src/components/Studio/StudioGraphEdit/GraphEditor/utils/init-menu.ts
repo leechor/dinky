@@ -9,11 +9,12 @@ export type DispatchMenuInfo = React.Dispatch<
   }>
 >;
 
-export function initMenu(graph: Graph, isShowMenuInfo: DispatchMenuInfo,changeNode:(node:Cell)=>void) {
+export function initMenu(graph: Graph, isShowMenuInfo: DispatchMenuInfo, changeNode: (node: Cell) => void, changePositon: (x: number, y: number) => void) {
   //右键菜单点击node时
   graph.on("node:contextmenu", ({ cell, e }) => {
-    
+
     const p = graph.clientToGraph(e.clientX, e.clientY);
+    changePositon(p.x, p.y)
     changeNode(cell)
     isShowMenuInfo({
       show: true,
@@ -21,12 +22,11 @@ export function initMenu(graph: Graph, isShowMenuInfo: DispatchMenuInfo,changeNo
       left: p.x,
       node: cell
     });
-    
+
   });
 
   //画图区域右键
   graph.on("blank:contextmenu", ({ e }) => {
-    
     const p = graph.clientToGraph(e.clientX, e.clientY);
     isShowMenuInfo({
       show: true,

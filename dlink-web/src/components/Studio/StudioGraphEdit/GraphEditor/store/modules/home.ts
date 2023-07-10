@@ -22,18 +22,19 @@ export const initFlowDataAction = createAsyncThunk('fetchData', (payload, store)
   //   }
   // });
 });
-export type GraphTabs = {
-  activeKey: string,
-  panes: GraphTabsItem[]
+export type GraphTabs = GraphTabsItem[]
+export type Position = {
+  x: number,
+  y: number
 }
 export type GraphTabsItem = {
-  title: string,
-  key: string,
-  closable: boolean,
-  icon?: any,
-  value?: any
+  id: string,
+  key: number,
 }
-
+export type UnselectedCell = {
+  groupId: string,
+  childrenId: string[]
+}
 interface GraphEditorData {
   flowData: {},
   taskName: string,
@@ -48,7 +49,10 @@ interface GraphEditorData {
   //保存graph在其他组件中调用
   graph: Graph,
   editor: {} | InstanceType<typeof JSONEditor>,
-  graphTabs: GraphTabs,
+  graphTabs: string[],
+  unSelectedCellIds: UnselectedCell[]
+  activeKey: number,
+  position: Position
 
 }
 const initialState: GraphEditorData = {
@@ -66,15 +70,10 @@ const initialState: GraphEditorData = {
   graph: {} as Graph,
   //保存jsoneditor 示例用作保存校验
   editor: {},
-  graphTabs: {
-    activeKey: "0", panes: [{
-      title: "process",
-      key: "0",
-      closable: false,
-      icon: null,
-      value: null
-    }]
-  }
+  graphTabs: [],
+  unSelectedCellIds: [],
+  activeKey: 0,
+  position: { x: 0, y: 0 }
 
 }
 const homeSlice = createSlice({
@@ -112,17 +111,35 @@ const homeSlice = createSlice({
       state.editor = payload
     },
     changeActiveKey(state, { payload }) {
-
+      state.activeKey = payload
     },
     addGraphTabs(state, { payload }) {
       
-      let old = state.graphTabs.panes
-      let newpanes:GraphTabsItem[]= [...old]
-      newpanes.push(payload)
-      state.graphTabs = {
-        activeKey: payload.key,
-        panes: newpanes
+      state.graphTabs = [...state.graphTabs, payload]
+    },
+    removeGraphTabs(state, { payload }) {
+      if (payload === "0") {
+        state.graphTabs = [];
+      } else {
+        let tabs = [...state.graphTabs];
+        const index = tabs.findIndex(id => id === payload);
+        tabs = tabs.splice(index)
+        state.graphTabs = [...tabs]
       }
+    },
+    changeUnselectedCells(state, { payload }) {
+      const unSelectedCellIds = state.unSelectedCellIds;
+      if (payload.type == "push") {
+        unSelectedCellIds.push(payload.data)
+        state.unSelectedCellIds = [...unSelectedCellIds]
+      }
+      if (payload.type == "shift") {
+
+      }
+
+    },
+    changePositon(state, { payload }){
+      state.position=payload
     }
   },
   extraReducers: {},
@@ -139,7 +156,10 @@ export const {
   changeGraph,
   changeJsonEditor,
   changeActiveKey,
-  addGraphTabs
+  addGraphTabs,
+  removeGraphTabs,
+  changeUnselectedCells,
+  changePositon
 } = homeSlice.actions;
 
 export default homeSlice.reducer;
