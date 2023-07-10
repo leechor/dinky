@@ -60,6 +60,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class Operator extends Node implements Runnable {
     public static final String FIELD_FUNCTIONS = "columns";//保证输出名称的一致性
+
+    public static final String TABLE_NAME_DEFAULT = "tableNameDefault";//保证输出名称的一致性
+
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private Map<String, InputPort<? extends PseudoData<?>>> inputPorts = new HashMap<>();
@@ -299,7 +302,7 @@ public abstract class Operator extends Node implements Runnable {
     /** 生成内部用户自定义函数(算子)对应的注册代码, 以便在flink sql中对其进行引用调用. */
     private void generateUdfFunctionByInner() {
         Map<String, String> ufs = this.getUserFunctions();
-        if (ufs == null) {
+        if (ufs == null||ufs.isEmpty()) {
             return;
         }
 

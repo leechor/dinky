@@ -37,4 +37,6 @@ public interface TaskFlowGraphService extends ISuperService<FlowGraph> {
     String testGraphStatement(String graph);
 
     List<JsonNode> getOperatorConfigurations();
+
+    String operatorPreview(String graph);
 }

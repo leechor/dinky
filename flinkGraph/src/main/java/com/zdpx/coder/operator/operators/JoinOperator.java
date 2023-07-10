@@ -88,11 +88,18 @@ public class JoinOperator extends Operator {
         @SuppressWarnings("unchecked")
         List<Map<String, String>> columnList = (List<Map<String, String>>)parameters.get("columnList");
 
+        Object outputTableName = parameters.get("tableName");
+        if(outputTableName==null){
+            outputTableName = NameHelper.generateVariableName("JoinOperator");
+        }
+        //算子预览功能
+        String primaryTableName = "primaryTable";
+        String secondTableName = "secondTable";
+        if(primaryInput.getConnection()!=null){
+            primaryTableName = primaryInput.getOutputPseudoData().getName();
+            secondTableName = secondInput.getOutputPseudoData().getName();
+        }
 
-
-        String outputTableName = NameHelper.generateVariableName("JoinOperator");
-        String primaryTableName = primaryInput.getOutputPseudoData().getName();
-        String secondTableName = secondInput.getOutputPseudoData().getName();
         //根据config中的字段，确定columns中的字段属于哪张表
         List<FieldFunction> ffsPrimary = outPutFieldFunction(parameters, primaryTableName, secondTableName);
 
@@ -125,7 +132,7 @@ public class JoinOperator extends Operator {
 
         List<Column> cls = Operator.getColumnFromFieldFunctions(ffsPrimary);
         generate(sqlStr);
-        OperatorUtil.postTableOutput(outputPort, outputTableName, cls);
+        OperatorUtil.postTableOutput(outputPort, outputTableName.toString(), cls);
     }
 
     public void setUpTableName(Map<String, String> l,String tableName,String column){

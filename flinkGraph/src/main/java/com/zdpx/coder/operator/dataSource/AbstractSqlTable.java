@@ -19,8 +19,10 @@
 
 package com.zdpx.coder.operator.dataSource;
 
+import com.zdpx.coder.graph.InputPort;
 import com.zdpx.coder.graph.InputPortObject;
 import com.zdpx.coder.graph.OutputPortObject;
+import com.zdpx.coder.graph.PseudoData;
 import com.zdpx.coder.utils.TemplateUtils;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -44,7 +46,7 @@ public abstract class AbstractSqlTable extends Operator {
                     + ")"
                     + "WITH ("
                     + "<#list parameters as key, value>"
-                    + "'${(key == \"tableName\")?then(\"table-name\", key)}' = '${value}'<#sep>, "
+                    + "'${key}' = '${value}'<#sep>,</#sep>"
                     + "</#list>)";
 
 
@@ -70,7 +72,8 @@ public abstract class AbstractSqlTable extends Operator {
 
         //任意数据源格式转换
         dataModel.put(PARAMETERS,formatConversion(dataModel));
-        dataModel.put("tableName",generateTableName(dataModel.get("tableName").toString()));
+        Object tableName1 = dataModel.get("tableName");
+        dataModel.put("tableName",tableName1==null? generateTableName():tableName1);
 
         if(flag){ //sink
             List<Map<String, Object>> input = formatProcessingSink(dataModel);
@@ -85,8 +88,6 @@ public abstract class AbstractSqlTable extends Operator {
 
             if(ti.getName()==null){
                 ti.setName(dataModel.get("tableName").toString());
-            }else{
-                ti.setName(generateTableName(ti.getName()));
             }
 
             outputPortObject.setPseudoData(ti);
@@ -112,7 +113,7 @@ public abstract class AbstractSqlTable extends Operator {
         return defineList;
     }
 
-    //数据汇内部格式处理，包括输入的获取和勾选字段的设置
+    //输出表内部格式处理，包括输入的获取和勾选字段的设置
     public List<Map<String, Object>> formatProcessingSink(Map<String, Object> dataModel){
         //从config中获取输入
         @SuppressWarnings("unchecked")
@@ -141,18 +142,23 @@ public abstract class AbstractSqlTable extends Operator {
 
     //配置连接到sink的input语句
     public void connectToSink(String input_0,Map<String, Object> dataModel,List<Map<String, Object>> input){
+
+        //算子预览的特殊处理
+        String tableName = TABLE_NAME_DEFAULT;
         @SuppressWarnings("unchecked")
-        TableInfo pseudoData =
-                ((InputPortObject<TableInfo>) getInputPorts().get(input_0)).getOutputPseudoData();
-        if (pseudoData != null) {
-            Map<String, Object> data = new HashMap<>();
-            data.put("outPutTableName", dataModel.get("tableName"));
-            data.put("tableInfo", input);//pseudoData
-            data.put("inPutTableName", pseudoData.getName());
-            data.put("columns", dataModel.get("columns"));
-            String insertSqlStr = TemplateUtils.format("insert", data, INPUT_SQL);
-            this.getSchemaUtil().getGenerateResult().generate(insertSqlStr);
+        InputPortObject<TableInfo> in =(InputPortObject<TableInfo>)getInputPorts().get(input_0);
+        if(in.getConnection()!=null){
+            tableName=in.getOutputPseudoData().getName();
         }
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("outPutTableName", dataModel.get("tableName"));
+        data.put("tableInfo", input);
+        data.put("inPutTableName", tableName);
+        data.put("columns", dataModel.get("columns"));
+        String insertSqlStr = TemplateUtils.format("insert", data, INPUT_SQL);
+        this.getSchemaUtil().getGenerateResult().generate(insertSqlStr);
+
     }
 
     protected Map<String, Object> getDataModel(String tableName) {
@@ -184,6 +190,8 @@ public abstract class AbstractSqlTable extends Operator {
 
         psFirst.remove("primary");
         psFirst.remove("watermark");
+        psFirst.remove("tableName");
+
 
         for (Map.Entry<String, Object> m : psFirst.entrySet()) {
             if (m.getKey().equals(columns)) {
@@ -200,9 +208,10 @@ public abstract class AbstractSqlTable extends Operator {
         return result;
     }
 
-    //适用于tableName不为空的数据源
-    protected String generateTableName(String tableName) {
-        return tableName + "_" + this.getId().substring(this.getId().lastIndexOf('-') + 1);
+    //当tableName为空时，随机生成表名
+    protected String generateTableName() {
+        return this.getId().substring(this.getId().lastIndexOf('-') + 1);
+//        return tableName + "_" + this.getId().substring(this.getId().lastIndexOf('-') + 1);
     }
 
     @Override

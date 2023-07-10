@@ -70,4 +70,11 @@ public class TaskFlowGraphController {
         }
         return Result.succeed(configurations);
     }
+
+    @PutMapping("preview")
+    public Result<List<JsonNode>> operatorPreview(@RequestBody String graph) {
+        taskFlowGraphService.operatorPreview(graph);
+        return Result.succeed();
+    }
+
 }

@@ -7,7 +7,12 @@
         ],
 		"description": "基础转换算子，将输入数据转换为一个新视图",
         "properties": {
-			
+			"tableName": {
+				"type": "string",
+				"minLength": 1,
+				"title": "tableName",
+				"description": "表名称，若为空将随机生成"
+			},
 			"orderBy": {
 				"type": "array",
 				"description": "指定字段升序或降序",
