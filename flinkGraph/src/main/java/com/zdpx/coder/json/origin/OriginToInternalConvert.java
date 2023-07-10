@@ -308,7 +308,7 @@ public class OriginToInternalConvert implements ToInternalConvert {
         Environment environment = new Environment();
         scene.setEnvironment(environment);
         BeanUtils.copyProperties(sceneNode.getEnvironment(), scene.getEnvironment());
-        scene.setProcessPackage(covertProcess(sceneNode.getProcess()));
+        scene.setProcess(covertProcess(sceneNode.getProcess()));
         return scene;
     }
 

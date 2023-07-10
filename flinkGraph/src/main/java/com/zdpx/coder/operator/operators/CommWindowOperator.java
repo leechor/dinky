@@ -22,24 +22,22 @@ import java.util.stream.Collectors;
  * TUMBLE    ---> TUMBLE(TABLE data, DESCRIPTOR(timecol), size)
  * HOP       ---> HOP(TABLE data, DESCRIPTOR(timecol), slide, size[, offset])
  * CUMULATE  ---> CUMULATE(TABLE data, DESCRIPTOR(timecol), step, size)
- *
+ * <p>
  * 普通聚合：
  * GROUP BY columName
- *
+ * <p>
  * 窗口聚合方式：
  * 1 GROUP BY
- *  from <windows_open>
- *      group by windows_start, window_end ,(OTHER_GROUP);
- *
+ * from <windows_open>
+ * group by windows_start, window_end ,(OTHER_GROUP);
+ * <p>
  * OTHER_GROUP暂不实现
  * 1.1 GROUPING SETS
  * 1.2 CUBE
  * 1.3 级联窗口聚合
  * 1.4 分组聚合
  * 1.5 OVER聚合
- *
- *
- * */
+ */
 
 public class CommWindowOperator extends Operator {
 
@@ -48,21 +46,23 @@ public class CommWindowOperator extends Operator {
                     "<#import \"%s\" as e>CREATE VIEW ${tableName} AS SELECT <@e.fieldsProcess columns/> FROM ${inputTableName} " +
                             "<#if where??>WHERE ${where}</#if> " +
                             "<#if window??> ${window.windowFunction} ( TABLE ${window.table} , DESCRIPTOR(${window.descriptor}), " +
-                                "<#if window.slide??>INTERVAL '${window.slide.timeSpan}' ${window.slide.timeUnit},</#if> " +
-                                "<#if window.step ??>INTERVAL '${window.step.timeSpan}' ${window.step.timeUnit},</#if>" +
-                                "INTERVAL '${window.size.timeSpan}' ${window.size.timeUnit}) " +
-                            "</#if>"+
+                            "<#if window.slide??>INTERVAL '${window.slide.timeSpan}' ${window.slide.timeUnit},</#if> " +
+                            "<#if window.step ??>INTERVAL '${window.step.timeSpan}' ${window.step.timeUnit},</#if>" +
+                            "INTERVAL '${window.size.timeSpan}' ${window.size.timeUnit}) " +
+                            "</#if>" +
                             "<#if group??>GROUP BY " +
-                                "<#if (group.aggregation) == \"group\" > ${group.column} " +
-                                "<#elseif (group.aggregation) == \"windowGroup\"> ${group.windowsStart} , ${group.windowEnd} " +
-                                "</#if>" +
-                            "</#if>"+
-                            "<#if orderBy??>ORDER BY <#list orderBy as o> `${o.order}` ${o.sort} </#list></#if>"+
+                            "<#if (group.aggregation) == \"group\" > ${group.column} " +
+                            "<#elseif (group.aggregation) == \"windowGroup\"> ${group.windowsStart} , ${group.windowEnd} " +
+                            "</#if>" +
+                            "</#if>" +
+                            "<#if orderBy??>ORDER BY <#list orderBy as o> `${o.order}` ${o.sort} </#list></#if>" +
                             "<#if limit?? && (limit?size!=0) >limit <#list limit as l> `${l}` <#sep>,</#sep></#list></#if>"
-                            ,
+                    ,
                     Specifications.TEMPLATE_FILE);
 
-    /** 函数字段名常量 */
+    /**
+     * 函数字段名常量
+     */
     public static final String WHERE = "where";
 
     public static final String GROUP = "group";
@@ -118,32 +118,32 @@ public class CommWindowOperator extends Operator {
         p.put(LIMIT, parameters.get(LIMIT));
 
         @SuppressWarnings("unchecked")
-        List<Map<String, Object>> order = (List<Map<String, Object>>)parameters.get(ORDER_BY);
-        if(order!=null&&order.size()!=0){
+        List<Map<String, Object>> order = (List<Map<String, Object>>) parameters.get(ORDER_BY);
+        if (order != null && !order.isEmpty()) {
             p.put(ORDER_BY, order);
         }
 
         @SuppressWarnings("unchecked")
-        Map<String, Object> windowList = (Map<String, Object>)parameters.get(WINDOW);
-        if(windowList!=null&&windowList.size()!=0){
+        Map<String, Object> windowList = (Map<String, Object>) parameters.get(WINDOW);
+        if (windowList != null && !windowList.isEmpty()) {
             @SuppressWarnings("unchecked")
             Map<String, Object> size = (Map<String, Object>) windowList.get(SIZE);
-            windowList.putAll(size==null ? new HashMap<>():size);
+            windowList.putAll(size == null ? new HashMap<>() : size);
             @SuppressWarnings("unchecked")
             Map<String, Object> slide = (Map<String, Object>) windowList.get(SLIDE);
-            windowList.putAll(slide==null ? new HashMap<>():slide);
+            windowList.putAll(slide == null ? new HashMap<>() : slide);
             @SuppressWarnings("unchecked")
             Map<String, Object> step = (Map<String, Object>) windowList.get(STEP);
-            windowList.putAll(step==null ? new HashMap<>():step);
+            windowList.putAll(step == null ? new HashMap<>() : step);
 
             //将 window.table 改为输入表名称
-            windowList.put("table",tableName);
+            windowList.put("table", tableName);
             p.put(WINDOW, windowList);
         }
 
         @SuppressWarnings("unchecked")
         Map<String, Object> groupList = (Map<String, Object>) parameters.get(GROUP);
-        if(groupList!=null&&groupList.size()!=0){
+        if (groupList != null && !groupList.isEmpty()) {
             p.put(GROUP, groupList);
         }
 

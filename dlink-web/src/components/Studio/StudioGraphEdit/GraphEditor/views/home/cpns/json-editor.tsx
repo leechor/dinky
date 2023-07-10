@@ -95,6 +95,22 @@ const Editor = memo(() => {
         return
       }
 
+      changeStyle()
+
+      //判断当前节点是否有变化
+      // 如果是同一个节点，说明只是值发生变化
+      //如果节点发生变化，则不设置，让其读取自己的配置
+      currentSelectNode.setData(
+        {
+          parameters: editor.getValue(),
+          config: currentSelectNode.getData()?.config ?? []
+        },
+        {overwrite: true});
+      dispatch(changeCurrentSelectNode(currentSelectNode));
+    });
+
+    function changeStyle() {
+      //modify description
       const labels = document.querySelectorAll('.je-panel label')
       labels.forEach((item: Element) => {
         const desc: HTMLElement | null | undefined = item.parentElement?.querySelector('p.je-desc')
@@ -109,6 +125,7 @@ const Editor = memo(() => {
         desc.remove()
       })
 
+      //modify question mark
       const h4Label = document.querySelectorAll('.je-panel h4')
       h4Label.forEach((item: Element) => {
         const desc: HTMLElement | null | undefined = item.parentElement?.querySelector('h4 + span + div + p, h4 + div + p')
@@ -123,17 +140,39 @@ const Editor = memo(() => {
         desc.remove()
       })
 
-      //判断当前节点是否有变化
-      // 如果是同一个节点，说明只是值发生变化
-      //如果节点发生变化，则不设置，让其读取自己的配置
-      currentSelectNode.setData(
-        {
-          parameters: editor.getValue(),
-          config: currentSelectNode.getData()?.config ?? []
-        },
-        {overwrite: true});
-      dispatch(changeCurrentSelectNode(currentSelectNode));
-    });
+      //modify delete columns button
+      const dataObjects = document.querySelectorAll('.je-object__container')
+      dataObjects.forEach( item => {
+        const deleteButton : HTMLElement | null = item.querySelector(':scope > .btn-group > button[title="Delete columns"]')
+        if (!deleteButton) {
+          return
+        }
+
+        const icon = deleteButton.querySelector('.icon-delete + span')
+        if (!icon) {
+          return
+        }
+        icon.innerHTML = ""
+
+        const h4 = item.querySelector('h4.je-object__title');
+        h4?.append(deleteButton.parentElement!);
+      })
+
+      //modify delete items button
+      const deleteItems = document.querySelectorAll('.je-panel > div > .je-panel')
+      deleteItems.forEach(item => {
+        const deleteButton = item.querySelector('.btn-group > button[title="Delete item"]')
+        if (!deleteButton) {
+          return
+        }
+
+        const itemFormGroup = item.querySelector('.form-group')
+        itemFormGroup?.append(deleteButton.parentElement!)
+        itemFormGroup?.setAttribute('style', 'flex-wrap: nowrap')
+      })
+
+
+    }
 
     return () => {
       editor.destroy()
