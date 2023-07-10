@@ -140,7 +140,7 @@ const Editor = memo(() => {
         desc.remove()
       })
 
-      //modify delete button
+      //modify delete columns button
       const dataObjects = document.querySelectorAll('.je-object__container')
       dataObjects.forEach( item => {
         const deleteButton : HTMLElement | null = item.querySelector(':scope > .btn-group > button[title="Delete columns"]')
@@ -157,6 +157,20 @@ const Editor = memo(() => {
         const h4 = item.querySelector('h4.je-object__title');
         h4?.append(deleteButton.parentElement!);
       })
+
+      //modify delete items button
+      const deleteItems = document.querySelectorAll('.je-panel > div > .je-panel')
+      deleteItems.forEach(item => {
+        const deleteButton = item.querySelector('.btn-group > button[title="Delete item"]')
+        if (!deleteButton) {
+          return
+        }
+
+        const itemFormGroup = item.querySelector('.form-group')
+        itemFormGroup?.append(deleteButton.parentElement!)
+        itemFormGroup?.setAttribute('style', 'flex-wrap: nowrap')
+      })
+
 
     }
 
