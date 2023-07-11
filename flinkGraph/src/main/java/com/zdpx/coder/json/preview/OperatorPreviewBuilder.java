@@ -11,6 +11,7 @@ import com.zdpx.coder.json.x6.X6ToInternalConvert;
 import com.zdpx.coder.operator.Operator;
 import lombok.SneakyThrows;
 
+/**根据单个算子生成sql语句*/
 public class OperatorPreviewBuilder{
 
     private String graph;

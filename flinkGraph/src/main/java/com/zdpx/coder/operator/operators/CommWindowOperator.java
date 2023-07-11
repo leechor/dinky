@@ -112,10 +112,9 @@ public class CommWindowOperator extends Operator {
             outputTableName = NameHelper.generateVariableName("CommWindowFunctionOperator");
         }
         //算子预览功能
-        Connection<TableInfo> connection = inputPortObject.getConnection();
         String tableName = TABLE_NAME_DEFAULT;
-        if(connection!=null){
-            tableName = connection.getName();
+        if(inputPortObject.getConnection()!=null){
+            tableName = inputPortObject.getOutputPseudoData().getName();
         }
 
         List<FieldFunction> ffs = Operator.getFieldFunctions(tableName, parameters);

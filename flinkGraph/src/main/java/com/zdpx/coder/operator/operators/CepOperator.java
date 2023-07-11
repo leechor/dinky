@@ -181,10 +181,9 @@ public class CepOperator extends Operator {
 
         //算子预览的特殊处理
         TableInfo tableInfo =null;
-        Connection<TableInfo> connection = inputPortObject.getConnection();
         String tableName = TABLE_NAME_DEFAULT;
-        if(connection!=null){
-            tableName = connection.getName();
+        if(inputPortObject.getConnection()!=null){
+            tableName = inputPortObject.getOutputPseudoData().getName();;
             tableInfo=inputPortObject.getOutputPseudoData();
         }
 
