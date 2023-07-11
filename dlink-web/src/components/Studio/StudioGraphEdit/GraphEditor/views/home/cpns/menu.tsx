@@ -303,9 +303,8 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
 
   const createProcess = () => {
     //获取选中包围盒的位置信息
-    // const selectedBox = document.getElementsByClassName("x6-widget-selection-inner")
-    // const rect = selectedBox[0].getBoundingClientRect();
-    // graph.positionRect(rect, "center")
+    const selectedBox = document.querySelector(".x6-widget-selection-inner")
+    const rect = selectedBox?.getBoundingClientRect()!;
 
     const nodes = graph.getSelectedCells()
       .filter(item => item.isNode())
@@ -330,6 +329,8 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     });
 
     const group = graph.addNode(node);
+    group.setPosition(graph.clientToLocal(rect.x + (rect.width - group.size().width) / 2,
+      rect.y + (rect.height - group.size().height) / 2))
     group.setChildren(nodes)
     graph.centerCell(group)
 

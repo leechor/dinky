@@ -107,6 +107,7 @@ export const scroller = (graph: Graph) => {
     }),
   );
   graph.centerContent();
+  graph.lockScroller()
 };
 
 export const transform = (graph: Graph) => {
