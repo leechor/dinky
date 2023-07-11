@@ -300,54 +300,19 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
         break;
     }
   };
-  const createProcess = () => {
 
+  const createProcess = () => {
     //获取选中包围盒的位置信息
     // const selectedBox = document.getElementsByClassName("x6-widget-selection-inner")
     // const rect = selectedBox[0].getBoundingClientRect();
     // graph.positionRect(rect, "center")
 
-    const cells = graph.getSelectedCells()
-    if (cells.length === 0) return
-    //查找框选中的节点与外界连线情况决定输入与输出连接桩
+    const nodes = graph.getSelectedCells()
+      .filter(item => item.isNode())
+      .map(item => item as Node);
 
-    //查找桩个数
-    //查找所有连线
-    const allNodes = graph.getNodes();
-    const unSelectedNodes = allNodes.filter(allNode =>
-      !cells.some(select => select.id === allNode.id)
-    )
-    let unSelectOutGoEdges: Edge[] = [];
-    let unSelectInComingEdegs: Edge[] = [];
-    let innerComingEdges: Edge[] = [];
-    let innerOutgoingEdges: Edge[] = []
-    unSelectedNodes.forEach(node => {
-      const oedges = graph.model.getOutgoingEdges(node)
-      const cdges = graph.model.getIncomingEdges(node)
-      if (oedges) {
-        unSelectOutGoEdges = [...unSelectOutGoEdges, ...oedges]
-      }
-      if (cdges) {
-        unSelectInComingEdegs = [...unSelectOutGoEdges, ...cdges]
-      }
-    })
+    if (nodes.length === 0) return
 
-    cells.map(cell => {
-      const cedges = graph.model.getIncomingEdges(cell)
-      const oedges = graph.model.getOutgoingEdges(cell)
-      if (cedges) {
-        innerComingEdges = [...innerComingEdges, ...cedges]
-      }
-      if (oedges) {
-        innerOutgoingEdges = [...innerOutgoingEdges, ...oedges]
-      }
-    })
-    //获取输入所有边
-    const selectedIncommingEdge: (Edge | null)[] = unSelectOutGoEdges.filter(outEdge =>
-      innerComingEdges.some(innerEdge => innerEdge.id === outEdge.id))
-    //获取输出所有边
-    const selectedOutgoingEdge: (Edge | null)[] = unSelectInComingEdegs.filter(incomeEdge =>
-      innerOutgoingEdges.some(innerEdge => innerEdge.id === incomeEdge.id))
     const node = graph.createNode({
       shape: CustomShape.GROUP_PROCESS,
       width: 70,
@@ -363,43 +328,41 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
         },
       },
     });
-    const childrenId = cells?.map(c => c.id)
-    const group = graph.addNode(node);
 
-    //设置组节点位置
-    // let p = graph.pageToLocal(left, top)
-    // let p = graph.clientToLocal(position.x, position.y)
-    // group.setPosition(position.x, position.y)
+    const group = graph.addNode(node);
+    group.setChildren(nodes)
     graph.centerCell(group)
 
-    cells?.forEach((c) => {
-      //保存选中之前的位置
-      if (c.isNode()) {
-        c.prop("previousPostion", c.position())
-      }
-      const innerEdges = graph.getConnectedEdges(c).filter((edge) => {
-        return cells.includes(edge.getSourceNode()!) && cells.includes(edge.getTargetNode()!);
-      });
-      //隐藏选中的节点及边
-      [c, ...innerEdges].forEach(cell => {
-        cell.hide();
+    nodes?.flatMap(item => {
+      item.prop("previousPosition", item.position())
+      item.hide()
+      return graph.getConnectedEdges(item)
+    }).filter((edge) => nodes.includes(edge.getSourceNode()!) && nodes.includes(edge.getTargetNode()!))
+      .forEach(item => {
+        item.hide()
+        group.addChild(item)
       })
-      // toggleVisibleInner([c, ...innerEdges], false, graph);
-      //将隐藏的节点添加进组节点
-      group.addChild(c);
-    })
+
     //将隐藏的节点设置为不可选
     graph.setSelectionFilter((cell) => {
-      return !childrenId!.includes(cell.id)
+      return ! nodes?.map(c => c.id)!.includes(cell.id)
     })
-    addOuterPortAndEdeg(selectedIncommingEdge, group, "input")
-    addOuterPortAndEdeg(selectedOutgoingEdge, group, "output")
+
+    const selectedIncomingEdge: (Edge | null)[] = nodes
+      .flatMap(item => graph.model.getIncomingEdges(node))
+      .filter(item => item?.getSourceNode() && !nodes.includes(item.getSourceNode()!))
+
+    //获取输出所有边
+    const selectedOutgoingEdge: (Edge | null)[] = nodes
+      .flatMap(item => graph.model.getOutgoingEdges(node))
+      .filter(item => item?.getTargetNode() && !nodes.includes(item.getTargetNode()!))
+
+    addOuterPortAndEdge(selectedIncomingEdge, group, "input")
+    addOuterPortAndEdge(selectedOutgoingEdge, group, "output")
 
     //根据组节点外部的输入和输出添加放大后的输入输出桩
     const out_inputPortIds = node?.getPortsByGroup("inputs").map(data => data.id);
     const out_outputPortIds = node?.getPortsByGroup("outputs").map(data => data.id);
-
-
 
 
     // const selectAbleIds:string:[] = unSelectedNodes.map(node => { id: node.id })
@@ -407,13 +370,15 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     // 将该组节点子节点添加进不可选中数组中
     // dispatch(changeUnselectedCells({ type: "push", data: { groupId: node.id, childrenId } }))
   }
-  const addOuterPortAndEdeg = (outEdge: (Edge | null)[], groupNode: Node, type: OuterEdgeType) => {
+
+  const addOuterPortAndEdge = (outEdge: (Edge | null)[], groupNode: Node, type: OuterEdgeType) => {
     //将外部节点与组节点连线
 
     if (!outEdge.length && !outEdge.length) {
       //情况1：所选组无连线，默认一个连接装并且无连线
       return
     }
+
     //添加外部输入桩
     if (outEdge.length > 1) {
 
@@ -464,13 +429,14 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     }
   }
   const uploadFileClick = () => {
-    const fileIput = document.createElement("input")
-    fileIput.type = "file"
-    fileIput.accept = ".json"
-    fileIput.style.display = "none"
-    fileIput.addEventListener("change", handleFileChange);
-    fileIput.click()
+    const fileInput = document.createElement("input")
+    fileInput.type = "file"
+    fileInput.accept = ".json"
+    fileInput.style.display = "none"
+    fileInput.addEventListener("change", handleFileChange);
+    fileInput.click()
   }
+
   const handleFileChange = (event: any) => {
     const selectFiles = event.target.files;
     if (selectFiles.length === 1) {
