@@ -39,6 +39,8 @@ enum HorizontalAlignState {
   CENTER,
   RIGHT
 }
+type OuterEdgeType = "input" | "output"
+
 
 enum VerticalAlignState {
   TOP = 1,
@@ -79,7 +81,6 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     unSelectedCellIds: state.home.unSelectedCellIds,
     position: state.home.position
   }));
-  console.log(position, ">>>>>>>>>>>>>>>>>pos");
 
   const dispatch = useAppDispatch();
   const convertHorizontalAlign = (align: string) => {
@@ -299,20 +300,12 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
         break;
     }
   };
-  const toggleVisibleInner = (cells: Cell[], visible: boolean, graph: Graph) => {
-    cells.forEach((cell) => {
-      const view = graph.findViewByCell(cell)?.container as HTMLElement;
-      view.style.visibility = visible ? 'visible' : 'hidden';
-    });
-  };
   const createProcess = () => {
-    
+
     //获取选中包围盒的位置信息
     // const selectedBox = document.getElementsByClassName("x6-widget-selection-inner")
     // const rect = selectedBox[0].getBoundingClientRect();
-    // console.log(rect, 'rect');
     // graph.positionRect(rect, "center")
-    // console.log(left, top, "left-top");
 
     const cells = graph.getSelectedCells()
     if (cells.length === 0) return
@@ -352,13 +345,10 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     //获取输入所有边
     const selectedIncommingEdge: (Edge | null)[] = unSelectOutGoEdges.filter(outEdge =>
       innerComingEdges.some(innerEdge => innerEdge.id === outEdge.id))
-    console.log(selectedIncommingEdge, "selectedIncommingEdge");
     //获取输出所有边
     const selectedOutgoingEdge: (Edge | null)[] = unSelectInComingEdegs.filter(incomeEdge =>
       innerOutgoingEdges.some(innerEdge => innerEdge.id === incomeEdge.id))
-    console.log(selectedOutgoingEdge, "selectedOutgoingEdge");
     const node = graph.createNode({
-      name: "param.name",
       shape: CustomShape.GROUP_PROCESS,
       width: 70,
       height: 50,
@@ -402,14 +392,76 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     graph.setSelectionFilter((cell) => {
       return !childrenId!.includes(cell.id)
     })
+    addOuterPortAndEdeg(selectedIncommingEdge, group, "input")
+    addOuterPortAndEdeg(selectedOutgoingEdge, group, "output")
 
-    //将外部节点与组节点连线
+    //根据组节点外部的输入和输出添加放大后的输入输出桩
+    const out_inputPortIds = node?.getPortsByGroup("inputs").map(data => data.id);
+    const out_outputPortIds = node?.getPortsByGroup("outputs").map(data => data.id);
 
-    
+
+
+
     // const selectAbleIds:string:[] = unSelectedNodes.map(node => { id: node.id })
     // graph.setSelectionFilter(selectAbleIds)
     // 将该组节点子节点添加进不可选中数组中
     // dispatch(changeUnselectedCells({ type: "push", data: { groupId: node.id, childrenId } }))
+  }
+  const addOuterPortAndEdeg = (outEdge: (Edge | null)[], groupNode: Node, type: OuterEdgeType) => {
+    //将外部节点与组节点连线
+
+    if (!outEdge.length && !outEdge.length) {
+      //情况1：所选组无连线，默认一个连接装并且无连线
+      return
+    }
+    //添加外部输入桩
+    if (outEdge.length > 1) {
+
+      //根据连线长度，添加n-1个输入桩
+      for (let i = 1; i < outEdge.length; i++) {
+        //添加连接桩
+        groupNode.addPort({
+          id: `${type}_${i}`, group: type + "s",
+          attrs: {
+            text: {
+              text: `${type}_${i}`,
+              style: {
+                visibility: "hidden",
+                fontSize: 10,
+                fill: "#3B4351",
+              },
+            },
+            path: {
+              d: type == "input" ? "m-6,2,a5,5.5 0 0 1 12,0" : "m-6,2,a5,5.5 0 0 1 12,0",
+            }
+          },
+          label: {
+            position: "bottom",
+          }
+        })
+      }
+    }
+
+    //添加外部输入连线
+    if (outEdge.length !== 0) {
+      outEdge.forEach((edge, index) => {
+        if (type === "input") {
+          const sourceCell = edge!.getSourceCell();
+          const sourcePortId = edge!.getSourcePortId();
+          graph.addEdge({
+            source: { cell: sourceCell!, port: sourcePortId },
+            target: { cell: groupNode!, port: `input_${index}` },
+          })
+        } else {
+          const targetCell = edge!.getTargetCell();
+          const targetPortId = edge!.getTargetPortId();
+          graph.addEdge({
+            source: { cell: groupNode!, port: `${type}_${index}` },
+            target: { cell: targetCell!, port: targetPortId },
+          })
+        }
+      })
+    }
   }
   const uploadFileClick = () => {
     const fileIput = document.createElement("input")

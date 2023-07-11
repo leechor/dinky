@@ -50,7 +50,7 @@ function registerGroupProgress(ports: Partial<PortManager.Metadata> | PortManage
           zIndex: 999,
           attrs: {
             text: {
-              text: `input`,
+              text: `input_0`,
               style: {
                 visibility: "hidden",
                 fontSize: 10,
@@ -63,14 +63,15 @@ function registerGroupProgress(ports: Partial<PortManager.Metadata> | PortManage
           },
           label: {
             position: "bottom",
-          }
+          },
+          id: "input_0"
         }, {
           group: 'outputs',
           zIndex: 999,
-
+          id: "output_0",
           attrs: {
             text: {
-              text: `output`,
+              text: `output_0`,
               style: {
                 visibility: "hidden",
                 fontSize: 10,
