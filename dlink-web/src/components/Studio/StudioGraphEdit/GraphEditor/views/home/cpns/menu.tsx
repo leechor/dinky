@@ -402,10 +402,10 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     for (let portId of out_inputPortIds) {
       //添加连接桩
       group.addPort({
-        id: portId + "inner", group: "output" + "s",
+        id: portId+"inner", group: "output" + "s",
         attrs: {
           text: {
-            text: portId + "inner",
+            text: portId+"inner",
             style: {
               visibility: "hidden",
               fontSize: 10,
@@ -416,7 +416,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
             d: "m-6,2,a5,5.5 0 0 1 12,0",
           }
         },
-
+        
         label: {
           position: "bottom",
         }
