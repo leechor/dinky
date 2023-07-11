@@ -10,6 +10,8 @@ import { GroupNode } from '@/components/Studio/StudioGraphEdit/GraphEditor/compo
 import unRegisterShape from "./shape-unregister"
 import CustomShape from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
 import GroupProcess from '@/components/Studio/StudioGraphEdit/GraphEditor/components/group-process';
+import { handleInitGroupPort } from './ports-register';
+
 
 
 function registerTextNode() {
@@ -62,7 +64,7 @@ function registerGroupProgress(ports: Partial<PortManager.Metadata> | PortManage
             }
           },
           label: {
-            position: "bottom",
+            position: "left",
           },
           id: "input_0"
         }, {
@@ -83,7 +85,7 @@ function registerGroupProgress(ports: Partial<PortManager.Metadata> | PortManage
             }
           },
           label: {
-            position: "bottom",
+            position: "right",
           }
         }
       ]
@@ -177,7 +179,8 @@ export default (
 
   });
   registerTextNode();
-  registerGroupProgress(ports)
+  const groupPorts = handleInitGroupPort()
+  registerGroupProgress(groupPorts)
   Graph.registerNode('package', GroupNode);
 
 

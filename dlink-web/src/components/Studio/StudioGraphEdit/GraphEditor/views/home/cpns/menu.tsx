@@ -345,7 +345,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
 
     //将隐藏的节点设置为不可选
     graph.setSelectionFilter((cell) => {
-      return ! nodes?.map(c => c.id)!.includes(cell.id)
+      return !nodes?.map(c => c.id)!.includes(cell.id)
     })
 
     const selectedIncomingEdge: (Edge | null)[] = nodes
@@ -360,33 +360,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     addOuterPortAndEdge(selectedIncomingEdge, group, "input")
     addOuterPortAndEdge(selectedOutgoingEdge, group, "output")
 
-    //根据组节点外部的输入和输出添加放大后的输入输出桩
-    const out_inputPortIds = node?.getPortsByGroup("inputs").map(data => data.id);
-    const out_outputPortIds = node?.getPortsByGroup("outputs").map(data => data.id);
-    //添加放大后左侧桩，类型为输出，可以发出连线
-    for (let portId of out_inputPortIds) {
-      //添加连接桩
-      group.addPort({
-        id: portId+"inner", group: "output" + "s",
-        attrs: {
-          text: {
-            text: portId+"inner",
-            style: {
-              visibility: "hidden",
-              fontSize: 10,
-              fill: "#3B4351",
-            },
-          },
-          path: {
-            d: "m-6,2,a5,5.5 0 0 1 12,0",
-          }
-        },
-        
-        label: {
-          position: "bottom",
-        }
-      })
-    }
+    addInnerPortAndEdge(group)
 
 
     // const selectAbleIds:string:[] = unSelectedNodes.map(node => { id: node.id })
@@ -425,7 +399,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
             }
           },
           label: {
-            position: "bottom",
+            position: type == "input" ? "left" : "right",
           }
         })
       }
@@ -449,6 +423,60 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
             target: { cell: targetCell!, port: targetPortId },
           })
         }
+      })
+    }
+  }
+  const addInnerPortAndEdge = (groupNode: Node) => {
+    //根据组节点外部的输入和输出添加放大后的输入输出桩
+    const out_inputPortIds = groupNode?.getPortsByGroup("inputs").map(data => data.id);
+    const out_outputPortIds = groupNode?.getPortsByGroup("outputs").map(data => data.id);
+    //添加放大后左侧桩，类型为输出，可以发出连线
+    for (let portId of out_inputPortIds) {
+      //添加连接桩
+      groupNode.addPort({
+        id: portId + "in", group: "innerOutputs",
+        attrs: {
+          text: {
+            text: portId + "_in",
+            style: {
+              visibility: "hidden",
+              fontSize: 10,
+              fill: "#3B4351",
+            },
+          },
+        },
+        args: {
+          dx: 2,
+
+        },
+        label: {
+          position: "right",
+        }
+
+      })
+    }
+    for (let portId of out_outputPortIds) {
+      //添加连接桩
+      groupNode.addPort({
+        id: portId + "in", group: "innerInputs",
+        attrs: {
+          text: {
+            text: portId + "_in",
+            style: {
+              visibility: "hidden",
+              fontSize: 10,
+              fill: "#3B4351",
+            },
+          },
+        },
+        args: {
+          dx: -2,
+
+        },
+        label: {
+          position: "left",
+        }
+
       })
     }
   }
