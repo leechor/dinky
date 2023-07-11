@@ -7,9 +7,8 @@ import {
   changeCurrentSelectNodeName,
   changeGraph,
   addGraphTabs,
-  changeUnselectedCells
+
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
-import { useAppSelector } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
 import React from 'react';
 
 /**
@@ -141,6 +140,7 @@ export const initGraph = (
     },
     grid: true,
   });
+
   graph.center()
   //自定义删除按钮
   removeBtnNodeRegister(graph)
@@ -298,12 +298,19 @@ export const initGraph = (
     }
     // updateGraphData(graph);
   });
+
   graph.on('cell:removed', ({ cell, index, options }) => {
     // updateGraphData(graph);
   });
+
   graph.on('node:dblclick', ({ node, e, view }) => {
+    if (node.shape !== CustomShape.GROUP_PROCESS) {
+      return;
+    }
+
     //新增导航
     dispatch(addGraphTabs(node.id))
+
     // const isNode = cell.isNode();
     // const name = cell.isNode() ? 'node-editor' : 'edge-editor';
     // cell.removeTool(name);
@@ -316,49 +323,36 @@ export const initGraph = (
     //     },
     //   },
     // });
-    if (node.isNode() && node.shape === CustomShape.GROUP_PROCESS) {
-      //设置节点大小铺满当前视口
-      const viewportWidth = graph.container.clientWidth
-      const viewportHeight = graph.container.clientHeight;
-      node.resize(viewportWidth, viewportHeight);
-      node.toBack();
-      //改变节点markup
-      node.setMarkup([
-        {
-          tagName: "rect",
-          selector: "body",
-        }
-      ])
-      node.setAttrByPath("body", {
-        fill: "#ffffff",
-        stroke: "#ccc"
-      })
 
-      graph.positionCell(node, "top-left")
-      graph.cleanSelection();
-      //将当前节点内的节点及连线显示
-      const children = node.getChildren()?.filter((n) => n.isNode()) as Node[];
-      children?.forEach((item) => {
-        const innerEdges = graph.getConnectedEdges(item).filter((edge) => {
-          return children.includes(edge.getSourceNode()!) && children.includes(edge.getTargetNode()!);
-        });
-        item.toggleVisible()
-      });
-      //隐藏其他节点
-      graph.getCells().forEach(cell => {
-        node.children?.forEach(childCell => {
-          if (cell.id !== childCell.id && cell.id !== node.id) {
-            cell.toggleVisible()
-          }
-        })
-      })
-      //将隐藏的节点加入到不可选中数组中
+    const width = graph.container.clientWidth - node.size().width
+    const height = graph.container.clientHeight - node.size().height
+    node.resize(width / 2, height /2, {direction:'top-left'});
+    node.resize(width / 2, height /2, {direction:'bottom-right'});
+    node.toBack();
 
+    // node.setMarkup([
+    //   {
+    //     tagName: "rect",
+    //     selector: "body",
+    //   }
+    // ])
+    //
+    // node.setAttrByPath("body", {
+    //   fill: 'transparent',
+    //   stroke: "#ccc"
+    // })
 
+    graph.positionCell(node, 'top-left')
+    node.hide()
+    graph.cleanSelection();
+    node.getChildren()?.forEach(item => item.show())
 
-      // cell.setVisible(false)
-    }
+    // graph.getCells()
+    //   .filter(item => !node.getChildren()?.includes(item))
+    //   .forEach(item => item.hide())
+
   });
+
   // graph.on("node:port:mousedown",({node,port})=>{
   //   console.log("port",node.getPort(port!));
   //   node.setPortProp(port!,"attrs/circle",{
