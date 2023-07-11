@@ -398,6 +398,30 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     //根据组节点外部的输入和输出添加放大后的输入输出桩
     const out_inputPortIds = node?.getPortsByGroup("inputs").map(data => data.id);
     const out_outputPortIds = node?.getPortsByGroup("outputs").map(data => data.id);
+    //添加放大后左侧桩，类型为输出，可以发出连线
+    for (let portId of out_inputPortIds) {
+      //添加连接桩
+      group.addPort({
+        id: portId + "inner", group: "output" + "s",
+        attrs: {
+          text: {
+            text: portId + "inner",
+            style: {
+              visibility: "hidden",
+              fontSize: 10,
+              fill: "#3B4351",
+            },
+          },
+          path: {
+            d: "m-6,2,a5,5.5 0 0 1 12,0",
+          }
+        },
+
+        label: {
+          position: "bottom",
+        }
+      })
+    }
 
 
 
@@ -410,7 +434,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
   const addOuterPortAndEdeg = (outEdge: (Edge | null)[], groupNode: Node, type: OuterEdgeType) => {
     //将外部节点与组节点连线
 
-    if (!outEdge.length && !outEdge.length) {
+    if (!outEdge.length) {
       //情况1：所选组无连线，默认一个连接装并且无连线
       return
     }
