@@ -349,12 +349,12 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     })
 
     const selectedIncomingEdge: (Edge | null)[] = nodes
-      .flatMap(item => graph.model.getIncomingEdges(node))
+      .flatMap(item => graph.model.getIncomingEdges(item))
       .filter(item => item?.getSourceNode() && !nodes.includes(item.getSourceNode()!))
 
     //获取输出所有边
     const selectedOutgoingEdge: (Edge | null)[] = nodes
-      .flatMap(item => graph.model.getOutgoingEdges(node))
+      .flatMap(item => graph.model.getOutgoingEdges(item))
       .filter(item => item?.getTargetNode() && !nodes.includes(item.getTargetNode()!))
 
     addOuterPortAndEdge(selectedIncomingEdge, group, "input")
