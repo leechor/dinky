@@ -324,32 +324,21 @@ export const initGraph = (
     //   },
     // });
 
-    const width = graph.container.clientWidth - node.size().width
-    const height = graph.container.clientHeight - node.size().height
-    node.resize(width / 2, height /2, {direction:'top-left'});
-    node.resize(width / 2, height /2, {direction:'bottom-right'});
-    node.toBack();
 
-    // node.setMarkup([
-    //   {
-    //     tagName: "rect",
-    //     selector: "body",
-    //   }
-    // ])
-    //
-    // node.setAttrByPath("body", {
-    //   fill: 'transparent',
-    //   stroke: "#ccc"
-    // })
+    const scrollerPannable = document.querySelector(".x6-graph-scroller.x6-graph-scroller-pannable")
+    const rect = scrollerPannable?.getBoundingClientRect()!;
+    node.resize(rect.width / 2 ,  rect.height / 2, {direction:'top-left'});
+    node.resize(rect.width , rect.height, {direction:'bottom-right'});
+    node.toBack();
 
     graph.positionCell(node, 'top-left')
     node.hide()
     graph.cleanSelection();
     node.getChildren()?.forEach(item => item.show())
 
-    // graph.getCells()
-    //   .filter(item => !node.getChildren()?.includes(item))
-    //   .forEach(item => item.hide())
+    graph.getCells()
+      .filter(item => !node.getChildren()?.includes(item))
+      .forEach(item => item.hide())
 
   });
 
