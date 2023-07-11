@@ -43,6 +43,12 @@
 				"json"
 			]
 		},
+		"tableName": {
+			"type": "string",
+			"minLength": 1,
+			"title": "tableName",
+			"description": "表名称，若为空将随机生成"
+		},
 		
 	   "other":{
 		 "title": "otherConnect",

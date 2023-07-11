@@ -4,7 +4,12 @@
 	"description": "自定义输出算子，通过添加自定义参数，实现对任意输出方式的兼容",
 	"minItems": 1,
         "properties": {
-
+			"tableName": {
+				"type": "string",
+				"minLength": 1,
+				"title": "tableName",
+				"description": "表名称，若为空将随机生成"
+			},
 		   "other":{
 			 "title": "customerConnect",
 			  "type": "array",

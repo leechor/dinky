@@ -334,8 +334,7 @@ export const initGraph = (
         stroke: "#ccc"
       })
 
-      //当前节点居中显示
-      graph.centerCell(node)
+      graph.positionCell(node, "top-left")
       graph.cleanSelection();
       //将当前节点内的节点及连线显示
       const children = node.getChildren()?.filter((n) => n.isNode()) as Node[];
@@ -344,7 +343,6 @@ export const initGraph = (
           return children.includes(edge.getSourceNode()!) && children.includes(edge.getTargetNode()!);
         });
         item.toggleVisible()
-        graph.positionCell(item, "center")
       });
       //隐藏其他节点
       graph.getCells().forEach(cell => {

@@ -20,7 +20,6 @@
 package com.zdpx.coder.operator.operators;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +28,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zdpx.coder.Specifications;
+import com.zdpx.coder.graph.Connection;
 import com.zdpx.coder.graph.InputPortObject;
 import com.zdpx.coder.graph.OutputPortObject;
 import com.zdpx.coder.operator.Column;
@@ -179,13 +179,23 @@ public class CepOperator extends Operator {
         SkipStrategy skipStrategy =
                 mapper.convertValue(parameters.get(SKIP_STRATEGY), SkipStrategy.class);//AFTER 跳过策略
 
-        TableInfo tableInfo = inputPortObject.getOutputPseudoData();
+        //算子预览的特殊处理
+        TableInfo tableInfo =null;
+        String tableName = TABLE_NAME_DEFAULT;
+        if(inputPortObject.getConnection()!=null){
+            tableName = inputPortObject.getOutputPseudoData().getName();;
+            tableInfo=inputPortObject.getOutputPseudoData();
+        }
 
         @SuppressWarnings("unchecked")
         List<FieldFunction> ffs =
                 FieldFunction.analyzeParameters(
-                        tableInfo.getName(), (List<Map<String, Object>>) parameters.get(COLUMNS),false); //根据匹配成功的输入事件构造输出事件,字段名不加表名
-        String outputTableName = NameHelper.generateVariableName("CepOperator");
+                        tableName, (List<Map<String, Object>>) parameters.get(COLUMNS),false); //根据匹配成功的输入事件构造输出事件,字段名不加表名
+
+        Object outputTableName = parameters.get("tableName");
+        if(outputTableName==null){
+            outputTableName = NameHelper.generateVariableName("CepOperator");
+        }
 
         //4 定义匹配成功后的输出方式  ONE ROW PER MATCH/ALL ROWS PER MATCH
         String outPutMode = (String) parameters.get(OUT_PUT_MODE);
@@ -200,7 +210,7 @@ public class CepOperator extends Operator {
 
         Map<String, Object> parameterMap = new HashMap<>();
         parameterMap.put(OUTPUT_TABLE_NAME, outputTableName);
-        parameterMap.put(INPUT_TABLE_NAME, tableInfo.getName());
+        parameterMap.put(INPUT_TABLE_NAME, tableName);
         parameterMap.put(PARTITION, partition);
         parameterMap.put(ORDER_BY, orderBy);
         parameterMap.put(OUT_PUT_MODE, outPutMode);
@@ -220,11 +230,14 @@ public class CepOperator extends Operator {
         this.getSchemaUtil().getGenerateResult().generate(sqlStr);
 
         List<Column> columns = Specifications.convertFieldFunctionToColumns(ffs);
-        tableInfo.getColumns().stream()
-                .filter(t -> t.getName().equals(partition))
-                .findFirst()
-                .ifPresent(columns::add);
-        OperatorUtil.postTableOutput(outputPortObject, outputTableName, columns);
+
+        if(tableInfo!=null){
+            tableInfo.getColumns().stream()
+                    .filter(t -> t.getName().equals(partition))
+                    .findFirst()
+                    .ifPresent(columns::add);
+        }
+        OperatorUtil.postTableOutput(outputPortObject, outputTableName.toString(), columns);
     }
 
     @SuppressWarnings("unchecked")

@@ -19,6 +19,7 @@
 
 package com.zdpx.service.impl;
 
+import com.zdpx.coder.json.preview.OperatorPreviewBuilder;
 import org.dinky.data.model.Statement;
 import org.dinky.data.model.Task;
 import org.dinky.mybatis.service.impl.SuperServiceImpl;
@@ -80,6 +81,14 @@ public class TaskTaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScri
     @Override
     public List<JsonNode> getOperatorConfigurations() {
         return Scene.getOperatorConfigurations();
+    }
+
+    @Override
+    public String operatorPreview(String graph) {
+
+        OperatorPreviewBuilder preview = new OperatorPreviewBuilder(graph);
+
+        return preview.operatorPreview();
     }
 
     @Override

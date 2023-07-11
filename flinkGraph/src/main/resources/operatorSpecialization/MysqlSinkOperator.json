@@ -4,7 +4,6 @@
 	"description": "MySQL输出算子",
 	"minItems": 1,
         "required": [
-			"tableName",
 			"connector",
 			"url",
 			"username",
@@ -15,7 +14,8 @@
 		"tableName": {
 			"type": "string",
 			"minLength": 1,
-			"title": "tableName"
+			"title": "tableName",
+			"description": "表名称，若为空将随机生成"
 		},
 		"connector": {
 			"type": "string",

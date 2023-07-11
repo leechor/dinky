@@ -143,7 +143,7 @@ const Editor = memo(() => {
       //modify delete columns button
       const dataObjects = document.querySelectorAll('.je-object__container')
       dataObjects.forEach( item => {
-        const deleteButton : HTMLElement | null = item.querySelector(':scope > .btn-group > button[title="Delete columns"]')
+        const deleteButton : HTMLElement | null = item.querySelector(':scope > .btn-group > button[title^="Delete"]')
         if (!deleteButton) {
           return
         }
@@ -161,7 +161,7 @@ const Editor = memo(() => {
       //modify delete items button
       const deleteItems = document.querySelectorAll('.je-panel > div > .je-panel')
       deleteItems.forEach(item => {
-        const deleteButton = item.querySelector('.btn-group > button[title="Delete item"]')
+        const deleteButton = item.querySelector('.btn-group > button[title^="Delete"]')
         if (!deleteButton) {
           return
         }

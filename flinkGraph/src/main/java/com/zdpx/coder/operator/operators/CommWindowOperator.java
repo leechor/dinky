@@ -1,6 +1,7 @@
 package com.zdpx.coder.operator.operators;
 
 import com.zdpx.coder.Specifications;
+import com.zdpx.coder.graph.Connection;
 import com.zdpx.coder.graph.InputPortObject;
 import com.zdpx.coder.graph.OutputPortObject;
 import com.zdpx.coder.graph.Scene;
@@ -105,10 +106,17 @@ public class CommWindowOperator extends Operator {
     @Override
     protected void execute() {
         Map<String, Object> parameters = getFirstParameterMap();
-        String outputTableName = NameHelper.generateVariableName("CommWindowFunctionOperator");
 
+        Object outputTableName = parameters.get("tableName");
+        if(outputTableName==null){
+            outputTableName = NameHelper.generateVariableName("CommWindowFunctionOperator");
+        }
+        //算子预览功能
+        String tableName = TABLE_NAME_DEFAULT;
+        if(inputPortObject.getConnection()!=null){
+            tableName = inputPortObject.getOutputPseudoData().getName();
+        }
 
-        final String tableName = inputPortObject.getOutputPseudoData().getName();
         List<FieldFunction> ffs = Operator.getFieldFunctions(tableName, parameters);
         Map<String, Object> p = new HashMap<>();
         p.put("tableName", outputTableName);
@@ -152,7 +160,7 @@ public class CommWindowOperator extends Operator {
 
         OperatorUtil.postTableOutput(
                 outputPortObject,
-                outputTableName,
+                outputTableName.toString(),
                 Specifications.convertFieldFunctionToColumns(ffs));
     }
 
