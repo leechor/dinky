@@ -83,14 +83,15 @@ export const initGraph = (
 
       // 在移动边的时候判断连接是否有效，如果返回 false，当鼠标放开的时候，不会连接到当前元素，否则会连接到当前元素
       validateConnection({ sourceMagnet, targetMagnet }) {
+        
         if (!targetMagnet || !sourceMagnet) return false;
 
         //输入桩限制 (目标桩是输入桩的话则不能连接)
         const inputsPort = targetMagnet.getAttribute('port-group') ?? '';
-        if (['inputs'].includes(inputsPort)) {
+        if (['inputs',"innerInputs"].includes(inputsPort)) {
           //输出桩限制 如果
           const outputsPort = sourceMagnet.getAttribute('port-group') ?? '';
-          return ['outputs'].includes(outputsPort);
+          return ['outputs',"innerOutputs"].includes(outputsPort);
         }
         return false;
       },

@@ -103,7 +103,11 @@ export const scroller = (graph: Graph) => {
   graph.use(
     new Scroller({
       pannable: true,
-      modifiers:["ctrl","alt"]
+      modifiers:["ctrl","alt"],
+      pageBreak:true,
+      pageVisible:true,
+      pageWidth:500,
+      pageHeight:500
     }),
   );
   graph.centerContent();

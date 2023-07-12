@@ -357,11 +357,10 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     const selectedOutgoingEdge: (Edge | null)[] = nodes
       .flatMap(item => graph.model.getOutgoingEdges(item))
       .filter(item => item?.getTargetNode() && !nodes.includes(item.getTargetNode()!))
-
+    //添加外部桩和连线
     addOuterPortAndEdge(selectedIncomingEdge, group, "input")
     addOuterPortAndEdge(selectedOutgoingEdge, group, "output")
-
-    addInnerPortAndEdge(group)
+    //删除之前公共的连线，并且将组节点内的连接桩与选中的节点及进行连线
 
 
     // const selectAbleIds:string:[] = unSelectedNodes.map(node => { id: node.id })
@@ -412,33 +411,37 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
         if (type === "input") {
           const sourceCell = edge!.getSourceCell();
           const sourcePortId = edge!.getSourcePortId();
+          const innerTargetCell = edge?.getTargetCell();
+          const innerTargetPortId = edge?.getTargetPortId();
           graph.addEdge({
             source: { cell: sourceCell!, port: sourcePortId },
             target: { cell: groupNode!, port: `input_${index}` },
           })
+          //添加内部桩和连线
+          addInnerPortAndEdge(groupNode, "output", `input_${index}`, innerTargetCell, innerTargetPortId)
         } else {
           const targetCell = edge!.getTargetCell();
           const targetPortId = edge!.getTargetPortId();
+          const innerSourceCell = edge?.getSourceCell();
+          const innerSourcePortId = edge?.getSourcePortId();
           graph.addEdge({
             source: { cell: groupNode!, port: `${type}_${index}` },
             target: { cell: targetCell!, port: targetPortId },
           })
+          addInnerPortAndEdge(groupNode, "input", `${type}_${index}`, innerSourceCell, innerSourcePortId)
         }
       })
     }
   }
-  const addInnerPortAndEdge = (groupNode: Node) => {
-    //根据组节点外部的输入和输出添加放大后的输入输出桩
-    const out_inputPortIds = groupNode?.getPortsByGroup("inputs").map(data => data.id);
-    const out_outputPortIds = groupNode?.getPortsByGroup("outputs").map(data => data.id);
-    //添加放大后左侧桩，类型为输出，可以发出连线
-    for (let portId of out_inputPortIds) {
+  const addInnerPortAndEdge = (groupNode: Node, type: OuterEdgeType, outPortId: string, targetCell: Cell | null | undefined, targetPortId: string | undefined) => {
+
+    if (type === "output") {
       //添加连接桩
       groupNode.addPort({
-        id: portId + "in", group: "innerOutputs",
+        id: `${outPortId}_in ${targetCell!.id}_${targetPortId}`, group: "innerOutputs",
         attrs: {
           text: {
-            text: portId + "_in",
+            text: outPortId + "_in",
             style: {
               visibility: "hidden",
               fontSize: 10,
@@ -455,14 +458,13 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
         }
 
       })
-    }
-    for (let portId of out_outputPortIds) {
+    } else {
       //添加连接桩
       groupNode.addPort({
-        id: portId + "in", group: "innerInputs",
+        id: `${outPortId}_in ${targetCell!.id}_${targetPortId}`, group: "innerInputs",
         attrs: {
           text: {
-            text: portId + "_in",
+            text: outPortId + "_in",
             style: {
               visibility: "hidden",
               fontSize: 10,
@@ -480,6 +482,10 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
 
       })
     }
+
+
+
+
   }
   const uploadFileClick = () => {
     const fileInput = document.createElement("input")
