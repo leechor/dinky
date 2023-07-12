@@ -325,11 +325,9 @@ export const initGraph = (
     //   },
     // });
 
-
-    const scrollerPannable = document.querySelector(".x6-graph-scroller.x6-graph-scroller-pannable")
-    const rect = scrollerPannable?.getBoundingClientRect()!;
-    node.resize(rect.width / 2 ,  rect.height / 2, {direction:'top-left'});
-    node.resize(rect.width , rect.height, {direction:'bottom-right'});
+    const viewRectangle =  (graph.getPlugin('scroller')! as any).scrollerImpl.getVisibleArea();
+    node.resize(viewRectangle.width / 2 ,  viewRectangle.height / 2, {direction:'top-left'});
+    node.resize(viewRectangle.width , viewRectangle.height, {direction:'bottom-right'});
     node.toBack();
 
     graph.positionCell(node, 'top-left')
