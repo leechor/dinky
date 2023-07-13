@@ -45,7 +45,8 @@
 
         .ant-tabs-content {
           height: 100%;
-          .ant-tabs-tabpane{
+
+          .ant-tabs-tabpane {
             height: 100%;
           }
         }
@@ -56,11 +57,25 @@
     .editor-content {
       margin-top: 1px;
       flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
 
-      .x6-graph {
-        width: 100% !important;
-        height: 100% !important;
+      .header-bread {
+        height: 30px;
+        width: 100%;
       }
+
+      .content-graph {
+        flex: 1;
+        margin:10px;
+        .x6-graph {
+          width: 100% !important;
+          height: 100% !important;
+        }
+      }
+
+
     }
   }
 }
@@ -113,7 +128,7 @@
           align-items: center;
         }
 
-        button + label {
+        button+label {
           font-size: 0.8rem;
           margin: 0;
           line-height: 1;
@@ -132,14 +147,15 @@
 
         .je-panel .columns .form-group {
           label {
-            + .form-select {
+            +.form-select {
               box-sizing: border-box;
             }
 
           }
         }
 
-        select.form-select, input.form-input {
+        select.form-select,
+        input.form-input {
           padding: 0.1rem 0.2rem;
           height: 1.3rem;
         }
@@ -177,7 +193,7 @@
           background-color: #e1e3e1;
           box-sizing: border-box;
 
-          button.delete.json-editor-btntype-delete  span{
+          button.delete.json-editor-btntype-delete span {
             display: none;
           }
 

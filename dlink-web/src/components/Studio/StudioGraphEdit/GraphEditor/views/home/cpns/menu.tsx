@@ -322,20 +322,26 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
           ry: 6,
         },
         text: {
-          text: " param.name",
+          text: CustomShape.GROUP_PROCESS,
           fontSize: 2,
         },
       },
     });
 
     const group = graph.addNode(node);
-    group.setPosition(graph.clientToLocal(rect.x + (rect.width - group.size().width) / 2,
-      rect.y + (rect.height - group.size().height) / 2))
+    if (Object.values(rect).every(item => item === 0)) {
+      group.setPosition(nodes[0].position().x, nodes[0].position().y)
+    } else {
+      group.setPosition(graph.clientToLocal(rect.x + (rect.width - group.size().width) / 2,
+        rect.y + (rect.height - group.size().height) / 2))
+    }
+
     group.setChildren(nodes)
-    graph.centerCell(group)
+
 
     nodes?.flatMap(item => {
-      item.prop("previousPosition", item.position())
+      item.prop("previousPosition", item.position({ relative: true }))
+      item.prop("previousSize", item.size())
       item.hide()
       return graph.getConnectedEdges(item)
     }).filter((edge) => nodes.includes(edge.getSourceNode()!) && nodes.includes(edge.getTargetNode()!))
@@ -361,8 +367,11 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     addOuterPortAndEdge(selectedIncomingEdge, group, "input")
     addOuterPortAndEdge(selectedOutgoingEdge, group, "output")
     //删除之前公共的连线，并且将组节点内的连接桩与选中的节点及进行连线
+    removeEdges(selectedIncomingEdge)
+    removeEdges(selectedOutgoingEdge)
 
-
+    group.prop("previousPosition", group.position({ relative: true }))
+    group.prop("previousSize", group.size())
     // const selectAbleIds:string:[] = unSelectedNodes.map(node => { id: node.id })
     // graph.setSelectionFilter(selectAbleIds)
     // 将该组节点子节点添加进不可选中数组中
@@ -414,6 +423,16 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
           const innerTargetCell = edge?.getTargetCell();
           const innerTargetPortId = edge?.getTargetPortId();
           graph.addEdge({
+            attrs: {
+              line: {
+                stroke: '#b2a2e9',
+                strokeWidth: 2,
+                targetMarker: {
+                  name: 'classic',
+                  size: 10,
+                },
+              },
+            },
             source: { cell: sourceCell!, port: sourcePortId },
             target: { cell: groupNode!, port: `input_${index}` },
           })
@@ -425,6 +444,16 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
           const innerSourceCell = edge?.getSourceCell();
           const innerSourcePortId = edge?.getSourcePortId();
           graph.addEdge({
+            attrs: {
+              line: {
+                stroke: '#b2a2e9',
+                strokeWidth: 2,
+                targetMarker: {
+                  name: 'classic',
+                  size: 10,
+                },
+              },
+            },
             source: { cell: groupNode!, port: `${type}_${index}` },
             target: { cell: targetCell!, port: targetPortId },
           })
@@ -438,7 +467,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     if (type === "output") {
       //添加连接桩
       groupNode.addPort({
-        id: `${outPortId}_in ${targetCell!.id}_${targetPortId}`, group: "innerOutputs",
+        id: `${outPortId}_in`, group: "innerOutputs",
         attrs: {
           text: {
             text: outPortId + "_in",
@@ -451,17 +480,17 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
         },
         args: {
           dx: 2,
-
         },
         label: {
           position: "right",
         }
 
       })
+      addInnerEdges(groupNode.id, `${outPortId}_in`, "output", targetCell!.id, targetPortId!)
     } else {
       //添加连接桩
       groupNode.addPort({
-        id: `${outPortId}_in ${targetCell!.id}_${targetPortId}`, group: "innerInputs",
+        id: `${outPortId}_in`, group: "innerInputs",
         attrs: {
           text: {
             text: outPortId + "_in",
@@ -473,16 +502,65 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
           },
         },
         args: {
-          dx: -2,
-
+          dx: -2
         },
         label: {
           position: "left",
         }
 
       })
+      addInnerEdges(groupNode.id, `${outPortId}_in`, "input", targetCell!.id, targetPortId!)
     }
+  }
+  const removeEdges = (edges: (Edge | null)[]) => {
+    if (edges.length) {
+      for (let edge of edges) {
+        graph.removeEdge(edge!)
+      }
+    }
+  }
+  const addInnerEdges = (gId: string, gPortId: string, type: OuterEdgeType, conSourceCellId: string, conSourPortId: string) => {
+    
+    if (type === "output") {
+      graph.addEdge({
+        attrs: {
+          line: {
+            stroke: '#b2a2e9',
+            strokeWidth: 2,
+            targetMarker: {
+              name: 'classic',
+              size: 10,
+            },
+          },
+        },
+        router: "normal",
+        connector: {
+          name: "smooth"
+        },
+        source: { cell: gId, port: gPortId },
+        target: { cell: conSourceCellId, port: conSourPortId },
+      }).hide()
 
+    } else {
+      graph.addEdge({
+        attrs: {
+          line: {
+            stroke: '#b2a2e9',
+            strokeWidth: 2,
+            targetMarker: {
+              name: 'classic',
+              size: 10,
+            },
+          },
+        },
+        router: "normal",
+        connector: {
+          name: "smooth"
+        },
+        source: { cell: conSourceCellId, port: conSourPortId },
+        target: { cell: gId, port: gPortId },
+      }).hide()
+    }
 
 
 

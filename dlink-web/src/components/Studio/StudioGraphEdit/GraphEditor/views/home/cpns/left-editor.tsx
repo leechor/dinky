@@ -445,7 +445,7 @@ const LeftEditor = memo(() => {
   const changeNode = (node: Cell) => {
     dispatch(changeCurrentSelectNode(node))
   }
-  const changePosition = (x:number,y:number) => {
+  const changePosition = (x: number, y: number) => {
     dispatch(changePositon({ x, y }))
   }
   const handleClickMenu = (e: any, current: any) => {
@@ -453,7 +453,7 @@ const LeftEditor = memo(() => {
 
   };
   const tabClick = (tabId: string) => {
-    
+
     dispatch(removeGraphTabs(tabId))
   }
   const getSubprocess = () => {
@@ -522,11 +522,14 @@ const LeftEditor = memo(() => {
         <div className={styles['leftEditor-editor']}>
 
           <div className={styles['editor-content']}>
-            <Breadcrumb>
-              {<Breadcrumb.Item onClick={() => { tabClick("0") }} >process<CaretRightOutlined /></Breadcrumb.Item>}
-              {getSubprocess()}
-            </Breadcrumb>
-            <div ref={editorContentRef} className={styles['x6-graph']}>
+            <div className={styles["header-bread"]}>
+              <Breadcrumb>
+                {<Breadcrumb.Item onClick={() => { tabClick("0") }} >process<CaretRightOutlined /></Breadcrumb.Item>}
+                {getSubprocess()}
+              </Breadcrumb>
+            </div>
+
+            <div ref={editorContentRef} className={styles['content-graph']}>
               {showMenuInfo.show && (
                 <CustomMenu
                   top={showMenuInfo.top}
@@ -538,6 +541,7 @@ const LeftEditor = memo(() => {
                 />
               )}
             </div>
+
           </div>
         </div>
       </div>

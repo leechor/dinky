@@ -41,7 +41,7 @@ export const initGraph = (
       },
       router: {
         name: 'manhattan',
-        args:{
+        args: {
           step: 5,
         }
       },
@@ -83,15 +83,15 @@ export const initGraph = (
 
       // 在移动边的时候判断连接是否有效，如果返回 false，当鼠标放开的时候，不会连接到当前元素，否则会连接到当前元素
       validateConnection({ sourceMagnet, targetMagnet }) {
-        
+
         if (!targetMagnet || !sourceMagnet) return false;
 
         //输入桩限制 (目标桩是输入桩的话则不能连接)
         const inputsPort = targetMagnet.getAttribute('port-group') ?? '';
-        if (['inputs',"innerInputs"].includes(inputsPort)) {
+        if (['inputs', "innerInputs"].includes(inputsPort)) {
           //输出桩限制 如果
           const outputsPort = sourceMagnet.getAttribute('port-group') ?? '';
-          return ['outputs',"innerOutputs"].includes(outputsPort);
+          return ['outputs', "innerOutputs"].includes(outputsPort);
         }
         return false;
       },
@@ -141,8 +141,6 @@ export const initGraph = (
     },
     grid: true,
   });
-
-  graph.center()
   //自定义删除按钮
   removeBtnNodeRegister(graph)
   removeBtnEdgeRegister(graph)
@@ -206,7 +204,6 @@ export const initGraph = (
   }
 
   graph.on('edge:mouseenter', ({ e, view, edge, cell }) => {
-    console.log("enter");
 
     // edge.attr(LINE_STOKE_WIDTH, 4);
     // showEdgePorts(edge, true);
@@ -324,20 +321,47 @@ export const initGraph = (
     //     },
     //   },
     // });
+    //获取画布的大小
 
-    const viewRectangle =  (graph.getPlugin('scroller')! as any).scrollerImpl.getVisibleArea();
-    node.resize(viewRectangle.width / 2 ,  viewRectangle.height / 2, {direction:'top-left'});
-    node.resize(viewRectangle.width , viewRectangle.height, {direction:'bottom-right'});
+    
+
+    //将组节点向右移动两个画布
+    const dx = graph.getGraphArea().width;
+    const dy = graph.getGraphArea().height;
+    node.translate(-node.position().x, -node.position().y)
+    node.translate(dx, 0)
+    //隐藏当前组节点的所有连线
+    const edges = graph.model.getConnectedEdges(node, { deep: true });
+    for (let edge of edges) {
+      edge.hide()
+    }
+    //反向平移画布
+    graph.translate(-dx, 0)
+
+
+    // const viewRectangle = (graph.getPlugin('scroller')! as any).scrollerImpl.getVisibleArea();
+    // node.resize(viewRectangle.width / 2, viewRectangle.height / 2, { direction: 'top-left' });
+    // node.resize(viewRectangle.width, viewRectangle.height, { direction: 'bottom-right' });
+    //放大到画布大小
+    node.resize(dx, dy)
     node.toBack();
+    // graph.positionCell(node, 'top-left')
+    //隐藏组节点
 
-    graph.positionCell(node, 'top-left')
-    node.hide()
+    node.setAttrs({ body: { style: { display: "none" } } })
     graph.cleanSelection();
-    node.getChildren()?.forEach(item => item.show())
-
-    graph.getCells()
-      .filter(item => !node.getChildren()?.includes(item))
-      .forEach(item => item.hide())
+    node.getChildren()?.forEach(item => {
+      
+      item.show()
+      //将节点位移到和之前对应的地方
+      const prePos = item.getProp().previousPosition
+      const pos = item.getProp().position
+      item.prop("position",{x:pos.x+prePos.x,y:pos.y+prePos.y})
+    })
+    // 设置画布不能滚动
+    // graph.getCells()
+    //   .filter(item => !node.getChildren()?.includes(item))
+    //   .forEach(item => item.hide())
 
   });
 

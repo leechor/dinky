@@ -1,4 +1,3 @@
-import { cloneDeep } from 'lodash';
 import { Graph, Node } from '@antv/x6';
 import { register } from '@antv/x6-react-shape';
 import TextNode from '@/components/Studio/StudioGraphEdit/GraphEditor/components/text-node';
