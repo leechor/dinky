@@ -1,15 +1,17 @@
 package com.zdpx.coder.graph;
 
 import com.zdpx.coder.operator.Identifier;
+import com.zdpx.coder.operator.OperatorFeature;
 import com.zdpx.coder.operator.Parameters;
 
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Optional;
 
 @Slf4j
 public abstract class Node implements Identifier {
     protected String id;
     protected String name;
-    private String icon;
 
     protected Parameters parameters = new Parameters();
     protected NodeWrapper nodeWrapper;
@@ -32,12 +34,8 @@ public abstract class Node implements Identifier {
         this.name = name;
     }
 
-    public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
+    public Optional<OperatorFeature> getOperatorFeature() {
+        return Optional.empty();
     }
 
     public NodeWrapper getNodeWrapper() {

@@ -1,7 +1,6 @@
 import { Menu } from '@antv/x6-react-components';
 import { FC, memo, useState } from 'react';
-import { message, Radio, RadioChangeEvent, Space, Upload } from 'antd';
-import type { UploadProps } from 'antd/es/upload/interface';
+import { message, Radio, RadioChangeEvent, Space, } from 'antd';
 import { DataUri, Graph, Node, Cell, Edge } from '@antv/x6';
 import '@antv/x6-react-components/es/menu/style/index.css';
 import {
@@ -22,8 +21,7 @@ import {
 import CustomShape from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
 import { useAppSelector, useAppDispatch } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
 import { formatDate } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/math"
-import { changeUnselectedCells } from "@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home"
-import { edge } from '@antv/g2plot/lib/adaptor/geometries';
+
 
 type MenuPropsType = {
   top: number;
@@ -337,7 +335,6 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     }
 
     group.setChildren(nodes)
-
 
     nodes?.flatMap(item => {
       item.prop("previousPosition", item.position({ relative: true }))

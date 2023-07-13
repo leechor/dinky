@@ -174,7 +174,7 @@ export default (
     );
 
     //保存组和节点关系
-    registerOperatorNode(param.code, ports, OperatorNode(param.icon, param.name), portItem);
+    registerOperatorNode(param.code, ports, OperatorNode(param.feature?.icon, param.name), portItem);
 
   });
   registerTextNode();

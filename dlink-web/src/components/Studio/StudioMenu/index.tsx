@@ -94,7 +94,6 @@ const StudioMenu = (props: any) => {
     tabs,
     current,
     currentPath,
-    form,
     width,
     height,
     refs,
@@ -108,7 +107,7 @@ const StudioMenu = (props: any) => {
   // const [editModalVisible, handleEditModalVisible] = useState<boolean>(false);
   const [graphData, setGraphData] = useState();
   const [dolphinData, setDolphinData] = useState();
-  
+
   const menu = (
     <Menu>
       <Menu.Item>{l('global.stay.tuned')}</Menu.Item>
@@ -127,7 +126,7 @@ const StudioMenu = (props: any) => {
       if (e.keyCode === 113) {
         e.preventDefault();
         if (current) {
-          
+
           // handleEditModalVisible(true);
           props.changeFullScreen(true);
           if (graph instanceof Graph) {
@@ -373,7 +372,7 @@ const StudioMenu = (props: any) => {
   };
 
   const saveSqlAndSettingToTask = () => {
-    
+
     //校验
     if (current.task.dialect !== "FlinkSql") {
       if (editor instanceof JSONEditor<any>) {

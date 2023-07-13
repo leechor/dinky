@@ -19,6 +19,7 @@
 
 package com.zdpx.coder.graph;
 
+import com.zdpx.coder.operator.OperatorFeature;
 import io.debezium.util.Strings;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.flink.table.functions.UserDefinedFunction;
@@ -162,12 +163,12 @@ public class Scene {
                         String.format(
                                 "{\"name\": \"%s\",%n"
                                         + "\"code\":\"%s\",%n"
-                                        + "\"icon\":\"%s\",%n"
+                                        + "\"feature\": %s,%n"
                                         + "\"group\":\"%s\",%n"
                                         + "\"specification\": %s}",
                                 name,
                                 t.getKey(),
-                                operator.getIcon(),
+                                mapper.valueToTree(operator.getOperatorFeature().orElse(null)).toString(),
                                 operator.getGroup(),
                                 operator.getSpecification()));
     }

@@ -20,8 +20,11 @@
 package com.zdpx.coder.operator.dataSource.mysql;
 
 import com.zdpx.coder.graph.OutputPortObject;
+import com.zdpx.coder.operator.OperatorFeature;
 import com.zdpx.coder.operator.TableInfo;
 import com.zdpx.coder.operator.dataSource.AbstractSqlTable;
+
+import java.util.Optional;
 
 /** */
 public class MysqlSourceOperator extends AbstractSqlTable {
@@ -34,8 +37,15 @@ public class MysqlSourceOperator extends AbstractSqlTable {
     protected void initialize() {
         outputPortObject = new OutputPortObject<>(this, OUTPUT_0);
         getOutputPorts().put(OUTPUT_0, outputPortObject);
-        setIcon("icon-MySQL-icon-02");
         setName("MySQL数据源");
+    }
+
+    @Override
+    public Optional<OperatorFeature> getOperatorFeature() {
+        OperatorFeature operatorFeature = OperatorFeature.builder()
+                .icon("icon-MySQL-icon-02")
+                .build();
+        return Optional.of(operatorFeature);
     }
 
     @Override
