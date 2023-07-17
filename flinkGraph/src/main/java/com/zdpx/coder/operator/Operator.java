@@ -103,11 +103,13 @@ public abstract class Operator extends Node implements Runnable {
             return parametersLocal;
         }
         try {
-            if(!parametersStr.subSequence(0,1).equals("[")){
-                parametersLocal.add(objectMapper.readValue(parametersStr, new TypeReference<Map<String, Object>>() {}));
+            if (!parametersStr.subSequence(0, 1).equals("[")) {
+                parametersLocal.add(objectMapper.readValue(parametersStr, new TypeReference<Map<String, Object>>() {
+                }));
 
-            }else{
-                parametersLocal=objectMapper.readValue(parametersStr, new TypeReference<List<Map<String, Object>>>() {});
+            } else {
+                parametersLocal = objectMapper.readValue(parametersStr, new TypeReference<List<Map<String, Object>>>() {
+                });
             }
 
         } catch (JsonProcessingException e) {
@@ -126,7 +128,9 @@ public abstract class Operator extends Node implements Runnable {
         if (applies()) {
             validParameters();
             generateUdfFunctionByInner();
-            execute();
+            Map<String, Object> map = formatOperatorParameter();//格式化参数信息
+            generateCheckInformation(map);//生成校验信息相关逻辑
+            execute(map);//生成sql相关逻辑
         }
     }
 
@@ -156,7 +160,9 @@ public abstract class Operator extends Node implements Runnable {
         this.getSchemaUtil().getGenerateResult().generate(sqlStr);
     }
 
-    /** 校验输入参数是否正确. */
+    /**
+     * 校验输入参数是否正确.
+     */
     protected void validParameters() {
         String parametersString = getParametersString();
         if (jsonSchemaValidator.getSchema() == null) {
@@ -173,7 +179,9 @@ public abstract class Operator extends Node implements Runnable {
         }
     }
 
-    /** 初始化信息,输出/输入端口应该在该函数中完成注册定义 */
+    /**
+     * 初始化信息,输出/输入端口应该在该函数中完成注册定义
+     */
     protected abstract void initialize();
 
     @Override
@@ -198,14 +206,26 @@ public abstract class Operator extends Node implements Runnable {
     protected Map<String, Object> getFirstParameterMap() {
         List<Map<String, Object>> parameterLists = getParameterLists();//增加config中的字段
         Map<String, Object> map = new HashMap<>();
-        for(Map<String, Object> p:parameterLists){
+        for (Map<String, Object> p : parameterLists) {
             map.putAll(p);
         }
         return map;
     }
 
-    /** 逻辑执行函数 */
-    protected abstract void execute();
+    /**
+     * 格式化参数信息
+     */
+    protected abstract Map<String, Object> formatOperatorParameter();
+
+    /**
+     * 生成校验信息相关逻辑
+     */
+    protected abstract void generateCheckInformation(Map<String, Object> map);
+
+    /**
+     * 逻辑执行函数
+     */
+    protected abstract void execute(Map<String, Object> result);
 
     /**
      * 注册输入端口
@@ -269,7 +289,9 @@ public abstract class Operator extends Node implements Runnable {
                 });
     }
 
-    /** 设置宏算子参数的校验信息. */
+    /**
+     * 设置宏算子参数的校验信息.
+     */
     protected void definePropertySchema() {
         String propertySchema = getSpecification();
         if (Strings.isNullOrEmpty(propertySchema)) {
@@ -287,11 +309,13 @@ public abstract class Operator extends Node implements Runnable {
      */
     protected List<Map<String, Object>> getParameterLists() {
         List<Map<String, Object>> parameterLists = getParameterLists(this.nodeWrapper.getParameters());
-        if(this.nodeWrapper.getConfig()!=null){
-            Map<String, Object> map = new HashMap<>();
-            map.put("config",getParameterLists(this.nodeWrapper.getConfig()));
-            parameterLists.add(map);
+        Map<String, Object> map = new HashMap<>();
+        if (this.nodeWrapper.getConfig() != null) {
+            map.put("config", getParameterLists(this.nodeWrapper.getConfig()));
         }
+        map.put("id", id);//节点校验需要使用
+
+        parameterLists.add(map);
         return parameterLists;
     }
 
@@ -299,10 +323,12 @@ public abstract class Operator extends Node implements Runnable {
         return this.getOperatorWrapper().getParameters();
     }
 
-    /** 生成内部用户自定义函数(算子)对应的注册代码, 以便在flink sql中对其进行引用调用. */
+    /**
+     * 生成内部用户自定义函数(算子)对应的注册代码, 以便在flink sql中对其进行引用调用.
+     */
     private void generateUdfFunctionByInner() {
         Map<String, String> ufs = this.getUserFunctions();
-        if (ufs == null||ufs.isEmpty()) {
+        if (ufs == null || ufs.isEmpty()) {
             return;
         }
 
@@ -334,16 +360,17 @@ public abstract class Operator extends Node implements Runnable {
     public static List<FieldFunction> getFieldFunctions(
             String primaryTableName, Map<String, Object> parameters) {
         return FieldFunction.analyzeParameters(
-                primaryTableName, (List<Map<String, Object>>) parameters.get(FIELD_FUNCTIONS),true);
+                primaryTableName, (List<Map<String, Object>>) parameters.get(FIELD_FUNCTIONS), true);
     }
 
     public static Map<String, Object> getJsonAsMap(JsonNode inputs) {
-        return new ObjectMapper().convertValue(inputs, new TypeReference<Map<String, Object>>() {});
+        return new ObjectMapper().convertValue(inputs, new TypeReference<Map<String, Object>>() {
+        });
     }
 
     public static List<Column> getColumnFromFieldFunctions(List<FieldFunction> ffs) {
         return ffs.stream()
-                .map(t -> new Column(getColumnName(t.getOutName()==null? t.getParameters().get(0).toString():t.getOutName()), t.getOutType()))
+                .map(t -> new Column(getColumnName(t.getOutName() == null ? t.getParameters().get(0).toString() : t.getOutName()), t.getOutType()))
                 .collect(Collectors.toList());
     }
 

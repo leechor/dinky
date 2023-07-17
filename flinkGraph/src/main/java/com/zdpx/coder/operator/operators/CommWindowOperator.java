@@ -1,10 +1,7 @@
 package com.zdpx.coder.operator.operators;
 
 import com.zdpx.coder.Specifications;
-import com.zdpx.coder.graph.Connection;
-import com.zdpx.coder.graph.InputPortObject;
-import com.zdpx.coder.graph.OutputPortObject;
-import com.zdpx.coder.graph.Scene;
+import com.zdpx.coder.graph.*;
 import com.zdpx.coder.operator.FieldFunction;
 import com.zdpx.coder.operator.Operator;
 import com.zdpx.coder.operator.OperatorUtil;
@@ -104,16 +101,16 @@ public class CommWindowOperator extends Operator {
     }
 
     @Override
-    protected void execute() {
+    protected Map<String, Object> formatOperatorParameter() {
         Map<String, Object> parameters = getFirstParameterMap();
 
         Object outputTableName = parameters.get("tableName");
-        if(outputTableName==null){
+        if (outputTableName == null || outputTableName.equals("")) {
             outputTableName = NameHelper.generateVariableName("CommWindowFunctionOperator");
         }
         //算子预览功能
         String tableName = TABLE_NAME_DEFAULT;
-        if(inputPortObject.getConnection()!=null){
+        if (inputPortObject.getConnection() != null) {
             tableName = inputPortObject.getOutputPseudoData().getName();
         }
 
@@ -124,6 +121,7 @@ public class CommWindowOperator extends Operator {
         p.put("inputTableName", tableName);
         p.put(WHERE, parameters.get(WHERE));
         p.put(LIMIT, parameters.get(LIMIT));
+        p.put("id", parameters.get("id"));
 
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> order = (List<Map<String, Object>>) parameters.get(ORDER_BY);
@@ -154,13 +152,33 @@ public class CommWindowOperator extends Operator {
         if (groupList != null && !groupList.isEmpty()) {
             p.put(GROUP, groupList);
         }
+        return p;
+    }
+
+    /**
+     * 校验内容：
+     */
+    @Override
+    protected void generateCheckInformation(Map<String, Object> map) {
+        CheckInformationModel model = new CheckInformationModel();
+        model.setOperatorId(map.get("id").toString());
+        model.setColor("green");
+        model.setTableName(map.get("tableName").toString());
+
+        this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
+    }
+
+    @Override
+    protected void execute(Map<String, Object> p) {
 
         String sqlStr = TemplateUtils.format("CommWindowFunction", p, TEMPLATE);
         this.getSchemaUtil().getGenerateResult().generate(sqlStr);
 
+        @SuppressWarnings("unchecked")
+        List<FieldFunction> ffs = (List<FieldFunction>) p.get(Operator.FIELD_FUNCTIONS);
         OperatorUtil.postTableOutput(
                 outputPortObject,
-                outputTableName.toString(),
+                p.get("tableName").toString(),
                 Specifications.convertFieldFunctionToColumns(ffs));
     }
 

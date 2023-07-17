@@ -19,11 +19,16 @@
 
 package com.zdpx.coder.operator.dataSource.mysql;
 
+import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.graph.InputPortObject;
 import com.zdpx.coder.operator.dataSource.AbstractSqlTable;
 import lombok.extern.slf4j.Slf4j;
 
-/** */
+import java.util.Map;
+
+/**
+ *
+ */
 @Slf4j
 public class MysqlSinkOperator extends AbstractSqlTable {
 
@@ -35,8 +40,26 @@ public class MysqlSinkOperator extends AbstractSqlTable {
         setName("MysqlSink");
     }
 
+    /**
+     * 校验内容：
+     */
     @Override
-    protected void execute() {
-        processLogic(MYSQL_SINK,true,null);
+    protected void generateCheckInformation(Map<String, Object> map) {
+        CheckInformationModel model = new CheckInformationModel();
+        model.setOperatorId(map.get("id").toString());
+        model.setColor("green");
+        model.setTableName(map.get("tableName").toString());
+
+        this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
+    }
+
+    @Override
+    protected void execute(Map<String, Object> dataModel) {
+        processLogic(true, null, dataModel);
+    }
+
+    @Override
+    protected String getDefaultName() {
+        return MYSQL_SINK;
     }
 }

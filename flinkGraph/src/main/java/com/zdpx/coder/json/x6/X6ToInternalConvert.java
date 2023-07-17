@@ -99,7 +99,7 @@ public final class X6ToInternalConvert implements ToInternalConvert {
                 case "package":
                     node = new ProcessPackage();
                     break;
-                case "group":
+                case "group-process":
                     node = new ProcessGroup();
                     break;
                 case "custom-text-node":
@@ -180,8 +180,8 @@ public final class X6ToInternalConvert implements ToInternalConvert {
                 String sourceCell = sourceConnect.get("cell");
                 String sourcePort = sourceConnect.get("port");
 
-//                System.out.println(tn.getId()+": 处理前 "+"source: "+cell.get("source").get("cell")+" ------------ "+cell.get("source").get("port"));
-//                System.out.println(tn.getId()+": 处理hou "+"source: "+sourceConnect.get("cell")+" ------------ "+sourceConnect.get("port"));
+                System.out.println(tn.getId()+": 处理前 "+"source: "+cell.get("source").get("cell")+" ------------ "+cell.get("source").get("port"));
+                System.out.println(tn.getId()+": 处理hou "+"source: "+sourceConnect.get("cell")+" ------------ "+sourceConnect.get("port"));
                 jump.putAll(sourceConnect);
 
                 //分组的特殊逻辑，对正常节点没有影响
@@ -189,8 +189,8 @@ public final class X6ToInternalConvert implements ToInternalConvert {
                 String targetCell = targetConnect.get("cell");
                 String targetPort = targetConnect.get("port");
 
-//                System.out.println(tn.getId()+": 处理前 "+"target: "+cell.get("target").get("cell")+" ------------ "+cell.get("target").get("port"));
-//                System.out.println(tn.getId()+": 处理hou "+"target: "+targetConnect.get("cell")+" ------------ "+targetConnect.get("port")+"\n");
+                System.out.println(tn.getId()+": 处理前 "+"target: "+cell.get("target").get("cell")+" ------------ "+cell.get("target").get("port"));
+                System.out.println(tn.getId()+": 处理hou "+"target: "+targetConnect.get("cell")+" ------------ "+targetConnect.get("port")+"\n");
                 jump.putAll(targetConnect);
 
 
@@ -274,8 +274,8 @@ public final class X6ToInternalConvert implements ToInternalConvert {
     }
     /**
      * 分组
-     * 存在 源节点 id等于当前目标节点的id时，递归获取下一源节点指向的目标节点（跳过），直到找不到符合条件的源节点
-     * 存在 目标节点 id等于当前源节点的id时，递归获取上一目标节点指向的源节点（跳过），直到找不到符合条件的目标节点
+     * 存在 源节点 id等于当前目标节点的id时，递归获取下一源节点指向的目标节点（跳过），直到找不到符合条件的源节点 source: false -> -in
+     * 存在 目标节点 id等于当前源节点的id时，递归获取上一目标节点指向的源节点（跳过），直到找不到符合条件的目标节点 target: true ->  -in
      * */
     public static Map<String,String> findConnect(List<Connection<?>> copyConnections, Map<String, TempNode> tempNodeMap, JsonNode node, Map<String, String> map, Boolean direction){
         String cell = node.get("cell").asText();// node：当遍历后没有匹配时，认为该节点是最终节点
@@ -286,7 +286,7 @@ public final class X6ToInternalConvert implements ToInternalConvert {
             JsonNode text = tempNodeMap.get(copyConnections.get(i).getId()).getNode();
             //direction: 寻找的方向
             JsonNode t1 = text.get(direction? "source":"target"); //：正向获取
-            if(cell.equals(t1.get("cell").asText()) && port.equals(t1.get("port").asText())){//todo 对应关系的逻辑需要重写
+            if(cell.equals(t1.get("cell").asText()) && port.equals(t1.get("port").asText()+"_in")){
                 //存在连接节点的情况
                 Map<String, String> connect = findConnect(copyConnections, tempNodeMap, text.get(!direction? "source":"target"), map,direction);//反向获取
                 //进入到这里的线都需要删除

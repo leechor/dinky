@@ -113,7 +113,19 @@ public class BroadcastOperator extends Operator {
     }
 
     @Override
-    protected void execute() {
+    protected Map<String, Object> formatOperatorParameter() {
+        return null;
+    }
+
+    /**
+     * 校验内容：无
+     */
+    @Override
+    protected void generateCheckInformation(Map<String, Object> map) {
+    }
+
+    @Override
+    protected void execute(Map<String, Object> map) {
 
         if (getOutputPorts().isEmpty()
                 || this.nodeWrapper == null

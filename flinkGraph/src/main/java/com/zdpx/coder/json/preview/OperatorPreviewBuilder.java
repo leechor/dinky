@@ -32,6 +32,7 @@ public class OperatorPreviewBuilder{
         //添加算子信息
         operator.setNodeWrapper(new X6NodeWrapper());
         operator.setName(name);
+        operator.setId(cell.get("id").asText());
         JsonNode data = cell.get("data");
         if (data != null) {
             NodeWrapper nodeWrapper = operator.getNodeWrapper();

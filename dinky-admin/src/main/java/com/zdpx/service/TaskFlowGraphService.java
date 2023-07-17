@@ -19,6 +19,7 @@
 
 package com.zdpx.service;
 
+import com.zdpx.coder.graph.CheckInformationModel;
 import org.dinky.data.model.Task;
 import org.dinky.mybatis.service.ISuperService;
 
@@ -32,7 +33,7 @@ public interface TaskFlowGraphService extends ISuperService<FlowGraph> {
 
     boolean insert(FlowGraph statement);
 
-    boolean saveOrUpdateTask(Task task);
+    List<CheckInformationModel> saveOrUpdateTask(Task task);
 
     String testGraphStatement(String graph);
 

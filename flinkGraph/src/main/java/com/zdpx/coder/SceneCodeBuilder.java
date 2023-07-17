@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import com.zdpx.coder.code.CodeBuilder;
 import com.zdpx.coder.code.CodeJavaBuilderImpl;
 import com.zdpx.coder.code.CodeSqlBuilderImpl;
+import com.zdpx.coder.graph.InputPortObject;
 import com.zdpx.coder.graph.Scene;
 import com.zdpx.coder.json.ResultType;
 import com.zdpx.coder.operator.Identifier;
@@ -84,17 +85,22 @@ public class SceneCodeBuilder {
      *
      * @throws IOException ignore
      */
-    public String build() {
+    public Map<String, Object> build() {
         if (codeBuilder == null) {
             throw new IllegalStateException(String.format("Code Builder %s empty!", codeBuilder));
         }
 
         codeBuilder.firstBuild();
         createOperatorsCode();
-        return codeBuilder.lastBuild();
+        String sql = codeBuilder.lastBuild();
+        Map<String, Object> outputMap = codeBuilder.getCheckInformation();
+        outputMap.put("SQL", sql);
+        return outputMap;
     }
 
-    /** 广度优先遍历计算节点, 生成相对应的源码 */
+    /**
+     * 广度优先遍历计算节点, 生成相对应的源码
+     */
     private void createOperatorsCode() {
         List<Operator> sinkOperatorNodes =
                 Scene.getSinkOperatorNodes(this.scene.getProcess());
@@ -102,12 +108,6 @@ public class SceneCodeBuilder {
         Deque<Operator> ops = new ArrayDeque<>();
 
         bft(new HashSet<>(sinks), ops::push);
-        //特殊节点的执行顺序调整
-        Operator addJarOperator = sinks.stream().filter(item -> item.getName().equals("AddJarOperator")).findFirst().orElse(null);
-        if(addJarOperator!=null){
-            ops.remove(addJarOperator);
-            ops.addFirst(addJarOperator);
-        }
         ops.stream().distinct().forEach(this::operate);
     }
 
@@ -116,11 +116,17 @@ public class SceneCodeBuilder {
      * 广度优先遍历计算节点, 执行call 函数
      *
      * @param operators 起始节点集
-     * @param call 待执行函数
+     * @param call      待执行函数
      */
     private void bft(Set<Operator> operators, Consumer<Operator> call) {
         if (operators.isEmpty()) {
             return;
+        } else if (operators.size() == 1) {
+            Operator o = operators.iterator().next();
+            if (o.getInputPorts().size() == 0 && o.getOutputPorts().size() == 0) {
+                call.accept(o);
+                return;
+            }
         }
 
         List<Operator> ops =
@@ -129,11 +135,15 @@ public class SceneCodeBuilder {
                         .collect(Collectors.toList());
         final Set<Operator> preOperators = new HashSet<>();
         for (Operator op : ops) {
-            call.accept(op);
-            op.getInputPorts().values().stream()
-                    .filter(t -> !Objects.isNull(t.getConnection()))
-                    .map(t -> t.getConnection().getFromPort())
-                    .forEach(fromPort -> preOperators.add(fromPort.getParent()));
+            if (op.getInputPorts().size() != 0 || op.getOutputPorts().size() != 0) {
+                call.accept(op);
+                op.getInputPorts().values().stream()
+                        .filter(t -> !Objects.isNull(t.getConnection()))
+                        .map(t -> t.getConnection().getFromPort())
+                        .forEach(fromPort -> preOperators.add(fromPort.getParent()));
+            } else {
+                preOperators.add(op);
+            }
         }
         bft(preOperators, call);
     }
@@ -159,13 +169,13 @@ public class SceneCodeBuilder {
 
         LinkedHashSet<Class<? extends Operator>> collect = operators.stream()
                 .filter(c -> !Modifier.isAbstract(c.getModifiers()))
-                .sorted(Comparator.comparing(Class::getName,Comparator.reverseOrder()))
+                .sorted(Comparator.comparing(Class::getName, Comparator.reverseOrder()))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
         Map<String, Class<? extends Operator>> map = new LinkedHashMap<>();
-        for(Class<? extends Operator> l : collect){
-            map.put(InstantiationUtil.instantiate(l).getCode(),l);
+        for (Class<? extends Operator> l : collect) {
+            map.put(InstantiationUtil.instantiate(l).getCode(), l);
         }
-        return  map;
+        return map;
     }
 
     /**

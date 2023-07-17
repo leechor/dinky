@@ -19,6 +19,7 @@
 
 package com.zdpx.controller;
 
+import com.zdpx.coder.graph.CheckInformationModel;
 import org.dinky.data.model.Task;
 import org.dinky.data.result.Result;
 
@@ -48,11 +49,13 @@ public class TaskFlowGraphController {
     }
 
     @PutMapping
-    public Result<Void> submitSql(@RequestBody Task task) {
-        if (taskFlowGraphService.saveOrUpdateTask(task)) {
-            return Result.succeed("submit sql success");
+    public Result<List<CheckInformationModel>> submitSql(@RequestBody Task task) {
+        List<CheckInformationModel> msg = taskFlowGraphService.saveOrUpdateTask(task);
+        if (!msg.isEmpty()) {
+//            return Result.succeed(msg);
+            return Result.failed("保存完成,未通过校验");
         } else {
-            return Result.failed("submit sql failed");
+            return Result.succeed("保存完成");
         }
     }
 

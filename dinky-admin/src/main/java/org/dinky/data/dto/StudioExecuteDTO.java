@@ -20,6 +20,7 @@
 package org.dinky.data.dto;
 
 import org.dinky.assertion.Asserts;
+import org.dinky.data.model.Task;
 import org.dinky.job.JobConfig;
 
 import java.util.HashMap;
@@ -110,4 +111,18 @@ public class StudioExecuteDTO extends AbstractStatementDTO {
     public Integer getTaskId() {
         return taskId == null ? getId() : taskId;
     }
+
+    public StudioExecuteDTO task2DTO(Task task){
+        StudioExecuteDTO studioExecuteDTO = new StudioExecuteDTO();
+        studioExecuteDTO.setConfigJson(task.getConfigJson());
+        studioExecuteDTO.setDialect(task.getDialect());
+        studioExecuteDTO.setFragment(task.getFragment());
+        studioExecuteDTO.setId(task.getId());
+        studioExecuteDTO.setStatement(task.getStatement());
+        studioExecuteDTO.setStatementSet(task.getStatementSet());
+        studioExecuteDTO.setType(task.getType());
+
+        return studioExecuteDTO;
+    }
+
 }

@@ -19,11 +19,16 @@
 
 package com.zdpx.coder.operator.dataSource.oracle;
 
+import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.graph.OutputPortObject;
 import com.zdpx.coder.operator.TableInfo;
 import com.zdpx.coder.operator.dataSource.AbstractSqlTable;
 
-/** */
+import java.util.Map;
+
+/**
+ *
+ */
 public class OracleSourceOperator extends AbstractSqlTable {
 
     private OutputPortObject<TableInfo> outputPortObject;
@@ -36,8 +41,27 @@ public class OracleSourceOperator extends AbstractSqlTable {
         getOutputPorts().put(OUTPUT_0, outputPortObject);
     }
 
+    /**
+     * 校验内容：
+     */
     @Override
-    protected void execute() {
-        processLogic(ORACLE_SOURCE,false,outputPortObject);
+    protected void generateCheckInformation(Map<String, Object> map) {
+        CheckInformationModel model = new CheckInformationModel();
+        model.setOperatorId(map.get("id").toString());
+        model.setColor("green");
+        model.setTableName(map.get("tableName").toString());
+
+        this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
+    }
+
+    @Override
+    protected void execute(Map<String, Object> dataModel) {
+
+        processLogic(false, outputPortObject, dataModel);
+    }
+
+    @Override
+    protected String getDefaultName() {
+        return ORACLE_SOURCE;
     }
 }

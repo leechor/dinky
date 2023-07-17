@@ -19,9 +19,12 @@
 
 package com.zdpx.service.impl;
 
+import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.json.preview.OperatorPreviewBuilder;
+import org.dinky.data.dto.StudioExecuteDTO;
 import org.dinky.data.model.Statement;
 import org.dinky.data.model.Task;
+import org.dinky.data.result.SqlExplainResult;
 import org.dinky.mybatis.service.impl.SuperServiceImpl;
 import org.dinky.service.StatementService;
 import org.dinky.service.TaskService;
@@ -31,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.dinky.service.impl.StudioServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,10 +61,13 @@ public class TaskTaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScri
 
     private final FlowGraphScriptMapper flowGraphScriptMapper;
 
-    public TaskTaskFlowGraphServiceImpl(TaskService taskService, StatementService statementService, FlowGraphScriptMapper flowGraphScriptMapper) {
+    private final StudioServiceImpl studioServiceImpl;
+
+    public TaskTaskFlowGraphServiceImpl(TaskService taskService, StatementService statementService, FlowGraphScriptMapper flowGraphScriptMapper, StudioServiceImpl studioServiceImpl) {
         this.taskService = taskService;
         this.statementService=statementService;
         this.flowGraphScriptMapper = flowGraphScriptMapper;
+        this.studioServiceImpl = studioServiceImpl;
     }
 
     @Override
@@ -71,11 +78,14 @@ public class TaskTaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScri
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean saveOrUpdateTask(Task task) {
-        String sql = convertConfigToSource(task);
-        task.setStatement(sql);
+    public List<CheckInformationModel> saveOrUpdateTask(Task task) {
+        Map<String, Object> map = convertConfigToSource(task);
+        task.setStatement(map.get("SQL").toString());
+        taskService.saveOrUpdateTask(task);
 
-        return taskService.saveOrUpdateTask(task);
+        @SuppressWarnings("unchecked")
+        List<CheckInformationModel> msg = (List<CheckInformationModel>)map.get("MSG");
+        return msg;
     }
 
     @Override
@@ -93,12 +103,13 @@ public class TaskTaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScri
 
     @Override
     public String testGraphStatement(String graph) {
-        return convertToSql(graph);
+        return convertToSql(graph).get("SQL").toString();
     }
 
-    private String convertConfigToSource(Task task) {
+    private Map<String, Object> convertConfigToSource(Task task) {
         String flowGraphScript = task.getStatement();
-        String sql = convertToSql(flowGraphScript);
+        Map<String, Object> checkAndSQL = convertToSql(flowGraphScript);
+        String sql = checkAndSQL.get("SQL").toString();
 
         //保存json
         Statement statement = new Statement();
@@ -121,10 +132,30 @@ public class TaskTaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScri
         }else{
             this.update(flowGraph,new QueryWrapper<FlowGraph>().eq("task_id", oldGraph.getTaskId()));
         }
-        return sql;
+
+        //sql校验
+        StudioExecuteDTO studio = new StudioExecuteDTO().task2DTO(task);
+        studio.setStatement(sql);
+        List<SqlExplainResult> sqlExplainResults = studioServiceImpl.explainSql(studio);
+
+        @SuppressWarnings("unchecked")
+        List<CheckInformationModel> list = (List<CheckInformationModel>)checkAndSQL.get("MSG");
+        for(CheckInformationModel c : list){
+            for(SqlExplainResult s:sqlExplainResults){
+                // sql校验接口没有提供表名，暂时使用sql中的表名找对应算子
+                if (!s.isParseTrue()&&s.getSql().split(" ")[2].contains(c.getTableName())){
+                    c.setSqlErrorMsg(s.getError());
+                }
+            }
+        }
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("SQL",sql);
+        map.put("MSG",list);
+        return map;
     }
 
-    public String convertToSql(String flowGraphScript) {
+    public Map<String, Object> convertToSql(String flowGraphScript) {
         List<Task> tasks = taskService.list(new QueryWrapper<Task>().eq("dialect", "Java"));
         Map<String, String> udfDatabase =
                 tasks.stream()

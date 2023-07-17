@@ -35,7 +35,9 @@ import com.zdpx.coder.operator.Operator;
 import com.zdpx.coder.operator.TableInfo;
 import com.zdpx.coder.utils.TableDataStreamConverter;
 
-/** */
+/**
+ *
+ */
 public abstract class AbstractSqlTable extends Operator {
     public static final String TEMPLATE =
             "CREATE TABLE ${tableName} ("
@@ -63,32 +65,36 @@ public abstract class AbstractSqlTable extends Operator {
     protected static final String FLAG = "flag";
     protected static final String COLUMNS = "columns";
 
+    protected abstract String getDefaultName();
 
+    @Override
+    protected Map<String, Object> formatOperatorParameter() {
+        Map<String, Object> dataModel = getDataModel();
+        //任意数据源格式转换
+        dataModel.put(PARAMETERS, formatConversion(dataModel));
+        Object tableName = dataModel.get("tableName");
+        if (tableName == null || tableName.equals("")) {
+            dataModel.put("tableName", generateTableName(this.getDefaultName()));
+        }
+        return dataModel;
+    }
 
     //重复代码提取  source:false  sink:true
-    public void processLogic(String tableName, boolean flag, OutputPortObject<TableInfo> outputPortObject){
+    public void processLogic(boolean flag, OutputPortObject<TableInfo> outputPortObject, Map<String, Object> dataModel) {
 
-        Map<String, Object> dataModel = getDataModel(tableName);
+        String tableName = dataModel.get("tableName").toString();
 
-        //任意数据源格式转换
-        dataModel.put(PARAMETERS,formatConversion(dataModel));
-        Object tableName1 = dataModel.get("tableName");
-        dataModel.put("tableName",tableName1==null? generateTableName():tableName1);
-
-        if(flag){ //sink
+        if (flag) { //sink
             List<Map<String, Object>> input = formatProcessingSink(dataModel);
-            connectToSink(INPUT_0,dataModel,input);
-        }else{ //source
+            connectToSink(INPUT_0, dataModel, input);
+        } else { //source
             //删除没有勾选的字段
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> columns = (List<Map<String, Object>>) dataModel.get(COLUMNS);
             columns.removeIf(s -> !(boolean) s.get(FLAG));
             Map<String, Object> parameters = getParameterLists().get(0); // [ parameters , config ]
             final TableInfo ti = TableDataStreamConverter.getTableInfo(parameters);
-
-            if(ti.getName()==null){
-                ti.setName(dataModel.get("tableName").toString());
-            }
+            ti.setName(tableName);
 
             outputPortObject.setPseudoData(ti);
         }
@@ -99,14 +105,14 @@ public abstract class AbstractSqlTable extends Operator {
     }
 
     //兼容任意类型的数据源
-    protected Map<String, Object> formatConversion(Map<String, Object> dataModel){
+    protected Map<String, Object> formatConversion(Map<String, Object> dataModel) {
         @SuppressWarnings("unchecked")
         Map<String, Object> defineList = (Map<String, Object>) dataModel.get("parameters");
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> other = (List<Map<String, Object>>) defineList.get("other");
-        if(other.size()>0){
-            for(Map<String, Object> m:other){
-                defineList.put(m.get("key").toString(),m.get("values"));
+        if (other.size() > 0) {
+            for (Map<String, Object> m : other) {
+                defineList.put(m.get("key").toString(), m.get("values"));
             }
         }
         defineList.remove("other");
@@ -114,16 +120,16 @@ public abstract class AbstractSqlTable extends Operator {
     }
 
     //输出表内部格式处理，包括输入的获取和勾选字段的设置
-    public List<Map<String, Object>> formatProcessingSink(Map<String, Object> dataModel){
+    public List<Map<String, Object>> formatProcessingSink(Map<String, Object> dataModel) {
         //从config中获取输入
         @SuppressWarnings("unchecked")
-        List<Map<String, List<Map<String,Object>>>> config = (List<Map<String, List<Map<String,Object>>>>) dataModel.get("config");
+        List<Map<String, List<Map<String, Object>>>> config = (List<Map<String, List<Map<String, Object>>>>) dataModel.get("config");
         List<Map<String, Object>> input = new ArrayList<>();
-        for(Map<String, List<Map<String,Object>>> map:config){
-            for(Map.Entry<String, List<Map<String,Object>>> m2:map.entrySet()){
+        for (Map<String, List<Map<String, Object>>> map : config) {
+            for (Map.Entry<String, List<Map<String, Object>>> m2 : map.entrySet()) {
                 List<Map<String, Object>> value = m2.getValue();
-                for(Map<String, Object> l:value){
-                    if((boolean)l.get("flag")){
+                for (Map<String, Object> l : value) {
+                    if ((boolean) l.get("flag")) {
                         input.add(l);
                     }
                 }
@@ -132,8 +138,8 @@ public abstract class AbstractSqlTable extends Operator {
         //删除没有勾选的字段
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> output = (List<Map<String, Object>>) dataModel.get("columns");
-        for(Map<String, Object> s:output){
-            if(!(boolean)s.get("flag")){
+        for (Map<String, Object> s : output) {
+            if (!(boolean) s.get("flag")) {
                 output.remove(s);
             }
         }
@@ -141,14 +147,14 @@ public abstract class AbstractSqlTable extends Operator {
     }
 
     //配置连接到sink的input语句
-    public void connectToSink(String input_0,Map<String, Object> dataModel,List<Map<String, Object>> input){
+    public void connectToSink(String input_0, Map<String, Object> dataModel, List<Map<String, Object>> input) {
 
         //算子预览的特殊处理
         String tableName = TABLE_NAME_DEFAULT;
         @SuppressWarnings("unchecked")
-        InputPortObject<TableInfo> in =(InputPortObject<TableInfo>)getInputPorts().get(input_0);
-        if(in.getConnection()!=null){
-            tableName=in.getOutputPseudoData().getName();
+        InputPortObject<TableInfo> in = (InputPortObject<TableInfo>) getInputPorts().get(input_0);
+        if (in.getConnection() != null) {
+            tableName = in.getOutputPseudoData().getName();
         }
 
         Map<String, Object> data = new HashMap<>();
@@ -161,7 +167,7 @@ public abstract class AbstractSqlTable extends Operator {
 
     }
 
-    protected Map<String, Object> getDataModel(String tableName) {
+    protected Map<String, Object> getDataModel() {
         final String columns = "columns";
         String parameters = "parameters";
 
@@ -170,19 +176,19 @@ public abstract class AbstractSqlTable extends Operator {
 
         Map<String, Object> result = new HashMap<>();
         result.put(parameters, new HashMap<String, Object>());
-        result.put("tableName",tableName);
-        if(psFirst.get("tableName")!=null){
-            result.put("tableName", psFirst.get("tableName") );
+
+        if (psFirst.get("tableName") != null) {
+            result.put("tableName", psFirst.get("tableName"));
         }
         String primary = psFirst.get("primary").toString();
-        if(primary!=null&&!primary.equals("")){
-            result.put("primary", primary );
+        if (primary != null && !primary.equals("")) {
+            result.put("primary", primary);
         }
 
         @SuppressWarnings("unchecked")
-        Map<String, Object> watermark = (Map<String, Object>)psFirst.get("watermark");
-        if(watermark.get("column")!=null&&!watermark.get("column").equals("")){
-            if((Integer)watermark.get("timeSpan")==0){
+        Map<String, Object> watermark = (Map<String, Object>) psFirst.get("watermark");
+        if (watermark.get("column") != null && !watermark.get("column").equals("")) {
+            if ((Integer) watermark.get("timeSpan") == 0) {
                 watermark.remove("timeSpan");
             }
             result.put("watermark", watermark);
@@ -202,16 +208,15 @@ public abstract class AbstractSqlTable extends Operator {
             HashMap<String, Object> ps = (HashMap<String, Object>) result.get(parameters);
             ps.put(m.getKey(), m.getValue());
         }
-        if(parameterLists.size()>1){//文件中存在config
+        if (parameterLists.size() > 1) {//文件中存在config
             result.putAll(parameterLists.get(1));
         }
         return result;
     }
 
-    //当tableName为空时，随机生成表名
-    protected String generateTableName() {
-        return this.getId().substring(this.getId().lastIndexOf('-') + 1);
-//        return tableName + "_" + this.getId().substring(this.getId().lastIndexOf('-') + 1);
+    //当没有指定tableName时，随机生成表名
+    protected String generateTableName(String tableName) {
+        return tableName + "_" + this.getId().substring(this.getId().lastIndexOf('-') + 1);
     }
 
     @Override
