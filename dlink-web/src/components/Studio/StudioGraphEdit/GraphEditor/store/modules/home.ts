@@ -1,7 +1,8 @@
+
 import { JSONEditor } from '@json-editor/json-editor';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { Parameter } from '@/components/Studio/StudioGraphEdit/GraphEditor/ts-define/parameter';
-import { Graph, Node } from '@antv/x6';
+import { Graph, Node, Cell } from '@antv/x6';
 import { getOperatorConfigure } from '../../service/request/test';
 import { message } from 'antd';
 export const initFlowDataAction = createAsyncThunk('fetchData', (payload, store) => {
@@ -35,6 +36,14 @@ export type UnselectedCell = {
   groupId: string,
   childrenId: string[]
 }
+
+export type GroupTabItem = {
+  layer: number,
+  innerCells: Cell[],
+  groupCellId: string,
+}
+
+
 interface GraphEditorData {
   flowData: {},
   taskName: string,
@@ -49,7 +58,7 @@ interface GraphEditorData {
   //保存graph在其他组件中调用
   graph: Graph,
   editor: {} | InstanceType<typeof JSONEditor>,
-  graphTabs: string[],
+  graphTabs: GroupTabItem[],
   unSelectedCellIds: UnselectedCell[]
   activeKey: number,
   position: Position
@@ -113,18 +122,30 @@ const homeSlice = createSlice({
     changeActiveKey(state, { payload }) {
       state.activeKey = payload
     },
+    addActiveKey(state, { payload }) {
+      state.activeKey += payload
+
+    },
     addGraphTabs(state, { payload }) {
-      
-      state.graphTabs = [...state.graphTabs, payload]
+      let length = state.graphTabs.length;
+      let tabItem = {
+        layer: length ? state.graphTabs[length - 1].layer + payload.layer : payload.layer,
+        innerCells: payload.innerCells,
+        groupCellId: payload.groupCellId,
+      }
+      state.graphTabs = [...state.graphTabs, tabItem]
     },
     removeGraphTabs(state, { payload }) {
-      if (payload === "0") {
+      if (payload === 0) {
         state.graphTabs = [];
       } else {
         let tabs = [...state.graphTabs];
-        const index = tabs.findIndex(id => id === payload);
-        tabs = tabs.splice(index)
-        state.graphTabs = [...tabs]
+        const index = tabs.findIndex(tab => tab.layer === payload);
+        let ele = [];
+        for (let i = 0; i < index + 1; i++) {
+          ele.push(tabs[i])
+        }
+        state.graphTabs = [...ele]
       }
     },
     changeUnselectedCells(state, { payload }) {
@@ -138,8 +159,8 @@ const homeSlice = createSlice({
       }
 
     },
-    changePositon(state, { payload }){
-      state.position=payload
+    changePositon(state, { payload }) {
+      state.position = payload
     }
   },
   extraReducers: {},
@@ -156,6 +177,7 @@ export const {
   changeGraph,
   changeJsonEditor,
   changeActiveKey,
+  addActiveKey,
   addGraphTabs,
   removeGraphTabs,
   changeUnselectedCells,

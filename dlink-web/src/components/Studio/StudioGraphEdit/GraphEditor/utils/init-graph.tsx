@@ -7,8 +7,11 @@ import {
   changeCurrentSelectNodeName,
   changeGraph,
   addGraphTabs,
+  addActiveKey,
+  GroupTabItem,
 
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
+import store from '../store';
 import React from 'react';
 
 /**
@@ -230,6 +233,13 @@ export const initGraph = (
     //深拷贝,数组要改变地址子组件才能监听到变化
     selectedNodes.push(node);
     setSelectedNodes([...selectedNodes]);
+    console.log(node.getSize().width, graph.getGraphArea().width, "selected....")
+    //组节点放大后不允许选择
+    if (node.shape === CustomShape.GROUP_PROCESS
+      && (node.getSize().height >= graph.getGraphArea().height
+        || node.getSize().width >= graph.getGraphArea().height)) {
+      graph.unselect(node)
+    }
   });
 
   //右键菜单
@@ -287,6 +297,7 @@ export const initGraph = (
     //节点被选中时隐藏连接桩
     const ports = container.querySelectorAll('.x6-port-body');
     showPortsOrLabels(ports, false);
+    //放大节点时不允许选中
   });
 
   graph.on('cell:added', ({ cell, index, options }) => {
@@ -302,13 +313,6 @@ export const initGraph = (
   });
 
   graph.on('node:dblclick', ({ node, e, view }) => {
-    if (node.shape !== CustomShape.GROUP_PROCESS) {
-      return;
-    }
-
-    //新增导航
-    dispatch(addGraphTabs(node.id))
-
     // const isNode = cell.isNode();
     // const name = cell.isNode() ? 'node-editor' : 'edge-editor';
     // cell.removeTool(name);
@@ -321,14 +325,24 @@ export const initGraph = (
     //     },
     //   },
     // });
-    //获取画布的大小
-
-    
-
+    if (node.shape !== CustomShape.GROUP_PROCESS) {
+      return;
+    }
+    //设置当前key
+    dispatch(addActiveKey(1))
+    //新增导航
+    dispatch(addGraphTabs({ groupCellId: node.id, layer: 1, innerCells: node.getChildren() }))
+    //将组节点外部的节点全部隐藏
+    // graph.getCells()
     //将组节点向右移动两个画布
+
+    const tabs = store.getState().home.graphTabs
+    const activeKey = store.getState().home.activeKey
+
     const dx = graph.getGraphArea().width;
     const dy = graph.getGraphArea().height;
-    node.translate(-node.position().x, -node.position().y)
+    const prePos = node.getProp().previousPosition
+    node.translate(-prePos.x, -prePos.y)
     node.translate(dx, 0)
     //隐藏当前组节点的所有连线
     const edges = graph.model.getConnectedEdges(node, { deep: true });
@@ -336,27 +350,26 @@ export const initGraph = (
       edge.hide()
     }
     //反向平移画布
-    graph.translate(-dx, 0)
-
-
-    // const viewRectangle = (graph.getPlugin('scroller')! as any).scrollerImpl.getVisibleArea();
-    // node.resize(viewRectangle.width / 2, viewRectangle.height / 2, { direction: 'top-left' });
-    // node.resize(viewRectangle.width, viewRectangle.height, { direction: 'bottom-right' });
+    graph.translate(-dx / tabs[tabs.length - 1].layer, 0)
     //放大到画布大小
-    node.resize(dx, dy)
+    node.resize(dx / tabs[tabs.length - 1].layer, dy)
     node.toBack();
-    // graph.positionCell(node, 'top-left')
     //隐藏组节点
-
-    node.setAttrs({ body: { style: { display: "none" } } })
+    node.setAttrs({ fo: { visibility: "hidden" } })
     graph.cleanSelection();
+    //将隐藏的节点设置为可选
+    graph.setSelectionFilter((cell) => {
+      return !!node.getChildren()?.map(c => c.id).includes(cell.id)
+    })
+    console.log(node, "node>>>>>>>>>>>>>>>>");
+
     node.getChildren()?.forEach(item => {
-      
       item.show()
       //将节点位移到和之前对应的地方
-      const prePos = item.getProp().previousPosition
-      const pos = item.getProp().position
-      item.prop("position",{x:pos.x+prePos.x,y:pos.y+prePos.y})
+      if (item.isNode()) {
+        const prePos = item.getProp().previousPosition
+        item.prop("position", { x: dx / tabs[tabs.length - 1].layer + prePos.x, y: prePos.y })
+      }
     })
     // 设置画布不能滚动
     // graph.getCells()

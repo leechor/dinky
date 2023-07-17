@@ -300,6 +300,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
   };
 
   const createProcess = () => {
+    debugger
     //获取选中包围盒的位置信息
     const selectedBox = document.querySelector(".x6-widget-selection-inner")
     const rect = selectedBox?.getBoundingClientRect()!;
@@ -517,7 +518,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     }
   }
   const addInnerEdges = (gId: string, gPortId: string, type: OuterEdgeType, conSourceCellId: string, conSourPortId: string) => {
-    
+
     if (type === "output") {
       graph.addEdge({
         attrs: {
@@ -530,9 +531,9 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
             },
           },
         },
-        router: "normal",
+        router: "orth",
         connector: {
-          name: "smooth"
+          name: "rounded"
         },
         source: { cell: gId, port: gPortId },
         target: { cell: conSourceCellId, port: conSourPortId },
@@ -550,9 +551,9 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
             },
           },
         },
-        router: "normal",
+        router: "orth",
         connector: {
-          name: "smooth"
+          name: "rounded"
         },
         source: { cell: conSourceCellId, port: conSourPortId },
         target: { cell: gId, port: gPortId },

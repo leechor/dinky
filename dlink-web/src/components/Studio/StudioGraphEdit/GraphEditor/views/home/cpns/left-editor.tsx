@@ -18,11 +18,15 @@ import styles from './index.less';
 import { message, Breadcrumb } from 'antd';
 import { CaretRightOutlined } from '@ant-design/icons';
 import AddModalPort from '../../../components/add-port-modal';
+import CustomShape from '../../../utils/cons';
 import {
   changeCurrentSelectNode,
   removeGraphTabs,
-  changePositon
+  changePositon,
+  addActiveKey,
+  addGraphTabs
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
+import type { GroupTabItem } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import localCache from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/localStorage"
 import { cloneDeep } from 'lodash';
 
@@ -82,13 +86,14 @@ const LeftEditor = memo(() => {
   const dispatch = useAppDispatch();
 
 
-  const { flowData, operatorParameters: operatorParameters, jsonEditor, taskName, tabs } = useAppSelector((state) => ({
+  const { flowData, operatorParameters: operatorParameters, jsonEditor, taskName, tabs, activeKey } = useAppSelector((state) => ({
     flowData: state.home.flowData,
     operatorParameters: state.home.operatorParameters,
     currentSelectNode: state.home.currentSelectNode,
     jsonEditor: state.home.editor,
     taskName: state.home.taskName,
     tabs: state.home.graphTabs,
+    activeKey: state.home.activeKey,
   }));
 
 
@@ -452,16 +457,19 @@ const LeftEditor = memo(() => {
 
 
   };
-  const tabClick = (tabId: string) => {
+  const tabClick = (layer: number) => {
 
-    dispatch(removeGraphTabs(tabId))
+    dispatch(removeGraphTabs(layer))
   }
   const getSubprocess = () => {
     if (tabs.length !== 0) {
-      return tabs.map((tabId: string, index: number) => { return <Breadcrumb.Item onClick={() => (tabClick(tabId))}>{`subprocess${index}`}<CaretRightOutlined /></Breadcrumb.Item> })
+      return tabs.map((tab: GroupTabItem) => {
+        return <Breadcrumb.Item onClick={() => (tabClick(tab.layer))} key={tab.layer}>{`subprocess${tab.layer - 1}`}<CaretRightOutlined /></Breadcrumb.Item>
+      })
     }
 
   }
+
 
   useEffect(() => {
     if (editorContentRef.current) {
@@ -473,7 +481,7 @@ const LeftEditor = memo(() => {
         editorContentContainer,
         selectedNodes,
         setSelectedNodes,
-        dispatch,
+        dispatch
       );
       initMenu(graphRef.current, setShowMenuInfo, changeNode, changePosition);
 
@@ -499,6 +507,7 @@ const LeftEditor = memo(() => {
 
         //加载连接装点击事件控制portmodal
         handleNodeConfigSet(graphRef.current)
+        
       }
     }
 
@@ -524,7 +533,7 @@ const LeftEditor = memo(() => {
           <div className={styles['editor-content']}>
             <div className={styles["header-bread"]}>
               <Breadcrumb>
-                {<Breadcrumb.Item onClick={() => { tabClick("0") }} >process<CaretRightOutlined /></Breadcrumb.Item>}
+                {<Breadcrumb.Item onClick={() => { tabClick(0) }} >process<CaretRightOutlined /></Breadcrumb.Item>}
                 {getSubprocess()}
               </Breadcrumb>
             </div>
