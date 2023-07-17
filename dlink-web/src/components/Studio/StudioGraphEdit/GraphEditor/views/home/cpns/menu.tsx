@@ -300,7 +300,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
   };
 
   const createProcess = () => {
-    debugger
+    
     //获取选中包围盒的位置信息
     const selectedBox = document.querySelector(".x6-widget-selection-inner")
     const rect = selectedBox?.getBoundingClientRect()!;
