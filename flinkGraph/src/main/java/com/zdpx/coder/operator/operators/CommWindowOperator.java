@@ -9,6 +9,7 @@ import com.zdpx.coder.operator.TableInfo;
 import com.zdpx.coder.utils.NameHelper;
 import com.zdpx.coder.utils.TemplateUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -122,6 +123,7 @@ public class CommWindowOperator extends Operator {
         p.put(WHERE, parameters.get(WHERE));
         p.put(LIMIT, parameters.get(LIMIT));
         p.put("id", parameters.get("id"));
+        p.put("config",formatProcessing(parameters));
 
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> order = (List<Map<String, Object>>) parameters.get(ORDER_BY);
@@ -157,6 +159,7 @@ public class CommWindowOperator extends Operator {
 
     /**
      * 校验内容：
+     * 输入字段名拼写错误
      */
     @Override
     protected void generateCheckInformation(Map<String, Object> map) {
@@ -165,6 +168,27 @@ public class CommWindowOperator extends Operator {
         model.setColor("green");
         model.setTableName(map.get("tableName").toString());
 
+        List<String> operatorErrorMsg = new ArrayList<>();
+
+        @SuppressWarnings("unchecked")
+        List<FieldFunction> columns = (List<FieldFunction>) map.get("columns");
+        @SuppressWarnings("unchecked")
+        List<Map<String, String>> config = (List<Map<String, String>>) map.get("config");
+        List<String> inputName = config.stream().map(item -> item.get("name")).collect(Collectors.toList());
+
+        for(FieldFunction column : columns){
+            for(int i=0;i<inputName.size();i++){
+                if(column.getOutName().equals(inputName.get(i))){
+                    break;
+                }
+                if(i==inputName.size()-1){
+                    operatorErrorMsg.add("算子输入不包含该字段, 未匹配的字段名： "+ column.getOutName());
+                    model.setColor("red");
+                }
+            }
+        }
+
+        model.setOperatorErrorMsg(operatorErrorMsg);
         this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
     }
 

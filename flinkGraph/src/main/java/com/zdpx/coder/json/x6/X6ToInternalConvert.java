@@ -180,8 +180,8 @@ public final class X6ToInternalConvert implements ToInternalConvert {
                 String sourceCell = sourceConnect.get("cell");
                 String sourcePort = sourceConnect.get("port");
 
-                System.out.println(tn.getId()+": 处理前 "+"source: "+cell.get("source").get("cell")+" ------------ "+cell.get("source").get("port"));
-                System.out.println(tn.getId()+": 处理hou "+"source: "+sourceConnect.get("cell")+" ------------ "+sourceConnect.get("port"));
+//                System.out.println(tn.getId()+": 处理前 "+"source: "+cell.get("source").get("cell")+" ------------ "+cell.get("source").get("port"));
+//                System.out.println(tn.getId()+": 处理hou "+"source: "+sourceConnect.get("cell")+" ------------ "+sourceConnect.get("port"));
                 jump.putAll(sourceConnect);
 
                 //分组的特殊逻辑，对正常节点没有影响
@@ -189,8 +189,8 @@ public final class X6ToInternalConvert implements ToInternalConvert {
                 String targetCell = targetConnect.get("cell");
                 String targetPort = targetConnect.get("port");
 
-                System.out.println(tn.getId()+": 处理前 "+"target: "+cell.get("target").get("cell")+" ------------ "+cell.get("target").get("port"));
-                System.out.println(tn.getId()+": 处理hou "+"target: "+targetConnect.get("cell")+" ------------ "+targetConnect.get("port")+"\n");
+//                System.out.println(tn.getId()+": 处理前 "+"target: "+cell.get("target").get("cell")+" ------------ "+cell.get("target").get("port"));
+//                System.out.println(tn.getId()+": 处理hou "+"target: "+targetConnect.get("cell")+" ------------ "+targetConnect.get("port")+"\n");
                 jump.putAll(targetConnect);
 
 

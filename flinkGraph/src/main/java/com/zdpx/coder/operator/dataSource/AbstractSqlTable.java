@@ -19,10 +19,7 @@
 
 package com.zdpx.coder.operator.dataSource;
 
-import com.zdpx.coder.graph.InputPort;
-import com.zdpx.coder.graph.InputPortObject;
-import com.zdpx.coder.graph.OutputPortObject;
-import com.zdpx.coder.graph.PseudoData;
+import com.zdpx.coder.graph.*;
 import com.zdpx.coder.utils.TemplateUtils;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -73,21 +70,72 @@ public abstract class AbstractSqlTable extends Operator {
         //任意数据源格式转换
         dataModel.put(PARAMETERS, formatConversion(dataModel));
         Object tableName = dataModel.get("tableName");
+        dataModel.put("config",formatProcessing(dataModel));
         if (tableName == null || tableName.equals("")) {
             dataModel.put("tableName", generateTableName(this.getDefaultName()));
         }
         return dataModel;
     }
 
-    //重复代码提取  source:false  sink:true
-    public void processLogic(boolean flag, OutputPortObject<TableInfo> outputPortObject, Map<String, Object> dataModel) {
+    /**
+     * Source校验内容：
+     * WATERMARK中的字段是否为事件字段
+     * Sink校验内容：
+     * WATERMARK中的字段是否为事件字段
+     * 入参数量和表字段数量不匹配
+     */
+    @Override
+    protected void generateCheckInformation(Map<String, Object> map) {
+        CheckInformationModel model = new CheckInformationModel();
+        model.setOperatorId(map.get("id").toString());
+        model.setColor("green");
+        model.setTableName(map.get("tableName").toString());
+
+        Map<String, String> portInformation = new HashMap<>();
+        boolean flag = this.getClass().getName().contains("Sink");
+        String portName = OUTPUT_0;
+        if(flag){
+            portName=INPUT_0;
+        }
+
+        if(map.get("watermark")!=null){
+            @SuppressWarnings("unchecked")
+            List<Map<String, String>> columns = (List<Map<String, String>>) map.get("columns");
+            Map<String, String> type = columns.stream()
+                    .filter(item -> item.get("name").equals(map.get("watermark").toString()))
+                    .filter(item -> item.get("type").contains("TIME"))
+                    .findFirst().orElse(null);
+            if(type==null){
+                portInformation.put(portName,"WATERMARK中指定的列不包含时间字段");
+                model.setColor("red");
+            }
+        }
+
+        if (flag) {
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> config = (List<Map<String, Object>>) map.get("config");
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> columns = (List<Map<String, Object>>) map.get(COLUMNS);
+            if(config.size()!=columns.size()){
+                portInformation.put(portName,"输入字段和输出表中指定的字段数量不匹配");
+                model.setColor("red");
+            }
+        }
+
+        model.setPortInformation(portInformation);
+        this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
+    }
+
+    //重复代码提取
+    public void processLogic( OutputPortObject<TableInfo> outputPortObject, Map<String, Object> dataModel) {
 
         String tableName = dataModel.get("tableName").toString();
 
-        if (flag) { //sink
-            List<Map<String, Object>> input = formatProcessingSink(dataModel);
-            connectToSink(INPUT_0, dataModel, input);
-        } else { //source
+        if (this.getClass().getName().contains("Sink")) {
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> config = (List<Map<String, Object>>) dataModel.get("config");
+            connectToSink(INPUT_0, dataModel, config);
+        } else {
             //删除没有勾选的字段
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> columns = (List<Map<String, Object>>) dataModel.get(COLUMNS);
@@ -117,33 +165,6 @@ public abstract class AbstractSqlTable extends Operator {
         }
         defineList.remove("other");
         return defineList;
-    }
-
-    //输出表内部格式处理，包括输入的获取和勾选字段的设置
-    public List<Map<String, Object>> formatProcessingSink(Map<String, Object> dataModel) {
-        //从config中获取输入
-        @SuppressWarnings("unchecked")
-        List<Map<String, List<Map<String, Object>>>> config = (List<Map<String, List<Map<String, Object>>>>) dataModel.get("config");
-        List<Map<String, Object>> input = new ArrayList<>();
-        for (Map<String, List<Map<String, Object>>> map : config) {
-            for (Map.Entry<String, List<Map<String, Object>>> m2 : map.entrySet()) {
-                List<Map<String, Object>> value = m2.getValue();
-                for (Map<String, Object> l : value) {
-                    if ((boolean) l.get("flag")) {
-                        input.add(l);
-                    }
-                }
-            }
-        }
-        //删除没有勾选的字段
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> output = (List<Map<String, Object>>) dataModel.get("columns");
-        for (Map<String, Object> s : output) {
-            if (!(boolean) s.get("flag")) {
-                output.remove(s);
-            }
-        }
-        return input;
     }
 
     //配置连接到sink的input语句

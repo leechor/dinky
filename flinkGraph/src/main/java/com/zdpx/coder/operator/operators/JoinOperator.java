@@ -137,7 +137,8 @@ public class JoinOperator extends Operator {
     /**
      * 校验内容：
      * <p>
-     * 端口校验：
+     *
+     *
      */
     @Override
     protected void generateCheckInformation(Map<String, Object> map) {
@@ -145,13 +146,6 @@ public class JoinOperator extends Operator {
         model.setOperatorId(map.get("id").toString());
         model.setColor("green");
         model.setTableName(map.get("tableName").toString());
-
-        Map<String, String> port = new HashMap<>();
-        port.put(primaryInput.getName(), "");
-        port.put(secondInput.getName(), "");
-        port.put(outputPort.getName(), "");
-
-        model.setPortInformation(port);
 
         this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
     }

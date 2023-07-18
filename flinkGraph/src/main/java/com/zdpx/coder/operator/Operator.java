@@ -378,6 +378,33 @@ public abstract class Operator extends Node implements Runnable {
         return fullColumnName.substring(fullColumnName.lastIndexOf('.') + 1);
     }
 
+    //处理config中的数据格式和勾选情况
+    public List<Map<String, Object>> formatProcessing(Map<String, Object> dataModel) {
+        //从config中获取输入
+        @SuppressWarnings("unchecked")
+        List<Map<String, List<Map<String, Object>>>> config = (List<Map<String, List<Map<String, Object>>>>) dataModel.get("config");
+        List<Map<String, Object>> input = new ArrayList<>();
+        for (Map<String, List<Map<String, Object>>> map : config) {
+            for (Map.Entry<String, List<Map<String, Object>>> m2 : map.entrySet()) {
+                List<Map<String, Object>> value = m2.getValue();
+                for (Map<String, Object> l : value) {
+                    if ((boolean) l.get("flag")) {
+                        input.add(l);
+                    }
+                }
+            }
+        }
+        //删除没有勾选的字段
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> output = (List<Map<String, Object>>) dataModel.get("columns");
+        for (Map<String, Object> s : output) {
+            if (!(boolean) s.get("flag")) {
+                output.remove(s);
+            }
+        }
+        return input;
+    }
+
     // region g/s
 
     public Map<String, String> getUserFunctions() {

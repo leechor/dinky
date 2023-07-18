@@ -177,7 +177,7 @@ public class FieldFunction {
     }
 
     /**
-     * 分析字段配置, 转软化为{@link FieldFunction} 形式.
+     * 分析字段配置, 转化为{@link FieldFunction} 形式.
      *
      * @param funcs 字段处理函数配置
      * @param flag 是否需要在列明前添加表名称 ,true：需要  false 不需要

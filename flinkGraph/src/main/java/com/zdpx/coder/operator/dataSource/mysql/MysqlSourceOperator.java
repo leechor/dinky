@@ -45,19 +45,6 @@ public class MysqlSourceOperator extends AbstractSqlTable {
         setName("MySQL数据源");
     }
 
-    /**
-     * 校验内容：
-     */
-    @Override
-    protected void generateCheckInformation(Map<String, Object> map) {
-        CheckInformationModel model = new CheckInformationModel();
-        model.setOperatorId(map.get("id").toString());
-        model.setColor("green");
-        model.setTableName(map.get("tableName").toString());
-
-        this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
-    }
-
     @Override
     public Optional<OperatorFeature> getOperatorFeature() {
         OperatorFeature operatorFeature = OperatorFeature.builder()
@@ -68,7 +55,7 @@ public class MysqlSourceOperator extends AbstractSqlTable {
 
     @Override
     protected void execute(Map<String, Object> dataModel) {
-        processLogic(false, outputPortObject, dataModel);
+        processLogic( outputPortObject, dataModel);
     }
 
     @Override
