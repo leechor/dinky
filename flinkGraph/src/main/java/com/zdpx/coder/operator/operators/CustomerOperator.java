@@ -79,7 +79,7 @@ public class CustomerOperator extends Operator {
             order.put(arrays[i], stringObjectHashMap);
             String type = stringObjectHashMap.get(TYPE).toString();
             if (type.contains(FIELD_NAME)) {
-                List<FieldFunction> ffs = Operator.getFieldFunctions(outputTableName, stringObjectHashMap);
+                List<FieldFunction> ffs = Operator.getFieldFunctions(outputTableName, stringObjectHashMap,new ArrayList<>());
                 stringObjectHashMap.put(FIELD_FUNCTIONS, ffs);
                 placeholder.set(i, stringObjectHashMap);
                 if (type.equals(OUT_PUT_FIELD_NAME)) {
@@ -143,7 +143,7 @@ public class CustomerOperator extends Operator {
         this.getSchemaUtil().getGenerateResult().generate(sqlStr);
 
         @SuppressWarnings("unchecked")
-        List<FieldFunction> ffs = (List<FieldFunction>) result.get(Operator.FIELD_FUNCTIONS);
+        List<FieldFunction> ffs = (List<FieldFunction>) result.get(Operator.COLUMNS);
         OperatorUtil.postTableOutput(
                 outputPortObject,
                 result.get("outputTableName").toString(),

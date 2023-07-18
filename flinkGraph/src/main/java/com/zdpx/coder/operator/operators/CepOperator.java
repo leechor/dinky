@@ -100,19 +100,6 @@ import com.zdpx.coder.utils.TemplateUtils;
  * @author Licho Sun
  */
 public class CepOperator extends Operator {
-    public static final String PARTITION = "partition";
-    public static final String ORDER_BY = "orderBy";
-    public static final String INPUT_TABLE_NAME = "inputTableName";
-    public static final String OUTPUT_TABLE_NAME = "outputTableName";
-    public static final String COLUMNS = "columns"; //保证输出名称的一致
-    public static final String DEFINES = "defines";
-    public static final String PATTERNS = "patterns";
-    private static final String SKIP_STRATEGY = "skipStrategy";
-    private static final String CEP = "CEP";
-    private static final String OUT_PUT_MODE = "outPutMode"; //输出规则
-    private static final String TIME_SPAN = "timeSpan"; //时间跨度
-    private static final String TIME_UNIT = "timeUnit"; //时间跨度单位
-
 
     private static final String TEMPLATE =
             MessageFormat.format(
@@ -125,8 +112,8 @@ public class CepOperator extends Operator {
 
     @Override
     protected void initialize() {
-        inputPortObject = registerInputObjectPort("input_0");
-        outputPortObject = registerOutputObjectPort("output_0");
+        inputPortObject = registerInputObjectPort(INPUT_0);
+        outputPortObject = registerOutputObjectPort(OUTPUT_0);
     }
 
     @Override
@@ -165,18 +152,19 @@ public class CepOperator extends Operator {
         //算子预览的特殊处理
         TableInfo tableInfo = null;
         String tableName = TABLE_NAME_DEFAULT;
+        List<Column> columns = new ArrayList<>();
         if (inputPortObject.getConnection() != null) {
             tableName = inputPortObject.getOutputPseudoData().getName();
-            ;
             tableInfo = inputPortObject.getOutputPseudoData();
+            columns = inputPortObject.getConnection().getFromPort().getPseudoData().getColumns();
         }
 
         @SuppressWarnings("unchecked")
         List<FieldFunction> ffs =
                 FieldFunction.analyzeParameters(
-                        tableName, (List<Map<String, Object>>) parameters.get(COLUMNS), false); //根据匹配成功的输入事件构造输出事件,字段名不加表名
+                        tableName, (List<Map<String, Object>>) parameters.get(COLUMNS), false, columns); //根据匹配成功的输入事件构造输出事件,字段名不加表名
 
-        Object outputTableName = parameters.get("tableName");
+        Object outputTableName = parameters.get(TABLE_NAME);
         if (outputTableName == null || outputTableName.equals("")) {
             outputTableName = NameHelper.generateVariableName("CepOperator");
         }
@@ -207,8 +195,8 @@ public class CepOperator extends Operator {
         parameterMap.put(
                 PATTERNS, patterns.stream().map(Pattern::toString).collect(Collectors.toList()));
 
-        parameterMap.put("tableInfo", tableInfo);
-        parameterMap.put("id", parameters.get("id"));
+        parameterMap.put(TABLE_INFO, tableInfo);
+        parameterMap.put(ID, parameters.get(ID));
 
         return parameterMap;
     }
@@ -217,41 +205,44 @@ public class CepOperator extends Operator {
      * 校验内容：
      * <p>
      * 输入节点是否包含时间属性字段
-     * <p>
      * ORDER BY需要为时间属性字段
      * 使用了未定义的事件
+     * todo partition、orderBy不属于输入参数
      */
     @Override
     protected void generateCheckInformation(Map<String, Object> map) {
         CheckInformationModel model = new CheckInformationModel();
-        model.setOperatorId(map.get("id").toString());
-        model.setColor("green");
-        model.setTableName(map.get("tableName").toString());
+        model.setOperatorId(map.get(ID).toString());
+        model.setColor(GREEN);
+        model.setTableName(map.get(INPUT_TABLE_NAME).toString());
 
         //输入节点校验
-        Map<String, String> portInformation = new HashMap<>();
-        List<String> operatorErrorMsg = new ArrayList<>();
-        List<Column> collect = ((TableInfo) map.get("tableInfo")).getColumns().stream().
-                filter(item -> item.getType().contains("TIMESTAMP")).collect(Collectors.toList());
+        Map<String, List<String>> portInformation = new HashMap<>();
+        List<String> list = new ArrayList<>();
+        List<Column> collect = ((TableInfo) map.get(TABLE_INFO)).getColumns().stream()
+                 .filter(item -> item.getType()!=null)
+                 .filter(item -> item.getType().contains("TIMESTAMP")).collect(Collectors.toList());
         if (collect.isEmpty()) {
-            portInformation.put(inputPortObject.getName(), "CEP算子入参需要包含时间属性字段，类型包括TIMESTAMP(3)、TIMESTAMP_LTZ(3)等");
+            list.add("CEP算子入参需要包含时间属性字段，类型包括TIMESTAMP(3)、TIMESTAMP_LTZ(3)等");
+            model.setColor(RED);
+        }else{
+            Column column = collect.stream().filter(item -> item.getName().equals(map.get(ORDER_BY).toString())).findFirst().orElse(null);
+            if (column == null) {
+                list.add("ORDER BY 对应的字段，必须是时间属性字段");
+                model.setColor(RED);
+            }
         }
 
-        Column column = collect.stream().filter(item -> item.getName().equals(map.get(ORDER_BY).toString())).findFirst().orElse(null);
-
-        //算子内部逻辑校验
-        if (column == null) {
-            operatorErrorMsg.add("ORDER BY 对应的字段，必须是时间属性字段");
-        }
         @SuppressWarnings("unchecked")
         List<String> defines = (List<String>) map.get(DEFINES);
         String patterns = map.get(PATTERNS).toString();
         String s = defines.stream().filter(item -> !patterns.contains(item.split(" AS")[0])).findFirst().orElse(null);
         if (s != null) {
-            operatorErrorMsg.add("DEFINE 使用了 PATTERN 中未声明的事件");
+            list.add("DEFINE 使用了 PATTERN 中未声明的事件");
+            model.setColor(RED);
         }
 
-        model.setOperatorErrorMsg(operatorErrorMsg);
+        portInformation.put(INPUT_0,list);
         model.setPortInformation(portInformation);
         this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
     }
@@ -266,12 +257,11 @@ public class CepOperator extends Operator {
         @SuppressWarnings("unchecked")
         List<Column> columns = Specifications.convertFieldFunctionToColumns((List<FieldFunction>) parameterMap.get(COLUMNS));
 
-        TableInfo tableInfo = (TableInfo) parameterMap.get("tableInfo");
-        if (parameterMap.get("tableInfo") != null) {
-            tableInfo.getColumns().stream()
-                    .filter(t -> t.getName().equals(parameterMap.get(PARTITION)))
-                    .findFirst()
-                    .ifPresent(columns::add);
+        TableInfo tableInfo = (TableInfo) parameterMap.get(TABLE_INFO);
+        if (parameterMap.get(TABLE_INFO) != null) {
+            Column first = tableInfo.getColumns().stream().filter(t -> t.getName().equals(parameterMap.get(PARTITION))).findFirst().orElse(null);
+            columns.removeIf(f -> f.getName().equals(first.getName()));//此处不用判空
+            columns.add(first);
         }
         OperatorUtil.postTableOutput(outputPortObject, parameterMap.get(OUTPUT_TABLE_NAME).toString(), columns);
     }

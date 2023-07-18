@@ -58,13 +58,12 @@ public class JoinOperator extends Operator {
     private InputPortObject<TableInfo> primaryInput;
     private InputPortObject<TableInfo> secondInput;
     private OutputPortObject<TableInfo> outputPort;
-    public static final String COLUMNS = "columns"; //保证输出名称的一致
 
     @Override
     protected void initialize() {
-        primaryInput = registerInputObjectPort("primaryInput");
-        secondInput = registerInputObjectPort("secondInput");
-        outputPort = registerOutputObjectPort("output_0");
+        primaryInput = registerInputObjectPort(PRIMARY_INPUT);
+        secondInput = registerInputObjectPort(SECOND_INPUT);
+        outputPort = registerOutputObjectPort(OUTPUT_0);
     }
 
     @Override
@@ -85,43 +84,47 @@ public class JoinOperator extends Operator {
         }
 
         Map<String, Object> parameters = getFirstParameterMap();
-        String joinType = (String) parameters.get("joinType");
+        String joinType = (String) parameters.get(JOIN_TYPE);
         String forSystemTime = (String) parameters.get("systemTimeColumn");
-        String where = (String) parameters.get("where");
+        String where = (String) parameters.get(WHERE);
 
         @SuppressWarnings("unchecked")
         List<Map<String, String>> columnList = (List<Map<String, String>>) parameters.get("columnList");
 
-        Object outputTableName = parameters.get("tableName");
+        Object outputTableName = parameters.get(TABLE_NAME);
         if (outputTableName == null || outputTableName.equals("")) {
             outputTableName = NameHelper.generateVariableName("JoinOperator");
         }
         //算子预览功能
         String primaryTableName = "primaryTable";
         String secondTableName = "secondTable";
+        List<Column> primaryColumns = new ArrayList<>();
+        List<Column> secondColumns = new ArrayList<>();
         if (primaryInput.getConnection() != null) {
             primaryTableName = primaryInput.getOutputPseudoData().getName();
             secondTableName = secondInput.getOutputPseudoData().getName();
+            primaryColumns = primaryInput.getConnection().getFromPort().getPseudoData().getColumns();
+            secondColumns = secondInput.getConnection().getFromPort().getPseudoData().getColumns();
         }
 
         //根据config中的字段，确定columns中的字段属于哪张表
-        List<FieldFunction> ffsPrimary = outPutFieldFunction(parameters, primaryTableName, secondTableName);
+        List<FieldFunction> ffsPrimary = outPutFieldFunction(parameters, primaryTableName, secondTableName,primaryColumns,secondColumns );
 
 
         Map<String, Object> dataModel = new HashMap<>();
-        dataModel.put("tableName", outputTableName);
-        dataModel.put("inputTableName", primaryTableName);
-        dataModel.put("anotherTableName", secondTableName);
-        dataModel.put(Operator.FIELD_FUNCTIONS, ffsPrimary);
-        dataModel.put("joinType", joinType);
-        dataModel.put("id", parameters.get("id"));
+        dataModel.put(TABLE_NAME, outputTableName);
+        dataModel.put(INPUT_TABLE_NAME, primaryTableName);
+        dataModel.put(ANOTHER_TABLE_NAME, secondTableName);
+        dataModel.put(Operator.COLUMNS, ffsPrimary);
+        dataModel.put(JOIN_TYPE, joinType);
+        dataModel.put(ID, parameters.get(ID));
         if (forSystemTime != null && !forSystemTime.equals("")) {
             dataModel.put(
                     "systemTimeColumn",
                     FieldFunction.insertTableName(primaryTableName, null, forSystemTime, true));
         }
         if (where != null && !where.equals("")) {
-            dataModel.put("where", where);
+            dataModel.put(WHERE, where);
         }
 
 
@@ -137,15 +140,15 @@ public class JoinOperator extends Operator {
     /**
      * 校验内容：
      * <p>
-     *
-     *
+     * todo systemTimeColumn需要时间字段
+     * todo 左表、右表连接字段需要属于对应的表
      */
     @Override
     protected void generateCheckInformation(Map<String, Object> map) {
         CheckInformationModel model = new CheckInformationModel();
-        model.setOperatorId(map.get("id").toString());
-        model.setColor("green");
-        model.setTableName(map.get("tableName").toString());
+        model.setOperatorId(map.get(ID).toString());
+        model.setColor(GREEN);
+        model.setTableName(map.get(TABLE_NAME).toString());
 
         this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
     }
@@ -156,12 +159,12 @@ public class JoinOperator extends Operator {
 
             String sqlStr = TemplateUtils.format(this.getName(), dataModel, TEMPLATE);
             @SuppressWarnings("unchecked")
-            List<FieldFunction> ffs = (List<FieldFunction>) dataModel.get(Operator.FIELD_FUNCTIONS);
+            List<FieldFunction> ffs = (List<FieldFunction>) dataModel.get(Operator.COLUMNS);
             registerUdfFunctions(ffs);
 
             List<Column> cls = Operator.getColumnFromFieldFunctions(ffs);
             generate(sqlStr);
-            OperatorUtil.postTableOutput(outputPort, dataModel.get("tableName").toString(), cls);
+            OperatorUtil.postTableOutput(outputPort, dataModel.get(TABLE_NAME).toString(), cls);
         }
     }
 
@@ -172,7 +175,8 @@ public class JoinOperator extends Operator {
     }
 
 
-    public List<FieldFunction> outPutFieldFunction(Map<String, Object> parameters, String primaryTableName, String secondTableName) {
+    public List<FieldFunction> outPutFieldFunction(Map<String, Object> parameters, String primaryTableName, String secondTableName,
+                                                   List<Column> primaryColumns,List<Column> secondColumns) {
 
         List<FieldFunction> ffsPrimary = new ArrayList<>();
 
@@ -182,7 +186,7 @@ public class JoinOperator extends Operator {
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> columns = (List<Map<String, Object>>) parameters.get(COLUMNS);
         for (Map<String, Object> column : columns) {
-            if ((boolean) column.get("flag")) {
+            if ((boolean) column.get(FLAG)) {
                 switch (column.get("inputTable").toString()) {
                     case "primaryInput":
                         primaryInput.add(column);
@@ -193,8 +197,8 @@ public class JoinOperator extends Operator {
                 }
             }
         }
-        ffsPrimary.addAll(FieldFunction.analyzeParameters(primaryTableName, primaryInput, true));
-        ffsPrimary.addAll(FieldFunction.analyzeParameters(secondTableName, secondInput, true));
+        ffsPrimary.addAll(FieldFunction.analyzeParameters(primaryTableName, primaryInput, true,primaryColumns));
+        ffsPrimary.addAll(FieldFunction.analyzeParameters(secondTableName, secondInput, true,secondColumns));
 
         return ffsPrimary;
 

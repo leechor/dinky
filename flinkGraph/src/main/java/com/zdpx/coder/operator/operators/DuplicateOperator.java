@@ -39,7 +39,7 @@ public class DuplicateOperator extends Operator {
 
     @Override
     protected void initialize() {
-        registerInputObjectPort("input_0");
+        registerInputObjectPort(INPUT_0);
     }
 
     @Override
@@ -67,8 +67,8 @@ public class DuplicateOperator extends Operator {
     @Override
     protected void generateCheckInformation(Map<String, Object> map) {
         CheckInformationModel model = new CheckInformationModel();
-        model.setOperatorId(map.get("id").toString());
-        model.setColor("green");
+        model.setOperatorId(map.get(ID).toString());
+        model.setColor(GREEN);
 
         this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
     }
@@ -84,7 +84,7 @@ public class DuplicateOperator extends Operator {
 
         //从config中获取输出字段,数组的长度只可能是1
         @SuppressWarnings("unchecked")
-        List<Map<String, Object>> firstParameterMap = (List<Map<String, Object>>) getFirstParameterMap().get("config");
+        List<Map<String, Object>> firstParameterMap = (List<Map<String, Object>>) getFirstParameterMap().get(CONFIG);
 
         getOutputPorts()
                 .values()

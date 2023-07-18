@@ -59,9 +59,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public abstract class Operator extends Node implements Runnable {
-    public static final String FIELD_FUNCTIONS = "columns";//保证输出名称的一致性
-
-    public static final String TABLE_NAME_DEFAULT = "tableNameDefault";//保证输出名称的一致性
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -311,9 +308,9 @@ public abstract class Operator extends Node implements Runnable {
         List<Map<String, Object>> parameterLists = getParameterLists(this.nodeWrapper.getParameters());
         Map<String, Object> map = new HashMap<>();
         if (this.nodeWrapper.getConfig() != null) {
-            map.put("config", getParameterLists(this.nodeWrapper.getConfig()));
+            map.put(CONFIG, getParameterLists(this.nodeWrapper.getConfig()));
         }
-        map.put("id", id);//节点校验需要使用
+        map.put(ID, id);//节点校验需要使用
 
         parameterLists.add(map);
         return parameterLists;
@@ -358,9 +355,9 @@ public abstract class Operator extends Node implements Runnable {
 
     @SuppressWarnings("unchecked")
     public static List<FieldFunction> getFieldFunctions(
-            String primaryTableName, Map<String, Object> parameters) {
+            String primaryTableName, Map<String, Object> parameters , List<Column> inputColumn) {
         return FieldFunction.analyzeParameters(
-                primaryTableName, (List<Map<String, Object>>) parameters.get(FIELD_FUNCTIONS), true);
+                primaryTableName, (List<Map<String, Object>>) parameters.get(COLUMNS), true,inputColumn);
     }
 
     public static Map<String, Object> getJsonAsMap(JsonNode inputs) {
@@ -382,13 +379,13 @@ public abstract class Operator extends Node implements Runnable {
     public List<Map<String, Object>> formatProcessing(Map<String, Object> dataModel) {
         //从config中获取输入
         @SuppressWarnings("unchecked")
-        List<Map<String, List<Map<String, Object>>>> config = (List<Map<String, List<Map<String, Object>>>>) dataModel.get("config");
+        List<Map<String, List<Map<String, Object>>>> config = (List<Map<String, List<Map<String, Object>>>>) dataModel.get(CONFIG);
         List<Map<String, Object>> input = new ArrayList<>();
         for (Map<String, List<Map<String, Object>>> map : config) {
             for (Map.Entry<String, List<Map<String, Object>>> m2 : map.entrySet()) {
                 List<Map<String, Object>> value = m2.getValue();
                 for (Map<String, Object> l : value) {
-                    if ((boolean) l.get("flag")) {
+                    if ((boolean) l.get(FLAG)) {
                         input.add(l);
                     }
                 }
@@ -398,7 +395,7 @@ public abstract class Operator extends Node implements Runnable {
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> output = (List<Map<String, Object>>) dataModel.get("columns");
         for (Map<String, Object> s : output) {
-            if (!(boolean) s.get("flag")) {
+            if (!(boolean) s.get(FLAG)) {
                 output.remove(s);
             }
         }

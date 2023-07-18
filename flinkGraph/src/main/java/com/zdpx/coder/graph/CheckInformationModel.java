@@ -12,7 +12,7 @@ public class CheckInformationModel {
 
     private String tableName; // 算子所在的表名称（输出表名称）
 
-    private Map<String, String> portInformation; //端口名称，端口的报错信息
+    private Map<String, List<String>> portInformation; //端口名称，端口的报错信息
 
     private String color; //颜色 green red
 
