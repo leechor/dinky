@@ -17,12 +17,26 @@ import {Tooltip} from "antd";
 import {QuestionCircleOutlined} from "@ant-design/icons";
 import {createRoot} from "react-dom/client";
 import {MyMonacoEditor as myMonaco} from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/my-monaco-editor";
+import {MyAutoCompleteEditor as myautoinput} from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/my-auto-complete-editor";
 
 const EditorTip = (title: string) => {
   return (<Tooltip title={title}>
     <QuestionCircleOutlined/>
   </Tooltip>)
 };
+
+function preProcessJsonEditor() {
+  // register monaco
+  JSONEditor.defaults.editors['monaco'] = myMonaco;
+  const aceModes = ['actionscript', 'batchfile', 'c', 'c++', 'cpp', 'coffee', 'csharp', 'css', 'dart', 'django', 'ejs', 'erlang', 'golang', 'groovy', 'handlebars', 'haskell', 'haxe', 'html', 'ini', 'jade', 'java', 'javascript', 'json', 'less', 'lisp', 'lua', 'makefile', 'matlab', 'mysql', 'objectivec', 'pascal', 'perl', 'pgsql', 'php', 'python', 'r', 'ruby', 'sass', 'scala', 'scss', 'sh', 'smarty', 'sql', 'sqlserver', 'stylus', 'svg', 'twig', 'vbscript', 'xml', 'yaml']
+  const monaco: any = (schema: any) => schema.type === 'string' && aceModes.includes(schema.format) && 'monaco'
+  JSONEditor.defaults.resolvers = [monaco, ...JSONEditor.defaults.resolvers]
+
+  // register autocomplete.js
+  JSONEditor.defaults.editors['autoinput'] = myautoinput;
+  const autoinput: any = (schema: any) => schema.type === 'string' && schema.format === 'autoinput' && 'autoinput'
+  JSONEditor.defaults.resolvers = [autoinput, ...JSONEditor.defaults.resolvers]
+}
 
 const Editor = memo(() => {
 
@@ -63,12 +77,7 @@ const Editor = memo(() => {
 
     const container = jsonRef.current;
     container.innerHTML = '';
-
-    delete JSONEditor.defaults.editors['ace'];
-    JSONEditor.defaults.editors['monaco'] = myMonaco;
-    const aceModes = ['actionscript', 'batchfile', 'c', 'c++', 'cpp', 'coffee', 'csharp', 'css', 'dart', 'django', 'ejs', 'erlang', 'golang', 'groovy', 'handlebars', 'haskell', 'haxe', 'html', 'ini', 'jade', 'java', 'javascript', 'json', 'less', 'lisp', 'lua', 'makefile', 'matlab', 'mysql', 'objectivec', 'pascal', 'perl', 'pgsql', 'php', 'python', 'r', 'ruby', 'sass', 'scala', 'scss', 'sh', 'smarty', 'sql', 'sqlserver', 'stylus', 'svg', 'twig', 'vbscript', 'xml', 'yaml']
-    const monaco: any = (schema: any) => schema.type === 'string' && aceModes.includes(schema.format) && 'monaco'
-    JSONEditor.defaults.resolvers = [monaco, ...JSONEditor.defaults.resolvers.filter((r: any) => r !== 'simplemde')]
+    preProcessJsonEditor();
 
     editor = new JSONEditor<any>(container, config);
 

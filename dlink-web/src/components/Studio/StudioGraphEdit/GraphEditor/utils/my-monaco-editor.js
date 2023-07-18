@@ -14,6 +14,7 @@ export class MyMonacoEditor extends StringEditor {
   }
 
   afterInputReady() {
+    // todo: add monaco editor
     super.afterInputReady();
   }
 
