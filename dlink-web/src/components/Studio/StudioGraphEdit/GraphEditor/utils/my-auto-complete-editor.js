@@ -41,12 +41,20 @@ export class MyAutoCompleteEditor extends StringEditor {
           return query;
         }
 
+        const regrex = /\W$/;
+        if (regrex.test(query)) {
+          return '';
+        }
+
         // Get last query value index
         const lastQuery = querySplit.length - 1;
         // Trim new query
         const newQuery = querySplit[lastQuery].trim();
 
         return newQuery;
+      },
+      trigger: (query) => {
+        return query.length > 0;
       },
       events: {
         input: {
