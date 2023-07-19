@@ -19,6 +19,7 @@
 
 package com.zdpx.coder.operator.dataSource.mysql;
 
+import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.graph.OutputPortObject;
 import com.zdpx.coder.operator.OperatorFeature;
 import com.zdpx.coder.operator.TableInfo;
@@ -26,7 +27,11 @@ import com.zdpx.coder.operator.dataSource.AbstractSqlTable;
 
 import java.util.Optional;
 
-/** */
+import java.util.Map;
+
+/**
+ *
+ */
 public class MysqlSourceOperator extends AbstractSqlTable {
 
     private OutputPortObject<TableInfo> outputPortObject;
@@ -49,7 +54,12 @@ public class MysqlSourceOperator extends AbstractSqlTable {
     }
 
     @Override
-    protected void execute() {
-        processLogic(MYSQL_SOURCE,false,outputPortObject);
+    protected void execute(Map<String, Object> dataModel) {
+        processLogic( outputPortObject, dataModel);
+    }
+
+    @Override
+    protected String getDefaultName() {
+        return MYSQL_SOURCE;
     }
 }

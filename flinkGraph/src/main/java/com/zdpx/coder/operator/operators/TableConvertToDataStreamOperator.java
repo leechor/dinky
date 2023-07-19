@@ -31,7 +31,9 @@ import com.zdpx.coder.operator.Parameter;
 import com.zdpx.coder.operator.TableInfo;
 import com.zdpx.coder.utils.NameHelper;
 
-/** */
+/**
+ *
+ */
 public class TableConvertToDataStreamOperator extends Operator {
 
     private OutputPortObject<TableInfo> outputPortObject;
@@ -39,8 +41,8 @@ public class TableConvertToDataStreamOperator extends Operator {
     @Override
     protected void initialize() {
         parameters.getParameterList().add(new Parameter(Specifications.TABLE_NAME));
-        outputPortObject = registerOutputObjectPort("output_0)");
-        registerInputObjectPort("input_0");
+        outputPortObject = registerOutputObjectPort(OUTPUT_0);
+        registerInputObjectPort(INPUT_0);
     }
 
     @Override
@@ -54,7 +56,20 @@ public class TableConvertToDataStreamOperator extends Operator {
     }
 
     @Override
-    protected void execute() {
+    protected Map<String, Object> formatOperatorParameter() {
+        return null;
+    }
+
+    /**
+     * 校验内容：无
+     */
+    @Override
+    protected void generateCheckInformation(Map<String, Object> map) {
+
+    }
+
+    @Override
+    protected void execute(Map<String, Object> map) {
         String tn =
                 NameHelper.generateVariableName(
                         parameters.getParameterByName(Specifications.TABLE_NAME));

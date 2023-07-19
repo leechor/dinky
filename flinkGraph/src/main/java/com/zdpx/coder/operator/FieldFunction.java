@@ -19,6 +19,7 @@
 
 package com.zdpx.coder.operator;
 
+import com.zdpx.coder.graph.OperatorSpecializationFieldConfig;
 import org.apache.logging.log4j.util.Strings;
 
 import java.util.ArrayList;
@@ -94,13 +95,13 @@ import java.util.Map;
  *
  * @author Licho Sun
  */
-public class FieldFunction {
+public class FieldFunction extends OperatorSpecializationFieldConfig {
 
     /** 函数需要的参数, 如果类型为{@link FieldFunction}, 会按照嵌套函数处理, */
     List<Object> parameters = new ArrayList<>();
     /** 字段输入名称,通过<b>AS</b>关键字进行字段重命名 */
     private String outName;
-    /** 字段输出类型, 约定(deprecated). */
+    /** 字段输出类型, 约定(deprecated). 算子校验需要类型推断，启用该字段 */
     private String outType;
     /** 自定义调用的函数名称 */
     private String functionName;
@@ -116,11 +117,11 @@ public class FieldFunction {
      */
     static FieldFunction processFieldConfigure(String tableName, Map<String, Object> fos , boolean flag) {
         FieldFunction fo = new FieldFunction();
-        fo.setOutName(fos.get("name").equals("")? null:(String) fos.get("name"));
-        fo.setFunctionName(fos.get("functionName").equals("") ? null :(String) fos.get("functionName") );
+        fo.setOutName(fos.get(NAME).equals("")? null:(String) fos.get(NAME));
+        fo.setFunctionName(fos.get(FUNCTION_NAME).equals("") ? null :(String) fos.get(FUNCTION_NAME) );
         fo.setDelimiter((String) fos.get("delimiter"));
         @SuppressWarnings("unchecked")
-        List<Object> fieldParameters = (List<Object>) fos.get("parameters");
+        List<Object> fieldParameters = (List<Object>) fos.get(PARAMETERS);
 
         if (fieldParameters == null) {
             fo.setOutName(insertTableName(tableName, fo, fo.getOutName(),flag));
@@ -177,22 +178,38 @@ public class FieldFunction {
     }
 
     /**
-     * 分析字段配置, 转软化为{@link FieldFunction} 形式.
+     * 分析字段配置, 转化为{@link FieldFunction} 形式.
      *
      * @param funcs 字段处理函数配置
      * @param flag 是否需要在列明前添加表名称 ,true：需要  false 不需要
      * @return {@link FieldFunction}形式的字段处理定义
      */
     public static List<FieldFunction> analyzeParameters(
-            String primaryTableName, List<Map<String, Object>> funcs ,boolean flag) {
+            String primaryTableName, List<Map<String, Object>> funcs ,boolean flag ,List<Column> inputColumn) {
         List<FieldFunction> fieldFunctions = new ArrayList<>();
         for (Map<String, Object> fos : funcs) {//此处过滤掉未选中的节点
-            if((boolean)fos.get("flag")){
+            if((boolean)fos.get(FLAG)){
                 FieldFunction fo = processFieldConfigure(primaryTableName, fos ,flag);
+                fo.setOutType(typeInference(inputColumn, fo,fos));
                 fieldFunctions.add(fo);
             }
         }
         return fieldFunctions;
+    }
+
+    public static String typeInference(List<Column> inputColumn,FieldFunction fo,Map<String, Object> list){
+        if(!inputColumn.isEmpty()&&fo.getOutType()==null){
+            @SuppressWarnings("unchecked")
+            List<String> l = (List<String>)list.get(PARAMETERS);
+            if(l.size()==1){
+                for(Column c :inputColumn){
+                    if(c.getName().equals(l.get(0))){
+                         return c.getType();
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     // region g/s

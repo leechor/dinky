@@ -1,6 +1,7 @@
 package com.zdpx.coder.operator.operators;
 
 import com.zdpx.coder.Specifications;
+import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.graph.OutputPortObject;
 import com.zdpx.coder.operator.FieldFunction;
 import com.zdpx.coder.operator.Operator;
@@ -16,17 +17,17 @@ public class CustomerOperator extends Operator {
 
     public static final String TEMPLATE =
             String.format(
-            "<#import \"%s\" as e>" +
-            "<#list Table as item>${item.sql}" +
-                    "<#if item.type??>" +
-                    "<#if item.type == \"inputTableName\">${item.column}" +
-                    "<#elseif item.type == \"outPutTableName\">${item.column}" +
-                    "<#elseif item.type == \"fieldName\"><#if item.needBrackets == \"true\">(</#if><@e.fieldsProcess item.columns/><#if item.needBrackets == \"true\">)</#if>" +
-                    "<#elseif item.type == \"outPutFieldName\"><#if item.needBrackets == \"true\">(</#if><@e.fieldsProcess item.columns/><#if item.needBrackets == \"true\">)</#if>" +
-                    "</#if> " +
-                    "</#if> " +
-            "</#list>"
-                    ,Specifications.TEMPLATE_FILE);
+                    "<#import \"%s\" as e>" +
+                            "<#list Table as item>${item.sql}" +
+                            "<#if item.type??>" +
+                            "<#if item.type == \"inputTableName\">${item.column}" +
+                            "<#elseif item.type == \"outPutTableName\">${item.column}" +
+                            "<#elseif item.type == \"fieldName\"><#if item.needBrackets == \"true\">(</#if><@e.fieldsProcess item.columns/><#if item.needBrackets == \"true\">)</#if>" +
+                            "<#elseif item.type == \"outPutFieldName\"><#if item.needBrackets == \"true\">(</#if><@e.fieldsProcess item.columns/><#if item.needBrackets == \"true\">)</#if>" +
+                            "</#if> " +
+                            "</#if> " +
+                            "</#list>"
+                    , Specifications.TEMPLATE_FILE);
 
     public static final String STATEMENT_BODY = "statementBody";
     public static final String PLACEHOLDER = "placeholder";
@@ -55,8 +56,7 @@ public class CustomerOperator extends Operator {
     }
 
     @Override
-    protected void execute() {
-
+    protected Map<String, Object> formatOperatorParameter() {
         Map<String, Object> parameters = getFirstParameterMap();
 
         @SuppressWarnings("unchecked")
@@ -73,60 +73,83 @@ public class CustomerOperator extends Operator {
         String outputTableName = placeholder.stream().filter(item -> item.get(TYPE).equals(OUT_PUT_TABLE_NAME)).findFirst().orElse(null).get(COLUMNS).toString();
         HashMap<String, HashMap<String, Object>> order = new HashMap<>();
 
-        for(int i=0;i<placeholder.size();i++){
+        for (int i = 0; i < placeholder.size(); i++) {
             HashMap<String, Object> stringObjectHashMap = placeholder.get(i);
-            arrays[i]=String.valueOf(stringObjectHashMap.get(NAME));
-            order.put(arrays[i],stringObjectHashMap);
+            arrays[i] = String.valueOf(stringObjectHashMap.get(NAME));
+            order.put(arrays[i], stringObjectHashMap);
             String type = stringObjectHashMap.get(TYPE).toString();
-            if(type.contains(FIELD_NAME)){
-                List<FieldFunction> ffs = Operator.getFieldFunctions(outputTableName, stringObjectHashMap);
-                stringObjectHashMap.put(FIELD_FUNCTIONS,ffs);
-                placeholder.set(i,stringObjectHashMap);
-                if(type.equals(OUT_PUT_FIELD_NAME)){
-                    outPutFfs=ffs;
+            if (type.contains(FIELD_NAME)) {
+                List<FieldFunction> ffs = Operator.getFieldFunctions(outputTableName, stringObjectHashMap,new ArrayList<>());
+                stringObjectHashMap.put(FIELD_FUNCTIONS, ffs);
+                placeholder.set(i, stringObjectHashMap);
+                if (type.equals(OUT_PUT_FIELD_NAME)) {
+                    outPutFfs = ffs;
                 }
             }
         }
-        for(int i=0;i<arrays.length-1;i++){
-            for(int j=0;j<arrays.length-1-i;j++){
+        for (int i = 0; i < arrays.length - 1; i++) {
+            for (int j = 0; j < arrays.length - 1 - i; j++) {
                 int index1 = statementBody.indexOf(arrays[j]);
-                int index2 = statementBody.indexOf(arrays[j+1]);
-                if(index1 > index2){
+                int index2 = statementBody.indexOf(arrays[j + 1]);
+                if (index1 > index2) {
                     String temp = arrays[j];
-                    arrays[j] = arrays[j+1];
-                    arrays[j+1] = temp;
+                    arrays[j] = arrays[j + 1];
+                    arrays[j + 1] = temp;
                 }
             }
         }
         List<HashMap<String, Object>> orderList = new ArrayList<>();
 
         //截断
-        for(int i=0;i<arrays.length;i++){
+        for (int i = 0; i < arrays.length; i++) {
             String[] split = statementBody.split(arrays[i]);
             HashMap<String, Object> map = order.get(arrays[i]);
-            map.put("sql",split[0]);
-            statementBody=split[1];
+            map.put("sql", split[0]);
+            statementBody = split[1];
             orderList.add(map);
         }
         //组装输入
         HashMap<String, Object> last = new HashMap<>();
-        last.put("sql",statementBody);
+        last.put("sql", statementBody);
         orderList.add(last);
 
 
         HashMap<String, Object> result = new HashMap<>();
-        result.put("Table",orderList);
+        result.put("Table", orderList);
+        result.put("outputTableName", outputTableName);
+        result.put("outPutFfs", outPutFfs);
+        result.put("id", parameters.get("id"));
+
+        return result;
+    }
+
+    /**
+     * 校验内容：
+     */
+    @Override
+    protected void generateCheckInformation(Map<String, Object> map) {
+        CheckInformationModel model = new CheckInformationModel();
+        model.setOperatorId(map.get("id").toString());
+        model.setColor("green");
+        model.setTableName(map.get("tableName").toString());
+
+        this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
+    }
+
+    @Override
+    protected void execute(Map<String, Object> result) {
+
         String sqlStr = TemplateUtils.format("customerTableName", result, TEMPLATE);
         this.getSchemaUtil().getGenerateResult().generate(sqlStr);
 
+        @SuppressWarnings("unchecked")
+        List<FieldFunction> ffs = (List<FieldFunction>) result.get(Operator.COLUMNS);
         OperatorUtil.postTableOutput(
                 outputPortObject,
-                outputTableName,
-                Specifications.convertFieldFunctionToColumns(outPutFfs));
+                result.get("outputTableName").toString(),
+                Specifications.convertFieldFunctionToColumns(ffs));
 
     }
-
-
 
 
 }

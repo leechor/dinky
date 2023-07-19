@@ -19,6 +19,7 @@
 
 package com.zdpx.coder.operator.dataSource.kafka;
 
+import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.graph.OutputPortObject;
 import com.zdpx.coder.operator.TableInfo;
 import com.zdpx.coder.operator.dataSource.AbstractSqlTable;
@@ -28,7 +29,9 @@ import com.zdpx.coder.utils.TemplateUtils;
 import java.util.List;
 import java.util.Map;
 
-/** */
+/**
+ *
+ */
 public class KafKaSourceOperator extends AbstractSqlTable {
 
     private OutputPortObject<TableInfo> outputPortObject;
@@ -42,7 +45,12 @@ public class KafKaSourceOperator extends AbstractSqlTable {
     }
 
     @Override
-    protected void execute() {
-        processLogic(KAFKA_SOURCE,false,outputPortObject);
+    protected void execute(Map<String, Object> dataModel) {
+        processLogic(outputPortObject, dataModel);
+    }
+
+    @Override
+    protected String getDefaultName() {
+        return KAFKA_SOURCE;
     }
 }

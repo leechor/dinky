@@ -19,11 +19,16 @@
 
 package com.zdpx.coder.operator.dataSource.oracle;
 
+import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.graph.OutputPortObject;
 import com.zdpx.coder.operator.TableInfo;
 import com.zdpx.coder.operator.dataSource.AbstractSqlTable;
 
-/** */
+import java.util.Map;
+
+/**
+ *
+ */
 public class OracleSourceOperator extends AbstractSqlTable {
 
     private OutputPortObject<TableInfo> outputPortObject;
@@ -37,7 +42,13 @@ public class OracleSourceOperator extends AbstractSqlTable {
     }
 
     @Override
-    protected void execute() {
-        processLogic(ORACLE_SOURCE,false,outputPortObject);
+    protected void execute(Map<String, Object> dataModel) {
+
+        processLogic(outputPortObject, dataModel);
+    }
+
+    @Override
+    protected String getDefaultName() {
+        return ORACLE_SOURCE;
     }
 }

@@ -1,18 +1,23 @@
 package com.zdpx.coder.operator.operators;
 
 import com.zdpx.coder.Specifications;
+import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.operator.Operator;
 import com.zdpx.coder.utils.TemplateUtils;
 import lombok.SneakyThrows;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/** 引入jar或 udf */
+/**
+ * 引入jar或 udf
+ */
 public class AddJarOperator extends Operator {
 
     public static final String TEMPLATE =
@@ -36,21 +41,48 @@ public class AddJarOperator extends Operator {
         return true;
     }
 
-    @SneakyThrows
     @Override
-    protected void execute() {
+    protected Map<String, Object> formatOperatorParameter() {
+        return getFirstParameterMap();
+    }
 
-        Map<String, Object> parameters = getFirstParameterMap();
+    /**
+     * 校验内容：
+     * jar的路径是否存在
+     * 是否为一个jar
+     */
+    @Override
+    protected void generateCheckInformation(Map<String, Object> map) {
+
+        CheckInformationModel model = new CheckInformationModel();
+        model.setOperatorId(map.get(ID).toString());
+        model.setColor(GREEN);
+
+        List<String> msg = new ArrayList<>();
 
         @SuppressWarnings("unchecked")
-        List<String> jars = (List<String>)parameters.get("jars");
-        HashMap<String, Object> map = new HashMap<>();
+        List<String> jars = (List<String>) map.get("jars");
+        for (String s : jars) {
+            File file = new File(s);
+            if (!file.exists()) {
+                msg.add(s + " 不存在");
+                model.setColor(RED);
+            }
+            String[] split = s.split("\\.");
+            if (!split[split.length - 1].equals("jar")) {
+                msg.add(s + " 不是一个可添加jar");
+                model.setColor(RED);
+            }
+        }
 
-        map.put("jars",jars);
+        model.setOperatorErrorMsg(msg);
+        this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
+    }
 
+    @Override
+    protected void execute(Map<String, Object> map) {
         String sqlStr = TemplateUtils.format("AddJarOperator", map, TEMPLATE);
         this.getSchemaUtil().getGenerateResult().generate(sqlStr);
-
     }
 
     //动态加载Jar

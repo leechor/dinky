@@ -19,11 +19,19 @@
 
 package com.zdpx.coder.operator.dataSource.oracle;
 
+import com.zdpx.coder.graph.CheckInformationModel;
+import com.zdpx.coder.graph.InputPort;
 import com.zdpx.coder.graph.InputPortObject;
+import com.zdpx.coder.graph.PseudoData;
+import com.zdpx.coder.operator.TableInfo;
 import com.zdpx.coder.operator.dataSource.AbstractSqlTable;
 import lombok.extern.slf4j.Slf4j;
 
-/** */
+import java.util.Map;
+
+/**
+ *
+ */
 @Slf4j
 public class OracleSinkOperator extends AbstractSqlTable {
 
@@ -35,7 +43,12 @@ public class OracleSinkOperator extends AbstractSqlTable {
     }
 
     @Override
-    protected void execute() {
-        processLogic(ORACLE_SINK,true,null);
+    protected void execute(Map<String, Object> dataModel) {
+        processLogic( null, dataModel);
+    }
+
+    @Override
+    protected String getDefaultName() {
+        return ORACLE_SINK;
     }
 }

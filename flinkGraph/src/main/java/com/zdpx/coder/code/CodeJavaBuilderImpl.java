@@ -22,6 +22,7 @@ package com.zdpx.coder.code;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 
 import javax.lang.model.element.Modifier;
 
@@ -30,6 +31,7 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import com.zdpx.coder.CodeContext;
 import com.zdpx.coder.Specifications;
+import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.graph.Environment;
 
 import lombok.extern.slf4j.Slf4j;
@@ -94,6 +96,11 @@ public class CodeJavaBuilderImpl implements CodeJavaBuilder {
     }
 
     @Override
+    public void addCheckInformation(CheckInformationModel checkInformationModel) {
+
+    }
+
+    @Override
     public void generateJavaFunction(CodeBlock codeBlock) {
         codeContext.getMain().addCode(codeBlock).addCode(System.lineSeparator());
     }
@@ -121,6 +128,11 @@ public class CodeJavaBuilderImpl implements CodeJavaBuilder {
         } catch (Exception e) {
             log.error(String.format("write file %s error!Error: %s", directory, e.getMessage()));
         }
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> getCheckInformation() {
         return null;
     }
 

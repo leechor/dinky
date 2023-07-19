@@ -5,7 +5,7 @@ import com.zdpx.coder.operator.Operator;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ProcessGroup extends Operator  implements NodeCollection {
+public class ProcessGroup extends Operator implements NodeCollection {
     private boolean expanded;
 
     // region getter/setter
@@ -76,8 +76,17 @@ public class ProcessGroup extends Operator  implements NodeCollection {
     }
 
     @Override
-    protected void execute() {
-
+    protected Map<String, Object> formatOperatorParameter() {
+        return null;
     }
+
+    @Override
+    protected void generateCheckInformation(Map<String, Object> map) {
+    }
+
+    @Override
+    protected void execute(Map<String, Object> result) {
+    }
+
 
 }

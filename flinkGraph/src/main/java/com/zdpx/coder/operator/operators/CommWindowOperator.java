@@ -1,17 +1,12 @@
 package com.zdpx.coder.operator.operators;
 
 import com.zdpx.coder.Specifications;
-import com.zdpx.coder.graph.Connection;
-import com.zdpx.coder.graph.InputPortObject;
-import com.zdpx.coder.graph.OutputPortObject;
-import com.zdpx.coder.graph.Scene;
-import com.zdpx.coder.operator.FieldFunction;
-import com.zdpx.coder.operator.Operator;
-import com.zdpx.coder.operator.OperatorUtil;
-import com.zdpx.coder.operator.TableInfo;
+import com.zdpx.coder.graph.*;
+import com.zdpx.coder.operator.*;
 import com.zdpx.coder.utils.NameHelper;
 import com.zdpx.coder.utils.TemplateUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,36 +56,19 @@ public class CommWindowOperator extends Operator {
                     ,
                     Specifications.TEMPLATE_FILE);
 
-    /**
-     * 函数字段名常量
-     */
-    public static final String WHERE = "where";
-
-    public static final String GROUP = "group";
-
-    public static final String ORDER_BY = "orderBy";
-
-    public static final String WINDOW = "window";
-
-    public static final String SIZE = "size";
-    public static final String SLIDE = "slide";
-    public static final String STEP = "step";
-    public static final String LIMIT = "limit";
-
-
     private InputPortObject<TableInfo> inputPortObject;
     private OutputPortObject<TableInfo> outputPortObject;
 
     @Override
     protected void initialize() {
-        inputPortObject = registerInputObjectPort("input_0");
-        outputPortObject = registerOutputObjectPort("output_0");
+        inputPortObject = registerInputObjectPort(INPUT_0);
+        outputPortObject = registerOutputObjectPort(OUTPUT_0);
     }
 
     @Override
     protected Map<String, String> declareUdfFunction() {
         Map<String, Object> parameters = getParameterLists().get(0);
-        List<FieldFunction> ffs = Operator.getFieldFunctions(null, parameters);
+        List<FieldFunction> ffs = Operator.getFieldFunctions(null, parameters,new ArrayList<>());
         List<String> functions =
                 ffs.stream().map(FieldFunction::getFunctionName).collect(Collectors.toList());
         return Scene.getUserDefinedFunctionMaps().entrySet().stream()
@@ -104,26 +82,30 @@ public class CommWindowOperator extends Operator {
     }
 
     @Override
-    protected void execute() {
+    protected Map<String, Object> formatOperatorParameter() {
         Map<String, Object> parameters = getFirstParameterMap();
 
-        Object outputTableName = parameters.get("tableName");
-        if(outputTableName==null){
+        Object outputTableName = parameters.get(TABLE_NAME);
+        if (outputTableName == null || outputTableName.equals("")) {
             outputTableName = NameHelper.generateVariableName("CommWindowFunctionOperator");
         }
         //算子预览功能
         String tableName = TABLE_NAME_DEFAULT;
-        if(inputPortObject.getConnection()!=null){
+        List<Column> columns = new ArrayList<>();
+        if (inputPortObject.getConnection() != null) {
             tableName = inputPortObject.getOutputPseudoData().getName();
+            columns = inputPortObject.getConnection().getFromPort().getPseudoData().getColumns();
         }
 
-        List<FieldFunction> ffs = Operator.getFieldFunctions(tableName, parameters);
+        List<FieldFunction> ffs = Operator.getFieldFunctions(tableName, parameters,columns);
         Map<String, Object> p = new HashMap<>();
-        p.put("tableName", outputTableName);
-        p.put(Operator.FIELD_FUNCTIONS, ffs);
-        p.put("inputTableName", tableName);
+        p.put(TABLE_NAME, outputTableName);
+        p.put(Operator.COLUMNS, ffs);
+        p.put(INPUT_TABLE_NAME, tableName);
         p.put(WHERE, parameters.get(WHERE));
         p.put(LIMIT, parameters.get(LIMIT));
+        p.put(ID, parameters.get(ID));
+        p.put(CONFIG,formatProcessing(parameters));
 
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> order = (List<Map<String, Object>>) parameters.get(ORDER_BY);
@@ -154,13 +136,57 @@ public class CommWindowOperator extends Operator {
         if (groupList != null && !groupList.isEmpty()) {
             p.put(GROUP, groupList);
         }
+        return p;
+    }
+
+    /**
+     * 校验内容：
+     * 输入字段名拼写错误
+     */
+    @Override
+    protected void generateCheckInformation(Map<String, Object> map) {
+        CheckInformationModel model = new CheckInformationModel();
+        model.setOperatorId(map.get(ID).toString());
+        model.setColor(GREEN);
+        model.setTableName(map.get(TABLE_NAME).toString());
+
+        List<String> list = new ArrayList<>();
+        Map<String, List<String>> portInformation = new HashMap<>();
+
+        @SuppressWarnings("unchecked")
+        List<FieldFunction> columns = (List<FieldFunction>) map.get(COLUMNS);
+        @SuppressWarnings("unchecked")
+        List<Map<String, String>> config = (List<Map<String, String>>) map.get(CONFIG);
+        List<String> inputName = config.stream().map(item -> item.get(NAME)).collect(Collectors.toList());
+
+        for(FieldFunction column : columns){
+            for(int i=0;i<inputName.size();i++){
+                if(column.getOutName().equals(inputName.get(i))){
+                    break;
+                }
+                if(i==inputName.size()-1){
+                    list.add("算子输入不包含该字段, 未匹配的字段名： "+ column.getOutName());
+                    model.setColor(RED);
+                }
+            }
+        }
+
+        portInformation.put(inputPortObject.getName(),list);
+        model.setPortInformation(portInformation);
+        this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
+    }
+
+    @Override
+    protected void execute(Map<String, Object> p) {
 
         String sqlStr = TemplateUtils.format("CommWindowFunction", p, TEMPLATE);
         this.getSchemaUtil().getGenerateResult().generate(sqlStr);
 
+        @SuppressWarnings("unchecked")
+        List<FieldFunction> ffs = (List<FieldFunction>) p.get(Operator.COLUMNS);
         OperatorUtil.postTableOutput(
                 outputPortObject,
-                outputTableName.toString(),
+                p.get(TABLE_NAME).toString(),
                 Specifications.convertFieldFunctionToColumns(ffs));
     }
 

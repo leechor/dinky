@@ -1,11 +1,16 @@
 
 package com.zdpx.coder.operator.dataSource.kafka;
 
+import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.graph.InputPortObject;
 import com.zdpx.coder.operator.dataSource.AbstractSqlTable;
 import lombok.extern.slf4j.Slf4j;
 
-/** */
+import java.util.Map;
+
+/**
+ *
+ */
 @Slf4j
 public class KafKaSinkOperator extends AbstractSqlTable {
 
@@ -17,7 +22,12 @@ public class KafKaSinkOperator extends AbstractSqlTable {
     }
 
     @Override
-    protected void execute() {
-        processLogic(KAFKA_SINK,true,null);
+    protected void execute(Map<String, Object> dataModel) {
+        processLogic(null, dataModel);
+    }
+
+    @Override
+    protected String getDefaultName() {
+        return KAFKA_SINK;
     }
 }

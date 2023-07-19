@@ -1,11 +1,16 @@
 
 package com.zdpx.coder.operator.dataSource.es;
 
+import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.graph.InputPortObject;
 import com.zdpx.coder.operator.dataSource.AbstractSqlTable;
 import lombok.extern.slf4j.Slf4j;
 
-/** */
+import java.util.Map;
+
+/**
+ *
+ */
 @Slf4j
 public class ESSinkOperator extends AbstractSqlTable {
 
@@ -17,7 +22,12 @@ public class ESSinkOperator extends AbstractSqlTable {
     }
 
     @Override
-    protected void execute() {
-        processLogic(ES_SINK,true,null);
+    protected void execute(Map<String, Object> dataModel) {
+        processLogic(null, dataModel);
+    }
+
+    @Override
+    protected String getDefaultName() {
+        return ES_SINK;
     }
 }
