@@ -1,11 +1,11 @@
 import {StringEditor} from "@json-editor/json-editor/src/editors/string";
-import { extend } from "@json-editor/json-editor/src/utilities"
+import {extend} from "@json-editor/json-editor/src/utilities"
 import autoComplete from "@tarekraafat/autocomplete.js/dist/autoComplete";
 
 
 export class MyAutoCompleteEditor extends StringEditor {
 
-  build () {
+  build() {
     this.options.format = 'textarea' /* Force format into "textarea" */
     super.build()
     this.input_type = this.schema.format /* Restore original format */
@@ -18,27 +18,74 @@ export class MyAutoCompleteEditor extends StringEditor {
 
   afterInputReady() {
     // if(window.autoComplete && !this.autocomplete_instance) {
-      /* Get options, either global options from "this.defaults.options.autocomplete" or */
-      /* single property options from schema "options.autocomplete" */
+    /* Get options, either global options from "this.defaults.options.autocomplete" or */
+    /* single property options from schema "options.autocomplete" */
     let options = this.expandCallbacks('autoinput', extend({}, {
-        search: (jsEditor) => {
-          // eslint-disable-next-line no-console
-          console.log(`No "search" callback defined for autocomplete in property "${jsEditor.key}"`)
-          return []
-        },
-      }, this.defaults.options.auto || {}, this.options.auto || {}))
 
-    this.input.style.display = 'none'
-    this.autocomplete_instance = new autoComplete(options)
-      this.input = this.autocomplete_instance.input
-    // }
-    /* Listen for changes */
-    this.autocomplete_instance.addEvents('change', () => {
-      this.input.value = this.autocomplete_instance.
-      this.refreshValue()
-      this.is_dirty = true
-      this.onChange(true)
+    }, this.defaults.options.autoinput || {}, this.options.autoinput || {}))
+
+    const autoCompleteJS = new autoComplete({
+      options,
+      selector: () => this.input,
+      data: {
+        src: ["abc", "def", "xza"],
+        cache: true,
+      },
+      resultItem: {
+        highlight: true
+      },
+      query: (query) => {
+        // Split query into array
+        const querySplit = query.match(/\w+/g);
+        if (!querySplit) {
+          return query;
+        }
+
+        // Get last query value index
+        const lastQuery = querySplit.length - 1;
+        // Trim new query
+        const newQuery = querySplit[lastQuery].trim();
+
+        return newQuery;
+      },
+      events: {
+        input: {
+          selection: (event) => {
+            const feedback = event.detail;
+            const input = this.input;
+            // Trim selected Value
+            const selection = feedback.selection.value.trim();
+
+            const regrex = /(.+\W)\w+$/;
+            // Split query into array and trim each value
+            const query = regrex.exec(input.value);
+
+            const result = query ? query[1] : '';
+            // Replace Input value with the new query
+            input.value = result + selection;
+          },
+          keydown(event) {
+            switch (event.keyCode) {
+              // Down/Up arrow
+              case 40:
+              case 38:
+                event.preventDefault();
+                event.keyCode === 40 ? autoCompleteJS.next() : autoCompleteJS.previous();
+                break;
+              // Enter
+              case 13:
+                if (autoCompleteJS.cursor >= 0) {
+                  event.preventDefault();
+                  autoCompleteJS.select(event);
+                }
+                break;
+            }
+          }
+        }
+      }
     })
+
+    this.autocomplete_instance = autoCompleteJS;
     super.afterInputReady();
   }
 
