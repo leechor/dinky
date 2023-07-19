@@ -300,7 +300,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
   };
 
   const createProcess = () => {
-    
+
     //获取选中包围盒的位置信息
     const selectedBox = document.querySelector(".x6-widget-selection-inner")
     const rect = selectedBox?.getBoundingClientRect()!;
@@ -369,6 +369,8 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     removeEdges(selectedOutgoingEdge)
 
     group.prop("previousPosition", group.position({ relative: true }))
+    const prePos = group.getProp().previousPosition
+
     group.prop("previousSize", group.size())
     // const selectAbleIds:string:[] = unSelectedNodes.map(node => { id: node.id })
     // graph.setSelectionFilter(selectAbleIds)

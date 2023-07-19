@@ -233,7 +233,6 @@ export const initGraph = (
     //深拷贝,数组要改变地址子组件才能监听到变化
     selectedNodes.push(node);
     setSelectedNodes([...selectedNodes]);
-    console.log(node.getSize().width, graph.getGraphArea().width, "selected....")
     //组节点放大后不允许选择
     if (node.shape === CustomShape.GROUP_PROCESS
       && (node.getSize().height >= graph.getGraphArea().height
@@ -290,14 +289,23 @@ export const initGraph = (
   graph.on('cell:unselected', (cell: Cell, options: Model.SetOptions) => {
     selectedNodes.length = 0;
     setSelectedNodes(selectedNodes);
+
+
+
+
   });
 
   //节点/边被选中时触发。
-  graph.on('cell:selected', (cell: Cell, options: Model.SetOptions) => {
+  graph.on('cell:selected', ({ cell }: { cell: Cell }, options: Model.SetOptions) => {
     //节点被选中时隐藏连接桩
     const ports = container.querySelectorAll('.x6-port-body');
     showPortsOrLabels(ports, false);
-    //放大节点时不允许选中
+    //放大节点时不允许选
+    if (cell.shape === CustomShape.GROUP_PROCESS) {
+      console.log(cell.id, 'groupid');
+    }
+
+
   });
 
   graph.on('cell:added', ({ cell, index, options }) => {
@@ -305,6 +313,13 @@ export const initGraph = (
     if (cell.shape === 'package') {
       cell.setZIndex(-1);
     }
+    // 在添加的时候将该节点加入到上级画布的innercells
+    // const activeKey = store.getState().home.activeKey
+    // const tabsaved = store.getState().home.graphTabs
+    // if (tabsaved.length) {
+    //   tabsaved[activeKey-1].innerCells.push(cell)
+    // }
+
     // updateGraphData(graph);
   });
 
@@ -328,42 +343,85 @@ export const initGraph = (
     if (node.shape !== CustomShape.GROUP_PROCESS) {
       return;
     }
-    //设置当前key
+    //保存每一次平移时当前画布中组节点内外的cells
+    let innerCells: Cell[] = []
+    let outterCells: Cell[] = []
+    innerCells = node.getChildren()!;
+    const activeKey = store.getState().home.activeKey
+    const tabsaved = store.getState().home.graphTabs
+    if (!activeKey) {
+      const cells = graph.getCells();
+      outterCells = cells.filter(cell => !innerCells.some(inCell => inCell.id === cell.id))
+    } else {
+      const cells = tabsaved[activeKey - 1].innerCells
+
+      outterCells = cells.filter(cell => !innerCells.some(inCell => inCell.id === cell.id))
+      tabsaved[activeKey - 1].innerCells.push(node)
+      outterCells.push(graph.getCellById(tabsaved[activeKey - 1].groupCellId))
+      outterCells.push(node)
+
+    }
+
+    let incomEdegs = graph?.getIncomingEdges(node)
+    let outEdges = graph?.getOutgoingEdges(node)
+    let innerInputPorts = node.getPortsByGroup("innerInputs")
+    let innerOutputPorts = node.getPortsByGroup("innerOutputs")
+    if (innerOutputPorts.length > 0) {
+      for (let edge of outEdges!) {
+        const sourcePortId = edge.getSourcePortId()
+        if (innerOutputPorts.some(port => port.id === sourcePortId)) {
+          innerCells.push(edge);
+        } else {
+          outterCells.push(edge)
+        }
+      }
+    }
+    if (innerInputPorts.length > 0) {
+      for (let edge of incomEdegs!) {
+        const targetPortId = edge.getTargetPortId()
+        if (innerInputPorts.some(port => port.id === targetPortId)) {
+
+          innerCells.push(edge);
+        } else {
+          outterCells.push(edge)
+        }
+      }
+    }
+    outterCells = outterCells.filter(outCell =>
+      !innerCells.some(innerCell => innerCell.id === outCell.id)
+    )
+
+    console.log(innerCells, outterCells, "inner,outter");
+
+    //设置当前key    
     dispatch(addActiveKey(1))
     //新增导航
-    dispatch(addGraphTabs({ groupCellId: node.id, layer: 1, innerCells: node.getChildren() }))
+    dispatch(addGraphTabs({ groupCellId: node.id, layer: 1, innerCells, outterCells }))
     //将组节点外部的节点全部隐藏
-    // graph.getCells()
-    //将组节点向右移动两个画布
+    outterCells.forEach(cell => {
+      cell.hide()
+    })
 
-    const tabs = store.getState().home.graphTabs
-    const activeKey = store.getState().home.activeKey
-
+    const tabs = store.getState().home.graphTabs;
     const dx = graph.getGraphArea().width;
     const dy = graph.getGraphArea().height;
     const prePos = node.getProp().previousPosition
     node.translate(-prePos.x, -prePos.y)
     node.translate(dx, 0)
-    //隐藏当前组节点的所有连线
-    const edges = graph.model.getConnectedEdges(node, { deep: true });
-    for (let edge of edges) {
-      edge.hide()
-    }
     //反向平移画布
     graph.translate(-dx / tabs[tabs.length - 1].layer, 0)
     //放大到画布大小
     node.resize(dx / tabs[tabs.length - 1].layer, dy)
     node.toBack();
     //隐藏组节点
+    node.show();
     node.setAttrs({ fo: { visibility: "hidden" } })
     graph.cleanSelection();
-    //将隐藏的节点设置为可选
+    //将隐藏的节点设置为不可选
     graph.setSelectionFilter((cell) => {
-      return !!node.getChildren()?.map(c => c.id).includes(cell.id)
+      return !!innerCells?.map(c => c.id).includes(cell.id)
     })
-    console.log(node, "node>>>>>>>>>>>>>>>>");
-
-    node.getChildren()?.forEach(item => {
+    innerCells?.forEach(item => {
       item.show()
       //将节点位移到和之前对应的地方
       if (item.isNode()) {
@@ -371,15 +429,13 @@ export const initGraph = (
         item.prop("position", { x: dx / tabs[tabs.length - 1].layer + prePos.x, y: prePos.y })
       }
     })
-    // 设置画布不能滚动
-    // graph.getCells()
-    //   .filter(item => !node.getChildren()?.includes(item))
-    //   .forEach(item => item.hide())
-
   });
 
+  graph.on("edge:click", ({ edge }) => {
+
+  })
+
   // graph.on("node:port:mousedown",({node,port})=>{
-  //   console.log("port",node.getPort(port!));
   //   node.setPortProp(port!,"attrs/circle",{
   //     r:8,
   //   })

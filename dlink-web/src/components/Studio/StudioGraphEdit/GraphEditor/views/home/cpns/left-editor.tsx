@@ -1,5 +1,9 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { Graph, Node, Cell, Edge } from '@antv/x6';
+import { cloneDeep } from 'lodash';
+import { message, Breadcrumb } from 'antd';
+import { CaretRightOutlined } from '@ant-design/icons';
+
 import { handleInitPort } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/ports-register';
 import { initGraph } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/init-graph';
 import { stencilComponentsLoader } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/stencil-components-loader';
@@ -7,28 +11,22 @@ import { initStencil } from '@/components/Studio/StudioGraphEdit/GraphEditor/uti
 import { handleInitNodes } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/node-by-data-loader';
 import registerShape from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/shape-register';
 import unRegisterShape from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/shape-unregister';
-import {
-  useAppDispatch,
-  useAppSelector,
-} from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
+import { useAppDispatch, useAppSelector, } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
 import { CustomMenu } from './menu';
 import { initMenu } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/init-menu';
 import NodeModalForm from '@/components/Studio/StudioGraphEdit/GraphEditor/components/node-modal-form';
 import styles from './index.less';
-import { message, Breadcrumb } from 'antd';
-import { CaretRightOutlined } from '@ant-design/icons';
 import AddModalPort from '../../../components/add-port-modal';
-import CustomShape from '../../../utils/cons';
 import {
   changeCurrentSelectNode,
   removeGraphTabs,
   changePositon,
   addActiveKey,
-  addGraphTabs
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import type { GroupTabItem } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import localCache from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/localStorage"
-import { cloneDeep } from 'lodash';
+import CustomShape from '../../../utils/cons';
+
 
 export interface ParametersConfigType {
   name: string,
@@ -345,7 +343,6 @@ const LeftEditor = memo(() => {
       }
     } else {
       const flag = isConnected(graphRef.current!, value.readConfigData.currentCell, value.readConfigData.currentPort, value.isOutputs)
-      console.log(flag);
       if (!flag) return
       if (value.readConfigData.currentCell.shape === "DuplicateOperator") {
         const edges = graphRef.current!.model.getIncomingEdges(value.readConfigData.currentCell)
@@ -382,7 +379,6 @@ const LeftEditor = memo(() => {
       }
 
     }
-    console.log(graphRef.current?.toJSON(), "confirm");
   }
   const handleSubmitPort = (value: any) => {
     const node = showMenuInfo.node
@@ -457,9 +453,55 @@ const LeftEditor = memo(() => {
 
 
   };
-  const tabClick = (layer: number) => {
+  //上方面包屑控制画布群组导航
+  const tabClick = (currentIndex: number) => {
 
-    dispatch(removeGraphTabs(layer))
+    //如果点击的是最新并且未设置群组
+    if (currentIndex === 0 && tabs.length === 0) return
+    if (currentIndex === tabs[tabs.length - 1].layer) return
+    //一层一层回退（目前递减）
+    const graph = graphRef.current;
+    //1获取原来形状（拿到回退画布的元素）
+    const { layer, groupCellId, innerCells, outterCells } = tabs[tabs.length - 1]
+    const group = graph?.getCellById(groupCellId) as Node;
+    const preSize = group?.getProp().previousSize
+    //2将群组节点和内部节点移动到上个位置
+    const dx = graph!.getGraphArea().width;
+    const prePos = group.getProp().previousPosition
+    group.size(preSize.width, preSize.height)
+    //显示
+    group?.setAttrs({ fo: { visibility: "visibility" } })
+    //显示外部元素
+    outterCells.forEach((cell: Cell) => {
+      cell.show()
+    });
+    //设置外部元素可选
+    graph?.setSelectionFilter(cell => outterCells.map((c: Cell) => c.id).includes(cell.id))
+    //移动组节点位置
+    group.translate(-dx / (tabs.length + 1), 0)
+    group.translate(prePos.x - (dx / (tabs.length + 1)) * (layer - 1), prePos.y)
+
+    //反向平移画布
+    graph!.translate(dx / (tabs.length + 1), 0)
+
+    //内部元素隐藏
+    innerCells.forEach((cell: Cell) => {
+     
+      cell.hide()
+      const prePos = cell.getProp().previousPosition
+      if (tabs.length > 1) {
+        if (cell.isNode()) {
+          cell.prop("position", { x: prePos.x - (dx / (tabs.length + 1)) * (layer - 1), y: prePos.y })
+        }
+      } else {
+        if (cell.isNode() && cell.shape !== CustomShape.GROUP_PROCESS) {
+          cell.prop("position", { x: prePos.x - (dx / (tabs.length + 1)) * (layer - 1), y: prePos.y })
+        }
+      }
+
+    });
+    dispatch(removeGraphTabs(currentIndex))
+    dispatch(addActiveKey(-1))
   }
   const getSubprocess = () => {
     if (tabs.length !== 0) {
@@ -507,7 +549,7 @@ const LeftEditor = memo(() => {
 
         //加载连接装点击事件控制portmodal
         handleNodeConfigSet(graphRef.current)
-        
+
       }
     }
 

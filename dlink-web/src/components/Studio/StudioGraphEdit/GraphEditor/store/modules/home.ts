@@ -41,6 +41,7 @@ export type GroupTabItem = {
   layer: number,
   innerCells: Cell[],
   groupCellId: string,
+  outterCells: Cell[]
 }
 
 
@@ -132,6 +133,7 @@ const homeSlice = createSlice({
         layer: length ? state.graphTabs[length - 1].layer + payload.layer : payload.layer,
         innerCells: payload.innerCells,
         groupCellId: payload.groupCellId,
+        outterCells: payload.outterCells
       }
       state.graphTabs = [...state.graphTabs, tabItem]
     },

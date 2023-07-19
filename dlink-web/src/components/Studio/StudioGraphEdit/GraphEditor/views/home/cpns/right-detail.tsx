@@ -13,8 +13,6 @@ const RightDetail = memo(() => {
     }),
   );
   const getTitleInfo = () => {
-    console.log(currentSelectNode, operatorParameters);
-
     if (currentSelectNode && currentSelectNode.shape) {
       const found = operatorParameters.find((item: any) => item.code === currentSelectNode.shape)
       if (found) {
