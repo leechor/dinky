@@ -20,9 +20,7 @@ export class MyAutoCompleteEditor extends StringEditor {
     // if(window.autoComplete && !this.autocomplete_instance) {
     /* Get options, either global options from "this.defaults.options.autocomplete" or */
     /* single property options from schema "options.autocomplete" */
-    let options = this.expandCallbacks('autoinput', extend({}, {
-
-    }, this.defaults.options.autoinput || {}, this.options.autoinput || {}))
+    let options = this.expandCallbacks('autoinput', extend({}, {}, this.defaults.options.autoinput || {}, this.options.autoinput || {}))
 
     const autoCompleteJS = new autoComplete({
       options,
@@ -32,6 +30,16 @@ export class MyAutoCompleteEditor extends StringEditor {
         cache: true,
       },
       resultItem: {
+        element: (item, data) => {
+          // Modify Results Item Style
+          item.style = "display: flex; justify-content: space-between;";
+          // Modify Results Item Content
+          item.innerHTML = `
+      <span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+        ${data.match}
+      </span>
+      `;
+        },
         highlight: true
       },
       query: (query) => {
