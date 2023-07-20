@@ -53,6 +53,7 @@ export class MyAutoCompleteEditor extends StringEditor {
         highlight: true
       },
       query: (query) => {
+        // 处理结果为下拉框的输入值
         // Split query into array
         const querySplit = query.match(/\w+/g);
         if (!querySplit) {
@@ -72,17 +73,19 @@ export class MyAutoCompleteEditor extends StringEditor {
         return newQuery;
       },
       trigger: (query) => {
+        // 判断query是否触发下拉框搜索
         return query.length > 0;
       },
       events: {
         input: {
           selection: (event) => {
+            // 支持文本多输入的下拉框
             const feedback = event.detail;
             const input = this.input;
             // Trim selected Value
             const selection = feedback.selection.value.trim();
 
-            const regrex = /(.+\W)\w+$/;
+            const regrex = /(.*\W)\w+$/;
             // Split query into array and trim each value
             const query = regrex.exec(input.value);
 
@@ -92,14 +95,14 @@ export class MyAutoCompleteEditor extends StringEditor {
           },
           keydown(event) {
             switch (event.keyCode) {
-              // Down/Up arrow
               case 40:
               case 38:
+                // Down/Up arrow
                 event.preventDefault();
                 event.keyCode === 40 ? autoCompleteJS.next() : autoCompleteJS.previous();
                 break;
-              // Enter
               case 13:
+                // Enter
                 if (autoCompleteJS.cursor >= 0) {
                   event.preventDefault();
                   autoCompleteJS.select(event);
