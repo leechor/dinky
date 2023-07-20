@@ -22,8 +22,14 @@
               "minLength": 1,
               "description": "在窗口内，对事件时间进行排序",
               "format": "autoinput",
-              "options": {
-                "name": "myAutoComplete"
+              "autoinput": {
+                  "name": "my-autoComplete",
+                  "function": {
+                    "name": "getFields",
+                    "args": [
+                      "input"
+                    ]
+                }
               }
             },
             "outPutMode": {

@@ -1,7 +1,7 @@
 import {StringEditor} from "@json-editor/json-editor/src/editors/string";
 import {extend} from "@json-editor/json-editor/src/utilities"
 import autoComplete from "@tarekraafat/autocomplete.js/dist/autoComplete";
-
+import helper from "./autocomplete-utils"
 
 export class MyAutoCompleteEditor extends StringEditor {
 
@@ -20,15 +20,17 @@ export class MyAutoCompleteEditor extends StringEditor {
     // if(window.autoComplete && !this.autocomplete_instance) {
     /* Get options, either global options from "this.defaults.options.autocomplete" or */
     /* single property options from schema "options.autocomplete" */
-    let options = this.expandCallbacks('autoinput', extend({}, {}, this.defaults.options.autoinput || {}, this.options.autoinput || {}))
+    let options = this.expandCallbacks('autoinput', extend({},
+      {}, this.defaults.options.autoinput || {}, this.options.autoinput || {}, this.options.schema.autoinput || {}))
 
     const autoCompleteJS = new autoComplete({
-      options,
       selector: () => this.input,
       data: {
-        src: ["abc", "def", "xza"],
-        cache: true,
+        src: async () => {
+          return helper[options.function.name](options.function.args)
+        },
       },
+      debounce: 300,
       resultItem: {
         element: (item, data) => {
           // Modify Results Item Style
@@ -99,10 +101,14 @@ export class MyAutoCompleteEditor extends StringEditor {
           }
         }
       }
-    })
+    }, options)
 
     this.autocomplete_instance = autoCompleteJS;
     super.afterInputReady();
+  }
+
+  getData() {
+
   }
 
   destroy() {
