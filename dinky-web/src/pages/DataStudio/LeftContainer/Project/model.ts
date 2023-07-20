@@ -17,20 +17,3 @@
  *
  */
 
-import React from "react";
-import DockerConfig
-    from "@/pages/RegCenter/Cluster/Configuration/components/ConfigurationModal/ConfigurationForm/FlinkK8sNative/DockerConfig";
-import K8sConfig
-    from "@/pages/RegCenter/Cluster/Configuration/components/ConfigurationModal/ConfigurationForm/FlinkK8sNative/K8sConfig";
-
-const FlinkK8sNative = () => {
-
-    return <>
-        <DockerConfig/>
-        <K8sConfig/>
-    </>;
-
-}
-
-
-export default FlinkK8sNative;
