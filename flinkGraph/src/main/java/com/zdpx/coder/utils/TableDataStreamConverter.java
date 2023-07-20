@@ -23,32 +23,37 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.zdpx.coder.graph.OperatorSpecializationFieldConfig;
 import com.zdpx.coder.operator.Column;
 import com.zdpx.coder.operator.TableInfo;
 
 /** */
-public class TableDataStreamConverter {
+public class TableDataStreamConverter extends OperatorSpecializationFieldConfig {
     private TableDataStreamConverter() {}
 
+    //字段非函数格式，使用此方法构建tableInfo
     public static TableInfo getTableInfo(Map<String, Object> dataModel) {
         @SuppressWarnings("unchecked")
-        List<Map<String, String>> columns = (List<Map<String, String>>) dataModel.get("columns");
+        List<Map<String, Object>> columns = (List<Map<String, Object>>) dataModel.get(COLUMNS);
         List<Column> cs = new ArrayList<>();
-        for (Map<String, String> dm : columns) {
-            cs.add(new Column(dm.get("name"), dm.get("type")));
+        for (Map<String, Object> dm : columns) {
+            if((boolean)dm.get(FLAG)){
+                cs.add(new Column(dm.get(NAME).toString(), dm.get(TYPE).toString()));
+            }
         }
-
-        return TableInfo.newBuilder().name((String) dataModel.get("tableName")).columns(cs).build();
+        return TableInfo.newBuilder().name((String) dataModel.get(TABLE_NAME)).columns(cs).build();
     }
 
     //根据原有的TableInfo和config中的字段构建新的TableInfo
     public static TableInfo assembleNewTableInfo(TableInfo old,List<Map<String, Object>> count){
         List<Column> cs = new ArrayList<>();
-        for (Map<String, Object> dm : count) {
-            if((Boolean)dm.get("flag")){
-                cs.add(new Column(dm.get("name").toString(), dm.get("type")==null? "":dm.get("type").toString()));
-            }
-        }
+        List<Column> columns = old.getColumns();
+
+        count.stream().filter(dm-> (boolean)dm.get(FLAG)).forEach(dm->{
+            columns.stream().filter(c-> c.getName().equals(dm.get(NAME))).forEach(c->{
+                cs.add(new Column(c.getName(), c.getType()));
+            });
+        });
         return TableInfo.newBuilder().name(old.getName()).columns(cs).build();
     }
 

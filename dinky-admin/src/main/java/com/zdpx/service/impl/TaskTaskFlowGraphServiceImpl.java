@@ -140,14 +140,17 @@ public class TaskTaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScri
 
         @SuppressWarnings("unchecked")
         List<CheckInformationModel> list = (List<CheckInformationModel>)checkAndSQL.get("MSG");
-        for(CheckInformationModel c : list){
-            for(SqlExplainResult s:sqlExplainResults){
-                // sql校验接口没有提供表名，暂时使用sql中的表名找对应算子
+
+        list.stream().filter(c->c.getTableName()!=null).forEach(c->{
+            sqlExplainResults.forEach(s->{
                 if (!s.isParseTrue()&&s.getSql().split(" ")[2].contains(c.getTableName())){
                     c.setSqlErrorMsg(s.getError());
+                }else if(s.getSql().contains(c.getTableName())){//特殊算子 ADD JAR 异常参数添加
+                    c.setSqlErrorMsg(s.getError());
                 }
-            }
-        }
+            });
+        });
+
 
         Map<String, Object> map = new HashMap<>();
         map.put("SQL",sql);

@@ -88,6 +88,8 @@ public abstract class AbstractSqlTable extends Operator {
 
         Map<String, List<String>> portInformation = new HashMap<>();
         List<String> list = new ArrayList<>();
+        List<String> edge = new ArrayList<>();
+        String linkId ;
 
         boolean flag = this.getClass().getName().contains("Sink");
 
@@ -96,17 +98,16 @@ public abstract class AbstractSqlTable extends Operator {
             portName=INPUT_0;
         }
 
-        if(map.get(WATERMARK)!=null){
+        @SuppressWarnings("unchecked")
+        Map<String,String> watermark = (Map<String,String>)map.get(WATERMARK);
+        if(watermark!=null){
             @SuppressWarnings("unchecked")
             List<Map<String, String>> columns = (List<Map<String, String>>) map.get(COLUMNS);
             Map<String, String> type = columns.stream()
-                    .filter(item -> item.get(NAME).equals(map.get(WATERMARK).toString()))
-                    .filter(item -> item.get(TYPE)!=null)
-                    .filter(item -> item.get(TYPE).contains("TIME"))
+                    .filter(item -> item.get(NAME).equals(watermark.get(COLUMN))&&item.get(TYPE).contains("TIME"))
                     .findFirst().orElse(null);
             if(type==null){
-                list.add("WATERMARK中指定的列不包含时间字段");
-                model.setColor(RED);
+                list.add("WATERMARK中指定的列不包含时间属性字段");
             }
         }
 
@@ -117,21 +118,28 @@ public abstract class AbstractSqlTable extends Operator {
             List<Map<String, Object>> columns = (List<Map<String, Object>>) map.get(COLUMNS);
             if(config.size()!=columns.size()){
                 list.add("输入字段和输出表中指定的字段数量不匹配");
-                model.setColor(RED);
             }
+            linkId = getInputPorts().get(portName).getConnection().getId();
             TableInfo t = (TableInfo)getInputPorts().get(portName).getConnection().getFromPort().getPseudoData();
             //目前按顺序比较参数类型
             List<Column> columns1 = t.getColumns();
             for(int i=0;i<columns.size();i++){
                 if(!columns.get(i).get(TYPE).equals(columns1.get(i).getType())){
                     list.add("输入字段和输出表中指定参数类型不匹配 ，参数名称： "+columns.get(i).get(NAME)+" 参数类型 ： "+ columns1.get(i).getType()+" -> "+columns.get(i).get(TYPE));
-                    model.setColor(RED);
                 }
             }
         }
+        else{
+            linkId = getOutputPorts().get(portName).getConnection().getId();
+        }
 
-        portInformation.put(portName,list);
-        model.setPortInformation(portInformation);
+        if(!list.isEmpty()){
+            model.setColor(RED);
+            edge.add(linkId);
+            model.setEdge(edge);
+            portInformation.put(portName,list);
+            model.setPortInformation(portInformation);
+        }
         this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
     }
 
@@ -169,7 +177,7 @@ public abstract class AbstractSqlTable extends Operator {
         List<Map<String, Object>> other = (List<Map<String, Object>>) defineList.get(OTHER);
         if (other.size() > 0) {
             for (Map<String, Object> m : other) {
-                defineList.put(m.get(KEY).toString(), m.get(VALUE));
+                defineList.put(m.get(KEY).toString(), m.get(VALUES));
             }
         }
         defineList.remove(OTHER);

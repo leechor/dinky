@@ -81,7 +81,7 @@ public class OperatorSpecializationFieldConfig {
     //自定义数据源中自定义参数的键
     public static final String KEY = "key";
     //自定义数据源中自定义参数的值
-    public static final String VALUE = "value";
+    public static final String VALUES = "values";
 
 
     /**
@@ -108,5 +108,7 @@ public class OperatorSpecializationFieldConfig {
     public static final String SKIP_STRATEGY = "skipStrategy";
     public static final String CEP = "CEP";
     public static final String OUT_PUT_MODE = "outPutMode";//输出规则
+
+    public static final String SYSTEM_TIME_COLUMN = "systemTimeColumn";
 
 }

@@ -149,6 +149,7 @@ public class CommWindowOperator extends Operator {
         model.setOperatorId(map.get(ID).toString());
         model.setColor(GREEN);
         model.setTableName(map.get(TABLE_NAME).toString());
+        List<String> edge = new ArrayList<>();
 
         List<String> list = new ArrayList<>();
         Map<String, List<String>> portInformation = new HashMap<>();
@@ -166,13 +167,17 @@ public class CommWindowOperator extends Operator {
                 }
                 if(i==inputName.size()-1){
                     list.add("算子输入不包含该字段, 未匹配的字段名： "+ column.getOutName());
-                    model.setColor(RED);
                 }
             }
         }
 
-        portInformation.put(inputPortObject.getName(),list);
-        model.setPortInformation(portInformation);
+        if(!list.isEmpty()){
+            model.setColor(RED);
+            edge.add(getInputPorts().get(INPUT_0).getConnection().getId());
+            model.setEdge(edge);
+            portInformation.put(inputPortObject.getName(),list);
+            model.setPortInformation(portInformation);
+        }
         this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
     }
 
