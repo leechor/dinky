@@ -29,6 +29,14 @@ export class MyAutoCompleteEditor extends StringEditor {
         src: async () => {
           return helper[options.function.name](options.function.args)
         },
+        filter: (list) => {
+          // Filter duplicates
+          return Array.from(
+            new Set(list.map((value) => value.match))
+          ).map((item) => {
+            return list.find((value) => value.match === item);
+          });
+        }
       },
       debounce: 300,
       resultItem: {
