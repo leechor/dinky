@@ -326,6 +326,11 @@ export const initGraph = (
   graph.on('cell:removed', ({ cell, index, options }) => {
     // updateGraphData(graph);
   });
+  graph.on("node:mousemove", ({ node, x, y }) => {
+    if (node.shape === CustomShape.GROUP_PROCESS) {
+      node.prop("previousPosition", node.position({ relative: true }))
+    }
+  })
 
   graph.on('node:dblclick', ({ node, e, view }) => {
     // const isNode = cell.isNode();
@@ -432,6 +437,7 @@ export const initGraph = (
   });
 
   graph.on("edge:click", ({ edge }) => {
+    console.log(edge.id, "edgeid");
 
   })
 

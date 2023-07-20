@@ -111,7 +111,7 @@ export const scroller = (graph: Graph) => {
       pageWidth: graph.getGraphArea().width
     }),
   );
-  graph.centerContent();
+  // graph.centerContent();
   graph.lockScroller()
 };
 
@@ -131,7 +131,7 @@ export const transform = (graph: Graph) => {
       },
     }),
   );
-  graph.centerContent();
+  // graph.centerContent();
 };
 
 export const exportGraph = (graph: Graph) => {

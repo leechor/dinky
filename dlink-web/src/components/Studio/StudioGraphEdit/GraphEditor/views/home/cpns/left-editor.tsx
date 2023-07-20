@@ -471,10 +471,44 @@ const LeftEditor = memo(() => {
     group.size(preSize.width, preSize.height)
     //显示
     group?.setAttrs({ fo: { visibility: "visibility" } })
-    //显示外部元素
+    //显示外部元素(外部可能包含其他组节点，找出其子节点隐藏)
+
+    let otherGroups = outterCells.filter((cell: Cell) => {
+      return cell.shape === CustomShape.GROUP_PROCESS && cell.id !== groupCellId
+    })
+    let innerCellInOther: Cell[] = []
+    if (otherGroups.length) {
+      otherGroups.forEach((cell: Cell) => {
+        let child = cell.getChildren()
+        innerCellInOther = [...innerCellInOther, ...child!]
+        let incomEdegs = graph?.getIncomingEdges(cell)
+        let outEdges = graph?.getOutgoingEdges(cell)
+        let innerInputPorts = (cell as Node).getPortsByGroup("innerInputs")
+        let innerOutputPorts = (cell as Node).getPortsByGroup("innerOutputs")
+        if (innerOutputPorts.length > 0) {
+          for (let edge of outEdges!) {
+            const sourcePortId = edge.getSourcePortId()
+            if (innerOutputPorts.some(port => port.id === sourcePortId)) {
+              innerCellInOther.push(edge);
+            }
+          }
+        }
+        if (innerInputPorts.length > 0) {
+          for (let edge of incomEdegs!) {
+            const targetPortId = edge.getTargetPortId()
+            if (innerInputPorts.some(port => port.id === targetPortId)) {
+              innerCellInOther.push(edge);
+            }
+          }
+        }
+      });
+    }
     outterCells.forEach((cell: Cell) => {
       cell.show()
     });
+    innerCellInOther.forEach((cell: Cell) => {
+      cell.hide()
+    })
     //设置外部元素可选
     graph?.setSelectionFilter(cell => outterCells.map((c: Cell) => c.id).includes(cell.id))
     //移动组节点位置
@@ -486,18 +520,18 @@ const LeftEditor = memo(() => {
 
     //内部元素隐藏
     innerCells.forEach((cell: Cell) => {
-     
+
       cell.hide()
-      const prePos = cell.getProp().previousPosition
-      if (tabs.length > 1) {
-        if (cell.isNode()) {
-          cell.prop("position", { x: prePos.x - (dx / (tabs.length + 1)) * (layer - 1), y: prePos.y })
-        }
-      } else {
-        if (cell.isNode() && cell.shape !== CustomShape.GROUP_PROCESS) {
-          cell.prop("position", { x: prePos.x - (dx / (tabs.length + 1)) * (layer - 1), y: prePos.y })
-        }
-      }
+      // const prePos = cell.getProp().previousPosition
+      // if (tabs.length > 1) {
+      //   if (cell.isNode()) {
+      //     cell.prop("position", { x: prePos.x - (dx / (tabs.length + 1)) * (layer - 1), y: prePos.y })
+      //   }
+      // } else {
+      //   if (cell.isNode() && cell.shape !== CustomShape.GROUP_PROCESS) {
+      //     cell.prop("position", { x: prePos.x - (dx / (tabs.length + 1)) * (layer - 1), y: prePos.y })
+      //   }
+      // }
 
     });
     dispatch(removeGraphTabs(currentIndex))
