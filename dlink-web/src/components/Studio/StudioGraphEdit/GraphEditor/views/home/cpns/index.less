@@ -158,6 +158,11 @@
           background-color: #e1e3e1;
           box-sizing: border-box;
 
+
+          textarea.form-input[data-schemaformat="autoinput"] {
+            height: 1.3em;
+          }
+
           .columns {
             &:first-child {
 
@@ -179,23 +184,13 @@
               .form-label {
                 font-size: 12px;
                 font-weight: 400;
-                width: 40%;
-                word-break: break-word;
-                white-space: pre-wrap;
-              }
-
-              .form-input,
-              .form-select {
-                width: 60%;
-
+                margin-right: 5%;
               }
 
               .je-desc {
                 flex-wrap: wrap;
                 color: #1677ff;
                 font-style: oblique;
-                word-break: break-word;
-                white-space: pre-wrap;
               }
             }
           }
