@@ -369,8 +369,6 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     removeEdges(selectedOutgoingEdge)
 
     group.prop("previousPosition", group.position({ relative: true }))
-    const prePos = group.getProp().previousPosition
-
     group.prop("previousSize", group.size())
     // const selectAbleIds:string:[] = unSelectedNodes.map(node => { id: node.id })
     // graph.setSelectionFilter(selectAbleIds)

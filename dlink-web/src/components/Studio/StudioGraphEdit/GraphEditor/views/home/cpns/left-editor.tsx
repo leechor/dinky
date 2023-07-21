@@ -454,35 +454,43 @@ const LeftEditor = memo(() => {
 
   };
   //上方面包屑控制画布群组导航
-  const tabClick = (currentIndex: number) => {
+  const tabClick = (currentLayer: number) => {
 
     //如果点击的是最新并且未设置群组
-    if (currentIndex === 0 && tabs.length === 0) return
-    if (currentIndex === tabs[tabs.length - 1].layer) return
-    //一层一层回退（目前递减）
-    const graph = graphRef.current;
-    //1获取原来形状（拿到回退画布的元素）
-    const { layer, groupCellId, innerCells, outerCells: outerCells } = tabs[tabs.length - 1]
-    const group = graph?.getCellById(groupCellId) as Node;
-    const preSize = group?.getProp().previousSize
-    //2将群组节点和内部节点移动到上个位置
-    const dx = graph!.getGraphArea().width;
-    const prePos = group.getProp().previousPosition
-    group.size(preSize.width, preSize.height)
-    //显示
-    group?.setAttrs({ fo: { visibility: "visibility" } })
-    //显示外部元素(外部可能包含其他组节点，找出其子节点隐藏)
+    if ((currentLayer === 0 && tabs.length === 0) || currentLayer === tabs[tabs.length - 1].layer) {
+      return
+    }
 
+    //一层一层回退（目前递减）
+    //1获取原来形状（拿到回退画布的元素）
+    if (!graphRef.current) {
+      return
+    }
+    const graph = graphRef.current;
+
+    const { layer, groupCellId, innerCells, outerCells } = tabs[tabs.length - 1]
+
+    const groupNode = graph.getCellById(groupCellId) as Node;
+
+    //2将群组节点和内部节点移动到上个位置
+    const prePos = groupNode.getProp().previousPosition
+
+    const preSize = groupNode.getProp().previousSize;
+    groupNode.size(preSize.width, preSize.height)
+
+    groupNode.setAttrs({ fo: { visibility: "visibility" } })
+
+    //显示外部元素(外部可能包含其他组节点，找出其子节点隐藏)
     let otherGroups = outerCells.filter((cell: Cell) => {
       return cell.shape === CustomShape.GROUP_PROCESS && cell.id !== groupCellId
     })
+
     let innerCellInOther: Cell[] = []
     if (otherGroups.length) {
       otherGroups.forEach((cell: Cell) => {
-        let child = cell.getChildren()
-        innerCellInOther = [...innerCellInOther, ...child!]
-        let incomingEdges = graph?.getIncomingEdges(cell)
-        let outEdges = graph?.getOutgoingEdges(cell)
+        let child = cell.getChildren() ?? []
+        innerCellInOther = [...innerCellInOther, ...child]
+        let outEdges = graph.getOutgoingEdges(cell)
         let innerInputPorts = (cell as Node).getPortsByGroup("innerInputs")
         let innerOutputPorts = (cell as Node).getPortsByGroup("innerOutputs")
         if (innerOutputPorts.length > 0) {
@@ -494,7 +502,8 @@ const LeftEditor = memo(() => {
           }
         }
         if (innerInputPorts.length > 0) {
-          for (let edge of incomingEdges!) {
+          let incomingEdges = graph.getIncomingEdges(cell) ?? []
+          for (let edge of incomingEdges) {
             const targetPortId = edge.getTargetPortId()
             if (innerInputPorts.some(port => port.id === targetPortId)) {
               innerCellInOther.push(edge);
@@ -507,37 +516,28 @@ const LeftEditor = memo(() => {
     outerCells.forEach((cell: Cell) => {
       cell.show()
     });
-    // innerCellInOther.forEach((cell: Cell) => {
-    //   cell.hide()
-    // })
+
+
     //设置外部元素可选
-    graph?.setSelectionFilter(cell => outerCells.map((c: Cell) => c.id).includes(cell.id))
+    graph.setSelectionFilter(cell => outerCells.map((c: Cell) => c.id).includes(cell.id))
+
     //移动组节点位置
-    group.translate(-dx / (tabs.length + 1), 0)
-    group.translate(prePos.x - (dx / (tabs.length + 1)) * (layer - 1), prePos.y)
+    const dx = graph.getGraphArea().width;
+    groupNode.translate(-dx / (tabs.length + 1), 0)
+    groupNode.translate(prePos.x - (dx / (tabs.length + 1)) * (layer - 1), prePos.y)
 
     //反向平移画布
-    graph!.translate(dx / (tabs.length + 1), 0)
+    graph.translate(dx / (tabs.length + 1), 0)
 
     //内部元素隐藏
     innerCells.forEach((cell: Cell) => {
 
       cell.hide()
-      // const prePos = cell.getProp().previousPosition
-      // if (tabs.length > 1) {
-      //   if (cell.isNode()) {
-      //     cell.prop("position", { x: prePos.x - (dx / (tabs.length + 1)) * (layer - 1), y: prePos.y })
-      //   }
-      // } else {
-      //   if (cell.isNode() && cell.shape !== CustomShape.GROUP_PROCESS) {
-      //     cell.prop("position", { x: prePos.x - (dx / (tabs.length + 1)) * (layer - 1), y: prePos.y })
-      //   }
-      // }
 
     });
-    console.log(group.getDescendants(),"getDescendants");
+    console.log(groupNode.getDescendants(),"getDescendants");
 
-    group.getDescendants().forEach(cell => {
+    groupNode.getDescendants().forEach(cell => {
       if (cell.isNode() ) {
         cell.prop("position", { x: prePos.x - (dx / (tabs.length + 1)) * (layer - 1), y: prePos.y })
       }
@@ -546,16 +546,20 @@ const LeftEditor = memo(() => {
     if (activeKey === 0) {
       graph?.center()
     }
-    dispatch(removeGraphTabs(currentIndex))
+    dispatch(removeGraphTabs(currentLayer))
     dispatch(addActiveKey(-1))
   }
   const getSubprocess = () => {
-    if (tabs.length !== 0) {
-      return tabs.map((tab: GroupTabItem) => {
-        return <Breadcrumb.Item onClick={() => (tabClick(tab.layer))} key={tab.layer}>{`subprocess${tab.layer - 1}`}<CaretRightOutlined /></Breadcrumb.Item>
-      })
+    if (tabs.length === 0) {
+      return
     }
 
+    return tabs.map((tab: GroupTabItem) =>
+      <Breadcrumb.Item onClick={() => (tabClick(tab.layer))} key={tab.layer}>
+        {`subprocess${tab.layer - 1}`}
+        <CaretRightOutlined/>
+      </Breadcrumb.Item>
+    )
   }
 
 

@@ -332,42 +332,31 @@ export const initGraph = (
     }
   })
 
-  graph.on('node:dblclick', ({ node, e, view }) => {
-    // const isNode = cell.isNode();
-    // const name = cell.isNode() ? 'node-editor' : 'edge-editor';
-    // cell.removeTool(name);
-    // cell.addTools({
-    //   name,
-    //   args: {
-    //     event: e,
-    //     attrs: {
-    //       backgroundColor: isNode ? '#EFF4FF' : '#FFF',
-    //     },
-    //   },
-    // });
+  function shrinkGroupNode(node: Node<Node.Properties>) {
     if (node.shape !== CustomShape.GROUP_PROCESS) {
       return;
     }
+
     //保存每一次平移时当前画布中组节点内外的cells
-    let innerCells: Cell[] = []
-    let outterCells: Cell[] = []
-    innerCells = node.getChildren()!;
+    let innerCells = node.getChildren()!;
+
+    let outerCells: Cell[] = []
     const activeKey = store.getState().home.activeKey
-    const tabsaved = store.getState().home.graphTabs
+    const tabSaved = store.getState().home.graphTabs
     if (!activeKey) {
       const cells = graph.getCells();
-      outterCells = cells.filter(cell => !innerCells.some(inCell => inCell.id === cell.id))
+      outerCells = cells.filter(cell => !innerCells.some(inCell => inCell.id === cell.id))
     } else {
-      const cells = tabsaved[activeKey - 1].innerCells
+      const cells = tabSaved[activeKey - 1].innerCells
 
-      outterCells = cells.filter(cell => !innerCells.some(inCell => inCell.id === cell.id))
-      tabsaved[activeKey - 1].innerCells.push(node)
-      outterCells.push(graph.getCellById(tabsaved[activeKey - 1].groupCellId))
-      outterCells.push(node)
+      outerCells = cells.filter(cell => !innerCells.some(inCell => inCell.id === cell.id))
+      tabSaved[activeKey - 1].innerCells.push(node)
+      outerCells.push(graph.getCellById(tabSaved[activeKey - 1].groupCellId))
+      outerCells.push(node)
 
     }
 
-    let incomEdegs = graph?.getIncomingEdges(node)
+    let incomeEdges = graph?.getIncomingEdges(node)
     let outEdges = graph?.getOutgoingEdges(node)
     let innerInputPorts = node.getPortsByGroup("innerInputs")
     let innerOutputPorts = node.getPortsByGroup("innerOutputs")
@@ -377,33 +366,33 @@ export const initGraph = (
         if (innerOutputPorts.some(port => port.id === sourcePortId)) {
           innerCells.push(edge);
         } else {
-          outterCells.push(edge)
+          outerCells.push(edge)
         }
       }
     }
     if (innerInputPorts.length > 0) {
-      for (let edge of incomEdegs!) {
+      for (let edge of incomeEdges!) {
         const targetPortId = edge.getTargetPortId()
         if (innerInputPorts.some(port => port.id === targetPortId)) {
 
           innerCells.push(edge);
         } else {
-          outterCells.push(edge)
+          outerCells.push(edge)
         }
       }
     }
-    outterCells = outterCells.filter(outCell =>
+    outerCells = outerCells.filter(outCell =>
       !innerCells.some(innerCell => innerCell.id === outCell.id)
     )
 
-    console.log(innerCells, outterCells, "inner,outter");
+    console.log(innerCells, outerCells, "inner,outer");
 
-    //设置当前key    
+    //设置当前key
     dispatch(addActiveKey(1))
     //新增导航
-    dispatch(addGraphTabs({ groupCellId: node.id, layer: 1, innerCells, outterCells }))
+    dispatch(addGraphTabs({groupCellId: node.id, layer: 1, innerCells, outerCells: outerCells}))
     //将组节点外部的节点全部隐藏
-    outterCells.forEach(cell => {
+    outerCells.forEach(cell => {
       cell.hide()
     })
 
@@ -420,7 +409,7 @@ export const initGraph = (
     node.toBack();
     //隐藏组节点
     node.show();
-    node.setAttrs({ fo: { visibility: "hidden" } })
+    node.setAttrs({fo: {visibility: "hidden"}})
     graph.cleanSelection();
     //将隐藏的节点设置为不可选
     graph.setSelectionFilter((cell) => {
@@ -431,9 +420,13 @@ export const initGraph = (
       //将节点位移到和之前对应的地方
       if (item.isNode()) {
         const prePos = item.getProp().previousPosition
-        item.prop("position", { x: dx / tabs[tabs.length - 1].layer + prePos.x, y: prePos.y })
+        item.prop("position", {x: dx / tabs[tabs.length - 1].layer + prePos.x, y: prePos.y})
       }
     })
+  }
+
+  graph.on('node:dblclick', ({ node, e, view }) => {
+    shrinkGroupNode(node);
   });
 
   graph.on("edge:click", ({ edge }) => {
@@ -441,11 +434,6 @@ export const initGraph = (
 
   })
 
-  // graph.on("node:port:mousedown",({node,port})=>{
-  //   node.setPortProp(port!,"attrs/circle",{
-  //     r:8,
-  //   })
-  // })
   dispatch(changeGraph(graph));
   return graph;
 };

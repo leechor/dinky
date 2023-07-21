@@ -63,7 +63,7 @@ interface GraphEditorData {
   unSelectedCellIds: UnselectedCell[]
   activeKey: number,
   position: Position,
-  verifyOperDatas: []
+  verifyOperatorData: []
 
 }
 const initialState: GraphEditorData = {
@@ -85,7 +85,7 @@ const initialState: GraphEditorData = {
   unSelectedCellIds: [],
   activeKey: 0,
   position: { x: 0, y: 0 },
-  verifyOperDatas: [],
+  verifyOperatorData: [],
 
 }
 const homeSlice = createSlice({
@@ -135,7 +135,7 @@ const homeSlice = createSlice({
         layer: length ? state.graphTabs[length - 1].layer + payload.layer : payload.layer,
         innerCells: payload.innerCells,
         groupCellId: payload.groupCellId,
-        outterCells: payload.outterCells
+        outerCells: payload.outterCells
       }
       state.graphTabs = [...state.graphTabs, tabItem]
     },
