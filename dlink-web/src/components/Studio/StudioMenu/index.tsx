@@ -83,10 +83,11 @@ import StudioTabs from '@/components/Studio/StudioTabs';
 import { isDeletedTask, JOB_LIFE_CYCLE } from '@/components/Common/JobLifeCycle';
 import DolphinPush from '@/components/Studio/StudioMenu/DolphinPush';
 import { l } from '@/utils/intl';
-import { useAppSelector } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
+import { useAppSelector, useAppDispatch } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
 import { JSONEditor } from '@json-editor/json-editor';
 import localcache from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/localStorage"
 import { Graph } from '@antv/x6';
+import verifyOperator from '../StudioGraphEdit/GraphEditor/utils/verifyOperator'; 
 
 const StudioMenu = (props: any) => {
   const {
@@ -99,6 +100,7 @@ const StudioMenu = (props: any) => {
     refs,
     dispatch,
     currentSession,
+    verifyOperDatas
   } = props;
   const [modalVisible, handleModalVisible] = useState<boolean>(false);
   const [exportModalVisible, handleExportModalVisible] = useState<boolean>(false);
@@ -144,12 +146,16 @@ const StudioMenu = (props: any) => {
     editor: state.home.editor
   }));
 
+
   useEffect(() => {
     document.addEventListener('keydown', onKeyDown);
+    verifyOperator(verifyOperDatas, graph)
     return () => {
       document.removeEventListener('keydown', onKeyDown);
     };
-  }, [current]);
+
+
+  }, [current, verifyOperDatas]);
 
   const execute = () => {
     if (!isSql(current.task.dialect) && !isOnline(current.task.type)) {
@@ -372,13 +378,12 @@ const StudioMenu = (props: any) => {
   };
 
   const saveSqlAndSettingToTask = () => {
-
+    
     //校验
     if (current.task.dialect !== "FlinkSql") {
       if (editor instanceof JSONEditor<any>) {
         const errors = editor.validate()
         if (errors.length) {
-          console.log(errors, "errors")
           let errmsg = ""
           errors.forEach(error => {
             errmsg += error.message
@@ -968,6 +973,7 @@ export default connect(
     tabs: Studio.tabs,
     refs: Studio.refs,
     currentSession: Studio.currentSession,
+    verifyOperDatas: Studio.verifyOperDatas
   }),
   mapDispatchToProps,
 )(StudioMenu);

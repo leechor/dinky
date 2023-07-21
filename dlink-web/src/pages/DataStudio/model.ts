@@ -195,6 +195,7 @@ export type StateType = {
   refs?: {
     history: any;
   };
+  verifyOperDatas?: any[]
 };
 
 export type ModelType = {
@@ -264,15 +265,23 @@ const Model: ModelType = {
     refs: {
       history: {},
     },
+    verifyOperDatas: []
   },
 
   effects: {
     *saveTask({ payload }, { call, put }) {
-      
+
       const para = payload;
       para.configJson = JSON.stringify(payload.config);
       if (para.dialect == 'GraphSql') {
-        yield call(handleAddOrUpdate, 'api/zdpx', para);
+        const datas  = yield call(handleAddOrUpdate, 'api/zdpx', para);
+
+        yield put({
+          type: 'saveVerifyOperDatas',
+          payload: {
+            verifyOperDatas: datas || []
+          }
+        });
       } else {
         yield call(handleAddOrUpdate, 'api/task', para);
       }
@@ -280,6 +289,8 @@ const Model: ModelType = {
         type: 'saveTaskData',
         payload,
       });
+
+
     },
   },
 
@@ -309,7 +320,7 @@ const Model: ModelType = {
       };
     },
     saveSql(state, { payload }) {
-      
+
       const newTabs = state.tabs;
       let newCurrent = state.current;
       newCurrent.value = payload;
@@ -325,7 +336,7 @@ const Model: ModelType = {
         tabs: { ...newTabs },
       };
     },
-    saveGraph(state, { payload }) {},
+    saveGraph(state, { payload }) { },
     saveCurrentPath(state, { payload }) {
       return {
         ...state,
@@ -505,6 +516,10 @@ const Model: ModelType = {
         current: { ...newCurrent },
         tabs: { ...newTabs },
       };
+    },
+    saveVerifyOperDatas(state, { payload }) {
+      
+      return { ...state, ...payload }
     },
     saveSession(state, { payload }) {
       return {
