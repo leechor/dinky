@@ -53,7 +53,7 @@ import lombok.extern.slf4j.Slf4j;
 /** */
 @Slf4j
 @Service
-public class TaskTaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScriptMapper, FlowGraph>
+public class TaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScriptMapper, FlowGraph>
         implements TaskFlowGraphService {
 
     private final TaskService taskService;
@@ -63,7 +63,7 @@ public class TaskTaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScri
 
     private final StudioServiceImpl studioServiceImpl;
 
-    public TaskTaskFlowGraphServiceImpl(TaskService taskService, StatementService statementService, FlowGraphScriptMapper flowGraphScriptMapper, StudioServiceImpl studioServiceImpl) {
+    public TaskFlowGraphServiceImpl(TaskService taskService, StatementService statementService, FlowGraphScriptMapper flowGraphScriptMapper, StudioServiceImpl studioServiceImpl) {
         this.taskService = taskService;
         this.statementService=statementService;
         this.flowGraphScriptMapper = flowGraphScriptMapper;

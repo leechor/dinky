@@ -49,10 +49,13 @@ export type Settings = {
   flink: BaseConfigProperties[];
   maven: BaseConfigProperties[];
   ldap: BaseConfigProperties[];
+  metrics: BaseConfigProperties[];
+  resource: BaseConfigProperties[];
 }
 export type BaseConfigProperties = {
   key: string;
   value: any;
   note: string;
   frontType: string;
+  example: string[]
 }

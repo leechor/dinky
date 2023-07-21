@@ -17,7 +17,7 @@
 
 import styled from "styled-components";
 
-export const DataSourceAction = styled.div`
+export const DataAction = styled.div`
   display: flex !important;
   justify-content: space-between;
   margin-left: 2vw;
@@ -41,4 +41,28 @@ export const StartButton = styled.div`
   font-size: large;
   z-index: 2;
   top: 50%;
+`;
+
+
+export const TagAlignCenter = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+`;
+export const TagAlignLeft = styled.div`
+  display: flex;
+  height: 100%;
+  justify-content: left;
+  align-items: center;
+`;
+
+export const FlexCenterDiv = styled.div`
+  display: flex;
+  height: 100%;
+  justify-content: left;
+  align-items: center;
+`;
+export const Title = styled.div`
+  font-size: 16px;
 `;

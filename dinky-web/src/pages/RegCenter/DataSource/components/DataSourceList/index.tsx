@@ -37,7 +37,7 @@ import {renderDBIcon} from '@/pages/RegCenter/DataSource/components/function';
 import {EnableSwitchBtn} from '@/components/CallBackButton/EnableSwitchBtn';
 import {EditBtn} from '@/components/CallBackButton/EditBtn';
 import {NormalDeleteBtn} from '@/components/CallBackButton/NormalDeleteBtn';
-import {DataSourceAction} from '@/components/StyledComponents';
+import {DataAction} from '@/components/StyledComponents';
 import DataSourceDetail from '@/pages/RegCenter/DataSource/components/DataSourceDetail';
 import {WarningMessage} from '@/utils/messages';
 import {useNavigate} from '@@/exports';
@@ -60,7 +60,7 @@ const DataSourceTable = () => {
    * execute query  list
    * set   list
    */
-  const querDataSourceList = async () => {
+  const queryDataSourceList = async () => {
     await queryList(API_CONSTANTS.DATASOURCE).then(res => {
       setDataSource(res.data);
     });
@@ -73,7 +73,7 @@ const DataSourceTable = () => {
   const executeAndCallbackRefresh = async (callback: () => void) => {
     await setLoading(true);
     await callback();
-    await querDataSourceList();
+    await queryDataSourceList();
     await setLoading(false);
   };
 
@@ -146,7 +146,7 @@ const DataSourceTable = () => {
    * query  list
    */
   useEffect(() => {
-    querDataSourceList();
+    queryDataSourceList();
   }, []);
 
   /**
@@ -239,7 +239,7 @@ const DataSourceTable = () => {
    */
   const renderDataSource = dataSource.map((item) => ({
     subTitle: renderDataSourceSubTitle(item),
-    actions: <DataSourceAction>{renderDataSourceActionButton(item)}</DataSourceAction>,
+    actions: <DataAction>{renderDataSourceActionButton(item)}</DataAction>,
     avatar: <Space onClick={() => enterDetailPageClickHandler(item)}>{renderDBIcon(item.type, 60)}</Space>,
     content: renderDataSourceContent(item),
     key: item.id,
