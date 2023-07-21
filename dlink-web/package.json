@@ -80,6 +80,8 @@
     "@logicflow/core": "^1.2.3",
     "@logicflow/extension": "^1.2.3",
     "@reduxjs/toolkit": "^1.9.5",
+    "@tarekraafat/autocomplete.js": "^10.2.7",
+    "@trevoreyre/autocomplete-js": "^2.4.1",
     "@types/lodash.isequal": "^4.5.5",
     "@umijs/openapi": "^1.1.14",
     "@umijs/plugin-openapi": "^1.2.0",

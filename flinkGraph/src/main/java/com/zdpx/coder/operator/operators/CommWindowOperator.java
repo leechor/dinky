@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
  * 1.4 分组聚合
  * 1.5 OVER聚合
  */
-
 public class CommWindowOperator extends Operator {
 
     public static final String TEMPLATE =
@@ -141,7 +140,9 @@ public class CommWindowOperator extends Operator {
 
     /**
      * 校验内容：
-     * 输入字段名拼写错误
+     * 输出字段名拼写错误
+     * order、group[] 字段存在
+     * 滚动 滑动 累计窗口descriptor 需要时间属性
      */
     @Override
     protected void generateCheckInformation(Map<String, Object> map) {
@@ -149,6 +150,7 @@ public class CommWindowOperator extends Operator {
         model.setOperatorId(map.get(ID).toString());
         model.setColor(GREEN);
         model.setTableName(map.get(TABLE_NAME).toString());
+        List<String> edge = new ArrayList<>();
 
         List<String> list = new ArrayList<>();
         Map<String, List<String>> portInformation = new HashMap<>();
@@ -159,20 +161,80 @@ public class CommWindowOperator extends Operator {
         List<Map<String, String>> config = (List<Map<String, String>>) map.get(CONFIG);
         List<String> inputName = config.stream().map(item -> item.get(NAME)).collect(Collectors.toList());
 
+        boolean outPut = true;
+
         for(FieldFunction column : columns){
             for(int i=0;i<inputName.size();i++){
                 if(column.getOutName().equals(inputName.get(i))){
-                    break;
+                    outPut=false;
                 }
-                if(i==inputName.size()-1){
+                if(i==inputName.size()-1&&outPut){
                     list.add("算子输入不包含该字段, 未匹配的字段名： "+ column.getOutName());
-                    model.setColor(RED);
                 }
             }
         }
 
-        portInformation.put(inputPortObject.getName(),list);
-        model.setPortInformation(portInformation);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> group = (Map<String, Object>)map.get(GROUP);
+        List<String> orderColumn = null;
+        if(map.get(ORDER_BY)!=null){
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> order = (List<Map<String, Object>>)map.get(ORDER_BY);
+            orderColumn = order.stream().map(i -> i.get("order").toString()).collect(Collectors.toList());
+        }
+
+
+        boolean groupFlag = true;
+        int orderFlag=0;
+        for(String s:inputName){
+            if(map.get(GROUP)!=null&&s.equals(map.get(GROUP))){
+                if(group.get("aggregation").equals("group")&&group.get(COLUMN).equals(s)){
+                    groupFlag=false;
+                }
+            }
+            if(orderColumn!=null){
+                for(String col:orderColumn){
+                    if(col.equals(s)){
+                        orderFlag++;
+                    }
+                }
+            }
+        }
+        if(groupFlag){
+            list.add("该算子输入字段中不包含 group 定义字段，请检查字段名称");
+        }
+        if(orderColumn!=null&&orderFlag!=orderColumn.size()){
+            list.add("order by 中存在算子输入未定义的字段，请检查字段名称");
+        }
+
+        boolean windowFlag=true;
+        List<Column> inputColumns = ((TableInfo) getInputPorts().get(INPUT_0).getConnection().getFromPort().getPseudoData()).getColumns();
+        List<Column> time = inputColumns.stream().filter(item -> item.getType().contains("TIME")).collect(Collectors.toList());
+        if(map.get(WINDOW)!=null){
+            if(time.isEmpty()){
+                list.add("该算子使用了开窗函数，输入需要包含时间属性字段");
+            }else{
+                @SuppressWarnings("unchecked")
+                Map<String, Object> window = (Map<String, Object>) map.get(WINDOW);
+                String descriptor = window.get("descriptor").toString();
+                for(Column c:time){
+                    if(c.getName().equals(descriptor)&&c.getType().contains("TIME")){
+                        windowFlag=false;
+                    }
+                }
+            }
+            if(windowFlag){
+                list.add("该算子使用了开窗函数，descriptor需要指定输入中的时间属性字段");
+            }
+        }
+
+        if(!list.isEmpty()){
+            model.setColor(RED);
+            edge.add(getInputPorts().get(INPUT_0).getConnection().getId());
+            model.setEdge(edge);
+            portInformation.put(inputPortObject.getName(),list);
+            model.setPortInformation(portInformation);
+        }
         this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
     }
 

@@ -26,7 +26,17 @@
             "orderBy": {
               "type": "string",
               "minLength": 1,
-              "description": "在窗口内，对事件时间进行排序"
+              "description": "在窗口内，对事件时间进行排序",
+              "format": "autoinput",
+              "autoinput": {
+                  "name": "my-autoComplete",
+                  "function": {
+                    "name": "getFields",
+                    "args": [
+                      "input"
+                    ]
+                }
+              }
             },
             "outPutMode": {
               "type":"string",

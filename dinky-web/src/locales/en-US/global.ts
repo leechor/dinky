@@ -18,6 +18,7 @@
  */
 
 export default {
+  'global.max':'max',
   'button.create': 'Create',
   'button.close': 'Close',
   'button.confirm': 'Confirm',
@@ -76,6 +77,8 @@ export default {
   'right.menu.exportJson': 'Export JSON',
   'right.menu.importJson': 'Import JSON',
   'right.menu.rename': 'Rename',
+  'right.menu.refresh': 'Refresh',
+  'right.menu.createFolder': 'Create Folder',
   'right.menu.copy': 'Copy',
   'right.menu.cut': 'Cut',
   'right.menu.paste': 'Paste',
@@ -102,6 +105,7 @@ export default {
   'global.time.millisecond': 'ms ',
 
   'global.stay.tuned': 'Stay tuned',
+  'global.mini': 'Mini Size',
 
   'global.table.operate': 'Operation',
   'global.table.config': 'Config',
@@ -130,11 +134,11 @@ export default {
   'global.table.status.abnormal': 'Abnormal',
 
   'global.table.jobname': 'Job Name',
-  'global.table.jobid': 'Job Id',
-  'global.table.taskid': 'Task Id',
   'global.table.lifecycle': 'Life Cycle',
   'global.table.lifecycle.all': 'All',
   'global.table.lifecycle.dev': 'Develop',
+  'global.table.execmode.batch': 'Batch Mode',
+  'global.table.execmode.streaming': 'Stream Mode',
   'global.table.lifecycle.publish': 'Publish',
   'global.table.lifecycle.online': 'Online',
   'global.table.lifecycle.unknown': 'Unknown',
@@ -164,6 +168,8 @@ export default {
 
   'global.item': 'Pieces',
   'global.bout': 'Times',
+  'global.size': ' Size: {size}',
+
 
   'global.week.sunday': 'Sunday',
   'global.week.monday': 'Monday',

@@ -74,6 +74,13 @@ export default [
         hideInMenu: true,
         component: './DevOps',
       },
+      {
+        path: '/devops/job-detail',
+        name: 'job-detail',
+        hideInMenu: true,
+        component: './DevOps/JobDetail',
+      },
+
     ],
   },
   {
@@ -99,7 +106,7 @@ export default [
           {
             path: '/registration/cluster/config',
             name: 'cluster-config',
-            // component: './RegistrationCenter/ClusterManage/ClusterConfiguration',
+            component: './RegCenter/Cluster/Configuration',
           },
         ],
       },

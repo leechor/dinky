@@ -126,9 +126,26 @@ public abstract class Operator extends Node implements Runnable {
             validParameters();
             generateUdfFunctionByInner();
             Map<String, Object> map = formatOperatorParameter();//格式化参数信息
-            generateCheckInformation(map);//生成校验信息相关逻辑
+            if(checkOrNot()){
+                generateCheckInformation(map);//生成校验信息相关逻辑
+            }
             execute(map);//生成sql相关逻辑
         }
+    }
+
+    //预览功能不走算子校验
+    protected boolean checkOrNot(){
+        for(Map.Entry<String, InputPort<? extends PseudoData<?>>> in : getInputPorts().entrySet()){
+            if(in.getValue().getConnection()==null){
+                return false;
+            }
+        }
+        for(Map.Entry<String, OutputPort<? extends PseudoData<?>>> in : getOutputPorts().entrySet()){
+            if(in.getValue().getConnection()==null){
+                return false;
+            }
+        }
+        return true;
     }
 
     protected void registerUdfFunctions(List<FieldFunction> fieldFunctions) {
@@ -383,9 +400,12 @@ public abstract class Operator extends Node implements Runnable {
         List<Map<String, Object>> input = new ArrayList<>();
         for (Map<String, List<Map<String, Object>>> map : config) {
             for (Map.Entry<String, List<Map<String, Object>>> m2 : map.entrySet()) {
+                String[] split = m2.getKey().split("&");
+                String tableName = split[split.length-1];
                 List<Map<String, Object>> value = m2.getValue();
                 for (Map<String, Object> l : value) {
                     if ((boolean) l.get(FLAG)) {
+                        l.put(TABLE_NAME,tableName);
                         input.add(l);
                     }
                 }
@@ -393,7 +413,7 @@ public abstract class Operator extends Node implements Runnable {
         }
         //删除没有勾选的字段
         @SuppressWarnings("unchecked")
-        List<Map<String, Object>> output = (List<Map<String, Object>>) dataModel.get("columns");
+        List<Map<String, Object>> output = (List<Map<String, Object>>) dataModel.get(COLUMNS);
         for (Map<String, Object> s : output) {
             if (!(boolean) s.get(FLAG)) {
                 output.remove(s);

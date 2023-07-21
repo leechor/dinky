@@ -17,31 +17,21 @@
  *
  */
 
-package org.dinky.data.model;
+package org.dinky.configure.schedule;
 
-import java.util.Map;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
-import lombok.Getter;
-import lombok.Setter;
+@Configuration
+public class ScheduledConfig {
 
-/** @since */
-@Getter
-@Setter
-public class FlinkClusterConfiguration {
-    private Type type;
-    private String hadoopConfigPath;
-    private String flinkConfigPath;
-    private String flinkLibPath;
-    private String userJarPath;
-    private String flinkVersion;
-
-    Map<String, String> flinkConfig;
-    Map<String, String> kubernetesConfig;
-
-    public enum Type {
-        //
-        Yarn,
-        Kubernetes,
-        KubernetesOperator;
+    @Bean
+    public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
+        ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
+        threadPoolTaskScheduler.setPoolSize(10);
+        threadPoolTaskScheduler.setThreadNamePrefix("scheduler-");
+        threadPoolTaskScheduler.setRemoveOnCancelPolicy(true);
+        return threadPoolTaskScheduler;
     }
 }

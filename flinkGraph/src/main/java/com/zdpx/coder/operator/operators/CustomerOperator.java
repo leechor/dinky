@@ -37,7 +37,7 @@ public class CustomerOperator extends Operator {
     public static final String NAME = "name";
     public static final String FIELD_FUNCTIONS = "fieldFunctions";
     public static final String OUT_PUT_FIELD_NAME = "outPutFieldName";
-    public static final String FIELD_NAME = "ieldName";
+    public static final String FIELD_NAME = "fieldName";
 
     @Override
     protected void initialize() {

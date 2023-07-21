@@ -20,4 +20,6 @@ public class CheckInformationModel {
 
     private List<String> operatorErrorMsg; //算子校验异常
 
+    private List<String> edge; //报错的连线id
+
 }

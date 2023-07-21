@@ -24,9 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.zdpx.coder.graph.CheckInformationModel;
-import com.zdpx.coder.graph.OutputPort;
 import com.zdpx.coder.graph.OutputPortObject;
-import com.zdpx.coder.graph.PseudoData;
 import com.zdpx.coder.operator.Operator;
 import com.zdpx.coder.operator.TableInfo;
 
@@ -62,7 +60,7 @@ public class DuplicateOperator extends Operator {
     }
 
     /**
-     * 校验内容：
+     * 校验内容： 无
      */
     @Override
     protected void generateCheckInformation(Map<String, Object> map) {
@@ -84,14 +82,14 @@ public class DuplicateOperator extends Operator {
 
         //从config中获取输出字段,数组的长度只可能是1
         @SuppressWarnings("unchecked")
-        List<Map<String, Object>> firstParameterMap = (List<Map<String, Object>>) getFirstParameterMap().get(CONFIG);
+        Map<String, Object> firstParameterMap = ((List<Map<String, Object>>) getFirstParameterMap().get(CONFIG)).get(0);
 
         getOutputPorts()
                 .values()
                 .forEach(t -> {
                     @SuppressWarnings("unchecked")
-                    List<Map<String, Object>> count = (List<Map<String, Object>>) (firstParameterMap.get(0).get(t.getName()));
-                    ((OutputPortObject<TableInfo>) t).setPseudoData(assembleNewTableInfo(pseudoData, count));
+                    List<Map<String, Object>> o = (List<Map<String, Object>>)firstParameterMap.get(t.getName());
+                    ((OutputPortObject<TableInfo>) t).setPseudoData(assembleNewTableInfo(pseudoData, o));
                 });
     }
 }

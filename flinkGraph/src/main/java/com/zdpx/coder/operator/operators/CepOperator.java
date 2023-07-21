@@ -197,6 +197,7 @@ public class CepOperator extends Operator {
 
         parameterMap.put(TABLE_INFO, tableInfo);
         parameterMap.put(ID, parameters.get(ID));
+        parameterMap.put(CONFIG,formatProcessing(parameters));
 
         return parameterMap;
     }
@@ -207,7 +208,7 @@ public class CepOperator extends Operator {
      * 输入节点是否包含时间属性字段
      * ORDER BY需要为时间属性字段
      * 使用了未定义的事件
-     * todo partition、orderBy不属于输入参数
+     * partition、orderBy不属于输入参数
      */
     @Override
     protected void generateCheckInformation(Map<String, Object> map) {
@@ -215,8 +216,8 @@ public class CepOperator extends Operator {
         model.setOperatorId(map.get(ID).toString());
         model.setColor(GREEN);
         model.setTableName(map.get(INPUT_TABLE_NAME).toString());
+        List<String> edge = new ArrayList<>();
 
-        //输入节点校验
         Map<String, List<String>> portInformation = new HashMap<>();
         List<String> list = new ArrayList<>();
         List<Column> collect = ((TableInfo) map.get(TABLE_INFO)).getColumns().stream()
@@ -224,12 +225,10 @@ public class CepOperator extends Operator {
                  .filter(item -> item.getType().contains("TIMESTAMP")).collect(Collectors.toList());
         if (collect.isEmpty()) {
             list.add("CEP算子入参需要包含时间属性字段，类型包括TIMESTAMP(3)、TIMESTAMP_LTZ(3)等");
-            model.setColor(RED);
         }else{
             Column column = collect.stream().filter(item -> item.getName().equals(map.get(ORDER_BY).toString())).findFirst().orElse(null);
             if (column == null) {
                 list.add("ORDER BY 对应的字段，必须是时间属性字段");
-                model.setColor(RED);
             }
         }
 
@@ -239,11 +238,26 @@ public class CepOperator extends Operator {
         String s = defines.stream().filter(item -> !patterns.contains(item.split(" AS")[0])).findFirst().orElse(null);
         if (s != null) {
             list.add("DEFINE 使用了 PATTERN 中未声明的事件");
-            model.setColor(RED);
         }
 
-        portInformation.put(INPUT_0,list);
-        model.setPortInformation(portInformation);
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> config = (List<Map<String, Object>>)map.get(CONFIG);
+        Object par = config.stream().filter(item -> item.get(NAME).equals(map.get(PARTITION))).findFirst().orElse(null);
+        Object ord = config.stream().filter(item -> item.get(NAME).equals(map.get(ORDER_BY))).findFirst().orElse(null);
+        if(par==null){
+            list.add("输入连接桩中未寻找到 PARTITION 中定义的字段");
+        }
+        if(ord==null){
+            list.add("输入连接桩中未寻找到 ORDER_BY 中定义的字段");
+        }
+
+        if(!list.isEmpty()){
+            model.setColor(RED);
+            edge.add(getInputPorts().get(INPUT_0).getConnection().getId());
+            model.setEdge(edge);
+            portInformation.put(INPUT_0,list);
+            model.setPortInformation(portInformation);
+        }
         this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
     }
 
@@ -260,8 +274,10 @@ public class CepOperator extends Operator {
         TableInfo tableInfo = (TableInfo) parameterMap.get(TABLE_INFO);
         if (parameterMap.get(TABLE_INFO) != null) {
             Column first = tableInfo.getColumns().stream().filter(t -> t.getName().equals(parameterMap.get(PARTITION))).findFirst().orElse(null);
-            columns.removeIf(f -> f.getName().equals(first.getName()));//此处不用判空
-            columns.add(first);
+            if(first!=null){
+                columns.removeIf(f -> f.getName().equals(first.getName()));
+                columns.add(first);
+            }
         }
         OperatorUtil.postTableOutput(outputPortObject, parameterMap.get(OUTPUT_TABLE_NAME).toString(), columns);
     }

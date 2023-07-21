@@ -53,9 +53,9 @@ public class TaskFlowGraphController {
         List<CheckInformationModel> msg = taskFlowGraphService.saveOrUpdateTask(task);
         if (!msg.isEmpty()) {
 //            return Result.succeed(msg);
-            return Result.failed("保存完成,未通过校验");
+            return Result.succeed(msg);
         } else {
-            return Result.succeed("保存完成");
+            return Result.succeed("保存成功，并且无报错信息");
         }
     }
 

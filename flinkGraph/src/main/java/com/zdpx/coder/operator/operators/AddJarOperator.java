@@ -57,6 +57,7 @@ public class AddJarOperator extends Operator {
         CheckInformationModel model = new CheckInformationModel();
         model.setOperatorId(map.get(ID).toString());
         model.setColor(GREEN);
+        model.setTableName("ADD JAR");
 
         List<String> msg = new ArrayList<>();
 
@@ -66,16 +67,17 @@ public class AddJarOperator extends Operator {
             File file = new File(s);
             if (!file.exists()) {
                 msg.add(s + " 不存在");
-                model.setColor(RED);
             }
             String[] split = s.split("\\.");
             if (!split[split.length - 1].equals("jar")) {
                 msg.add(s + " 不是一个可添加jar");
-                model.setColor(RED);
             }
         }
 
-        model.setOperatorErrorMsg(msg);
+        if(!msg.isEmpty()){
+            model.setColor(RED);
+            model.setOperatorErrorMsg(msg);
+        }
         this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
     }
 
