@@ -462,7 +462,7 @@ const LeftEditor = memo(() => {
     //一层一层回退（目前递减）
     const graph = graphRef.current;
     //1获取原来形状（拿到回退画布的元素）
-    const { layer, groupCellId, innerCells, outterCells } = tabs[tabs.length - 1]
+    const { layer, groupCellId, innerCells, outerCells: outerCells } = tabs[tabs.length - 1]
     const group = graph?.getCellById(groupCellId) as Node;
     const preSize = group?.getProp().previousSize
     //2将群组节点和内部节点移动到上个位置
@@ -473,7 +473,7 @@ const LeftEditor = memo(() => {
     group?.setAttrs({ fo: { visibility: "visibility" } })
     //显示外部元素(外部可能包含其他组节点，找出其子节点隐藏)
 
-    let otherGroups = outterCells.filter((cell: Cell) => {
+    let otherGroups = outerCells.filter((cell: Cell) => {
       return cell.shape === CustomShape.GROUP_PROCESS && cell.id !== groupCellId
     })
     let innerCellInOther: Cell[] = []
@@ -481,7 +481,7 @@ const LeftEditor = memo(() => {
       otherGroups.forEach((cell: Cell) => {
         let child = cell.getChildren()
         innerCellInOther = [...innerCellInOther, ...child!]
-        let incomEdegs = graph?.getIncomingEdges(cell)
+        let incomingEdges = graph?.getIncomingEdges(cell)
         let outEdges = graph?.getOutgoingEdges(cell)
         let innerInputPorts = (cell as Node).getPortsByGroup("innerInputs")
         let innerOutputPorts = (cell as Node).getPortsByGroup("innerOutputs")
@@ -494,7 +494,7 @@ const LeftEditor = memo(() => {
           }
         }
         if (innerInputPorts.length > 0) {
-          for (let edge of incomEdegs!) {
+          for (let edge of incomingEdges!) {
             const targetPortId = edge.getTargetPortId()
             if (innerInputPorts.some(port => port.id === targetPortId)) {
               innerCellInOther.push(edge);
@@ -503,15 +503,15 @@ const LeftEditor = memo(() => {
         }
       });
     }
-    
-    outterCells.forEach((cell: Cell) => {
+
+    outerCells.forEach((cell: Cell) => {
       cell.show()
     });
     // innerCellInOther.forEach((cell: Cell) => {
     //   cell.hide()
     // })
     //设置外部元素可选
-    graph?.setSelectionFilter(cell => outterCells.map((c: Cell) => c.id).includes(cell.id))
+    graph?.setSelectionFilter(cell => outerCells.map((c: Cell) => c.id).includes(cell.id))
     //移动组节点位置
     group.translate(-dx / (tabs.length + 1), 0)
     group.translate(prePos.x - (dx / (tabs.length + 1)) * (layer - 1), prePos.y)
@@ -536,7 +536,7 @@ const LeftEditor = memo(() => {
 
     });
     console.log(group.getDescendants(),"getDescendants");
-    
+
     group.getDescendants().forEach(cell => {
       if (cell.isNode() ) {
         cell.prop("position", { x: prePos.x - (dx / (tabs.length + 1)) * (layer - 1), y: prePos.y })

@@ -41,7 +41,7 @@ export type GroupTabItem = {
   layer: number,
   innerCells: Cell[],
   groupCellId: string,
-  outterCells: Cell[]
+  outerCells: Cell[]
 }
 
 
@@ -167,7 +167,7 @@ const homeSlice = createSlice({
       state.position = payload
     },
     changeVerifyOperDatas(state, { payload }) {
-      
+
       state.verifyOperDatas = payload
     }
   },
