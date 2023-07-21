@@ -503,12 +503,13 @@ const LeftEditor = memo(() => {
         }
       });
     }
+    
     outterCells.forEach((cell: Cell) => {
       cell.show()
     });
-    innerCellInOther.forEach((cell: Cell) => {
-      cell.hide()
-    })
+    // innerCellInOther.forEach((cell: Cell) => {
+    //   cell.hide()
+    // })
     //设置外部元素可选
     graph?.setSelectionFilter(cell => outterCells.map((c: Cell) => c.id).includes(cell.id))
     //移动组节点位置
@@ -534,6 +535,17 @@ const LeftEditor = memo(() => {
       // }
 
     });
+    console.log(group.getDescendants(),"getDescendants");
+    
+    group.getDescendants().forEach(cell => {
+      if (cell.isNode() ) {
+        cell.prop("position", { x: prePos.x - (dx / (tabs.length + 1)) * (layer - 1), y: prePos.y })
+      }
+    })
+    window.graph = graph;
+    if (activeKey === 0) {
+      graph?.center()
+    }
     dispatch(removeGraphTabs(currentIndex))
     dispatch(addActiveKey(-1))
   }
@@ -559,6 +571,7 @@ const LeftEditor = memo(() => {
         setSelectedNodes,
         dispatch
       );
+      window.graph= graphRef.current
       initMenu(graphRef.current, setShowMenuInfo, changeNode, changePosition);
 
       if (stencilRef.current) {

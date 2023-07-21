@@ -1,3 +1,4 @@
+
 /*
  *
  *  Licensed to the Apache Software Foundation (ASF) under one or more
@@ -21,6 +22,7 @@ import { extend } from 'umi-request';
 import { TableListParams } from '@/components/Common/data';
 import { message } from 'antd';
 import { l } from '@/utils/intl';
+import localcache from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/localStorage';
 
 export const request2 = extend({
   headers: { tenantId: localStorage.getItem('dlink-tenantId') || '' },
@@ -102,14 +104,16 @@ export const handleAddOrUpdate = async (url: string, fields: any) => {
   const tipsTitle = fields.id ? l('app.request.update') : l('app.request.add');
   const hide = message.loading(l('app.request.running') + tipsTitle);
   try {
-    const { code, msg } = await addOrUpdateData(url, { ...fields });
+    const { code, datas, msg } = await addOrUpdateData(url, { ...fields });
+    // localcache.setCache("verifyOperDatas", datas)
     hide();
     if (code == CODE.SUCCESS) {
       message.success(msg);
     } else {
       message.warn(msg);
     }
-    return true;
+    
+    return datas;
   } catch (error) {
     hide();
     message.error(l('app.request.error'));

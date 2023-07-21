@@ -314,11 +314,11 @@ export const initGraph = (
       cell.setZIndex(-1);
     }
     // 在添加的时候将该节点加入到上级画布的innercells
-    // const activeKey = store.getState().home.activeKey
-    // const tabsaved = store.getState().home.graphTabs
-    // if (tabsaved.length) {
-    //   tabsaved[activeKey-1].innerCells.push(cell)
-    // }
+    const activeKey = store.getState().home.activeKey
+    const tabsaved = store.getState().home.graphTabs
+    if (tabsaved.length) {
+      tabsaved[activeKey-1].innerCells.push(cell)
+    }
 
     // updateGraphData(graph);
   });
