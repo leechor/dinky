@@ -8,8 +8,6 @@ import {
   changeGraph,
   addGraphTabs,
   addActiveKey,
-  GroupTabItem,
-
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import store from '../store';
 import React from 'react';
@@ -315,9 +313,9 @@ export const initGraph = (
     }
     // 在添加的时候将该节点加入到上级画布的innercells
     const activeKey = store.getState().home.activeKey
-    const tabsaved = store.getState().home.graphTabs
-    if (tabsaved.length) {
-      tabsaved[activeKey-1].innerCells.push(cell)
+    const tabSaved = store.getState().home.graphTabs
+    if (tabSaved.length) {
+      tabSaved[activeKey-1].innerCells.push(cell)
     }
 
     // updateGraphData(graph);
@@ -332,67 +330,50 @@ export const initGraph = (
     }
   })
 
-  function shrinkGroupNode(node: Node<Node.Properties>) {
+  function extendGroupNode(node: Node<Node.Properties>) {
     if (node.shape !== CustomShape.GROUP_PROCESS) {
       return;
     }
 
-    //保存每一次平移时当前画布中组节点内外的cells
-    let innerCells = node.getChildren()!;
-
-    let outerCells: Cell[] = []
     const activeKey = store.getState().home.activeKey
     const tabSaved = store.getState().home.graphTabs
-    if (!activeKey) {
-      const cells = graph.getCells();
-      outerCells = cells.filter(cell => !innerCells.some(inCell => inCell.id === cell.id))
-    } else {
-      const cells = tabSaved[activeKey - 1].innerCells
-
-      outerCells = cells.filter(cell => !innerCells.some(inCell => inCell.id === cell.id))
+    if (activeKey) {
       tabSaved[activeKey - 1].innerCells.push(node)
-      outerCells.push(graph.getCellById(tabSaved[activeKey - 1].groupCellId))
-      outerCells.push(node)
-
     }
 
-    let incomeEdges = graph?.getIncomingEdges(node)
-    let outEdges = graph?.getOutgoingEdges(node)
-    let innerInputPorts = node.getPortsByGroup("innerInputs")
     let innerOutputPorts = node.getPortsByGroup("innerOutputs")
+    let innerCells = node.getChildren()!;
     if (innerOutputPorts.length > 0) {
-      for (let edge of outEdges!) {
-        const sourcePortId = edge.getSourcePortId()
-        if (innerOutputPorts.some(port => port.id === sourcePortId)) {
-          innerCells.push(edge);
-        } else {
-          outerCells.push(edge)
+      graph?.getOutgoingEdges(node)?.forEach(edge => {
+          const sourcePortId = edge.getSourcePortId()
+          if (innerOutputPorts.some(port => port.id === sourcePortId)) {
+            innerCells.push(edge);
+          }
         }
-      }
+      )
     }
+
+    let innerInputPorts = node.getPortsByGroup("innerInputs")
     if (innerInputPorts.length > 0) {
+      let incomeEdges = graph?.getIncomingEdges(node)
       for (let edge of incomeEdges!) {
         const targetPortId = edge.getTargetPortId()
         if (innerInputPorts.some(port => port.id === targetPortId)) {
 
           innerCells.push(edge);
-        } else {
-          outerCells.push(edge)
         }
       }
     }
-    outerCells = outerCells.filter(outCell =>
-      !innerCells.some(innerCell => innerCell.id === outCell.id)
-    )
 
-    console.log(innerCells, outerCells, "inner,outer");
+
+    console.log(innerCells, "inner");
 
     //设置当前key
     dispatch(addActiveKey(1))
     //新增导航
-    dispatch(addGraphTabs({groupCellId: node.id, layer: 1, innerCells, outerCells: outerCells}))
+    dispatch(addGraphTabs({groupCellId: node.id, layer: 1, innerCells}))
     //将组节点外部的节点全部隐藏
-    outerCells.forEach(cell => {
+    node.getParent()?.children?.filter(cell => cell !== node).forEach(cell => {
       cell.hide()
     })
 
@@ -426,7 +407,7 @@ export const initGraph = (
   }
 
   graph.on('node:dblclick', ({ node, e, view }) => {
-    shrinkGroupNode(node);
+    extendGroupNode(node);
   });
 
   graph.on("edge:click", ({ edge }) => {
