@@ -1,13 +1,13 @@
-import { Cell, Dom, Edge, Graph, Model, Node, Shape } from '@antv/x6';
+import {Cell, Dom, Edge, Graph, Model, Node, Shape} from '@antv/x6';
 import loadPlugin from './plugin';
-import { removeBtnNodeRegister, removeBtnEdgeRegister } from './remove-btn-register';
+import {removeBtnEdgeRegister, removeBtnNodeRegister} from './remove-btn-register';
 import CustomShape from './cons';
 import {
+  addActiveKey,
+  addGraphTabs,
   changeCurrentSelectNode,
   changeCurrentSelectNodeName,
   changeGraph,
-  addGraphTabs,
-  addActiveKey,
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import store from '../store';
 import React from 'react';
@@ -48,8 +48,7 @@ export const initGraph = (
       },
       anchor: {
         name: 'orth',
-        args: {
-        }
+        args: {}
       },
       connectionPoint: {
         name: 'anchor',
@@ -83,7 +82,7 @@ export const initGraph = (
       },
 
       // 在移动边的时候判断连接是否有效，如果返回 false，当鼠标放开的时候，不会连接到当前元素，否则会连接到当前元素
-      validateConnection({ sourceMagnet, targetMagnet }) {
+      validateConnection({sourceMagnet, targetMagnet}) {
 
         if (!targetMagnet || !sourceMagnet) return false;
 
@@ -125,7 +124,7 @@ export const initGraph = (
     //  将一个节点拖动到另一个节点中，使其成为另一节点的子节点
     embedding: {
       enabled: true,
-      findParent({ node }) {
+      findParent({node}) {
         return this.getNodes().filter((targetNode) => {
           if (targetNode.shape == 'package') {
             const bbox = node.getBBox();
@@ -171,7 +170,7 @@ export const initGraph = (
 
   }
 
-  graph.on('node:mouseenter', ({ cell }) => {
+  graph.on('node:mouseenter', ({cell}) => {
     if (cell.isNode() && cell.hasPorts()) {
       showAllPorts(true);
     }
@@ -183,13 +182,13 @@ export const initGraph = (
         args: {
           x: 0,
           y: 0,
-          offset: { x: 0, y: 0 },
+          offset: {x: 0, y: 0},
         },
       },
     ]);
   });
 
-  graph.on('node:mouseleave', ({ cell }) => {
+  graph.on('node:mouseleave', ({cell}) => {
     // showAllPorts(false);
 
     //移除删除工具
@@ -197,6 +196,7 @@ export const initGraph = (
   });
 
   const LINE_STOKE_WIDTH = 'line/strokeWidth';
+
   function showEdgePorts(edge: Edge<Edge.Properties>, show: boolean) {
     const visibility = show ? 'visible' : 'hidden';
     const VISIBILITY_PATH = 'attrs/circle/style/visibility';
@@ -204,7 +204,7 @@ export const initGraph = (
     edge.getTargetNode()?.setPortProp(edge.getTargetPortId()!, VISIBILITY_PATH, visibility);
   }
 
-  graph.on('edge:mouseenter', ({ e, view, edge, cell }) => {
+  graph.on('edge:mouseenter', ({e, view, edge, cell}) => {
 
     // edge.attr(LINE_STOKE_WIDTH, 4);
     // showEdgePorts(edge, true);
@@ -218,13 +218,13 @@ export const initGraph = (
       },
     ]);
   });
-  graph.on('edge:mouseleave', ({ e, view, edge, cell }) => {
+  graph.on('edge:mouseleave', ({e, view, edge, cell}) => {
     // edge.setAttrByPath(LINE_STOKE_WIDTH, 2);
     // showEdgePorts(edge, false);
     edge.removeTools();
   });
 
-  graph.on('node:selected', ({ node }) => {
+  graph.on('node:selected', ({node}) => {
     dispatch(changeCurrentSelectNode(node));
     dispatch(changeCurrentSelectNodeName(node.shape));
 
@@ -240,41 +240,42 @@ export const initGraph = (
   });
 
   //右键菜单
-  graph.on('node:contextmenu', ({ cell, e }) => {
+  graph.on('node:contextmenu', ({cell, e}) => {
     const p = graph.clientToGraph(e.clientX, e.clientY);
   });
 
-  graph.on('blank:contextmenu', ({ e }) => {
+  graph.on('blank:contextmenu', ({e}) => {
     const p = graph.clientToGraph(e.clientX, e.clientY);
   });
 
-  graph.on('node:collapse', ({ cell: node }: any) => {
+  graph.on('node:collapse', ({cell: node}: any) => {
     node.toggleCollapse(node.isCollapsed());
   });
 
   //群组大小自适应处理
   let ctrlPressed = false;
-  graph.on('node:embedding', ({ e }: { e: Dom.MouseMoveEvent }) => { });
+  graph.on('node:embedding', ({e}: { e: Dom.MouseMoveEvent }) => {
+  });
 
-  graph.on('node:embedded', ({ node, currentParent }) => {
+  graph.on('node:embedded', ({node, currentParent}) => {
     ctrlPressed = false;
     //设置父节点zindex小于子节点
     currentParent?.toBack();
   });
 
-  graph.on('node:change:size', ({ node, options }) => {
+  graph.on('node:change:size', ({node, options}) => {
     if (options.skipParentHandler) {
       return;
     }
   });
 
-  graph.on('node:change:position', ({ node, options }) => {
+  graph.on('node:change:position', ({node, options}) => {
     if (options.skipParentHandler || ctrlPressed) {
       return;
     }
   });
 
-  graph.on('node:resizing', ({ node }) => {
+  graph.on('node:resizing', ({node}) => {
     node.setAttrs({
       image: {
         width: node.size().width,
@@ -289,12 +290,10 @@ export const initGraph = (
     setSelectedNodes(selectedNodes);
 
 
-
-
   });
 
   //节点/边被选中时触发。
-  graph.on('cell:selected', ({ cell }: { cell: Cell }, options: Model.SetOptions) => {
+  graph.on('cell:selected', ({cell}: { cell: Cell }, options: Model.SetOptions) => {
     //节点被选中时隐藏连接桩
     const ports = container.querySelectorAll('.x6-port-body');
     showPortsOrLabels(ports, false);
@@ -306,111 +305,113 @@ export const initGraph = (
 
   });
 
-  graph.on('cell:added', ({ cell, index, options }) => {
+  graph.on('cell:added', ({cell, index, options}) => {
     //更新表格数据
     if (cell.shape === 'package') {
       cell.setZIndex(-1);
     }
+
     // 在添加的时候将该节点加入到上级画布的innercells
     const activeKey = store.getState().home.activeKey
     const tabSaved = store.getState().home.graphTabs
     if (tabSaved.length) {
-      tabSaved[activeKey-1].innerCells.push(cell)
+      tabSaved[activeKey - 1].innerCells.push(cell)
     }
 
     // updateGraphData(graph);
   });
 
-  graph.on('cell:removed', ({ cell, index, options }) => {
+  graph.on('cell:removed', ({cell, index, options}) => {
     // updateGraphData(graph);
   });
-  graph.on("node:mousemove", ({ node, x, y }) => {
+
+  graph.on("node:mousemove", ({node, x, y}) => {
     if (node.shape === CustomShape.GROUP_PROCESS) {
-      node.prop("previousPosition", node.position({ relative: true }))
+      node.prop("previousPosition", node.position({relative: true}))
     }
   })
 
-  function extendGroupNode(node: Node<Node.Properties>) {
-    if (node.shape !== CustomShape.GROUP_PROCESS) {
+  function extendGroupNode(groupNode: Node<Node.Properties>) {
+    if (groupNode.shape !== CustomShape.GROUP_PROCESS) {
       return;
     }
 
     const activeKey = store.getState().home.activeKey
     const tabSaved = store.getState().home.graphTabs
     if (activeKey) {
-      tabSaved[activeKey - 1].innerCells.push(node)
+      tabSaved[activeKey - 1].innerCells.push(groupNode)
     }
 
-    let innerOutputPorts = node.getPortsByGroup("innerOutputs")
-    let innerCells = node.getChildren()!;
-    if (innerOutputPorts.length > 0) {
-      graph?.getOutgoingEdges(node)?.forEach(edge => {
-          const sourcePortId = edge.getSourcePortId()
-          if (innerOutputPorts.some(port => port.id === sourcePortId)) {
-            innerCells.push(edge);
-          }
-        }
-      )
-    }
+    let innerCells = groupNode.getChildren() ?? [];
 
-    let innerInputPorts = node.getPortsByGroup("innerInputs")
-    if (innerInputPorts.length > 0) {
-      let incomeEdges = graph?.getIncomingEdges(node)
-      for (let edge of incomeEdges!) {
-        const targetPortId = edge.getTargetPortId()
-        if (innerInputPorts.some(port => port.id === targetPortId)) {
+    const innerOutputPorts = groupNode.getPortsByGroup("innerOutputs")
+    graph?.getOutgoingEdges(groupNode)?.filter(edge =>
+      innerOutputPorts.some(port => edge.getSourcePortId() == port.id))
+      .forEach(edge => {
+        innerCells.push(edge)
+      })
 
-          innerCells.push(edge);
-        }
-      }
-    }
-
-
-    console.log(innerCells, "inner");
+    const innerInputPorts = groupNode.getPortsByGroup("innerInputs")
+    graph?.getIncomingEdges(groupNode)?.filter(edge =>
+      innerInputPorts.some(port => edge.getTargetPortId() == port.id))
+      .forEach(edge => {
+        innerCells.push(edge)
+      })
 
     //设置当前key
     dispatch(addActiveKey(1))
+
     //新增导航
-    dispatch(addGraphTabs({groupCellId: node.id, layer: 1, innerCells}))
-    //将组节点外部的节点全部隐藏
-    node.getParent()?.children?.filter(cell => cell !== node).forEach(cell => {
+    dispatch(addGraphTabs({groupCellId: groupNode.id, layer: 1, innerCells}))
+
+    graph.getCells().forEach(cell => {
       cell.hide()
     })
 
-    const tabs = store.getState().home.graphTabs;
-    const dx = graph.getGraphArea().width;
-    const dy = graph.getGraphArea().height;
-    const prePos = node.getProp().previousPosition
-    node.translate(-prePos.x, -prePos.y)
-    node.translate(dx, 0)
-    //反向平移画布
-    graph.translate(-dx / tabs[tabs.length - 1].layer, 0)
-    //放大到画布大小
-    node.resize(dx / tabs[tabs.length - 1].layer, dy)
-    node.toBack();
-    //隐藏组节点
-    node.show();
-    node.setAttrs({fo: {visibility: "hidden"}})
-    graph.cleanSelection();
-    //将隐藏的节点设置为不可选
+    const view = document.querySelector('.x6-graph-scroller-pannable')
+    if (!view) {
+      return
+    }
+
+    const {width, height} = view.getBoundingClientRect()
+    const preGroupNodeSize = groupNode.prop().previousSize
+    groupNode.prop("previousPosition", groupNode.position({relative: true,}))
+    // groupNode.translate(localWidth, 0)
+
+    groupNode.resize(width / 2, height / 2, {direction: 'top-left'});
+    groupNode.resize(width, height, {direction: 'bottom-right'});
+    graph.centerCell(groupNode)
+
+    groupNode.toBack();
+
+    //将隐藏的cell设置为不可选
     graph.setSelectionFilter((cell) => {
       return !!innerCells?.map(c => c.id).includes(cell.id)
     })
+
+    //隐藏组节点, 先显示, 再隐藏, 否则会导致子节点无法显示
+    groupNode.show()
+    // groupNode.setAttrs({fo: {visibility: "hidden"}})
+    graph.cleanSelection();
+
+    const groupNodeCurrentSize = groupNode.size()
     innerCells?.forEach(item => {
-      item.show()
-      //将节点位移到和之前对应的地方
       if (item.isNode()) {
-        const prePos = item.getProp().previousPosition
-        item.prop("position", {x: dx / tabs[tabs.length - 1].layer + prePos.x, y: prePos.y})
+        const previousPosition = item.prop().previousPosition
+        const x = (groupNodeCurrentSize.width - preGroupNodeSize.width) / 2 + previousPosition.x
+        const y = (groupNodeCurrentSize.height - preGroupNodeSize.height) / 2 - previousPosition.y
+        item.setPosition(x, y, {relative: true, deep: true})
       }
+
+      item.show()
     })
   }
 
-  graph.on('node:dblclick', ({ node, e, view }) => {
+  graph.on('node:dblclick', ({node, e, view}) => {
     extendGroupNode(node);
   });
 
-  graph.on("edge:click", ({ edge }) => {
+  graph.on("edge:click", ({edge}) => {
     console.log(edge.id, "edgeid");
 
   })
