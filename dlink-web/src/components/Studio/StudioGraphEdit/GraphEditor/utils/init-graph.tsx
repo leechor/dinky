@@ -11,6 +11,7 @@ import {
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import store from '../store';
 import React from 'react';
+import {getGraphViewSize} from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper";
 
 /**
  *
@@ -360,13 +361,12 @@ export const initGraph = (
     dispatch(addActiveKey(1))
     dispatch(addGraphTabs({groupCellId: groupNode.id, layer: 1, innerCells}))
 
-    const view = document.querySelector('.x6-graph-scroller-pannable')
-    if (!view) {
+    const {width, height} = getGraphViewSize() ?? {width: 0, height: 0}
+    if (!width) {
       return
     }
 
-    const {width, height} = view.getBoundingClientRect()
-    groupNode.setPosition(groupNode.position().x + width, groupNode.position().y + height, {relative: true, deep: true})
+    groupNode.setPosition(groupNode.position().x + width, groupNode.position().y + height, {relative: true, deep: true});
 
     groupNode.resize(width / 2, height / 2, {direction: 'top-left'});
     groupNode.resize(width, height, {direction: 'bottom-right'});
@@ -401,6 +401,10 @@ export const initGraph = (
         item.setPosition(x, y, {relative: true, deep: true})
         console.log(`extendGroupNode: ${item.id}, ${x}, ${y}`)
         item.prop('extendPosition', item.position({relative: true}))
+
+        if (item.shape === CustomShape.GROUP_PROCESS) {
+          item.setAttrs({fo: {visibility: "visible"}})
+        }
       }
 
       item.show()

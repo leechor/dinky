@@ -632,26 +632,23 @@ const LeftEditor = memo(() => {
     groupNode.prop('folderPosition', groupNode.position({relative: true,}))
     groupNode.prop('folderSize', groupNode.size())
 
-    groupNode.setAttrs({fo: {visibility: "visibility"}})
+    groupNode.show()
+    groupNode.setAttrs({fo: {visibility: "visible"}})
 
-    //显示外部元素(外部可能包含其他组节点，找出其子节点隐藏)
     const out = groupNode.parent ?? graph
     const outerCells = (out instanceof Cell ?
       out.getChildren() :
       graph.getCells().filter(cell => !cell.parent)) ?? []
 
-    let otherGroups = outerCells.filter((cell: Cell) => {
-      return cell.shape === CustomShape.GROUP_PROCESS && cell.id !== groupCellId
-    })
-
     //设置外部元素可选
     graph.setSelectionFilter(cell => outerCells.map((c: Cell) => c.id).includes(cell.id))
 
-    outerCells.map((cell: Cell) => {
+    outerCells.forEach((cell: Cell) => {
       cell.show()
+      if (cell.shape == CustomShape.GROUP_PROCESS) {
+        cell.setAttrs({fo: {visibility: "visible"}})
+      }
     });
-
-    otherGroups.forEach(node => node.setAttrs({fo: {visibility: "visibility"}}))
 
     window.graph = graph;
 

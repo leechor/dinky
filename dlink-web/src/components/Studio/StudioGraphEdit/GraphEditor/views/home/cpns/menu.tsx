@@ -21,6 +21,10 @@ import {
 import CustomShape from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
 import {useAppDispatch, useAppSelector} from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
 import {formatDate} from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/math"
+import {
+  convertAbsoluteToRelativePosition,
+  getGraphViewSize
+} from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper";
 
 
 type MenuPropsType = {
@@ -57,6 +61,7 @@ enum NoteTextColor {
   GRAY,
   TRANSPARENT,
 }
+
 
 const NoteTextColorValue: { [key in NoteTextColor]: string } = {
   [NoteTextColor.YELLOW]: "#fcf987",
@@ -323,6 +328,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({top = 0, left = 0, graph, no
     }
   };
 
+
   const createProcess = () => {
     const selectedNodes = graph.getSelectedCells()
       .filter(item => item.isNode())
@@ -332,11 +338,23 @@ export const CustomMenu: FC<MenuPropsType> = memo(({top = 0, left = 0, graph, no
       return
     }
 
-    const groupNode = graph.addNode(createPackageNode(graph));
+    const selectNodeParents = selectedNodes.map(node => node.parent) ?? []
+    let haveSameParent = false
+    if (selectNodeParents.length > 0) {
+      haveSameParent = !!selectNodeParents[0] && selectNodeParents.every(value => value === selectNodeParents[0])
+    }
 
-    const selectRectangle = graph.getCellsBBox(selectedNodes)!
-    groupNode.setPosition(selectRectangle.x + (selectRectangle.width - groupNode.size().width) / 2,
-      selectRectangle.y + (selectRectangle.height - groupNode.size().height) / 2,
+
+    const groupNode = graph.addNode(createPackageNode(graph));
+    const selectRectangle = graph.getCellsBBox(selectedNodes)!;
+    let relativeParentPosition = {x: selectRectangle.x, y: selectRectangle.y}
+    if (haveSameParent) {
+      groupNode.setParent(selectNodeParents[0])
+      relativeParentPosition = convertAbsoluteToRelativePosition(selectRectangle, groupNode.parent as Node)
+    }
+
+    groupNode.setPosition(relativeParentPosition.x + (selectRectangle.width - groupNode.size().width) / 2,
+      relativeParentPosition.y + (selectRectangle.height - groupNode.size().height) / 2,
       {relative: true, deep: true});
 
     const subGraphCells = graph.model.getSubGraph(selectedNodes)
@@ -345,11 +363,10 @@ export const CustomMenu: FC<MenuPropsType> = memo(({top = 0, left = 0, graph, no
     groupNode.prop("folderPosition", groupNode.position({relative: true}))
     groupNode.prop("folderSize", groupNode.size())
 
-    const view = document.querySelector('.x6-graph-scroller-pannable')
-    if (!view) {
+    const {width, height} = getGraphViewSize() ?? {}
+    if (!width || !height) {
       return
     }
-    const {width, height} = view.getBoundingClientRect()
 
     const groupNodeCurrentRelationPosition = groupNode.position({relative: true})
 
