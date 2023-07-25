@@ -125,7 +125,11 @@ const LeftEditor = memo(() => {
   }, [])
 
   const onMouseMove = (e: MouseEvent) => {
-    const target = e.target as HTMLElement
+    if (!e.altKey) {
+      return
+    }
+
+    const target = e.target as HTMLElement;
     const graph = graphRef.current!
     if (
       graph.container.contains(target) ||
@@ -204,11 +208,11 @@ const LeftEditor = memo(() => {
     if (!cell.getData() || !cell.getData()["config"][0]) {
       return cloneDeep(config)
     }
-    let oldConifg = cloneDeep(cell.getData()["config"][0])
+    let oldConfig = cloneDeep(cell.getData()["config"][0])
     for (let newKey in config) {
-      oldConifg[newKey] = config[newKey]
+      oldConfig[newKey] = config[newKey]
     }
-    return oldConifg
+    return oldConfig
   }
   const isConnected = (graph: Graph, node: Cell, id: string, isOutputs: boolean) => {
     let edges: Edge[] | null;
@@ -592,8 +596,6 @@ const LeftEditor = memo(() => {
       return
     }
 
-    //一层一层回退（目前递减）
-    //1获取原来形状（拿到回退画布的元素）
     if (!graphRef.current) {
       return
     }
@@ -603,8 +605,27 @@ const LeftEditor = memo(() => {
 
     const groupNode = graph.getCellById(groupCellId) as Node;
 
-    //2将群组节点和内部节点移动到上个位置
-    groupNode.size(groupNode.getProp().previousSize)
+    groupNode.prop('extendPosition', groupNode.position({relative: true,}))
+    groupNode.prop('extendSize', groupNode.size())
+
+    //内部元素隐藏
+    groupNode.getChildren()?.forEach((cell: Cell) => {
+      if (cell.isNode()) {
+        cell.prop("extendPosition", cell.position({relative: true,}))
+        cell.prop("extendSize", cell.size())
+        cell.setPosition(groupNode.position())
+        cell.prop('folderPosition', cell.position({relative: true,}))
+      }
+      cell.hide()
+    });
+
+    //移动组节点位置
+    groupNode.size(groupNode.getProp().folderSize)
+    groupNode.setPosition(groupNode.getProp().folderPosition, {deep: true, relative: true})
+    graph?.centerCell(groupNode)
+
+    groupNode.prop('folderPosition', groupNode.position({relative: true,}))
+    groupNode.prop('folderSize', groupNode.size())
 
     groupNode.setAttrs({fo: {visibility: "visibility"}})
 
@@ -626,18 +647,6 @@ const LeftEditor = memo(() => {
     });
 
     otherGroups.forEach(node => node.setAttrs({fo: {visibility: "visibility"}}))
-
-    //内部元素隐藏
-    groupNode.getChildren()?.forEach((cell: Cell) => {
-      if (cell.isNode()) {
-        cell.prop("previousPosition", cell.position({relative: true,}))
-      }
-      cell.hide()
-    });
-
-    //移动组节点位置
-    groupNode.setPosition(groupNode.getProp().previousPosition, {deep: true, relative: true})
-    graph?.centerCell(groupNode)
 
     window.graph = graph;
 

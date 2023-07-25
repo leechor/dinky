@@ -326,15 +326,17 @@ export const initGraph = (
   });
 
   graph.on("node:mousemove", ({node, x, y}) => {
-    if (node.shape === CustomShape.GROUP_PROCESS) {
-      node.prop("previousPosition", node.position({relative: true}))
-    }
   })
 
   function extendGroupNode(groupNode: Node<Node.Properties>) {
+
     if (groupNode.shape !== CustomShape.GROUP_PROCESS) {
       return;
     }
+
+    graph.getCells().forEach(cell => {
+      cell.hide()
+    })
 
     const activeKey = store.getState().home.activeKey
     const tabSaved = store.getState().home.graphTabs
@@ -360,13 +362,7 @@ export const initGraph = (
 
     //设置当前key
     dispatch(addActiveKey(1))
-
-    //新增导航
     dispatch(addGraphTabs({groupCellId: groupNode.id, layer: 1, innerCells}))
-
-    graph.getCells().forEach(cell => {
-      cell.hide()
-    })
 
     const view = document.querySelector('.x6-graph-scroller-pannable')
     if (!view) {
@@ -374,15 +370,20 @@ export const initGraph = (
     }
 
     const {width, height} = view.getBoundingClientRect()
-    const preGroupNodeSize = groupNode.prop().previousSize
-    groupNode.prop("previousPosition", groupNode.position({relative: true,}))
-    // groupNode.translate(localWidth, 0)
+    groupNode.setPosition(groupNode.position().x + width, groupNode.position().y + height, {relative: true, deep: true})
 
     groupNode.resize(width / 2, height / 2, {direction: 'top-left'});
     groupNode.resize(width, height, {direction: 'bottom-right'});
-    graph.centerCell(groupNode)
 
+    graph.centerCell(groupNode)
     groupNode.toBack();
+
+    const previousGroupNodeExtendPosition = groupNode.prop().extendPosition
+    groupNode.prop('extendPosition', groupNode.position({relative: true}))
+
+    const previsouGroupNodeExtendSize = groupNode.prop().extendSize
+    const groupNodeCurrentSize = groupNode.size()
+    groupNode.prop('extendSize', groupNodeCurrentSize)
 
     //将隐藏的cell设置为不可选
     graph.setSelectionFilter((cell) => {
@@ -394,17 +395,24 @@ export const initGraph = (
     // groupNode.setAttrs({fo: {visibility: "hidden"}})
     graph.cleanSelection();
 
-    const groupNodeCurrentSize = groupNode.size()
+    const currentGroupNodePosition  = groupNode.position({relative: true})
+    const currentGroupNodeSize = groupNode.size()
     innerCells?.forEach(item => {
       if (item.isNode()) {
-        const previousPosition = item.prop().previousPosition
-        const x = (groupNodeCurrentSize.width - preGroupNodeSize.width) / 2 + previousPosition.x
-        const y = (groupNodeCurrentSize.height - preGroupNodeSize.height) / 2 - previousPosition.y
+        const extendPosition = item.prop().extendPosition
+        console.log(`previousGroupNodeExtendPosition: ${previousGroupNodeExtendPosition.x}, ${previousGroupNodeExtendPosition.y}}},
+         currentGroupNodePosition: ${currentGroupNodePosition.x}, ${currentGroupNodePosition.y}}}, extendPosition: ${extendPosition.x}, ${extendPosition.y}}}`)
+        console.log(`extendGroupNode: ${item.id}, ${extendPosition.x}, ${extendPosition.y}}}`)
+        const x = extendPosition.x / previsouGroupNodeExtendSize.width * currentGroupNodeSize.width
+        const y = extendPosition.y / previsouGroupNodeExtendSize.height * currentGroupNodeSize.height
         item.setPosition(x, y, {relative: true, deep: true})
+        console.log(`extendGroupNode: ${item.id}, ${x}, ${y}`)
+        item.prop('extendPosition', item.position({relative: true}))
       }
 
       item.show()
     })
+
   }
 
   graph.on('node:dblclick', ({node, e, view}) => {

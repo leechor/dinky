@@ -342,18 +342,44 @@ export const CustomMenu: FC<MenuPropsType> = memo(({top = 0, left = 0, graph, no
     const subGraphCells = graph.model.getSubGraph(selectedNodes)
     groupNode.setChildren(subGraphCells)
 
-    groupNode.prop("previousPosition", groupNode.position({relative: true}))
-    groupNode.prop("previousSize", groupNode.size())
+    groupNode.prop("folderPosition", groupNode.position({relative: true}))
+    groupNode.prop("folderSize", groupNode.size())
+
+    const view = document.querySelector('.x6-graph-scroller-pannable')
+    if (!view) {
+      return
+    }
+    const {width, height} = view.getBoundingClientRect()
+
+    const groupNodeCurrentRelationPosition = groupNode.position({relative: true})
+
+    groupNode.prop("extendPosition", {
+      x: groupNodeCurrentRelationPosition.x - (width - selectRectangle.width) / 2,
+      y: groupNodeCurrentRelationPosition.y - (height - selectRectangle.height) / 2
+    })
+
+    console.log(`init: groupNode position ${groupNodeCurrentRelationPosition.x}, ${groupNodeCurrentRelationPosition.y}`)
+    console.log(`init: groupNode relative position ${groupNode.prop("extendPosition").x}, ${groupNode.prop("extendPosition").y}`)
+    groupNode.prop("extendSize", {width: width, height: height})
 
     subGraphCells.forEach(item => {
       item.setParent(groupNode)
       if (item.isNode()) {
-        item.prop("previousPosition", item.position({relative: true}))
-        item.prop("previousSize", item.size())
+        console.log(`init: item init ${item.id} position ${item.position({relative: true}).x}, ${item.position({relative: true}).y}`)
+        item.prop("extendPosition", {
+          x: item.position({relative: true}).x + (width - selectRectangle.width) / 2,
+          y: item.position({relative: true}).y + (height - selectRectangle.height) / 2
+        })
+
+        console.log(`init: item ${item.id} relative position ${item.prop("extendPosition").x}, ${item.prop("extendPosition").y}`)
+        item.prop("extendSize", item.size())
         item.setPosition(groupNode.position())
+        item.prop('folderPosition', item.position({relative: true}))
+        item.prop('folderSize', item.size())
       }
       item.hide()
     })
+
     const selectedIncomingEdge: (Edge | null)[] = selectedNodes
       .flatMap(node => graph.model.getIncomingEdges(node))
       .filter(edge => edge?.getSourceNode() && !selectedNodes.includes(edge.getSourceNode()!))
