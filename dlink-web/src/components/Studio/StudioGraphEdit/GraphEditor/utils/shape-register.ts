@@ -117,6 +117,7 @@ function registerOperatorNode(
     shape: code,
     component: registerCpn,
     ports: { ...ports, items: portItem },
+    effect: ["isError", "errorMsg"]
   });
 }
 

@@ -15,6 +15,7 @@ import { useAppDispatch, useAppSelector, } from '@/components/Studio/StudioGraph
 import { CustomMenu } from './menu';
 import { initMenu } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/init-menu';
 import NodeModalForm from '@/components/Studio/StudioGraphEdit/GraphEditor/components/node-modal-form';
+import NodeModalPreview from '../../../components/node-preview-modal';
 import styles from './index.less';
 import AddModalPort from '../../../components/add-port-modal';
 import {
@@ -22,6 +23,7 @@ import {
   removeGraphTabs,
   changePositon,
   addActiveKey,
+  changePreviewInfo,
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import type { GroupTabItem } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import localCache from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/localStorage"
@@ -84,7 +86,7 @@ const LeftEditor = memo(() => {
   const dispatch = useAppDispatch();
 
 
-  const { flowData, operatorParameters: operatorParameters, jsonEditor, taskName, tabs, activeKey } = useAppSelector((state) => ({
+  const { flowData, operatorParameters: operatorParameters, jsonEditor, taskName, tabs, activeKey, previewInfo } = useAppSelector((state) => ({
     flowData: state.home.flowData,
     operatorParameters: state.home.operatorParameters,
     currentSelectNode: state.home.currentSelectNode,
@@ -92,6 +94,7 @@ const LeftEditor = memo(() => {
     taskName: state.home.taskName,
     tabs: state.home.graphTabs,
     activeKey: state.home.activeKey,
+    previewInfo: state.home.previewInfo
   }));
 
 
@@ -136,6 +139,7 @@ const LeftEditor = memo(() => {
   }
   const handleNodeConfigSet = (graph: Graph) => {
     graph.on("node:port:click", ({ node, port }: { node: Node, port: string }) => {
+      window.port = port
       dispatch(changeCurrentSelectNode(node))
 
       if (!node.getData() && node.shape !== "DuplicateOperator") {
@@ -437,12 +441,16 @@ const LeftEditor = memo(() => {
       node?.setData({ ...(node.getData() ? node.getData() : {}), config: [newConfigObj] })
     }
     message.success("连接桩添加成功！")
-    console.log(graphRef.current?.toJSON(), "celldata");
 
   }
   const handleShowMenu = (value: boolean) => {
     setShowMenuInfo({ ...showMenuInfo, show: value })
   }
+
+  const handlePreviewCancel = () => {
+    dispatch(changePreviewInfo({ node: null, values: "", isShow: false }))
+  }
+  const handlePreviewSubmit = () => { }
   const changeNode = (node: Cell) => {
     dispatch(changeCurrentSelectNode(node))
   }
@@ -503,7 +511,7 @@ const LeftEditor = memo(() => {
         }
       });
     }
-    
+
     outterCells.forEach((cell: Cell) => {
       cell.show()
     });
@@ -535,10 +543,9 @@ const LeftEditor = memo(() => {
       // }
 
     });
-    console.log(group.getDescendants(),"getDescendants");
-    
+
     group.getDescendants().forEach(cell => {
-      if (cell.isNode() ) {
+      if (cell.isNode()) {
         cell.prop("position", { x: prePos.x - (dx / (tabs.length + 1)) * (layer - 1), y: prePos.y })
       }
     })
@@ -559,6 +566,8 @@ const LeftEditor = memo(() => {
   }
 
 
+
+
   useEffect(() => {
     if (editorContentRef.current) {
       const editorContentContainer: HTMLElement = editorContentRef.current;
@@ -571,7 +580,7 @@ const LeftEditor = memo(() => {
         setSelectedNodes,
         dispatch
       );
-      window.graph= graphRef.current
+      window.graph = graphRef.current
       initMenu(graphRef.current, setShowMenuInfo, changeNode, changePosition);
 
       if (stencilRef.current) {
@@ -654,6 +663,11 @@ const LeftEditor = memo(() => {
         modalVisible={!showMenuInfo.show && showMenuInfo.node.shape === "DuplicateOperator"}
         values={showMenuInfo.node} /> : null}
 
+      <NodeModalPreview onSubmit={() => handlePreviewSubmit()}
+        onCancel={() => handlePreviewCancel()}
+        modalVisible={previewInfo.isShow}
+        values={previewInfo.values}
+        node={previewInfo.node} />
     </>
 
   );

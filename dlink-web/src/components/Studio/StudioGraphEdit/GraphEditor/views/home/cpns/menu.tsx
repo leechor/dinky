@@ -1,6 +1,6 @@
 import { Menu } from '@antv/x6-react-components';
 import { FC, memo, useState } from 'react';
-import { message, Radio, RadioChangeEvent, Space, } from 'antd';
+import { message, Radio, RadioChangeEvent, Space, Modal } from 'antd';
 import { DataUri, Graph, Node, Cell, Edge } from '@antv/x6';
 import '@antv/x6-react-components/es/menu/style/index.css';
 import {
@@ -16,12 +16,14 @@ import {
   GroupOutlined,
   AlignCenterOutlined,
   BgColorsOutlined,
-  UploadOutlined
+  UploadOutlined,
+  EyeOutlined
 } from '@ant-design/icons';
 import CustomShape from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
 import { useAppSelector, useAppDispatch } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
 import { formatDate } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/math"
-
+import { changePreviewInfo } from '../../../store/modules/home';
+import { getNodePreviewInfo } from '@/components/Common/crud';
 
 type MenuPropsType = {
   top: number;
@@ -74,12 +76,9 @@ const DuplicateOperatorMenu = () => {
 
 export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, node, handleShowMenu, show }) => {
 
-  const { taskName, unSelectedCellIds, position } = useAppSelector((state) => ({
-    taskName: state.home.taskName,
-    unSelectedCellIds: state.home.unSelectedCellIds,
-    position: state.home.position
+  const { taskName } = useAppSelector((state) => ({
+    taskName: state.home.taskName
   }));
-
   const dispatch = useAppDispatch();
   const convertHorizontalAlign = (align: string) => {
     switch (align) {
@@ -292,7 +291,9 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
       case "createProcess":
         createProcess();
         break;
-      default:
+      case "preview":
+        preview()
+        break;
       case "import":
         uploadFileClick()
         break;
@@ -377,7 +378,14 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     // 将该组节点子节点添加进不可选中数组中
     // dispatch(changeUnselectedCells({ type: "push", data: { groupId: node.id, childrenId } }))
   }
+  const preview = async () => {
+    const data = graph.toJSON().cells.find(cell => cell.id === node!.id)
+    const { datas, msg } = await getNodePreviewInfo("/api/zdpx/preview", data)
+    console.log(datas, msg);
 
+    dispatch(changePreviewInfo({ node, values: datas, isShow: true }))
+
+  }
   const addOuterPortAndEdge = (outEdge: (Edge | null)[], groupNode: Node, type: OuterEdgeType) => {
     //将外部节点与组节点连线
 
@@ -647,6 +655,13 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
           icon={<GroupOutlined />}
           text="Move into new subprocess"
         />
+        <MenuItem
+          onClick={onMenuItemClick}
+          name="preview"
+          icon={<EyeOutlined />}
+          text="Node preview"
+        />
+
       </>}
       <MenuItem
         onClick={onMenuItemClick}
@@ -709,7 +724,6 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     <div style={styleObj}>
       {contextHolder}
       {blankMenu()}
-
     </div>
   );
 });

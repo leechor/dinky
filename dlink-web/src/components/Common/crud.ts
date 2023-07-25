@@ -100,6 +100,13 @@ export async function getInfoById(url: string, id: number) {
   });
 }
 
+export async function getNodePreviewInfo(url: string, body: any) {
+  return request2(url, {
+    method: 'POST',
+    data: { ...body },
+  });
+}
+
 export const handleAddOrUpdate = async (url: string, fields: any) => {
   const tipsTitle = fields.id ? l('app.request.update') : l('app.request.add');
   const hide = message.loading(l('app.request.running') + tipsTitle);
@@ -112,7 +119,7 @@ export const handleAddOrUpdate = async (url: string, fields: any) => {
     } else {
       message.warn(msg);
     }
-    
+
     return datas;
   } catch (error) {
     hide();

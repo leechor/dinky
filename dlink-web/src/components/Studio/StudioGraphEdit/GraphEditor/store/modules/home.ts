@@ -63,7 +63,12 @@ interface GraphEditorData {
   unSelectedCellIds: UnselectedCell[]
   activeKey: number,
   position: Position,
-  verifyOperDatas: []
+  verifyOperDatas: [],
+  previewInfo: {
+    values: string,
+    node: Node | null,
+    isShow: boolean
+  }
 
 }
 const initialState: GraphEditorData = {
@@ -86,6 +91,7 @@ const initialState: GraphEditorData = {
   activeKey: 0,
   position: { x: 0, y: 0 },
   verifyOperDatas: [],
+  previewInfo: { values: "", node: null, isShow: false }
 
 }
 const homeSlice = createSlice({
@@ -167,8 +173,10 @@ const homeSlice = createSlice({
       state.position = payload
     },
     changeVerifyOperDatas(state, { payload }) {
-      
       state.verifyOperDatas = payload
+    },
+    changePreviewInfo(state, { payload }) {
+      state.previewInfo = payload
     }
   },
   extraReducers: {},
@@ -190,7 +198,8 @@ export const {
   removeGraphTabs,
   changeUnselectedCells,
   changePositon,
-  changeVerifyOperDatas
+  changeVerifyOperDatas,
+  changePreviewInfo
 } = homeSlice.actions;
 
 export default homeSlice.reducer;

@@ -305,6 +305,7 @@ export const initGraph = (
       console.log(cell.id, 'groupid');
     }
 
+    window.cell=cell;
 
   });
 
@@ -438,6 +439,7 @@ export const initGraph = (
 
   graph.on("edge:click", ({ edge }) => {
     console.log(edge.id, "edgeid");
+    window.edge=edge;
 
   })
 
