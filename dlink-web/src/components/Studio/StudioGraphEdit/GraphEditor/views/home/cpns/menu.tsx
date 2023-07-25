@@ -18,12 +18,12 @@ import {
   UndoOutlined,
   UploadOutlined
 } from '@ant-design/icons';
-import CustomShape from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
+import CustomShape, {PreNodeInfo} from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
 import {useAppDispatch, useAppSelector} from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
 import {formatDate} from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/math"
 import {
   convertAbsoluteToRelativePosition,
-  getGraphViewSize
+  getGraphViewSize, PreNodeRect
 } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper";
 
 
@@ -360,39 +360,20 @@ export const CustomMenu: FC<MenuPropsType> = memo(({top = 0, left = 0, graph, no
     const subGraphCells = graph.model.getSubGraph(selectedNodes)
     groupNode.setChildren(subGraphCells)
 
-    groupNode.prop("folderPosition", groupNode.position({relative: true}))
-    groupNode.prop("folderSize", groupNode.size())
+    groupNode.prop(PreNodeInfo.PREVIOUS_NODE_RECT, new PreNodeRect(groupNode.position({relative: true}), groupNode.size()))
 
     const {width, height} = getGraphViewSize() ?? {}
     if (!width || !height) {
       return
     }
 
-    const groupNodeCurrentRelationPosition = groupNode.position({relative: true})
-
-    groupNode.prop("extendPosition", {
-      x: groupNodeCurrentRelationPosition.x - (width - selectRectangle.width) / 2,
-      y: groupNodeCurrentRelationPosition.y - (height - selectRectangle.height) / 2
-    })
-
-    console.log(`init: groupNode position ${groupNodeCurrentRelationPosition.x}, ${groupNodeCurrentRelationPosition.y}`)
-    console.log(`init: groupNode relative position ${groupNode.prop("extendPosition").x}, ${groupNode.prop("extendPosition").y}`)
-    groupNode.prop("extendSize", {width: width, height: height})
-
     subGraphCells.forEach(item => {
       item.setParent(groupNode)
       if (item.isNode()) {
-        console.log(`init: item init ${item.id} position ${item.position({relative: true}).x}, ${item.position({relative: true}).y}`)
-        item.prop("extendPosition", {
-          x: item.position({relative: true}).x + (width - selectRectangle.width) / 2,
-          y: item.position({relative: true}).y + (height - selectRectangle.height) / 2
-        })
-
-        console.log(`init: item ${item.id} relative position ${item.prop("extendPosition").x}, ${item.prop("extendPosition").y}`)
-        item.prop("extendSize", item.size())
+        const x = item.position().x - relativeParentPosition.x
+        const y = item.position().y - relativeParentPosition.y
+        item.prop(PreNodeInfo.PREVIOUS_NODE_RECT, new PreNodeRect({x, y}, item.size()))
         item.setPosition(groupNode.position())
-        item.prop('folderPosition', item.position({relative: true}))
-        item.prop('folderSize', item.size())
       }
       item.hide()
     })

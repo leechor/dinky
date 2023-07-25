@@ -1,4 +1,4 @@
-import {Node, Rectangle} from "@antv/x6";
+import {Node} from "@antv/x6";
 
 export function getGraphViewSize() {
   const view = document.querySelector('.x6-graph-scroller-pannable')
@@ -19,6 +19,24 @@ const convertAbsoluteToRelativePositionNode = (source: Node, target: Node) => {
   return convertAbsoluteToRelativePosition(source.position(), target)
 }
 
-export interface PreNodeRectangle extends Rectangle {
+export class PreNodeRect {
+  height: number;
+  width: number;
+  x: number;
+  y: number;
 
+  constructor({x, y}: { x: number, y: number }, {width, height}: { width: number, height: number }) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+  }
+
+  public get position() {
+    return {x: this.x, y: this.y}
+  }
+
+  public get size() {
+    return {width: this.width, height: this.height}
+  }
 }

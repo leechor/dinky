@@ -1,7 +1,7 @@
 import {Cell, Dom, Edge, Graph, Model, Node, Shape} from '@antv/x6';
 import loadPlugin from './plugin';
 import {removeBtnEdgeRegister, removeBtnNodeRegister} from './remove-btn-register';
-import CustomShape from './cons';
+import CustomShape, {PreNodeInfo} from './cons';
 import {
   addActiveKey,
   addGraphTabs,
@@ -11,7 +11,7 @@ import {
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import store from '../store';
 import React from 'react';
-import {getGraphViewSize} from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper";
+import {getGraphViewSize, PreNodeRect} from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper";
 
 /**
  *
@@ -341,7 +341,10 @@ export const initGraph = (
     let innerCells = groupNode.getChildren() ?? [];
     if (!innerCells.length) {
       console.log('没有子节点')
+      return
     }
+
+    const childrenBox = graph.getCellsBBox(innerCells)!
 
     const innerOutputPorts = groupNode.getPortsByGroup("innerOutputs")
     graph?.getOutgoingEdges(groupNode)?.filter(edge =>
@@ -374,12 +377,6 @@ export const initGraph = (
     graph.centerCell(groupNode)
     groupNode.toBack();
 
-    const previousGroupNodeExtendPosition = groupNode.prop().extendPosition
-    groupNode.prop('extendPosition', groupNode.position({relative: true}))
-
-    const previousGroupNodeExtendSize = groupNode.prop().extendSize
-    const groupNodeCurrentSize = groupNode.size()
-    groupNode.prop('extendSize', groupNodeCurrentSize)
 
     //将隐藏的cell设置为不可选
     graph.setSelectionFilter((cell) => {
@@ -388,19 +385,12 @@ export const initGraph = (
 
     graph.cleanSelection();
 
-    const currentGroupNodePosition  = groupNode.position({relative: true})
-    const currentGroupNodeSize = groupNode.size()
     innerCells?.forEach(item => {
       if (item.isNode()) {
-        const extendPosition = item.prop().extendPosition
-        console.log(`previousGroupNodeExtendPosition: ${previousGroupNodeExtendPosition.x}, ${previousGroupNodeExtendPosition.y}}},
-         currentGroupNodePosition: ${currentGroupNodePosition.x}, ${currentGroupNodePosition.y}}}, extendPosition: ${extendPosition.x}, ${extendPosition.y}}}`)
-        console.log(`extendGroupNode: ${item.id}, ${extendPosition.x}, ${extendPosition.y}}}`)
-        const x = extendPosition.x / previousGroupNodeExtendSize.width * currentGroupNodeSize.width
-        const y = extendPosition.y / previousGroupNodeExtendSize.height * currentGroupNodeSize.height
+        const preNodeRect = item.prop().preNodeRect
+        const x = width / 2 + preNodeRect.x
+        const y = height / 2+ preNodeRect.y
         item.setPosition(x, y, {relative: true, deep: true})
-        console.log(`extendGroupNode: ${item.id}, ${x}, ${y}`)
-        item.prop('extendPosition', item.position({relative: true}))
 
         if (item.shape === CustomShape.GROUP_PROCESS) {
           item.setAttrs({fo: {visibility: "visible"}})

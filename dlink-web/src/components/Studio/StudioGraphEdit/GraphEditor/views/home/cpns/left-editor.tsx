@@ -25,7 +25,8 @@ import {
   removeGraphTabs,
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import localCache from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/localStorage"
-import CustomShape from '../../../utils/cons';
+import CustomShape, {PreNodeInfo} from '../../../utils/cons';
+import {PreNodeRect} from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper";
 
 
 export interface ParametersConfigType {
@@ -610,27 +611,28 @@ const LeftEditor = memo(() => {
       return
     }
 
-    groupNode.prop('extendPosition', groupNode.position({relative: true,}));
-    groupNode.prop('extendSize', groupNode.size())
+    const children = groupNode.getChildren() ?? []
+    const childrenBox = graph.getCellsBBox(groupNode.getChildren()?.filter(cell => cell.isNode())?? [])!
 
-    //内部元素隐藏
-    groupNode.getChildren()?.forEach((cell: Cell) => {
-      if (cell.isNode()) {
-        cell.prop("extendPosition", cell.position({relative: true,}))
-        cell.prop("extendSize", cell.size())
-        cell.setPosition(groupNode.position())
-        cell.prop('folderPosition', cell.position({relative: true,}))
+    children.forEach((item: Cell) => {
+      if (item.isNode()) {
+        const x = item.position().x - childrenBox.x
+        const y = item.position().y - childrenBox.y
+        item.prop(PreNodeInfo.PREVIOUS_NODE_RECT, new PreNodeRect({x, y}, item.size()))
+        item.setPosition(groupNode.position())
       }
-      cell.hide()
+      item.hide()
     });
 
+    const preGroupNodeRect = groupNode.prop().preNodeRect
+
     //移动组节点位置
-    groupNode.size(groupNode.getProp().folderSize)
-    groupNode.setPosition(groupNode.getProp().folderPosition, {deep: true, relative: true})
+    groupNode.size(preGroupNodeRect.size)
+    groupNode.setPosition(preGroupNodeRect.position, {deep: true, relative: true})
     graph?.centerCell(groupNode)
 
-    groupNode.prop('folderPosition', groupNode.position({relative: true,}))
-    groupNode.prop('folderSize', groupNode.size())
+    groupNode.prop(PreNodeInfo.PREVIOUS_NODE_RECT, new PreNodeRect(groupNode.position({relative: true}), groupNode.size()))
+
 
     groupNode.show()
     groupNode.setAttrs({fo: {visibility: "visible"}})
