@@ -605,7 +605,12 @@ const LeftEditor = memo(() => {
 
     const groupNode = graph.getCellById(groupCellId) as Node;
 
-    groupNode.prop('extendPosition', groupNode.position({relative: true,}))
+    if (!groupNode) {
+      console.log(`群组节点${groupCellId}不存在`)
+      return
+    }
+
+    groupNode.prop('extendPosition', groupNode.position({relative: true,}));
     groupNode.prop('extendSize', groupNode.size())
 
     //内部元素隐藏

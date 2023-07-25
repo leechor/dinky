@@ -124,16 +124,6 @@ export const initGraph = (
     //  将一个节点拖动到另一个节点中，使其成为另一节点的子节点
     embedding: {
       enabled: true,
-      findParent({node}) {
-        return this.getNodes().filter((targetNode) => {
-          if (targetNode.shape == 'package') {
-            const bbox = node.getBBox();
-            const targetBBox = targetNode.getBBox();
-            return bbox.isIntersectWithRect(targetBBox);
-          }
-          return false;
-        });
-      },
     },
     background: {
       //画布背景色
@@ -333,6 +323,9 @@ export const initGraph = (
     if (groupNode.shape !== CustomShape.GROUP_PROCESS) {
       return;
     }
+    //隐藏组节点, 先显示, 再隐藏, 否则会导致子节点无法显示
+    groupNode.show()
+    groupNode.setAttrs({fo: {visibility: "hidden"}})
 
     graph.getCells().forEach(cell => {
       cell.hide()
@@ -345,6 +338,9 @@ export const initGraph = (
     }
 
     let innerCells = groupNode.getChildren() ?? [];
+    if (!innerCells.length) {
+      console.log('没有子节点')
+    }
 
     const innerOutputPorts = groupNode.getPortsByGroup("innerOutputs")
     graph?.getOutgoingEdges(groupNode)?.filter(edge =>
@@ -381,7 +377,7 @@ export const initGraph = (
     const previousGroupNodeExtendPosition = groupNode.prop().extendPosition
     groupNode.prop('extendPosition', groupNode.position({relative: true}))
 
-    const previsouGroupNodeExtendSize = groupNode.prop().extendSize
+    const previousGroupNodeExtendSize = groupNode.prop().extendSize
     const groupNodeCurrentSize = groupNode.size()
     groupNode.prop('extendSize', groupNodeCurrentSize)
 
@@ -390,9 +386,6 @@ export const initGraph = (
       return !!innerCells?.map(c => c.id).includes(cell.id)
     })
 
-    //隐藏组节点, 先显示, 再隐藏, 否则会导致子节点无法显示
-    groupNode.show()
-    // groupNode.setAttrs({fo: {visibility: "hidden"}})
     graph.cleanSelection();
 
     const currentGroupNodePosition  = groupNode.position({relative: true})
@@ -403,8 +396,8 @@ export const initGraph = (
         console.log(`previousGroupNodeExtendPosition: ${previousGroupNodeExtendPosition.x}, ${previousGroupNodeExtendPosition.y}}},
          currentGroupNodePosition: ${currentGroupNodePosition.x}, ${currentGroupNodePosition.y}}}, extendPosition: ${extendPosition.x}, ${extendPosition.y}}}`)
         console.log(`extendGroupNode: ${item.id}, ${extendPosition.x}, ${extendPosition.y}}}`)
-        const x = extendPosition.x / previsouGroupNodeExtendSize.width * currentGroupNodeSize.width
-        const y = extendPosition.y / previsouGroupNodeExtendSize.height * currentGroupNodeSize.height
+        const x = extendPosition.x / previousGroupNodeExtendSize.width * currentGroupNodeSize.width
+        const y = extendPosition.y / previousGroupNodeExtendSize.height * currentGroupNodeSize.height
         item.setPosition(x, y, {relative: true, deep: true})
         console.log(`extendGroupNode: ${item.id}, ${x}, ${y}`)
         item.prop('extendPosition', item.position({relative: true}))
