@@ -1,4 +1,5 @@
-import {Node} from "@antv/x6";
+import {Cell, Graph, Node} from "@antv/x6";
+import {PreNodeInfo} from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
 
 export function getGraphViewSize() {
   const view = document.querySelector('.x6-graph-scroller-pannable')
@@ -48,4 +49,26 @@ export const getPointsBox = (points: PreNodeRect[]): PreNodeRect => {
     height = bottom - top
   })
   return {x: left!, y: top!, width, height}
+}
+
+export function shrinkGroupNode(graph: Graph, groupNode: Node) {
+  const children = groupNode.getChildren() ?? []
+
+  children.forEach((item: Cell) => {
+    if (item.isNode()) {
+      const x = item.position().x - groupNode.position().x
+      const y = item.position().y - groupNode.position().y
+      item.prop(PreNodeInfo.PREVIOUS_NODE_RECT, {x, y, ...item.size()})
+      item.setPosition(groupNode.position())
+    }
+    item.hide()
+  });
+
+  //移动组节点位置
+  const preGroupNodeRect = groupNode.prop(PreNodeInfo.PREVIOUS_NODE_RECT)
+  groupNode.size(preGroupNodeRect.width, preGroupNodeRect.height)
+  groupNode.setPosition(preGroupNodeRect.x, preGroupNodeRect.y, {deep: true, relative: true})
+  graph?.centerCell(groupNode)
+
+  groupNode.prop(PreNodeInfo.PREVIOUS_NODE_RECT, {...groupNode.position({relative: true}), ...groupNode.size()})
 }

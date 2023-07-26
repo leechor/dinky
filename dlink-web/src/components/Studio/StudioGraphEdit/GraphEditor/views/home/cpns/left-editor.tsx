@@ -24,7 +24,8 @@ import {
   removeGraphTabs,
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import localCache from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/localStorage"
-import CustomShape, {PreNodeInfo} from '../../../utils/cons';
+import CustomShape from '../../../utils/cons';
+import {shrinkGroupNode} from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper";
 
 
 export interface ParametersConfigType {
@@ -609,25 +610,7 @@ const LeftEditor = memo(() => {
       return
     }
 
-    const children = groupNode.getChildren() ?? []
-
-    children.forEach((item: Cell) => {
-      if (item.isNode()) {
-        const x = item.position().x - groupNode.position().x
-        const y = item.position().y - groupNode.position().y
-        item.prop(PreNodeInfo.PREVIOUS_NODE_RECT, {x, y, ...item.size()})
-        item.setPosition(groupNode.position())
-      }
-      item.hide()
-    });
-
-    //移动组节点位置
-    const preGroupNodeRect = groupNode.prop(PreNodeInfo.PREVIOUS_NODE_RECT)
-    groupNode.size(preGroupNodeRect.width, preGroupNodeRect.height)
-    groupNode.setPosition(preGroupNodeRect.x, preGroupNodeRect.y, {deep: true, relative: true})
-    graph?.centerCell(groupNode)
-
-    groupNode.prop(PreNodeInfo.PREVIOUS_NODE_RECT, {...groupNode.position({relative: true}), ...groupNode.size()})
+    shrinkGroupNode(graph, groupNode);
 
     const {groupCellId: clickGroupId} = tabs[clickLayer]
 

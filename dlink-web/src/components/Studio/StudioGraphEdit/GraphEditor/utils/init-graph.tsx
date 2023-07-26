@@ -13,7 +13,7 @@ import React from 'react';
 import {
   getGraphViewSize,
   getPointsBox,
-  PreNodeRect
+  PreNodeRect, shrinkGroupNode
 } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper";
 
 /**
@@ -326,6 +326,10 @@ export const initGraph = (
     graph.getCells().forEach(cell => {
       cell.hide()
     })
+
+    if (groupNode.hasParent()) {
+      shrinkGroupNode(graph, groupNode.parent as Node);
+    }
 
     //隐藏组节点, 先显示, 再隐藏, 否则会导致子节点无法显示
     groupNode.show()
