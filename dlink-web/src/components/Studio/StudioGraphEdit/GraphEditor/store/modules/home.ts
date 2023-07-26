@@ -38,10 +38,7 @@ export type UnselectedCell = {
 }
 
 export type GroupTabItem = {
-  layer: number,
-  innerCells: Cell[],
   groupCellId: string,
-  outerCells: Cell[]
 }
 
 
@@ -61,7 +58,6 @@ interface GraphEditorData {
   editor: {} | InstanceType<typeof JSONEditor>,
   graphTabs: GroupTabItem[],
   unSelectedCellIds: UnselectedCell[]
-  activeKey: number,
   position: Position,
   verifyOperatorData: []
 
@@ -81,9 +77,10 @@ const initialState: GraphEditorData = {
   graph: {} as Graph,
   //保存jsoneditor 示例用作保存校验
   editor: {},
-  graphTabs: [],
+  graphTabs: [{
+    groupCellId: ""
+  }],
   unSelectedCellIds: [],
-  activeKey: 0,
   position: { x: 0, y: 0 },
   verifyOperatorData: [],
 
@@ -122,36 +119,15 @@ const homeSlice = createSlice({
     changeJsonEditor(state, { payload }) {
       state.editor = payload
     },
-    changeActiveKey(state, { payload }) {
-      state.activeKey = payload
-    },
-    addActiveKey(state, { payload }) {
-      state.activeKey += payload
 
+    addGraphTabs(state, {payload}) {
+      state.graphTabs.push({groupCellId: payload.groupCellId,})
     },
-    addGraphTabs(state, { payload }) {
-      let length = state.graphTabs.length;
-      let tabItem = {
-        layer: length ? state.graphTabs[length - 1].layer + payload.layer : payload.layer,
-        innerCells: payload.innerCells,
-        groupCellId: payload.groupCellId,
-        outerCells: payload.outterCells
-      }
-      state.graphTabs = [...state.graphTabs, tabItem]
-    },
+
     removeGraphTabs(state, { payload }) {
-      if (payload === 0) {
-        state.graphTabs = [];
-      } else {
-        let tabs = [...state.graphTabs];
-        const index = tabs.findIndex(tab => tab.layer === payload);
-        let ele = [];
-        for (let i = 0; i < index + 1; i++) {
-          ele.push(tabs[i])
-        }
-        state.graphTabs = [...ele]
-      }
+      state.graphTabs =state.graphTabs.slice(0, payload + 1)
     },
+
     changeUnselectedCells(state, { payload }) {
       const unSelectedCellIds = state.unSelectedCellIds;
       if (payload.type == "push") {
@@ -184,13 +160,10 @@ export const {
   changeCurrentSelectNodeParamsData,
   changeGraph,
   changeJsonEditor,
-  changeActiveKey,
-  addActiveKey,
+
   addGraphTabs,
   removeGraphTabs,
-  changeUnselectedCells,
   changePositon,
-  changeVerifyOperDatas
 } = homeSlice.actions;
 
 export default homeSlice.reducer;

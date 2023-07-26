@@ -344,7 +344,6 @@ export const CustomMenu: FC<MenuPropsType> = memo(({top = 0, left = 0, graph, no
       haveSameParent = !!selectNodeParents[0] && selectNodeParents.every(value => value === selectNodeParents[0])
     }
 
-
     const groupNode = graph.addNode(createPackageNode(graph));
     const selectRectangle = graph.getCellsBBox(selectedNodes)!;
     let relativeParentPosition = {x: selectRectangle.x, y: selectRectangle.y}

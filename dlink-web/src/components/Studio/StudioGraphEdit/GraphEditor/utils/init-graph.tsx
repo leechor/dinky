@@ -3,7 +3,6 @@ import loadPlugin from './plugin';
 import {removeBtnEdgeRegister, removeBtnNodeRegister} from './remove-btn-register';
 import CustomShape, {PreNodeInfo} from './cons';
 import {
-  addActiveKey,
   addGraphTabs,
   changeCurrentSelectNode,
   changeCurrentSelectNodeName,
@@ -306,13 +305,6 @@ export const initGraph = (
       cell.setZIndex(-1);
     }
 
-    // 在添加的时候将该节点加入到上级画布的innercells
-    const activeKey = store.getState().home.activeKey
-    const tabSaved = store.getState().home.graphTabs
-    if (tabSaved.length) {
-      tabSaved[activeKey - 1].innerCells.push(cell)
-    }
-
     // updateGraphData(graph);
   });
 
@@ -328,27 +320,24 @@ export const initGraph = (
     if (groupNode.shape !== CustomShape.GROUP_PROCESS) {
       return;
     }
-    //隐藏组节点, 先显示, 再隐藏, 否则会导致子节点无法显示
-    groupNode.show()
-    groupNode.setAttrs({fo: {visibility: "hidden"}})
+
+    dispatch(addGraphTabs({groupCellId: groupNode.id, layer: 1}))
 
     graph.getCells().forEach(cell => {
       cell.hide()
     })
 
-    const activeKey = store.getState().home.activeKey
-    const tabSaved = store.getState().home.graphTabs
-    if (activeKey) {
-      tabSaved[activeKey - 1].innerCells.push(groupNode)
-    }
+    //隐藏组节点, 先显示, 再隐藏, 否则会导致子节点无法显示
+    groupNode.show()
+    groupNode.setAttrs({fo: {visibility: "hidden"}})
 
-    let innerCells = groupNode.getChildren() ?? [];
-    if (!innerCells.length) {
+    let children = groupNode.getChildren() ?? [];
+    if (!children.length) {
       console.log('没有子节点')
       return
     }
 
-    const preChildrenBox = getPointsBox(innerCells
+    const preChildrenBox = getPointsBox(children
       .filter(item => item.isNode())
       .map(item => item.prop(PreNodeInfo.PREVIOUS_NODE_RECT)))
 
@@ -356,19 +345,15 @@ export const initGraph = (
     graph?.getOutgoingEdges(groupNode)?.filter(edge =>
       innerOutputPorts.some(port => edge.getSourcePortId() == port.id))
       .forEach(edge => {
-        innerCells.push(edge)
+        children.push(edge)
       })
 
     const innerInputPorts = groupNode.getPortsByGroup("innerInputs")
     graph?.getIncomingEdges(groupNode)?.filter(edge =>
       innerInputPorts.some(port => edge.getTargetPortId() == port.id))
       .forEach(edge => {
-        innerCells.push(edge)
+        children.push(edge)
       })
-
-    //设置当前key
-    dispatch(addActiveKey(1))
-    dispatch(addGraphTabs({groupCellId: groupNode.id, layer: 1, innerCells}))
 
     const graphViewBox = getGraphViewSize()
     if (!graphViewBox) {
@@ -389,12 +374,12 @@ export const initGraph = (
 
     //将隐藏的cell设置为不可选
     graph.setSelectionFilter((cell) => {
-      return !!innerCells?.map(c => c.id).includes(cell.id)
+      return !!children?.map(c => c.id).includes(cell.id)
     })
 
     graph.cleanSelection();
 
-    innerCells?.forEach(item => {
+    children?.forEach(item => {
       if (item.isNode()) {
         const preNodeRect = item.prop(PreNodeInfo.PREVIOUS_NODE_RECT) as PreNodeRect
         const {x: localX, y: localY} = graph.clientToLocal(graphViewBox.x, graphViewBox.y)
@@ -407,6 +392,7 @@ export const initGraph = (
         }
       }
 
+      item.toFront()
       item.show()
     })
 

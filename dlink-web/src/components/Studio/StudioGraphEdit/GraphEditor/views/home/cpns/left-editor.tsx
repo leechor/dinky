@@ -19,14 +19,12 @@ import styles from './index.less';
 import AddModalPort from '../../../components/add-port-modal';
 import type {GroupTabItem} from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import {
-  addActiveKey,
   changeCurrentSelectNode,
   changePositon,
   removeGraphTabs,
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import localCache from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/localStorage"
 import CustomShape, {PreNodeInfo} from '../../../utils/cons';
-import {PreNodeRect} from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper";
 
 
 export interface ParametersConfigType {
@@ -105,9 +103,8 @@ const LeftEditor = memo(() => {
     operatorParameters: operatorParameters,
     jsonEditor,
     taskName,
-    tabs,
-    activeKey
-  } = useAppSelector((state) => ({
+    tabs
+  }:{tabs: GroupTabItem[], [key:string]: any} = useAppSelector((state) => ({
     flowData: state.home.flowData,
     operatorParameters: state.home.operatorParameters,
     currentSelectNode: state.home.currentSelectNode,
@@ -591,25 +588,30 @@ const LeftEditor = memo(() => {
   }
 
   //上方面包屑控制画布群组导航
-  const tabClick = (currentLayer: number) => {
+  const tabClick = (clickLayer: number) => {
     //如果点击的是最新并且未设置群组
-    if ((currentLayer === 0 && tabs.length === 0) || currentLayer === tabs[tabs.length - 1].layer) {
+    if ((clickLayer === 0 && tabs.length === 0) || clickLayer === tabs.length) {
       return
     }
 
     if (!graphRef.current) {
       return
     }
+
     const graph = graphRef.current;
 
-    const {layer, groupCellId} = tabs[tabs.length - 1]
+    const {groupCellId: currentGroupCellId} = tabs[tabs.length - 1]
 
-    const groupNode = graph.getCellById(groupCellId) as Node;
+    const groupNode = graph.getCellById(currentGroupCellId) as Node;
 
     if (!groupNode) {
-      console.log(`群组节点${groupCellId}不存在`)
+      console.log(`群组节点${currentGroupCellId}不存在`)
       return
     }
+
+    graph.getCells().forEach(cell => {
+      cell.hide()
+    })
 
     const children = groupNode.getChildren() ?? []
 
@@ -620,7 +622,6 @@ const LeftEditor = memo(() => {
         item.prop(PreNodeInfo.PREVIOUS_NODE_RECT, {x, y, ...item.size()})
         item.setPosition(groupNode.position())
       }
-      item.hide()
     });
 
     const preGroupNodeRect = groupNode.prop(PreNodeInfo.PREVIOUS_NODE_RECT)
@@ -632,13 +633,13 @@ const LeftEditor = memo(() => {
 
     groupNode.prop(PreNodeInfo.PREVIOUS_NODE_RECT, {...groupNode.position({relative: true}), ...groupNode.size()})
 
+    const {groupCellId: clickGroupId} = tabs[clickLayer]
 
-    groupNode.show()
-    groupNode.setAttrs({fo: {visibility: "visible"}})
+    const clickGroupNode = graph.getCellById(clickGroupId) as Node;
 
-    const out = groupNode.parent ?? graph
-    const outerCells = (out instanceof Cell ?
-      out.getChildren() :
+    const currentBackground = clickGroupNode ?? graph
+    const outerCells = (currentBackground instanceof Cell ?
+      currentBackground.getChildren() :
       graph.getCells().filter(cell => !cell.parent)) ?? []
 
     //设置外部元素可选
@@ -653,8 +654,7 @@ const LeftEditor = memo(() => {
 
     window.graph = graph;
 
-    dispatch(removeGraphTabs(currentLayer))
-    dispatch(addActiveKey(-1))
+    dispatch(removeGraphTabs(clickLayer))
   }
 
   const getSubprocess = () => {
@@ -662,9 +662,9 @@ const LeftEditor = memo(() => {
       return
     }
 
-    return tabs.map((tab: GroupTabItem) =>
-      <Breadcrumb.Item onClick={() => (tabClick(tab.layer))} key={tab.layer}>
-        {`subprocess${tab.layer - 1}`}
+    return tabs.map((tab: GroupTabItem, index) =>
+      <Breadcrumb.Item onClick={() => (tabClick(index))} key={index}>
+        {`subprocess${index}`}
         <CaretRightOutlined/>
       </Breadcrumb.Item>
     )
@@ -734,9 +734,6 @@ const LeftEditor = memo(() => {
           <div className={styles['editor-content']}>
             <div className={styles["header-bread"]}>
               <Breadcrumb>
-                {<Breadcrumb.Item onClick={() => {
-                  tabClick(0)
-                }}>process<CaretRightOutlined/></Breadcrumb.Item>}
                 {getSubprocess()}
               </Breadcrumb>
             </div>
