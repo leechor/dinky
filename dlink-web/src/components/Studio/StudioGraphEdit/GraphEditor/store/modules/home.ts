@@ -125,7 +125,7 @@ const homeSlice = createSlice({
     },
 
     removeGraphTabs(state, { payload }) {
-      state.graphTabs =state.graphTabs.slice(0, payload + 1)
+      state.graphTabs = state.graphTabs.slice(0, payload + 1)
     },
 
     changeUnselectedCells(state, { payload }) {

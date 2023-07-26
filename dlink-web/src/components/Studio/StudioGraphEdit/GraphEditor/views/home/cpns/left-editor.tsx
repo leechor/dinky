@@ -591,7 +591,7 @@ const LeftEditor = memo(() => {
   //上方面包屑控制画布群组导航
   const tabClick = (clickLayer: number) => {
     //如果点击的是最新并且未设置群组
-    if ((clickLayer === 0 && tabs.length === 0) || clickLayer === tabs.length) {
+    if ((clickLayer === 0 && tabs.length === 0) || clickLayer === tabs.length - 1) {
       return
     }
 
@@ -600,21 +600,13 @@ const LeftEditor = memo(() => {
     }
 
     const graph = graphRef.current;
-
-    const {groupCellId: currentGroupCellId} = tabs[tabs.length - 1]
-
-    const groupNode = graph.getCellById(currentGroupCellId) as Node;
-
-    if (!groupNode) {
-      console.log(`群组节点${currentGroupCellId}不存在`)
-      return
-    }
-
+    // graph.getCells().forEach(cell => {
+    //   cell.hide()
+    // })
+    const groupNode = graph.getCellById(tabs[tabs.length - 1].groupCellId) as Node;
     shrinkGroupNode(graph, groupNode);
 
-    const {groupCellId: clickGroupId} = tabs[clickLayer]
-
-    const otherTopCells = graph.getCellById(clickGroupId)?.getChildren() ??
+    const otherTopCells = graph.getCellById(tabs[clickLayer].groupCellId)?.getChildren() ??
       graph.getCells().filter(cell => !cell.parent) ?? []
 
     //设置外部元素可选
@@ -628,7 +620,6 @@ const LeftEditor = memo(() => {
     });
 
     window.graph = graph;
-
     dispatch(removeGraphTabs(clickLayer))
   }
 
