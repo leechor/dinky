@@ -11,7 +11,11 @@ import {
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import store from '../store';
 import React from 'react';
-import {getGraphViewSize, PreNodeRect} from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper";
+import {
+  getGraphViewSize,
+  getPointsBox,
+  PreNodeRect
+} from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper";
 
 /**
  *
@@ -344,7 +348,9 @@ export const initGraph = (
       return
     }
 
-    const childrenBox = graph.getCellsBBox(innerCells)!
+    const preChildrenBox = getPointsBox(innerCells
+      .filter(item => item.isNode())
+      .map(item => item.prop(PreNodeInfo.PREVIOUS_NODE_RECT)))
 
     const innerOutputPorts = groupNode.getPortsByGroup("innerOutputs")
     graph?.getOutgoingEdges(groupNode)?.filter(edge =>
@@ -364,15 +370,18 @@ export const initGraph = (
     dispatch(addActiveKey(1))
     dispatch(addGraphTabs({groupCellId: groupNode.id, layer: 1, innerCells}))
 
-    const {width, height} = getGraphViewSize() ?? {width: 0, height: 0}
-    if (!width) {
+    const graphViewBox = getGraphViewSize()
+    if (!graphViewBox) {
       return
     }
 
-    groupNode.setPosition(groupNode.position().x + width, groupNode.position().y + height, {relative: true, deep: true});
+    groupNode.setPosition(
+      groupNode.position().x + graphViewBox.width,
+      groupNode.position().y + graphViewBox.height,
+      {relative: true, deep: true});
 
-    groupNode.resize(width / 2, height / 2, {direction: 'top-left'});
-    groupNode.resize(width, height, {direction: 'bottom-right'});
+    groupNode.resize(graphViewBox.width / 2, graphViewBox.height / 2, {direction: 'top-left'});
+    groupNode.resize(graphViewBox.width, graphViewBox.height, {direction: 'bottom-right'});
 
     graph.centerCell(groupNode)
     groupNode.toBack();
@@ -387,10 +396,11 @@ export const initGraph = (
 
     innerCells?.forEach(item => {
       if (item.isNode()) {
-        const preNodeRect = item.prop().preNodeRect
-        const x = width / 2 + preNodeRect.x
-        const y = height / 2+ preNodeRect.y
-        item.setPosition(x, y, {relative: true, deep: true})
+        const preNodeRect = item.prop(PreNodeInfo.PREVIOUS_NODE_RECT) as PreNodeRect
+        const {x: localX, y: localY} = graph.clientToLocal(graphViewBox.x, graphViewBox.y)
+        const x = (graphViewBox.width - preChildrenBox.width) / 2 + (preNodeRect.x - preChildrenBox.x) + localX
+        const y = (graphViewBox.height - preChildrenBox.height) / 2 + (preNodeRect.y - preChildrenBox.y) + localY
+        item.setPosition(x, y)
 
         if (item.shape === CustomShape.GROUP_PROCESS) {
           item.setAttrs({fo: {visibility: "visible"}})

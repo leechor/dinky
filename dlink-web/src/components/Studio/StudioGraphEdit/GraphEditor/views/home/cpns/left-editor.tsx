@@ -612,12 +612,11 @@ const LeftEditor = memo(() => {
     }
 
     const children = groupNode.getChildren() ?? []
-    const childrenBox = graph.getCellsBBox(groupNode.getChildren()?.filter(cell => cell.isNode())?? [])!
 
     children.forEach((item: Cell) => {
       if (item.isNode()) {
-        const x = item.position().x - childrenBox.x
-        const y = item.position().y - childrenBox.y
+        const x = item.position().x - groupNode.position().x
+        const y = item.position().y - groupNode.position().y
         item.prop(PreNodeInfo.PREVIOUS_NODE_RECT, new PreNodeRect({x, y}, item.size()))
         item.setPosition(groupNode.position())
       }
