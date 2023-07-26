@@ -617,20 +617,20 @@ const LeftEditor = memo(() => {
       if (item.isNode()) {
         const x = item.position().x - groupNode.position().x
         const y = item.position().y - groupNode.position().y
-        item.prop(PreNodeInfo.PREVIOUS_NODE_RECT, new PreNodeRect({x, y}, item.size()))
+        item.prop(PreNodeInfo.PREVIOUS_NODE_RECT, {x, y, ...item.size()})
         item.setPosition(groupNode.position())
       }
       item.hide()
     });
 
-    const preGroupNodeRect = groupNode.prop().preNodeRect
+    const preGroupNodeRect = groupNode.prop(PreNodeInfo.PREVIOUS_NODE_RECT)
 
     //移动组节点位置
-    groupNode.size(preGroupNodeRect.size)
-    groupNode.setPosition(preGroupNodeRect.position, {deep: true, relative: true})
+    groupNode.size(preGroupNodeRect.width, preGroupNodeRect.height)
+    groupNode.setPosition(preGroupNodeRect.x, preGroupNodeRect.y, {deep: true, relative: true})
     graph?.centerCell(groupNode)
 
-    groupNode.prop(PreNodeInfo.PREVIOUS_NODE_RECT, new PreNodeRect(groupNode.position({relative: true}), groupNode.size()))
+    groupNode.prop(PreNodeInfo.PREVIOUS_NODE_RECT, {...groupNode.position({relative: true}), ...groupNode.size()})
 
 
     groupNode.show()

@@ -360,7 +360,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({top = 0, left = 0, graph, no
     const subGraphCells = graph.model.getSubGraph(selectedNodes)
     groupNode.setChildren(subGraphCells)
 
-    groupNode.prop(PreNodeInfo.PREVIOUS_NODE_RECT, new PreNodeRect(groupNode.position({relative: true}), groupNode.size()))
+    groupNode.prop(PreNodeInfo.PREVIOUS_NODE_RECT, {...groupNode.position({relative: true}), ...groupNode.size()})
 
     const {width, height} = getGraphViewSize() ?? {}
     if (!width || !height) {
@@ -372,7 +372,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({top = 0, left = 0, graph, no
       if (item.isNode()) {
         const x = item.position().x - relativeParentPosition.x
         const y = item.position().y - relativeParentPosition.y
-        item.prop(PreNodeInfo.PREVIOUS_NODE_RECT, new PreNodeRect({x, y}, item.size()))
+        item.prop(PreNodeInfo.PREVIOUS_NODE_RECT, {x, y, ...item.size()})
         item.setPosition(groupNode.position())
       }
       item.hide()

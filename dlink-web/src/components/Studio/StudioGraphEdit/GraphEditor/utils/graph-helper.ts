@@ -19,7 +19,14 @@ const convertAbsoluteToRelativePositionNode = (source: Node, target: Node) => {
   return convertAbsoluteToRelativePosition(source.position(), target)
 }
 
-export const getPointsBox = (points: PreNodeRect[]) => {
+export interface PreNodeRect {
+  x: number,
+  y: number,
+  height: number,
+  width: number,
+}
+
+export const getPointsBox = (points: PreNodeRect[]): PreNodeRect => {
   let left: number, top: number, right: number, bottom: number, width: number = 0, height: number = 0;
   points.forEach((point) => {
     if (!point) {
@@ -40,27 +47,5 @@ export const getPointsBox = (points: PreNodeRect[]) => {
     width = right - left
     height = bottom - top
   })
-  return new PreNodeRect({x: left!, y: top!}, {width, height})
-}
-
-export class PreNodeRect {
-  height: number;
-  width: number;
-  x: number;
-  y: number;
-
-  constructor({x, y}: { x: number, y: number }, {width, height}: { width: number, height: number }) {
-    this.x = x;
-    this.y = y;
-    this.width = width;
-    this.height = height;
-  }
-
-  public get position() {
-    return {x: this.x, y: this.y}
-  }
-
-  public get size() {
-    return {width: this.width, height: this.height}
-  }
+  return {x: left!, y: top!, width, height}
 }
