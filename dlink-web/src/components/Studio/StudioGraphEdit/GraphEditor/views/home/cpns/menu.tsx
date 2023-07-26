@@ -348,7 +348,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({top = 0, left = 0, graph, no
     const selectRectangle = graph.getCellsBBox(selectedNodes)!;
     let relativeParentPosition = {x: selectRectangle.x, y: selectRectangle.y}
     if (haveSameParent) {
-      groupNode.setParent(selectNodeParents[0])
+      selectNodeParents[0]?.insertChild(groupNode)
       relativeParentPosition = convertAbsoluteToRelativePosition(selectRectangle, groupNode.parent as Node)
     }
 
@@ -357,7 +357,6 @@ export const CustomMenu: FC<MenuPropsType> = memo(({top = 0, left = 0, graph, no
       {relative: true, deep: true});
 
     const subGraphCells = graph.model.getSubGraph(selectedNodes)
-    groupNode.setChildren(subGraphCells)
 
     groupNode.prop(PreNodeInfo.PREVIOUS_NODE_RECT, {...groupNode.position({relative: true}), ...groupNode.size()})
 
@@ -367,7 +366,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({top = 0, left = 0, graph, no
     }
 
     subGraphCells.forEach(item => {
-      item.setParent(groupNode)
+      item.insertTo(groupNode)
       if (item.isNode()) {
         const x = item.position().x - relativeParentPosition.x
         const y = item.position().y - relativeParentPosition.y
@@ -379,13 +378,13 @@ export const CustomMenu: FC<MenuPropsType> = memo(({top = 0, left = 0, graph, no
 
     const selectedIncomingEdge: (Edge | null)[] = selectedNodes
       .flatMap(node => graph.model.getIncomingEdges(node))
-      .filter(edge => edge?.getSourceNode() && !selectedNodes.includes(edge.getSourceNode()!))
+      .filter(edge => !selectedNodes.includes(edge?.getSourceNode()!))
     addOuterPortAndEdge(selectedIncomingEdge, groupNode, "input")
     removeEdges(selectedIncomingEdge)
 
     const selectedOutgoingEdge: (Edge | null)[] = selectedNodes
       .flatMap(node => graph.model.getOutgoingEdges(node))
-      .filter(edge => edge?.getTargetNode() && !selectedNodes.includes(edge.getTargetNode()!))
+      .filter(edge =>!selectedNodes.includes(edge?.getTargetNode()!))
     addOuterPortAndEdge(selectedOutgoingEdge, groupNode, "output")
     removeEdges(selectedOutgoingEdge)
 

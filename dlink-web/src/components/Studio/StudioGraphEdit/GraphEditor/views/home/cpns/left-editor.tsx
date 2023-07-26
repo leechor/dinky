@@ -609,10 +609,6 @@ const LeftEditor = memo(() => {
       return
     }
 
-    graph.getCells().forEach(cell => {
-      cell.hide()
-    })
-
     const children = groupNode.getChildren() ?? []
 
     children.forEach((item: Cell) => {
@@ -622,11 +618,11 @@ const LeftEditor = memo(() => {
         item.prop(PreNodeInfo.PREVIOUS_NODE_RECT, {x, y, ...item.size()})
         item.setPosition(groupNode.position())
       }
+      item.hide()
     });
 
-    const preGroupNodeRect = groupNode.prop(PreNodeInfo.PREVIOUS_NODE_RECT)
-
     //移动组节点位置
+    const preGroupNodeRect = groupNode.prop(PreNodeInfo.PREVIOUS_NODE_RECT)
     groupNode.size(preGroupNodeRect.width, preGroupNodeRect.height)
     groupNode.setPosition(preGroupNodeRect.x, preGroupNodeRect.y, {deep: true, relative: true})
     graph?.centerCell(groupNode)
@@ -635,17 +631,13 @@ const LeftEditor = memo(() => {
 
     const {groupCellId: clickGroupId} = tabs[clickLayer]
 
-    const clickGroupNode = graph.getCellById(clickGroupId) as Node;
-
-    const currentBackground = clickGroupNode ?? graph
-    const outerCells = (currentBackground instanceof Cell ?
-      currentBackground.getChildren() :
-      graph.getCells().filter(cell => !cell.parent)) ?? []
+    const otherTopCells = graph.getCellById(clickGroupId)?.getChildren() ??
+      graph.getCells().filter(cell => !cell.parent) ?? []
 
     //设置外部元素可选
-    graph.setSelectionFilter(cell => outerCells.map((c: Cell) => c.id).includes(cell.id))
+    graph.setSelectionFilter(cell => otherTopCells.map((c: Cell) => c.id).includes(cell.id))
 
-    outerCells.forEach((cell: Cell) => {
+    otherTopCells.forEach((cell: Cell) => {
       cell.show()
       if (cell.shape == CustomShape.GROUP_PROCESS) {
         cell.setAttrs({fo: {visibility: "visible"}})
