@@ -101,11 +101,22 @@ export async function getInfoById(url: string, id: number) {
 }
 
 export async function getNodePreviewInfo(url: string, body: any) {
+  
+  console.log(body);
+
   return request2(url, {
-    method: 'POST',
-    data: { ...body },
+    method: 'PUT',
+    data: body,
   });
 }
+
+export async function getDataSourceType(url: string) {
+  return request2(url, {
+    method: 'GET',
+  });
+}
+
+
 
 export const handleAddOrUpdate = async (url: string, fields: any) => {
   const tipsTitle = fields.id ? l('app.request.update') : l('app.request.add');

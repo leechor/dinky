@@ -24,10 +24,12 @@ import {
   changePositon,
   addActiveKey,
   changePreviewInfo,
+  changeDataSourceInfo,
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import type { GroupTabItem } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import localCache from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/localStorage"
 import CustomShape from '../../../utils/cons';
+import DataSourceModal from '../../../components/data-source-modal';
 
 
 export interface ParametersConfigType {
@@ -50,6 +52,9 @@ interface ReadConfigData {
   currentPort: string,
   id?: string
 }
+enum DataSourceType {
+  Mysql = "Mysql"
+}
 export interface ParametersData {
   isOutputs: boolean,
   parametersConfig: ParametersConfigType[],
@@ -63,7 +68,7 @@ function strMapToObj(strMap: Map<string, ParametersConfigType[]>) {
   return obj
 }
 const portType: PortTypes = { inputs: "inputs", outputs: "outputs" }
-const LeftEditor = memo(() => {
+const LeftEditor = memo((props) => {
   let timer: any = null;
   const [selectedNodes, setSelectedNodes] = useState<Node[]>([]);
   const [showMenuInfo, setShowMenuInfo] = useState<{
@@ -86,16 +91,19 @@ const LeftEditor = memo(() => {
   const dispatch = useAppDispatch();
 
 
-  const { flowData, operatorParameters: operatorParameters, jsonEditor, taskName, tabs, activeKey, previewInfo } = useAppSelector((state) => ({
-    flowData: state.home.flowData,
-    operatorParameters: state.home.operatorParameters,
-    currentSelectNode: state.home.currentSelectNode,
-    jsonEditor: state.home.editor,
-    taskName: state.home.taskName,
-    tabs: state.home.graphTabs,
-    activeKey: state.home.activeKey,
-    previewInfo: state.home.previewInfo
-  }));
+  const { flowData, operatorParameters: operatorParameters, currentSelectNode,
+    jsonEditor, taskName, tabs, activeKey, previewInfo, dataSourceInfo }
+    = useAppSelector((state) => ({
+      flowData: state.home.flowData,
+      operatorParameters: state.home.operatorParameters,
+      currentSelectNode: state.home.currentSelectNode,
+      jsonEditor: state.home.editor,
+      taskName: state.home.taskName,
+      tabs: state.home.graphTabs,
+      activeKey: state.home.activeKey,
+      previewInfo: state.home.previewInfo,
+      dataSourceInfo: state.home.dataSourceInfo
+    }));
 
 
 
@@ -451,16 +459,46 @@ const LeftEditor = memo(() => {
     dispatch(changePreviewInfo({ node: null, values: "", isShow: false }))
   }
   const handlePreviewSubmit = () => { }
+  const handleDataSourceSubmit = (datas: any) => {
+    const { tableItem, value: data, type, tableName } = datas
+    //将数据源配置到config
+
+    switch (type) {
+      case DataSourceType.Mysql:
+        const jsonconfig = cloneDeep(jsonEditor.getValue());
+        const { url, username, password } = tableItem;
+        const getType = (str: string) => {
+          const lastIndex = str.lastIndexOf("_");
+          if (lastIndex !== -1) {
+            const result = str.substring(lastIndex + 1)
+            return result
+          } else {
+            return str
+          }
+        }
+        const columns = data.map((item: any) => ({
+          flag: true,
+          type: getType(item.javaType),
+          name: item.name
+        }))
+        const newJsonConfig = { ...jsonconfig, url, username, password, columns, tableName }
+        jsonEditor.setValue(newJsonConfig)
+        message.success("配置成功！")
+        break
+    }
+
+
+
+  }
+  const handleDataSourceCancel = () => {
+    dispatch(changeDataSourceInfo({ datas: "", isShowModal: false, node: null, type: "" }))
+  }
   const changeNode = (node: Cell) => {
     dispatch(changeCurrentSelectNode(node))
   }
   const changePosition = (x: number, y: number) => {
     dispatch(changePositon({ x, y }))
   }
-  const handleClickMenu = (e: any, current: any) => {
-
-
-  };
   //上方面包屑控制画布群组导航
   const tabClick = (currentIndex: number) => {
 
@@ -668,6 +706,14 @@ const LeftEditor = memo(() => {
         modalVisible={previewInfo.isShow}
         values={previewInfo.values}
         node={previewInfo.node} />
+
+      <DataSourceModal onSubmit={(value: any) => handleDataSourceSubmit(value)}
+        onCancel={() => handleDataSourceCancel()}
+        modalVisible={dataSourceInfo.isShowModal}
+        values={dataSourceInfo.datas}
+        node={dataSourceInfo.node}
+        type={dataSourceInfo.type}
+      />
     </>
 
   );

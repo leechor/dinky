@@ -15,10 +15,10 @@ type NodeModalProps = {
     onSubmit: (values: string) => void;
     modalVisible: boolean;
     values: string;
-    node: Node|null,
+    node: Node | null,
 };
 
-const TitleByNodeType = (selectedNode: Node) => {
+export const TitleByNodeType = (selectedNode: Node) => {
     if (!selectedNode.shape) {
         return <span style={{ paddingLeft: "5px" }}>{selectedNode.shape}</span>
     }

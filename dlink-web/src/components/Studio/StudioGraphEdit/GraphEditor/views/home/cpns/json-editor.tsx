@@ -97,6 +97,7 @@ const Editor = memo(() => {
     });
 
     editor.on('change', function () {
+      
       //先恢复初始值
       dispatch(changeCurrentSelectNodeParamsData([]));
       dispatch(changeCurrentSelectNodeParamsData(editor.getValue()));

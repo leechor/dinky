@@ -1,5 +1,6 @@
 export type Parameter = {
   code: string,
+  type: string | null;
   name: string;
   group: string;
   feature: {

@@ -18,22 +18,25 @@
  */
 
 
-import React, {useEffect, useState} from "react";
-import {SearchOutlined} from '@ant-design/icons';
+import React, { useEffect, useState } from "react";
+import { SearchOutlined } from '@ant-design/icons';
 import ProTable from '@ant-design/pro-table';
-import {getData} from "@/components/Common/crud";
-import {Button, Input, Space} from "antd";
-import {l} from "@/utils/intl";
+import { getData } from "@/components/Common/crud";
+import { Button, Input, Space } from "antd";
+import { l } from "@/utils/intl";
 
 const DTable = (props: any) => {
 
-  const {dataSource, columns, scroll} = props;
+  const { dataSource, columns, scroll, getDBInfo } = props;
 
   const [data, setData] = useState<[]>([]);
 
   const refreshData = async () => {
     const msg = await getData(dataSource.url, dataSource.params);
+    console.log(msg, "msg>>>>>>>>>>>>>>>>>");
+    
     setData(msg.datas);
+    getDBInfo({ datas: msg.datas, tableName: dataSource.params.tableName })
   };
 
   const buildColumn = () => {
@@ -66,7 +69,7 @@ const DTable = (props: any) => {
         }
       }
       if (openSearch === 'like') {
-        column = {...column, ...getColumnSearchProps(column.dataIndex),}
+        column = { ...column, ...getColumnSearchProps(column.dataIndex), }
       } else if (openSearch === 'dict') {
         column = {
           onFilter: (value, record) => record[column.dataIndex] === value,
@@ -90,7 +93,7 @@ const DTable = (props: any) => {
   return (
     <ProTable
       columns={buildColumn()}
-      style={{width: '100%'}}
+      style={{ width: '100%' }}
       scroll={scroll}
       dataSource={dataSource ? (dataSource.url ? data : dataSource) : []}
       rowKey="name"
@@ -108,32 +111,32 @@ const DTable = (props: any) => {
 export default DTable;
 
 export const getColumnSearchProps = (dIndex) => ({
-  filterDropdown: ({setSelectedKeys, selectedKeys, confirm, clearFilters}) => (
-    <div style={{padding: 8}}>
+  filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+    <div style={{ padding: 8 }}>
       <Input
         placeholder={l('pages.searchTable.keyword')}
         value={selectedKeys[0]}
         onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
         onPressEnter={() => handleSearch(selectedKeys, confirm, dIndex)}
-        style={{marginBottom: 8, display: 'block'}}
+        style={{ marginBottom: 8, display: 'block' }}
       />
       <Space>
         <Button
           type="primary"
           onClick={() => handleSearch(selectedKeys, confirm, dIndex)}
-          icon={<SearchOutlined/>}
+          icon={<SearchOutlined />}
           size="small"
-          style={{width: 90}}
+          style={{ width: 90 }}
         >
           {l('button.search')}
         </Button>
-        <Button onClick={() => handleReset(clearFilters)} size="small" style={{width: 90}}>
+        <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
           {l('button.reset')}
         </Button>
       </Space>
     </div>
   ),
-  filterIcon: filtered => <SearchOutlined style={{color: filtered ? '#1890ff' : undefined}}/>,
+  filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
   onFilter: (value, record) =>
     record[dIndex]
       ? record[dIndex].toString().toLowerCase().includes(value.toLowerCase())

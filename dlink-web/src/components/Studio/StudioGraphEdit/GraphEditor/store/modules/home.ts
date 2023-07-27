@@ -68,6 +68,12 @@ interface GraphEditorData {
     values: string,
     node: Node | null,
     isShow: boolean
+  },
+  dataSourceInfo: {
+    isShowModal: false,
+    datas: any,
+    node: Node | null,
+    type: string,
   }
 
 }
@@ -91,7 +97,13 @@ const initialState: GraphEditorData = {
   activeKey: 0,
   position: { x: 0, y: 0 },
   verifyOperDatas: [],
-  previewInfo: { values: "", node: null, isShow: false }
+  previewInfo: { values: "", node: null, isShow: false },
+  dataSourceInfo: {
+    isShowModal: false,
+    datas: null,
+    node: null,
+    type: "",
+  },
 
 }
 const homeSlice = createSlice({
@@ -177,6 +189,9 @@ const homeSlice = createSlice({
     },
     changePreviewInfo(state, { payload }) {
       state.previewInfo = payload
+    },
+    changeDataSourceInfo(state, { payload }) {
+      state.dataSourceInfo = payload
     }
   },
   extraReducers: {},
@@ -199,7 +214,8 @@ export const {
   changeUnselectedCells,
   changePositon,
   changeVerifyOperDatas,
-  changePreviewInfo
+  changePreviewInfo,
+  changeDataSourceInfo
 } = homeSlice.actions;
 
 export default homeSlice.reducer;

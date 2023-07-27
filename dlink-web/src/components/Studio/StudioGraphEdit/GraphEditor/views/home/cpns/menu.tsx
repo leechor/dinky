@@ -17,13 +17,15 @@ import {
   AlignCenterOutlined,
   BgColorsOutlined,
   UploadOutlined,
-  EyeOutlined
+  EyeOutlined,
+  DatabaseOutlined
 } from '@ant-design/icons';
 import CustomShape from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
 import { useAppSelector, useAppDispatch } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
+import type { Parameter } from '@/components/Studio/StudioGraphEdit/GraphEditor/ts-define/parameter';
 import { formatDate } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/math"
-import { changePreviewInfo } from '../../../store/modules/home';
-import { getNodePreviewInfo } from '@/components/Common/crud';
+import { changePreviewInfo, changeDataSourceInfo } from '../../../store/modules/home';
+import { getNodePreviewInfo, getDataSourceType } from '@/components/Common/crud';
 
 type MenuPropsType = {
   top: number;
@@ -76,10 +78,17 @@ const DuplicateOperatorMenu = () => {
 
 export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, node, handleShowMenu, show }) => {
 
-  const { taskName } = useAppSelector((state) => ({
-    taskName: state.home.taskName
+  const { taskName, operatorParameters } = useAppSelector((state) => ({
+    taskName: state.home.taskName,
+    operatorParameters: state.home.operatorParameters
+
   }));
   const dispatch = useAppDispatch();
+
+  const isDataSource: boolean = operatorParameters.filter((op: Parameter) => op.group.includes("dataSource")).some((op: Parameter) => op.code === node?.shape)
+
+  console.log(operatorParameters, node, "operatorParameters-node");
+
   const convertHorizontalAlign = (align: string) => {
     switch (align) {
       case 'left':
@@ -294,6 +303,9 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
       case "preview":
         preview()
         break;
+      case "setDataSource":
+        setDataSource()
+        break;
       case "import":
         uploadFileClick()
         break;
@@ -380,10 +392,30 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
   }
   const preview = async () => {
     const data = graph.toJSON().cells.find(cell => cell.id === node!.id)
-    const { datas, msg } = await getNodePreviewInfo("/api/zdpx/preview", data)
+    const { datas, msg, code } = await getNodePreviewInfo("/api/zdpx/preview", JSON.stringify(data))
     console.log(datas, msg);
+    if (code === 1) {
+      messageApi.error(msg)
+    }
+    if (code === 0) {
+      dispatch(changePreviewInfo({ node, values: datas, isShow: true }))
+    }
 
-    dispatch(changePreviewInfo({ node, values: datas, isShow: true }))
+
+
+  }
+  const setDataSource = async () => {
+    
+    const op: Parameter = operatorParameters.find((op: Parameter) => op.code === node?.shape)
+    const { datas, msg, code } = await getDataSourceType(`/api/database/listEnabledByType/${op.type}`);
+    console.log(datas, msg, code);
+    if (code === 1) {
+      messageApi.error(msg)
+    }
+    if (code === 0) {
+      dispatch(changeDataSourceInfo({ isShowModal: true, datas, node, type: op.type }))
+    }
+
 
   }
   const addOuterPortAndEdge = (outEdge: (Edge | null)[], groupNode: Node, type: OuterEdgeType) => {
@@ -663,6 +695,12 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
         />
 
       </>}
+      {(node && isDataSource) && <MenuItem
+        onClick={onMenuItemClick}
+        name="setDataSource"
+        icon={<DatabaseOutlined />}
+        text="Select dataSource"
+      />}
       <MenuItem
         onClick={onMenuItemClick}
         name="undo"
