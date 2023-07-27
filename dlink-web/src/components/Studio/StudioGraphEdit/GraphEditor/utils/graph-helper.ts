@@ -54,11 +54,17 @@ export const getPointsBox = (points: PreNodeRect[]): PreNodeRect => {
 export function shrinkGroupNode(graph: Graph, groupNode: Node) {
   const children = groupNode.getChildren() ?? []
 
+  //移动组节点位置
+  const preGroupNodeRect = groupNode.prop(PreNodeInfo.PREVIOUS_NODE_RECT)
+  groupNode.size(preGroupNodeRect.width, preGroupNodeRect.height)
+  groupNode.setPosition(preGroupNodeRect.x, preGroupNodeRect.y, {deep: true, relative: true})
+  graph?.centerCell(groupNode)
+
+  groupNode.prop(PreNodeInfo.PREVIOUS_NODE_RECT, {...groupNode.position({relative: true}), ...groupNode.size()})
+
   children.forEach((cell: Cell) => {
     if (cell.isNode()) {
-      const x = cell.position().x - groupNode.position().x
-      const y = cell.position().y - groupNode.position().y
-      cell.prop(PreNodeInfo.PREVIOUS_NODE_RECT, {x, y, ...cell.size()})
+      cell.prop(PreNodeInfo.PREVIOUS_NODE_RECT, {...cell.position({relative: true}), ...cell.size()})
       cell.setPosition(groupNode.position())
 
       if (cell.shape === CustomShape.GROUP_PROCESS) {
@@ -68,11 +74,4 @@ export function shrinkGroupNode(graph: Graph, groupNode: Node) {
     cell.hide()
   });
 
-  //移动组节点位置
-  const preGroupNodeRect = groupNode.prop(PreNodeInfo.PREVIOUS_NODE_RECT)
-  groupNode.size(preGroupNodeRect.width, preGroupNodeRect.height)
-  groupNode.setPosition(preGroupNodeRect.x, preGroupNodeRect.y, {deep: true, relative: true})
-  graph?.centerCell(groupNode)
-
-  groupNode.prop(PreNodeInfo.PREVIOUS_NODE_RECT, {...groupNode.position({relative: true}), ...groupNode.size()})
 }
