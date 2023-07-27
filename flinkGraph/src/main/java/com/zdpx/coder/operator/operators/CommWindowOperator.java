@@ -38,7 +38,8 @@ public class CommWindowOperator extends Operator {
 
     public static final String TEMPLATE =
             String.format(
-                    "<#import \"%s\" as e>CREATE VIEW ${tableName} AS SELECT <@e.fieldsProcess columns/> FROM ${inputTableName} " +
+                    "<#import \"%s\" as e>CREATE VIEW ${tableName} AS SELECT <@e.fieldsProcess columns/> " +
+                            "FROM ${inputTableName} <#if options??>/*+ OPTIONS('${options.key}'='${options.val}') */</#if>" +
                             "<#if where??>WHERE ${where}</#if> " +
                             "<#if window??> ${window.windowFunction} ( TABLE ${window.table} , DESCRIPTOR(${window.descriptor}), " +
                             "<#if window.slide??>INTERVAL '${window.slide.timeSpan}' ${window.slide.timeUnit},</#if> " +
@@ -105,6 +106,10 @@ public class CommWindowOperator extends Operator {
         p.put(LIMIT, parameters.get(LIMIT));
         p.put(ID, parameters.get(ID));
         p.put(CONFIG,formatProcessing(parameters));
+
+        if(parameters.get(OPTIONS)!=null&&!parameters.get(OPTIONS).equals("")){
+            p.put(OPTIONS,parameters.get(OPTIONS));
+        }
 
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> order = (List<Map<String, Object>>) parameters.get(ORDER_BY);

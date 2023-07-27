@@ -16,16 +16,19 @@
 			"tableName": {
 				"type": "string",
 				"title": "tableName",
+				"pattern":"^[A-Za-z0-9_]*$",
 				"description": "表名称，若为空将随机生成"
 			},
             "partition": {
               "type": "string",
+			  "pattern":"^[A-Za-z0-9_]*$",
               "minLength": 1,
               "description": "分组，分配计算节点"
             },
             "orderBy": {
               "type": "string",
               "minLength": 1,
+			  "pattern":"^[A-Za-z0-9_]*$",
               "description": "在窗口内，对事件时间进行排序",
               "format": "autoinput",
               "autoinput": {
@@ -57,7 +60,7 @@
                 "enum":["LAST_ROW","NEXT_ROW","LAST","FIRST"]
             },
             "variable": {
-                "type": "string",
+                "type": "integer",
                 "description": "跳过的行数，strategy为‘LAST’或‘FIRST’时需要指定"
             }
         }
@@ -87,6 +90,7 @@
             "variable": {
                 "type": "string",
                 "minLength": 1,
+				"pattern":"^[A-Za-z0-9-_]*$",
                 "description": "定义事件名称"
             },
             "quantifier": {
@@ -117,6 +121,7 @@
             },
             "name": {
                 "type": "string",
+				"pattern":"^[A-Za-z0-9_]*$",
                 "title": "outName"
             },
             "parameters": {
@@ -124,6 +129,7 @@
                 "minItems": 1,
                 "title": "parameters",
                 "items": {
+					"pattern":"^[A-Za-z0-9_]*$",
                    "type": "string"
                 }
             },
@@ -151,6 +157,7 @@
                         "variable": {
                             "type": "string",
                             "minLength": 1,
+							"pattern":"^[A-Za-z0-9_]*$",
                             "description": "事件名称"
                         },
                         "condition": {

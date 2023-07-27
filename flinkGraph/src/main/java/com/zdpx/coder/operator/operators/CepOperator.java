@@ -220,9 +220,7 @@ public class CepOperator extends Operator {
 
         Map<String, List<String>> portInformation = new HashMap<>();
         List<String> list = new ArrayList<>();
-        List<Column> collect = ((TableInfo) map.get(TABLE_INFO)).getColumns().stream()
-                 .filter(item -> item.getType()!=null)
-                 .filter(item -> item.getType().contains("TIMESTAMP")).collect(Collectors.toList());
+        List<Column> collect = ((TableInfo) map.get(TABLE_INFO)).getColumns().stream().filter(item -> item.getType()!=null&&item.getType().contains("TIMESTAMP")).collect(Collectors.toList());
         if (collect.isEmpty()) {
             list.add("CEP算子入参需要包含时间属性字段，类型包括TIMESTAMP(3)、TIMESTAMP_LTZ(3)等");
         }else{

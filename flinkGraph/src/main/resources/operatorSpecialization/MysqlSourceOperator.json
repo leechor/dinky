@@ -90,14 +90,7 @@
 						"type": "string",
 						"minLength": 1,
 						"title": "name",
-						"examples": [
-							"typ",
-							"taskId",
-							"taskStatus",
-							"dt",
-							"WATERMARK FOR dt AS dt - INTERVAL '15' SECOND",
-							"PRIMARY KEY(taskId) NOT ENFORCED "
-						],
+						"pattern":"^[A-Za-z0-9_]*$",
 						"description": "字段名名称"
 					},
 					"type": {
@@ -105,7 +98,7 @@
 						"minLength": 1,
 						"title": "type",
 						"default": "STRING",
-						"enum":["CHAR","VARCHAR","STRING","BOOLEAN","BINARY","VARBINARY","BYTES","DECIMAL","TINYINT","SMALLINT","INTEGER","BIGINT","FLOAT","DOUBLE","DATE","TIME","TIMESTAMP(3)","TIMESTAMP_LTZ(3)","INTERVAL","ARRAY","MULTISET","MAP","ROW","RAW"],
+						"enum":["CHAR","VARCHAR","STRING","BOOLEAN","BINARY","VARBINARY","BYTES","DECIMAL","TINYINT","SMALLINT","INT","BIGINT","FLOAT","DOUBLE","DATE","TIME","TIMESTAMP","TIMESTAMP(3)","TIMESTAMP_LTZ(3)","INTERVAL","ARRAY","MULTISET","MAP","ROW","RAW"],
 						"examples": [
 							"STRING",
 							"INT",
@@ -122,6 +115,7 @@
 		},
 		"primary":{
 			"type": "string",
+			"pattern":"^[A-Za-z0-9_.]*$",
 			"description": "设置主键"
 		},
 		
@@ -130,6 +124,7 @@
 		  "properties": {
 			"column": {
 				"type": "string",
+				"pattern":"^[A-Za-z0-9_]*$",
 				"description": "指定为watermark的列，需要TIMESTAMP或TIMESTAMP_LTZ类型"
 			},
 			"timeSpan": {

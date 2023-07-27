@@ -21,6 +21,7 @@
 			"type": "string",
 			"minLength": 1,
 			"title": "hosts",
+			"pattern":"^[A-Za-z0-9:-_./]*$",
 			"default": "http://localhost:9200",
 			"examples": [
 				"http://localhost:9200"
@@ -94,6 +95,7 @@
 						"type": "string",
 						"minLength": 1,
 						"title": "name",
+						"pattern":"^[A-Za-z0-9_]*$",
 						"examples": [
 							"typ",
 							"taskId",
@@ -126,6 +128,7 @@
 		},
 		"primary":{
 			"type": "string",
+			"pattern":"^[A-Za-z0-9_]*$",
 			"description": "设置主键"
 		},
 		"watermark":{
@@ -133,6 +136,7 @@
 		  "properties": {
 			"column": {
 				"type": "string",
+				"pattern":"^[A-Za-z0-9_]*$",
 				"description": "指定为watermark的列，需要TIMESTAMP或TIMESTAMP_LTZ类型"
 			},
 			"timeSpan": {

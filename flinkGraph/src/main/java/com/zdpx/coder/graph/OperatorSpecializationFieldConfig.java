@@ -83,6 +83,8 @@ public class OperatorSpecializationFieldConfig {
     //自定义数据源中自定义参数的值
     public static final String VALUES = "values";
 
+    //hints动态表功能增强
+    public static final String OPTIONS = "options";
 
     /**
      * 函数字段名常量
