@@ -69,6 +69,8 @@ public abstract class Operator extends Node implements Runnable {
     protected Map<String, String> userFunctions;
     private SceneCodeBuilder sceneCodeBuilder;
 
+    protected String type;
+
     protected JsonSchemaValidator jsonSchemaValidator = new JsonSchemaValidator();
 
     @SuppressWarnings({"NullAway.Init", "PMD.UnnecessaryConstructor"})
@@ -80,6 +82,10 @@ public abstract class Operator extends Node implements Runnable {
         this.nodeWrapper = nodeWrapper;
         initialize();
         definePropertySchema();
+    }
+
+    public String getType() {
+        return type;
     }
 
     /**
@@ -178,16 +184,17 @@ public abstract class Operator extends Node implements Runnable {
      * 校验输入参数是否正确.
      */
     protected void validParameters() {
+        String[] split = this.getClass().getName().split("\\.");//获取算子名称
         String parametersString = getParametersString();
         if (jsonSchemaValidator.getSchema() == null) {
-            log.warn("{} operator not parameter validation schema.", this.getName());
+            log.warn("{} operator not parameter validation schema.", split[split.length-1]);
             return;
         }
 
         Set<ValidationMessage> validationMessages = jsonSchemaValidator.validate(parametersString);
         if (!CollectionUtils.isEmpty(validationMessages)) {
             for (ValidationMessage validationMessage : validationMessages) {
-                log.error("{} operator parameters error: {}", this.getName(), validationMessage);
+                log.error("{} operator parameters error: {}", split[split.length-1], validationMessage);
             }
             throw new InvalidParameterException(validationMessages.toString());
         }
@@ -324,9 +331,7 @@ public abstract class Operator extends Node implements Runnable {
     protected List<Map<String, Object>> getParameterLists() {
         List<Map<String, Object>> parameterLists = getParameterLists(this.nodeWrapper.getParameters());
         Map<String, Object> map = new HashMap<>();
-        if (this.nodeWrapper.getConfig() != null) {
-            map.put(CONFIG, getParameterLists(this.nodeWrapper.getConfig()));
-        }
+        map.put(CONFIG, getParameterLists(this.nodeWrapper.getConfig()));
         map.put(ID, id);//节点校验需要使用
 
         parameterLists.add(map);
@@ -394,31 +399,28 @@ public abstract class Operator extends Node implements Runnable {
 
     //处理config中的数据格式和勾选情况
     public List<Map<String, Object>> formatProcessing(Map<String, Object> dataModel) {
-        //从config中获取输入
+
+        List<Map<String, Object>> input = new ArrayList<>();
         @SuppressWarnings("unchecked")
         List<Map<String, List<Map<String, Object>>>> config = (List<Map<String, List<Map<String, Object>>>>) dataModel.get(CONFIG);
-        List<Map<String, Object>> input = new ArrayList<>();
-        for (Map<String, List<Map<String, Object>>> map : config) {
-            for (Map.Entry<String, List<Map<String, Object>>> m2 : map.entrySet()) {
+        if(config.size()!=0){
+            //从config中获取输入
+            for (Map.Entry<String, List<Map<String, Object>>> m2 : config.get(0).entrySet()) {
                 String[] split = m2.getKey().split("&");
-                String tableName = split[split.length-1];
-                List<Map<String, Object>> value = m2.getValue();
-                for (Map<String, Object> l : value) {
+                m2.getValue().forEach(l->{
                     if ((boolean) l.get(FLAG)) {
-                        l.put(TABLE_NAME,tableName);
+                        l.put(TABLE_NAME,split[split.length-1]);
                         input.add(l);
                     }
-                }
+                });
             }
+
+            //删除没有勾选的字段
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> output = (List<Map<String, Object>>) dataModel.get(COLUMNS);
+            output.removeIf(s -> !(boolean) s.get(FLAG));
         }
-        //删除没有勾选的字段
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> output = (List<Map<String, Object>>) dataModel.get(COLUMNS);
-        for (Map<String, Object> s : output) {
-            if (!(boolean) s.get(FLAG)) {
-                output.remove(s);
-            }
-        }
+
         return input;
     }
 
@@ -456,11 +458,6 @@ public abstract class Operator extends Node implements Runnable {
         Operator operator = (Operator) o;
         return nodeWrapper.equals(operator.nodeWrapper);
     }
-
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(nodeWrapper);
-//    }
 
     public Map<String, InputPort<? extends PseudoData<?>>> getInputPorts() {
         return inputPorts;

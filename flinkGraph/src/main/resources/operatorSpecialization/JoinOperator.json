@@ -20,6 +20,7 @@
 		},
 		"systemTimeColumn": {
 		  "type": "string",
+		  "pattern":"^[A-Za-z0-9_]*$",
 		  "description": "设置时间基准列，需要时间属性字段"
 		},
 		"columnList": {
@@ -35,16 +36,41 @@
 				"properties": {
 					"onLeftColumn": {
 						"type": "string",
+						"pattern":"^[A-Za-z0-9_]*$",
 						"description": "左表的连接字段"
 					},
 					"onRightColumn": {
 						"type": "string",
+						"pattern":"^[A-Za-z0-9_]*$",
 						"description": "右表的连接字段"
 					}
 				}
 			}
 		},
-		
+
+		"hints": {
+		  "description": "选择提示字段",
+		  "type": "array",
+		  "items": {
+		    "type": "object",
+			"title": "hints",
+		    "properties": {
+				"joinHints": {
+				  "type": "string",
+				  "enum":["BROADCAST","SHUFFLE_HASH","SHUFFLE_MERGE","NEST_LOOP"],
+				  "description": "选择连接提示"
+				},
+				"joinColumn": {
+				  "description": "选择提示字段",
+				  "type": "array",
+					"items": {
+					   "type": "string",
+					   "pattern":"^[A-Za-z0-9_]*$"
+					}
+				}
+		    }
+		  }
+		},
 		
 		"where":{
 		  "type":"string",
@@ -67,6 +93,7 @@
 					},
 					"name": {
 						"type": "string",
+						"pattern":"^[A-Za-z0-9_]*$",
 						"title": "The outName Schema"
 					},
 					"parameters": {
@@ -74,7 +101,8 @@
 						"minItems": 1,
 						"title": "The parameters Schema",
 						"items": {
-						   "type": "string"
+						   "type": "string",
+						   "pattern":"^[A-Za-z0-9_]*$"
 						}
 					},
 					"inputTable":{

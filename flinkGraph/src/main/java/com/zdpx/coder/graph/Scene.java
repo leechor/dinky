@@ -145,6 +145,7 @@ public class Scene {
                             try {
                                 ObjectNode result =(ObjectNode) getOperationJsonNode(t, operator);
                                 JsonNode portsJsonNode = generateJsonPorts(operator);
+                                result.put("type",operator.getType());
                                 result.set("ports", portsJsonNode);
                                 return result;
                             } catch (JsonProcessingException e) {

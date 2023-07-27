@@ -52,7 +52,6 @@ public class TaskFlowGraphController {
     public Result<List<CheckInformationModel>> submitSql(@RequestBody Task task) {
         List<CheckInformationModel> msg = taskFlowGraphService.saveOrUpdateTask(task);
         if (!msg.isEmpty()) {
-//            return Result.succeed(msg);
             return Result.succeed(msg);
         } else {
             return Result.succeed("保存成功，并且无报错信息");
@@ -74,10 +73,10 @@ public class TaskFlowGraphController {
         return Result.succeed(configurations);
     }
 
-    @PutMapping("preview")
-    public Result<List<JsonNode>> operatorPreview(@RequestBody String graph) {
-        taskFlowGraphService.operatorPreview(graph);
-        return Result.succeed();
+    @PutMapping("/preview")
+    public Result<String> operatorPreview(@RequestBody String graph) {
+        String s = taskFlowGraphService.operatorPreview(graph);
+        return Result.data(s);
     }
 
 }

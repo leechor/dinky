@@ -1,35 +1,35 @@
-import { memo, useEffect, useRef, useState } from 'react';
-import { Graph, Node, Cell, Edge } from '@antv/x6';
-import { cloneDeep } from 'lodash';
-import { message, Breadcrumb } from 'antd';
-import { CaretRightOutlined } from '@ant-design/icons';
+import {memo, useEffect, useRef, useState} from 'react';
+import {Cell, Edge, Graph, Node} from '@antv/x6';
+import {cloneDeep} from 'lodash';
+import {Breadcrumb, message} from 'antd';
+import {CaretRightOutlined} from '@ant-design/icons';
 
-import { handleInitPort } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/ports-register';
-import { initGraph } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/init-graph';
-import { stencilComponentsLoader } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/stencil-components-loader';
-import { initStencil } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/init-stencil';
-import { handleInitNodes } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/node-by-data-loader';
+import {handleInitPort} from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/ports-register';
+import {initGraph} from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/init-graph';
+import {stencilComponentsLoader} from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/stencil-components-loader';
+import {initStencil} from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/init-stencil';
+import {handleInitNodes} from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/node-by-data-loader';
 import registerShape from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/shape-register';
 import unRegisterShape from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/shape-unregister';
-import { useAppDispatch, useAppSelector, } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
-import { CustomMenu } from './menu';
-import { initMenu } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/init-menu';
+import {useAppDispatch, useAppSelector,} from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
+import {CustomMenu} from './menu';
+import {initMenu} from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/init-menu';
 import NodeModalForm from '@/components/Studio/StudioGraphEdit/GraphEditor/components/node-modal-form';
 import NodeModalPreview from '../../../components/node-preview-modal';
 import styles from './index.less';
 import AddModalPort from '../../../components/add-port-modal';
+import type {GroupTabItem} from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import {
   changeCurrentSelectNode,
-  removeGraphTabs,
   changePositon,
-  addActiveKey,
   changePreviewInfo,
   changeDataSourceInfo,
+  removeGraphTabs,
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
-import type { GroupTabItem } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import localCache from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/localStorage"
 import CustomShape from '../../../utils/cons';
 import DataSourceModal from '../../../components/data-source-modal';
+import {shrinkGroupNode} from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper";
 
 
 export interface ParametersConfigType {
@@ -37,16 +37,19 @@ export interface ParametersConfigType {
   flag: boolean,
   type?: string,
 }
+
 interface PortTypes {
   inputs: string,
   outputs: string,
 }
+
 interface CompareCheckProps {
   origin: ParametersConfigType[],
   parameters: string[],
   isOutputs: boolean,
   readConfigData: ReadConfigData,
 }
+
 interface ReadConfigData {
   currentCell: Cell,
   currentPort: string,
@@ -55,11 +58,13 @@ interface ReadConfigData {
 enum DataSourceType {
   Mysql = "Mysql"
 }
+
 export interface ParametersData {
   isOutputs: boolean,
   parametersConfig: ParametersConfigType[],
   readConfigData: ReadConfigData
 }
+
 function strMapToObj(strMap: Map<string, ParametersConfigType[]>) {
   let obj = {};
   for (let [key, value] of strMap) {
@@ -67,8 +72,11 @@ function strMapToObj(strMap: Map<string, ParametersConfigType[]>) {
   }
   return obj
 }
-const portType: PortTypes = { inputs: "inputs", outputs: "outputs" }
-const LeftEditor = memo((props) => {
+
+const portType: PortTypes = {inputs: "inputs", outputs: "outputs"}
+
+const LeftEditor = memo(() => {
+
   let timer: any = null;
   const [selectedNodes, setSelectedNodes] = useState<Node[]>([]);
   const [showMenuInfo, setShowMenuInfo] = useState<{
@@ -82,17 +90,25 @@ const LeftEditor = memo((props) => {
     left: 0,
     node: null
   });
+
   const [modalVisible, isModalVisible] = useState(false)
-  const [parametersConfig, setParametersConfig] = useState<ParametersData>({ isOutputs: true, parametersConfig: [], readConfigData: {} as ReadConfigData } as ParametersData)
+  const [parametersConfig, setParametersConfig] = useState<ParametersData>({
+    isOutputs: true,
+    parametersConfig: [],
+    readConfigData: {} as ReadConfigData
+  } as ParametersData)
   const editorContentRef = useRef(null);
   const graphRef = useRef<Graph>();
   const stencilRef = useRef(null);
+  let v: HTMLDivElement
+  let h: HTMLDivElement
+  let c: HTMLDivElement
 
   const dispatch = useAppDispatch();
 
 
   const { flowData, operatorParameters: operatorParameters, currentSelectNode,
-    jsonEditor, taskName, tabs, activeKey, previewInfo, dataSourceInfo }
+    jsonEditor, taskName, tabs, activeKey, previewInfo, dataSourceInfo }: { tabs: GroupTabItem[], [key: string]: any }
     = useAppSelector((state) => ({
       flowData: state.home.flowData,
       operatorParameters: state.home.operatorParameters,
@@ -105,19 +121,103 @@ const LeftEditor = memo((props) => {
       dataSourceInfo: state.home.dataSourceInfo
     }));
 
+  useEffect(() => {
+    start()
 
+    return () => {
+      document.removeEventListener('mousemove', onMouseMove)
+    }
+  }, [])
 
+  const onMouseMove = (e: MouseEvent) => {
+    if (!e.altKey) {
+      return
+    }
+
+    const target = e.target as HTMLElement;
+    const graph = graphRef.current!
+    if (
+      graph.container.contains(target) ||
+      graph.container === target ||
+      target === v ||
+      target === h ||
+      target === c
+    ) {
+      const pageX = e.pageX
+      const pageY = e.pageY
+      const clientX = e.clientX
+      const clientY = e.clientY
+      v.style.left = `${pageX + 2}px`
+      h.style.top = `${pageY + 2}px`
+
+      c.style.left = `${pageX + 10}px`
+      c.style.top = `${pageY + 10}px`
+
+      const p1 = graph.pageToLocal(pageX, pageY)
+      const p2 = graph.localToGraph(p1)
+
+      c.innerHTML = `
+        <div>Page(pageX, pageY): ${pageX} x ${pageY}</div>
+        <div>Client(clientX, clientY): ${clientX} x ${clientY}</div>
+        <div>Local Point: ${p1.x} x ${p1.y}</div>
+        <div>Graph Point: ${p2.x} x ${p2.y}</div>
+        `
+    } else {
+      v.style.left = `${-1000}px`
+      h.style.top = `${-1000}px`
+      c.style.left = `${-10000}px`
+      c.style.top = `${-10000}px`
+    }
+  }
+
+  const start = () => {
+    const root = document.getElementById('root')!
+    v = document.createElement('div')
+    h = document.createElement('div')
+    c = document.createElement('div')
+
+    v.style.position = 'absolute'
+    v.style.width = '1px'
+    v.style.top = '0'
+    v.style.bottom = '0'
+    v.style.left = '-100px'
+    v.style.zIndex = `99`
+    v.style.borderLeft = '1px dashed red'
+
+    h.style.position = 'absolute'
+    h.style.height = '1px'
+    h.style.left = '0'
+    h.style.right = '0'
+    h.style.top = '-100px'
+    h.style.zIndex = `99`
+    h.style.borderTop = '1px dashed red'
+
+    c.style.position = 'absolute'
+    c.style.display = 'inline-block'
+    c.style.fontSize = '12px'
+    c.style.zIndex = `99`
+    c.style.padding = '4px 8px'
+    c.style.borderRadius = '2px'
+    c.style.lineHeight = '20px'
+    c.style.background = '#f6ffed'
+    c.style.border = '1px solid #b7eb8f'
+
+    root.appendChild(v)
+    root.appendChild(h)
+    root.appendChild(c)
+    document.addEventListener('mousemove', onMouseMove)
+  }
 
   const getNewConfig = (cell: Cell, config: any) => {
 
     if (!cell.getData() || !cell.getData()["config"][0]) {
       return cloneDeep(config)
     }
-    let oldConifg = cloneDeep(cell.getData()["config"][0])
+    let oldConfig = cloneDeep(cell.getData()["config"][0])
     for (let newKey in config) {
-      oldConifg[newKey] = config[newKey]
+      oldConfig[newKey] = config[newKey]
     }
-    return oldConifg
+    return oldConfig
   }
   const isConnected = (graph: Graph, node: Cell, id: string, isOutputs: boolean) => {
     let edges: Edge[] | null;
@@ -134,20 +234,22 @@ const LeftEditor = memo((props) => {
 
   const readConfigFromData = (currentCell: Cell, sourceCell: Cell, sourcePortId: string, currentPort: string, id: string) => {
     let parametersByOutPortConfig = currentCell.getData().config[0]
-    if (!parametersByOutPortConfig[id]) { message.warning("请设置输入参数配置!"); return }
+    if (!parametersByOutPortConfig[id]) {
+      message.warning("请设置输入参数配置!");
+      return
+    }
     let parametersConfig: ParametersConfigType[] = parametersByOutPortConfig[id]
     //c从config读取，是否筛选出flag true,第一次连线，config里均为true,点击确定修改配置后config有false,但也应该显示，所以不删选字段
     // parametersConfig = parametersConfig.filter(item => item.flag)
     setParametersConfig({
       isOutputs: false,
       parametersConfig: parametersConfig,
-      readConfigData: { currentCell, currentPort, id }
+      readConfigData: {currentCell, currentPort, id}
     })
     isModalVisible(true)
   }
   const handleNodeConfigSet = (graph: Graph) => {
-    graph.on("node:port:click", ({ node, port }: { node: Node, port: string }) => {
-      window.port = port
+    graph.on("node:port:click", ({node, port}: { node: Node, port: string }) => {
       dispatch(changeCurrentSelectNode(node))
 
       if (!node.getData() && node.shape !== "DuplicateOperator") {
@@ -170,13 +272,16 @@ const LeftEditor = memo((props) => {
               let sourcePortId = edge.getSourcePortId();
               if (sourcePortId == port) {
                 let id = `${node.id}&${port} ${targetNode!.id}&${targetPortId}`
-                let paramersByOutPortConfig = node.getData().config[0]
-                if (!paramersByOutPortConfig[id]) { message.warning("请设置输入参数配置!"); return }
-                let parametersConfig: ParametersConfigType[] = paramersByOutPortConfig[id]
+                let parametersByOutPortConfig = node.getData().config[0]
+                if (!parametersByOutPortConfig[id]) {
+                  message.warning("请设置输入参数配置!");
+                  return
+                }
+                let parametersConfig: ParametersConfigType[] = parametersByOutPortConfig[id]
                 setParametersConfig({
                   isOutputs: true,
                   parametersConfig: parametersConfig,
-                  readConfigData: { currentCell: node, currentPort: port, id }
+                  readConfigData: {currentCell: node, currentPort: port, id}
                 })
                 isModalVisible(true)
 
@@ -185,19 +290,25 @@ const LeftEditor = memo((props) => {
           } else {
             //没连线 修改自身连接装config
             let paramersByOutPortConfig = node.getData().config[0]
-            if (!paramersByOutPortConfig[port]) { message.warning("请设置输入参数配置!"); return }
+            if (!paramersByOutPortConfig[port]) {
+              message.warning("请设置输入参数配置!");
+              return
+            }
             let parametersConfig: ParametersConfigType[] = paramersByOutPortConfig[port]
             setParametersConfig({
               isOutputs: true,
               parametersConfig: parametersConfig,
-              readConfigData: { currentCell: node, currentPort: port, id: port }
+              readConfigData: {currentCell: node, currentPort: port, id: port}
             })
             isModalVisible(true)
           }
         } else {
           //修改（如果是DuplicateOperator则需要从输入节点的config里读取 ）
           const parametersConfig: ParametersConfigType[] = node.getData()?.parameters.columns;
-          if (parametersConfig.some(config => !config.name)) { message.warning("节点参数名称不能为空！"); return }
+          if (parametersConfig.some(config => !config.name)) {
+            message.warning("节点参数名称不能为空！");
+            return
+          }
           setParametersConfig({
             isOutputs: true,
             parametersConfig: [...parametersConfig],
@@ -234,9 +345,7 @@ const LeftEditor = memo((props) => {
       }
     })
 
-
-
-    graph.on("edge:connected", ({ isNew, edge, currentCell, currentPort }) => {
+    graph.on("edge:connected", ({isNew, edge, currentCell, currentPort}) => {
       //创建新边
       if (isNew) {
         //拿到该边的sourcecell和sourcePortId
@@ -251,7 +360,10 @@ const LeftEditor = memo((props) => {
         } else {
           parametersConfig = sourceCell?.getData()?.parameters.columns;
         }
-        if (parametersConfig.some(config => !config.name)) { message.warning("节点参数名称不能为空！"); return }
+        if (parametersConfig.some(config => !config.name)) {
+          message.warning("节点参数名称不能为空！");
+          return
+        }
         //将输出数据筛选后设置给输入【flag为true】
         parametersConfig = parametersConfig.filter(item => item.flag)
         if (!parametersConfig) return
@@ -286,12 +398,18 @@ const LeftEditor = memo((props) => {
 
 
           }
-          currentCell.setData({ ...(currentCell.getData() ? currentCell.getData() : {}), config: [newConfigObj] }, { overwrite: true });
+          currentCell.setData({
+            ...(currentCell.getData() ? currentCell.getData() : {}),
+            config: [newConfigObj]
+          }, {overwrite: true});
           if (sourceCell.shape === "DuplicateOperator") {
             //把input-output config 设置进自定义节点config
             let oldConfigObj = sourceCell.getData()["config"][0]
             oldConfigObj[id] = parametersConfig
-            sourceCell.setData({ ...(sourceCell.getData() ? sourceCell.getData() : {}), config: [cloneDeep(oldConfigObj)] }, { overwrite: true })
+            sourceCell.setData({
+              ...(sourceCell.getData() ? sourceCell.getData() : {}),
+              config: [cloneDeep(oldConfigObj)]
+            }, {overwrite: true})
           }
           //从node-data 读取config
           readConfigFromData(currentCell, sourceCell, sourcePortId, currentPort, id)
@@ -303,9 +421,8 @@ const LeftEditor = memo((props) => {
     isModalVisible(false);
   }
   const handleCancelPort = () => {
-    setShowMenuInfo({ ...showMenuInfo, show: true, node: null })
+    setShowMenuInfo({...showMenuInfo, show: true, node: null})
   }
-
 
   const handleSubmit = (value: CompareCheckProps) => {
     value.origin.forEach(item => {
@@ -338,12 +455,18 @@ const LeftEditor = memo((props) => {
               //修改自身config   同步下个cell config
               let oldConfigObj = value.readConfigData.currentCell.getData()["config"][0]
               oldConfigObj[id] = cloneDeep(value.origin)
-              node.setData({ ... (node?.getData() ? node.getData() : {}), config: [cloneDeep(oldConfigObj)] }, { overwrite: true })
+              node.setData({
+                ...(node?.getData() ? node.getData() : {}),
+                config: [cloneDeep(oldConfigObj)]
+              }, {overwrite: true})
             }
             configMap.set(id, filterConfigMap);
             let config = strMapToObj(configMap)
             let newConfigObj = getNewConfig(targetCell!, config)
-            targetCell!.setData({ ... (targetCell?.getData() ? targetCell.getData() : {}), config: [newConfigObj] }, { overwrite: true });
+            targetCell!.setData({
+              ...(targetCell?.getData() ? targetCell.getData() : {}),
+              config: [newConfigObj]
+            }, {overwrite: true});
           }
         }
       } else {
@@ -379,7 +502,10 @@ const LeftEditor = memo((props) => {
 
           }
 
-          currentNode?.setData({ ...(currentNode.getData() ? currentNode.getData() : {}), config: [newConfigObj] }, { overwrite: true })
+          currentNode?.setData({
+            ...(currentNode.getData() ? currentNode.getData() : {}),
+            config: [newConfigObj]
+          }, {overwrite: true})
         }
       } else {
         //如果是输入则修改config
@@ -387,7 +513,10 @@ const LeftEditor = memo((props) => {
         configMap.set(value.readConfigData.id!, value.origin);
         let config = strMapToObj(configMap)
         let newConfigObj = getNewConfig(value.readConfigData.currentCell!, config)
-        value.readConfigData.currentCell.setData({ ...(value.readConfigData.currentCell.getData() ? value.readConfigData.currentCell.getData() : {}), config: [newConfigObj] }, { overwrite: true });
+        value.readConfigData.currentCell.setData({
+          ...(value.readConfigData.currentCell.getData() ? value.readConfigData.currentCell.getData() : {}),
+          config: [newConfigObj]
+        }, {overwrite: true});
       }
 
     }
@@ -429,16 +558,19 @@ const LeftEditor = memo((props) => {
         let id = `${sourceCell!.id}&${sourcePortId} ${targetCell!.id}&${targetPortId}`
         //获取最新输0-0连接桩配置
         if (targetCell?.getData().config) {
-          let paramersByOutPortConfig = targetCell.getData().config[0]
-          if (!paramersByOutPortConfig[id]) { message.warning("请设置输入参数配置!"); return }
-          let parametersConfig: ParametersConfigType[] = paramersByOutPortConfig[id]
+          let parametersByOutPortConfig = targetCell.getData().config[0]
+          if (!parametersByOutPortConfig[id]) {
+            message.warning("请设置输入参数配置!");
+            return
+          }
+          let parametersConfig: ParametersConfigType[] = parametersByOutPortConfig[id]
           // 给每个连接桩赋初始值
           let newConfigObj = {};
           newConfigObj[id] = parametersConfig;
           for (const addPortId of outPortIds!) {
             newConfigObj[addPortId!] = cloneDeep(parametersConfig)
           }
-          node?.setData({ ...(node.getData() ? node.getData() : {}), config: [newConfigObj] })
+          node?.setData({...(node.getData() ? node.getData() : {}), config: [newConfigObj]})
         }
       }
     } else {
@@ -446,13 +578,13 @@ const LeftEditor = memo((props) => {
       let configMap: Map<string, ParametersConfigType[]> = new Map();
       configMap.set(value.portName, []);
       let newConfigObj = strMapToObj(configMap)
-      node?.setData({ ...(node.getData() ? node.getData() : {}), config: [newConfigObj] })
+      node?.setData({...(node.getData() ? node.getData() : {}), config: [newConfigObj]})
     }
     message.success("连接桩添加成功！")
 
   }
   const handleShowMenu = (value: boolean) => {
-    setShowMenuInfo({ ...showMenuInfo, show: value })
+    setShowMenuInfo({...showMenuInfo, show: value})
   }
 
   const handlePreviewCancel = () => {
@@ -497,110 +629,61 @@ const LeftEditor = memo((props) => {
     dispatch(changeCurrentSelectNode(node))
   }
   const changePosition = (x: number, y: number) => {
-    dispatch(changePositon({ x, y }))
+    dispatch(changePositon({x, y}))
   }
   //上方面包屑控制画布群组导航
-  const tabClick = (currentIndex: number) => {
+  const tabClick = (clickLayer: number) => {
 
     //如果点击的是最新并且未设置群组
-    if (currentIndex === 0 && tabs.length === 0) return
-    if (currentIndex === tabs[tabs.length - 1].layer) return
-    //一层一层回退（目前递减）
-    const graph = graphRef.current;
-    //1获取原来形状（拿到回退画布的元素）
-    const { layer, groupCellId, innerCells, outterCells } = tabs[tabs.length - 1]
-    const group = graph?.getCellById(groupCellId) as Node;
-    const preSize = group?.getProp().previousSize
-    //2将群组节点和内部节点移动到上个位置
-    const dx = graph!.getGraphArea().width;
-    const prePos = group.getProp().previousPosition
-    group.size(preSize.width, preSize.height)
-    //显示
-    group?.setAttrs({ fo: { visibility: "visibility" } })
-    //显示外部元素(外部可能包含其他组节点，找出其子节点隐藏)
-
-    let otherGroups = outterCells.filter((cell: Cell) => {
-      return cell.shape === CustomShape.GROUP_PROCESS && cell.id !== groupCellId
-    })
-    let innerCellInOther: Cell[] = []
-    if (otherGroups.length) {
-      otherGroups.forEach((cell: Cell) => {
-        let child = cell.getChildren()
-        innerCellInOther = [...innerCellInOther, ...child!]
-        let incomEdegs = graph?.getIncomingEdges(cell)
-        let outEdges = graph?.getOutgoingEdges(cell)
-        let innerInputPorts = (cell as Node).getPortsByGroup("innerInputs")
-        let innerOutputPorts = (cell as Node).getPortsByGroup("innerOutputs")
-        if (innerOutputPorts.length > 0) {
-          for (let edge of outEdges!) {
-            const sourcePortId = edge.getSourcePortId()
-            if (innerOutputPorts.some(port => port.id === sourcePortId)) {
-              innerCellInOther.push(edge);
-            }
-          }
-        }
-        if (innerInputPorts.length > 0) {
-          for (let edge of incomEdegs!) {
-            const targetPortId = edge.getTargetPortId()
-            if (innerInputPorts.some(port => port.id === targetPortId)) {
-              innerCellInOther.push(edge);
-            }
-          }
-        }
-      });
+    if ((clickLayer === 0 && tabs.length === 0) || clickLayer === tabs.length - 1) {
+      return
     }
 
-    outterCells.forEach((cell: Cell) => {
-      cell.show()
-    });
-    // innerCellInOther.forEach((cell: Cell) => {
+    if (!graphRef.current) {
+      return
+    }
+
+    const graph = graphRef.current;
+    // graph.getCells().forEach(cell => {
     //   cell.hide()
     // })
+    const groupNode = graph.getCellById(tabs[clickLayer + 1].groupCellId) as Node;
+    shrinkGroupNode(graph, groupNode);
+
+    const otherTopCells = graph.getCellById(tabs[clickLayer].groupCellId)?.getChildren() ??
+      graph.getCells().filter(cell => !cell.parent) ?? []
+
     //设置外部元素可选
-    graph?.setSelectionFilter(cell => outterCells.map((c: Cell) => c.id).includes(cell.id))
-    //移动组节点位置
-    group.translate(-dx / (tabs.length + 1), 0)
-    group.translate(prePos.x - (dx / (tabs.length + 1)) * (layer - 1), prePos.y)
+    graph.setSelectionFilter(cell => otherTopCells.map((c: Cell) => c.id).includes(cell.id))
 
-    //反向平移画布
-    graph!.translate(dx / (tabs.length + 1), 0)
-
-    //内部元素隐藏
-    innerCells.forEach((cell: Cell) => {
-
-      cell.hide()
-      // const prePos = cell.getProp().previousPosition
-      // if (tabs.length > 1) {
-      //   if (cell.isNode()) {
-      //     cell.prop("position", { x: prePos.x - (dx / (tabs.length + 1)) * (layer - 1), y: prePos.y })
-      //   }
-      // } else {
-      //   if (cell.isNode() && cell.shape !== CustomShape.GROUP_PROCESS) {
-      //     cell.prop("position", { x: prePos.x - (dx / (tabs.length + 1)) * (layer - 1), y: prePos.y })
-      //   }
-      // }
-
+    otherTopCells.forEach((cell: Cell) => {
+      cell.show()
+      if (cell.shape == CustomShape.GROUP_PROCESS) {
+        cell.setAttrs({fo: {visibility: "visible"}})
+      }
     });
 
-    group.getDescendants().forEach(cell => {
-      if (cell.isNode()) {
-        cell.prop("position", { x: prePos.x - (dx / (tabs.length + 1)) * (layer - 1), y: prePos.y })
-      }
-    })
     window.graph = graph;
-    if (activeKey === 0) {
-      graph?.center()
-    }
-    dispatch(removeGraphTabs(currentIndex))
-    dispatch(addActiveKey(-1))
+    dispatch(removeGraphTabs(clickLayer))
   }
+
+  const processTabClick = (index: number) => {
+    for (let i = tabs.length - 1; i >= index; i--) {
+      tabClick(i)
+    }
+  }
+
   const getSubprocess = () => {
-    if (tabs.length !== 0) {
-      return tabs.map((tab: GroupTabItem) => {
-        return <Breadcrumb.Item onClick={() => (tabClick(tab.layer))} key={tab.layer}>{`subprocess${tab.layer - 1}`}<CaretRightOutlined /></Breadcrumb.Item>
-      })
+    if (tabs.length === 0) {
+      return
     }
 
+    return tabs.map((tab: GroupTabItem, index) =>
+      <Breadcrumb.Item onClick={() => (processTabClick(index))} key={index}>
+        {`subprocess${index}`}
+        <CaretRightOutlined/>
+      </Breadcrumb.Item>
+    )
   }
 
 
@@ -669,7 +752,6 @@ const LeftEditor = memo((props) => {
           <div className={styles['editor-content']}>
             <div className={styles["header-bread"]}>
               <Breadcrumb>
-                {<Breadcrumb.Item onClick={() => { tabClick(0) }} >process<CaretRightOutlined /></Breadcrumb.Item>}
                 {getSubprocess()}
               </Breadcrumb>
             </div>
@@ -692,14 +774,14 @@ const LeftEditor = memo((props) => {
       </div>
 
       <NodeModalForm onSubmit={(value: any) => handleSubmit(value)}
-        onCancel={() => handleCancel()}
-        modalVisible={modalVisible}
-        values={parametersConfig} />
+                     onCancel={() => handleCancel()}
+                     modalVisible={modalVisible}
+                     values={parametersConfig}/>
 
       {showMenuInfo.node ? <AddModalPort onSubmit={(value: any) => handleSubmitPort(value)}
-        onCancel={() => handleCancelPort()}
-        modalVisible={!showMenuInfo.show && showMenuInfo.node.shape === "DuplicateOperator"}
-        values={showMenuInfo.node} /> : null}
+                                         onCancel={() => handleCancelPort()}
+                                         modalVisible={!showMenuInfo.show && showMenuInfo.node.shape === "DuplicateOperator"}
+                                         values={showMenuInfo.node}/> : null}
 
       <NodeModalPreview onSubmit={() => handlePreviewSubmit()}
         onCancel={() => handlePreviewCancel()}

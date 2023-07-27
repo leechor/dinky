@@ -31,6 +31,7 @@
 					},
 					"columns": {
 						"type": "string",
+						"pattern":"^[A-Za-z0-9_]*$",
 						"minLength": 1,
 						"title": "The outName Schema"
 					},
@@ -59,6 +60,7 @@
 		},
 		"column": {
 			"type": "string",
+			"pattern":"^[A-Za-z0-9_]*$",
 			"minLength": 1,
 			"title": "The column Schema"
 		}
@@ -76,6 +78,7 @@
 		},
 		"column": {
 			"type": "string",
+			"pattern":"^[A-Za-z0-9_]*$",
 			"minLength": 1,
 			"title": "The column Schema"
 		}
@@ -104,6 +107,7 @@
 			"items": {
 				"type": "object",
 				"title": "measures",
+				"pattern":"^[A-Za-z0-9_]*$",
 				"description": "output field",
 				"required": [
 					"functionName",
@@ -113,7 +117,6 @@
 				"properties": {
 					"functionName": {
 						"type": "string",
-						"minLength": 1,
 						"title": "The functionName Schema"
 					},
 					"name": {

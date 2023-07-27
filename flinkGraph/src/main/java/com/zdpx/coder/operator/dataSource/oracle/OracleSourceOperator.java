@@ -23,6 +23,7 @@ import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.graph.OutputPortObject;
 import com.zdpx.coder.operator.TableInfo;
 import com.zdpx.coder.operator.dataSource.AbstractSqlTable;
+import org.dinky.config.Dialect;
 
 import java.util.Map;
 
@@ -39,6 +40,7 @@ public class OracleSourceOperator extends AbstractSqlTable {
     protected void initialize() {
         outputPortObject = new OutputPortObject<>(this, OUTPUT_0);
         getOutputPorts().put(OUTPUT_0, outputPortObject);
+        this.type= Dialect.ORACLE.getValue();
     }
 
     @Override

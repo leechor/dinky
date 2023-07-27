@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.zdpx.coder.Specifications;
 import com.zdpx.coder.graph.CheckInformationModel;
@@ -46,8 +47,8 @@ public class JoinOperator extends Operator {
     public static final String TEMPLATE =
             String.format(
                     "<#import \"%s\" as e>CREATE VIEW ${tableName} AS "
-                            + "SELECT <@e.fieldsProcess columns/> "
-                            + "FROM ${inputTableName} "
+                            + "SELECT<#if hints??> /*+ ${hints} */ </#if>" +
+                            "<@e.fieldsProcess columns/> FROM ${inputTableName} "
                             + "${joinType?upper_case} JOIN ${anotherTableName} "
                             + "<#if systemTimeColumn??>FOR SYSTEM_TIME AS OF ${systemTimeColumn}</#if> "
                             + "<#if columnList??>ON <#list columnList as list>${list.onLeftColumn} = ${list.onRightColumn}<#sep> and </#sep></#list></#if>"
@@ -129,6 +130,26 @@ public class JoinOperator extends Operator {
         if (where != null && !where.equals("")) {
             dataModel.put(WHERE, where);
         }
+        // hints
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> hints =(List<Map<String, Object>>)parameters.get("hints");
+        if(hints!=null){
+            StringBuffer stringBuffer = new StringBuffer();
+            hints.forEach(item->{
+                stringBuffer.append(item.get("joinHints")).append("(");
+
+                @SuppressWarnings("unchecked")
+                List<String> joinColumn =(List<String>)item.get("joinColumn");
+                joinColumn.forEach(i->{
+                    stringBuffer.append(i);
+                    if(!i.equals(joinColumn.get(joinColumn.size()-1))){
+                        stringBuffer.append(",");
+                    }
+                });
+                stringBuffer.append(") ");
+            });
+            dataModel.put("hints",stringBuffer.toString());
+        }
 
         //修改连接字段的字段名称
         for (Map<String, String> l : columnList) {
@@ -171,11 +192,10 @@ public class JoinOperator extends Operator {
         if(map.get("forSystemTime")!=null){
             String left = columnList.get(0).get("onLeftColumn").split("\\.")[1];
             String right = columnList.get(0).get("onRightColumn").split("\\.")[1];
-            for(Column l:leftInputColumns){
-                if(map.get("forSystemTime").equals(l.getName())&&!l.getType().contains("TIME")){
-                    leftList.add("systemTimeColumn需要主表中的时间属性(如 TIMESTAMP(3)、TIMESTAMP_LTZ等),当前字段值： "+map.get("forSystemTime")+" ,类型： "+l.getType());
-                }
-            }
+
+            leftInputColumns.stream().filter(l->(map.get("forSystemTime").equals(l.getName())&&!l.getType().contains("TIME")))
+                    .forEach(l->leftList.add("systemTimeColumn需要主表中的时间属性(如 TIMESTAMP(3)、TIMESTAMP_LTZ等),当前字段值： "+map.get("forSystemTime")+" ,类型： "+l.getType()));
+
             for(Map<String, Object> m : config){
                 if(m.get(TABLE_NAME).equals(PRIMARY_INPUT)){
                     if(m.get(NAME).equals(map.get("forSystemTime"))){

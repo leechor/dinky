@@ -142,11 +142,13 @@ public class TaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScriptMa
         List<CheckInformationModel> list = (List<CheckInformationModel>)checkAndSQL.get("MSG");
 
         list.stream().filter(c->c.getTableName()!=null).forEach(c->{
-            sqlExplainResults.forEach(s->{
-                if (!s.isParseTrue()&&s.getSql().split(" ")[2].contains(c.getTableName())){
-                    c.setSqlErrorMsg(s.getError());
+            sqlExplainResults.stream().filter(s->s.getError()!=null).forEach(s->{
+                String error = s.getError();
+                String substring = error.substring(0, error.indexOf("\n"));
+                if (s.getSql().split(" ")[2].contains(c.getTableName())){
+                    c.setSqlErrorMsg(substring);
                 }else if(s.getSql().contains(c.getTableName())){//特殊算子 ADD JAR 异常参数添加
-                    c.setSqlErrorMsg(s.getError());
+                    c.setSqlErrorMsg(substring);
                 }
             });
         });
@@ -177,4 +179,5 @@ public class TaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScriptMa
         su.setUdfFunctionMap(udfAll);
         return su.build();
     }
+
 }

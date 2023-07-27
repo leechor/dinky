@@ -24,7 +24,7 @@ public class OperatorPreviewBuilder{
     public String operatorPreview() {
 
         //初始化算子环境  默认每次传一个算子
-        JsonNode cell = new ObjectMapper().readTree(graph).path("cells").get(0);
+        JsonNode cell = new ObjectMapper().readTree(graph);
         X6ToInternalConvert x6ToInternalConvert = new X6ToInternalConvert();
         String name = cell.get("shape").asText();
         Operator operator =x6ToInternalConvert.createOperatorByCode(name);

@@ -19,9 +19,11 @@
 
 package org.dinky.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.dinky.data.dto.CatalogueTaskDTO;
 import org.dinky.data.enums.Status;
 import org.dinky.data.model.Catalogue;
+import org.dinky.data.result.ProTableResult;
 import org.dinky.data.result.Result;
 import org.dinky.function.constant.PathConstant;
 import org.dinky.service.CatalogueService;
@@ -30,15 +32,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import cn.hutool.core.io.FileUtil;
@@ -157,6 +155,35 @@ public class CatalogueController {
         catalogueTaskDTO.setParentId(parentId);
         catalogueTaskDTO.setLeaf(true);
         return catalogueTaskDTO;
+    }
+
+    /** 动态查询列表 */
+    @PostMapping
+    public ProTableResult<Catalogue> listCatalogues(@RequestBody JsonNode para) {
+        return catalogueService.selectForProTable(para);
+    }
+
+    /** 批量删除 */
+    @DeleteMapping
+    public Result<Void> deleteMul(@RequestBody JsonNode para) {
+        if (para.size() > 0) {
+            boolean isAdmin = false;
+            List<String> error = new ArrayList<>();
+            for (final JsonNode item : para) {
+                Integer id = item.asInt();
+                List<String> ids = catalogueService.removeCatalogueAndTaskById(id);
+                if (!ids.isEmpty()) {
+                    error.addAll(ids);
+                }
+            }
+            if (error.size() == 0 && !isAdmin) {
+                return Result.succeed("删除成功");
+            } else {
+                return Result.succeed("删除失败，请检查作业" + error + "状态。");
+            }
+        } else {
+            return Result.failed("请选择要删除的记录");
+        }
     }
 
     /** 新增或者更新 */

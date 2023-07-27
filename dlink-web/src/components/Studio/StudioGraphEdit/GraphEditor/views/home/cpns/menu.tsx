@@ -1,29 +1,33 @@
 import { Menu } from '@antv/x6-react-components';
 import { FC, memo, useState } from 'react';
-import { message, Radio, RadioChangeEvent, Space, Modal } from 'antd';
-import { DataUri, Graph, Node, Cell, Edge } from '@antv/x6';
+import { message, Radio, RadioChangeEvent, Space, } from 'antd';
+import { Cell, DataUri, Edge, Graph, Node } from '@antv/x6';
 import '@antv/x6-react-components/es/menu/style/index.css';
 import {
-  CopyOutlined,
-  SnippetsOutlined,
-  RedoOutlined,
-  UndoOutlined,
-  ScissorOutlined,
-  DeleteOutlined,
-  ExportOutlined,
-  EditOutlined,
-  RadiusSettingOutlined,
-  GroupOutlined,
   AlignCenterOutlined,
   BgColorsOutlined,
+  CopyOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  ExportOutlined,
+  GroupOutlined,
+  RadiusSettingOutlined,
+  RedoOutlined,
+  ScissorOutlined,
+  SnippetsOutlined,
+  UndoOutlined,
   UploadOutlined,
   EyeOutlined,
   DatabaseOutlined
 } from '@ant-design/icons';
-import CustomShape from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
-import { useAppSelector, useAppDispatch } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
+import CustomShape, { PreNodeInfo } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
+import { useAppDispatch, useAppSelector } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
 import type { Parameter } from '@/components/Studio/StudioGraphEdit/GraphEditor/ts-define/parameter';
 import { formatDate } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/math"
+import {
+  convertAbsoluteToRelativePosition,
+  getGraphViewSize, PreNodeRect
+} from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper";
 import { changePreviewInfo, changeDataSourceInfo } from '../../../store/modules/home';
 import { getNodePreviewInfo, getDataSourceType } from '@/components/Common/crud';
 
@@ -41,6 +45,7 @@ enum HorizontalAlignState {
   CENTER,
   RIGHT
 }
+
 type OuterEdgeType = "input" | "output"
 
 
@@ -61,6 +66,7 @@ enum NoteTextColor {
   TRANSPARENT,
 }
 
+
 const NoteTextColorValue: { [key in NoteTextColor]: string } = {
   [NoteTextColor.YELLOW]: "#fcf987",
   [NoteTextColor.RED]: "#ffe9dc",
@@ -74,6 +80,25 @@ const NoteTextColorValue: { [key in NoteTextColor]: string } = {
 
 const DuplicateOperatorMenu = () => {
   return <Menu.Item icon={<EditOutlined />} name="add-port" text="添加输出桩" />
+}
+
+function createPackageNode(graph: Graph) {
+  const node = graph.createNode({
+    shape: CustomShape.GROUP_PROCESS,
+    width: 70,
+    height: 50,
+    attrs: {
+      body: {
+        rx: 7,
+        ry: 6,
+      },
+      text: {
+        text: CustomShape.GROUP_PROCESS,
+        fontSize: 2,
+      },
+    },
+  });
+  return node;
 }
 
 export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, node, handleShowMenu, show }) => {
@@ -158,12 +183,16 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
 
   const forward = () => {
     const cells = graph.getSelectedCells();
-    cells?.forEach(c => { c.setZIndex((c.getZIndex() ?? 0) + 1) });
+    cells?.forEach(c => {
+      c.setZIndex((c.getZIndex() ?? 0) + 1)
+    });
   };
 
   const backward = () => {
     const cells = graph.getSelectedCells();
-    cells?.forEach(c => { c.setZIndex((c.getZIndex() ?? 0) - 1) });
+    cells?.forEach(c => {
+      c.setZIndex((c.getZIndex() ?? 0) - 1)
+    });
   };
 
   const horizontalAlignHandler = (e: RadioChangeEvent) => {
@@ -312,83 +341,70 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     }
   };
 
+
   const createProcess = () => {
-
-    //获取选中包围盒的位置信息
-    const selectedBox = document.querySelector(".x6-widget-selection-inner")
-    const rect = selectedBox?.getBoundingClientRect()!;
-
-    const nodes = graph.getSelectedCells()
+    const selectedNodes = graph.getSelectedCells()
       .filter(item => item.isNode())
       .map(item => item as Node);
 
-    if (nodes.length === 0) return
-
-    const node = graph.createNode({
-      shape: CustomShape.GROUP_PROCESS,
-      width: 70,
-      height: 50,
-      attrs: {
-        body: {
-          rx: 7,
-          ry: 6,
-        },
-        text: {
-          text: CustomShape.GROUP_PROCESS,
-          fontSize: 2,
-        },
-      },
-    });
-
-    const group = graph.addNode(node);
-    if (Object.values(rect).every(item => item === 0)) {
-      group.setPosition(nodes[0].position().x, nodes[0].position().y)
-    } else {
-      group.setPosition(graph.clientToLocal(rect.x + (rect.width - group.size().width) / 2,
-        rect.y + (rect.height - group.size().height) / 2))
+    if (selectedNodes.length === 0) {
+      return
     }
 
-    group.setChildren(nodes)
+    const selectNodeParents = selectedNodes.map(node => node.parent) ?? []
+    let haveSameParent = false
+    if (selectNodeParents.length > 0) {
+      haveSameParent = !!selectNodeParents[0] && selectNodeParents.every(value => value === selectNodeParents[0])
+    }
 
-    nodes?.flatMap(item => {
-      item.prop("previousPosition", item.position({ relative: true }))
-      item.prop("previousSize", item.size())
+    const groupNode = graph.addNode(createPackageNode(graph));
+    const selectRectangle = graph.getCellsBBox(selectedNodes)!;
+    let relativeParentPosition = { x: selectRectangle.x, y: selectRectangle.y }
+    if (haveSameParent) {
+      selectNodeParents[0]?.insertChild(groupNode)
+      relativeParentPosition = convertAbsoluteToRelativePosition(selectRectangle, groupNode.parent as Node)
+    }
+
+    groupNode.setPosition(relativeParentPosition.x + (selectRectangle.width - groupNode.size().width) / 2,
+      relativeParentPosition.y + (selectRectangle.height - groupNode.size().height) / 2,
+      { relative: true, deep: true });
+
+    const subGraphCells = graph.model.getSubGraph(selectedNodes)
+
+    groupNode.prop(PreNodeInfo.PREVIOUS_NODE_RECT, { ...groupNode.position({ relative: true }), ...groupNode.size() })
+
+    const { width, height } = getGraphViewSize() ?? {}
+    if (!width || !height) {
+      return
+    }
+
+    subGraphCells.forEach(item => {
+      item.insertTo(groupNode)
+      if (item.isNode()) {
+        const x = item.position().x - relativeParentPosition.x
+        const y = item.position().y - relativeParentPosition.y
+        item.prop(PreNodeInfo.PREVIOUS_NODE_RECT, { x, y, ...item.size() })
+        item.setPosition(groupNode.position())
+      }
       item.hide()
-      return graph.getConnectedEdges(item)
-    }).filter((edge) => nodes.includes(edge.getSourceNode()!) && nodes.includes(edge.getTargetNode()!))
-      .forEach(item => {
-        item.hide()
-        group.addChild(item)
-      })
+    })
+
+    const selectedIncomingEdge: (Edge | null)[] = selectedNodes
+      .flatMap(node => graph.model.getIncomingEdges(node))
+      .filter(edge => !selectedNodes.includes(edge?.getSourceNode()!))
+    addOuterPortAndEdge(selectedIncomingEdge, groupNode, "input")
+    removeEdges(selectedIncomingEdge)
+
+    const selectedOutgoingEdge: (Edge | null)[] = selectedNodes
+      .flatMap(node => graph.model.getOutgoingEdges(node))
+      .filter(edge => !selectedNodes.includes(edge?.getTargetNode()!))
+    addOuterPortAndEdge(selectedOutgoingEdge, groupNode, "output")
+    removeEdges(selectedOutgoingEdge)
 
     //将隐藏的节点设置为不可选
     graph.setSelectionFilter((cell) => {
-      return !nodes?.map(c => c.id)!.includes(cell.id)
+      return !subGraphCells?.map(c => c.id)!.includes(cell.id)
     })
-
-    const selectedIncomingEdge: (Edge | null)[] = nodes
-      .flatMap(item => graph.model.getIncomingEdges(item))
-      .filter(item => item?.getSourceNode() && !nodes.includes(item.getSourceNode()!))
-
-    //获取输出所有边
-    const selectedOutgoingEdge: (Edge | null)[] = nodes
-      .flatMap(item => graph.model.getOutgoingEdges(item))
-      .filter(item => item?.getTargetNode() && !nodes.includes(item.getTargetNode()!))
-    //添加外部桩和连线
-    addOuterPortAndEdge(selectedIncomingEdge, group, "input")
-    addOuterPortAndEdge(selectedOutgoingEdge, group, "output")
-    //删除之前公共的连线，并且将组节点内的连接桩与选中的节点及进行连线
-    removeEdges(selectedIncomingEdge)
-    removeEdges(selectedOutgoingEdge)
-
-    group.prop("previousPosition", group.position({ relative: true }))
-    const prePos = group.getProp().previousPosition
-
-    group.prop("previousSize", group.size())
-    // const selectAbleIds:string:[] = unSelectedNodes.map(node => { id: node.id })
-    // graph.setSelectionFilter(selectAbleIds)
-    // 将该组节点子节点添加进不可选中数组中
-    // dispatch(changeUnselectedCells({ type: "push", data: { groupId: node.id, childrenId } }))
   }
   const preview = async () => {
     const data = graph.toJSON().cells.find(cell => cell.id === node!.id)
@@ -405,7 +421,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
 
   }
   const setDataSource = async () => {
-    
+
     const op: Parameter = operatorParameters.find((op: Parameter) => op.code === node?.shape)
     const { datas, msg, code } = await getDataSourceType(`/api/database/listEnabledByType/${op.type}`);
     console.log(datas, msg, code);
@@ -502,6 +518,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
       })
     }
   }
+
   const addInnerPortAndEdge = (groupNode: Node, type: OuterEdgeType, outPortId: string, targetCell: Cell | null | undefined, targetPortId: string | undefined) => {
 
     if (type === "output") {
@@ -559,6 +576,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
       }
     }
   }
+
   const addInnerEdges = (gId: string, gPortId: string, type: OuterEdgeType, conSourceCellId: string, conSourPortId: string) => {
 
     if (type === "output") {
@@ -603,7 +621,6 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     }
 
 
-
   }
   const uploadFileClick = () => {
     const fileInput = document.createElement("input")
@@ -638,7 +655,8 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
       message.warning("每次只能上传一个文件！")
     }
   }
-  const onMenuItemClick = () => { };
+  const onMenuItemClick = () => {
+  };
   const blankMenu = () => {
 
     return (<Menu hasIcon={true} onClick={onMenuClick}>
