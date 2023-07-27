@@ -136,7 +136,7 @@ public class JoinOperator extends Operator {
         if(hints!=null){
             StringBuffer stringBuffer = new StringBuffer();
             hints.forEach(item->{
-                stringBuffer.append(item.get("joinHints (").toString());
+                stringBuffer.append(item.get("joinHints")).append("(");
 
                 @SuppressWarnings("unchecked")
                 List<String> joinColumn =(List<String>)item.get("joinColumn");
