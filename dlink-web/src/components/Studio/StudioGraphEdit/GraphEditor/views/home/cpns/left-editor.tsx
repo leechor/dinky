@@ -105,14 +105,13 @@ const LeftEditor = memo(() => {
     jsonEditor,
     taskName,
     tabs
-  }:{tabs: GroupTabItem[], [key:string]: any} = useAppSelector((state) => ({
+  }: { tabs: GroupTabItem[], [key: string]: any } = useAppSelector((state) => ({
     flowData: state.home.flowData,
     operatorParameters: state.home.operatorParameters,
     currentSelectNode: state.home.currentSelectNode,
     jsonEditor: state.home.editor,
     taskName: state.home.taskName,
     tabs: state.home.graphTabs,
-    activeKey: state.home.activeKey,
   }));
 
   useEffect(() => {
@@ -590,6 +589,7 @@ const LeftEditor = memo(() => {
 
   //上方面包屑控制画布群组导航
   const tabClick = (clickLayer: number) => {
+
     //如果点击的是最新并且未设置群组
     if ((clickLayer === 0 && tabs.length === 0) || clickLayer === tabs.length - 1) {
       return
@@ -603,7 +603,7 @@ const LeftEditor = memo(() => {
     // graph.getCells().forEach(cell => {
     //   cell.hide()
     // })
-    const groupNode = graph.getCellById(tabs[tabs.length - 1].groupCellId) as Node;
+    const groupNode = graph.getCellById(tabs[clickLayer + 1].groupCellId) as Node;
     shrinkGroupNode(graph, groupNode);
 
     const otherTopCells = graph.getCellById(tabs[clickLayer].groupCellId)?.getChildren() ??
@@ -623,13 +623,19 @@ const LeftEditor = memo(() => {
     dispatch(removeGraphTabs(clickLayer))
   }
 
+  const processTabClick = (index: number) => {
+    for (let i = tabs.length - 1; i >= index; i--) {
+      tabClick(i)
+    }
+  }
+
   const getSubprocess = () => {
     if (tabs.length === 0) {
       return
     }
 
     return tabs.map((tab: GroupTabItem, index) =>
-      <Breadcrumb.Item onClick={() => (tabClick(index))} key={index}>
+      <Breadcrumb.Item onClick={() => (processTabClick(index))} key={index}>
         {`subprocess${index}`}
         <CaretRightOutlined/>
       </Breadcrumb.Item>

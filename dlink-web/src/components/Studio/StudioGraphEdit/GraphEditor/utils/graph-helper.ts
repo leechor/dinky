@@ -1,5 +1,5 @@
 import {Cell, Graph, Node} from "@antv/x6";
-import {PreNodeInfo} from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
+import CustomShape, {PreNodeInfo} from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
 
 export function getGraphViewSize() {
   const view = document.querySelector('.x6-graph-scroller-pannable')
@@ -54,14 +54,18 @@ export const getPointsBox = (points: PreNodeRect[]): PreNodeRect => {
 export function shrinkGroupNode(graph: Graph, groupNode: Node) {
   const children = groupNode.getChildren() ?? []
 
-  children.forEach((item: Cell) => {
-    if (item.isNode()) {
-      const x = item.position().x - groupNode.position().x
-      const y = item.position().y - groupNode.position().y
-      item.prop(PreNodeInfo.PREVIOUS_NODE_RECT, {x, y, ...item.size()})
-      item.setPosition(groupNode.position())
+  children.forEach((cell: Cell) => {
+    if (cell.isNode()) {
+      const x = cell.position().x - groupNode.position().x
+      const y = cell.position().y - groupNode.position().y
+      cell.prop(PreNodeInfo.PREVIOUS_NODE_RECT, {x, y, ...cell.size()})
+      cell.setPosition(groupNode.position())
+
+      if (cell.shape === CustomShape.GROUP_PROCESS) {
+        cell.setAttrs({fo: {visibility: "hidden"}})
+      }
     }
-    item.hide()
+    cell.hide()
   });
 
   //移动组节点位置
