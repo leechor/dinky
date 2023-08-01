@@ -12,6 +12,16 @@
   /* 超出部分以省略号显示 */
 }
 
+.custom-calcu-node-head {
+  position: absolute;
+  font-size: 12px;
+  text-align: center;
+  top: -20px;
+  left: 50%;
+  transform: translate(-50%);
+
+
+}
 
 .custom-calcu-node {
   position: relative;
@@ -26,15 +36,16 @@
     transform: translate(-50%, -50%);
 
   }
-  .custom-calcu-node-waring{
+
+  .custom-calcu-node-waring {
     color: #ff0000;
     position: absolute;
     bottom: 0;
-    left:10%;
+    left: 10%;
     z-index: 999;
-    
+
   }
-  
+
 
   .custom-svg {
     width: 20px !important;
@@ -42,53 +53,58 @@
   }
 
 }
-.error-msg{
-  
-  .error-msg-title{
+
+.error-msg {
+
+  .error-msg-title {
     font-weight: 800;
     border-bottom: 1px solid rgba(255, 255, 255, .3);
     border-top: 1px solid rgba(255, 255, 255, .3);
-    
+
   }
-  .error-msg-body{
+
+  .error-msg-body {
     padding-left: 1em;
-    
+
   }
 }
 
-.custom-calcu-node-process {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  border-radius: 4px;
-  
+:global {
+  .custom-calcu-node-process {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
 
-  .custom-calcu-node-process-top {
-    position: absolute;
-    width: 90%;
-    height: 90%;
-    transform: translate(-50%, 0);
-    background-color: #fde4d7;
-    left: 50%;
-    top: 0;
-    z-index: 10;
-    border:1px solid #f8b979;
-    .custom-calcu-node-svg-top{
+
+    .custom-calcu-node-process-top {
       position: absolute;
+      width: 90%;
+      height: 90%;
+      transform: translate(-50%, 0);
+      background-color: #fde4d7;
       left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-    }
-  }
+      top: 0;
+      z-index: 10;
+      border: 1px solid #f8b979;
 
-  .custom-calcu-node-process-bottom {
-    position: absolute;
-    width: 90%;
-    height: 80%;
-    z-index: 8;
-    bottom: 0;
-    background-color: #fde4d7;
-    border:1px solid #f8b979
+      .custom-calcu-node-svg-top {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+    }
+
+    .custom-calcu-node-process-bottom {
+      position: absolute;
+      width: 90%;
+      height: 80%;
+      z-index: 8;
+      bottom: 0;
+      background-color: #fde4d7;
+      border: 1px solid #f8b979
+    }
   }
 }
 

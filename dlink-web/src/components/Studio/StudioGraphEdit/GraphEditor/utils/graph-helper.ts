@@ -28,6 +28,7 @@ export interface PreNodeRect {
 }
 
 export const getPointsBox = (points: PreNodeRect[]): PreNodeRect => {
+  
   let left: number, top: number, right: number, bottom: number, width: number = 0, height: number = 0;
   points.forEach((point) => {
     if (!point) {

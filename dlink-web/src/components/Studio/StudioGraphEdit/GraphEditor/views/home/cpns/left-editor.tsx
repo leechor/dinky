@@ -1,35 +1,41 @@
-import {memo, useEffect, useRef, useState} from 'react';
-import {Cell, Edge, Graph, Node} from '@antv/x6';
-import {cloneDeep} from 'lodash';
-import {Breadcrumb, message} from 'antd';
-import {CaretRightOutlined} from '@ant-design/icons';
+import { memo, useEffect, useRef, useState } from 'react';
+import { Cell, Edge, Graph, Node } from '@antv/x6';
+import { cloneDeep } from 'lodash';
+import { Breadcrumb, message } from 'antd';
+import { CaretRightOutlined } from '@ant-design/icons';
 
-import {handleInitPort} from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/ports-register';
-import {initGraph} from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/init-graph';
-import {stencilComponentsLoader} from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/stencil-components-loader';
-import {initStencil} from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/init-stencil';
-import {handleInitNodes} from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/node-by-data-loader';
+import { handleInitPort } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/ports-register';
+import { initGraph } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/init-graph';
+import { stencilComponentsLoader } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/stencil-components-loader';
+import { initStencil } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/init-stencil';
+import { handleInitNodes } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/node-by-data-loader';
 import registerShape from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/shape-register';
 import unRegisterShape from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/shape-unregister';
-import {useAppDispatch, useAppSelector,} from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
-import {CustomMenu} from './menu';
-import {initMenu} from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/init-menu';
+import { useAppDispatch, useAppSelector, } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
+import { CustomMenu } from './menu';
+import { initMenu } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/init-menu';
 import NodeModalForm from '@/components/Studio/StudioGraphEdit/GraphEditor/components/node-modal-form';
 import NodeModalPreview from '../../../components/node-preview-modal';
 import styles from './index.less';
 import AddModalPort from '../../../components/add-port-modal';
-import type {GroupTabItem} from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
+import { changeStencilMenuInfo, GroupTabItem } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import {
   changeCurrentSelectNode,
   changePositon,
   changePreviewInfo,
   changeDataSourceInfo,
   removeGraphTabs,
+  changeGroupNameInfo
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import localCache from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/localStorage"
 import CustomShape from '../../../utils/cons';
 import DataSourceModal from '../../../components/data-source-modal';
-import {shrinkGroupNode} from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper";
+import GroupName from '../../../components/group-name-modal';
+import { shrinkGroupNode } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper";
+import { saveCustomGroupInfo, changeCustomGroupInfo } from '@/components/Common/crud';
+import { StencilMenu } from '../../../components/stencil-menu';
+import { initFlowDataAction } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
+
 
 
 export interface ParametersConfigType {
@@ -58,7 +64,16 @@ interface ReadConfigData {
 enum DataSourceType {
   Mysql = "Mysql"
 }
+type SubGraphCells = {
+  [oldCellId: string]: Cell
+}
+type MenuInfo = {
+  x: number,
+  y: number,
+  node: Node,
+  showStencilMenu: boolean
 
+}
 export interface ParametersData {
   isOutputs: boolean,
   parametersConfig: ParametersConfigType[],
@@ -73,8 +88,14 @@ function strMapToObj(strMap: Map<string, ParametersConfigType[]>) {
   return obj
 }
 
-const portType: PortTypes = {inputs: "inputs", outputs: "outputs"}
-
+const portType: PortTypes = { inputs: "inputs", outputs: "outputs" }
+export const warningTip = (code: number, msg: string) => {
+  if (code === 1) {
+    message.error(msg)
+  } else {
+    message.success(msg)
+  }
+}
 const LeftEditor = memo(() => {
 
   let timer: any = null;
@@ -105,20 +126,22 @@ const LeftEditor = memo(() => {
   let c: HTMLDivElement
 
   const dispatch = useAppDispatch();
+  const { stencilMenuInfo }: { stencilMenuInfo: MenuInfo } = useAppSelector((state) => ({
+    stencilMenuInfo: state.home.stencilMenuInfo
 
+  }));
 
-  const { flowData, operatorParameters: operatorParameters, currentSelectNode,
-    jsonEditor, taskName, tabs, activeKey, previewInfo, dataSourceInfo }: { tabs: GroupTabItem[], [key: string]: any }
+  const { flowData, operatorParameters: operatorParameters, groupNameInfo,
+    jsonEditor, taskName, tabs, previewInfo, dataSourceInfo }: { tabs: GroupTabItem[], [key: string]: any }
     = useAppSelector((state) => ({
       flowData: state.home.flowData,
       operatorParameters: state.home.operatorParameters,
-      currentSelectNode: state.home.currentSelectNode,
       jsonEditor: state.home.editor,
       taskName: state.home.taskName,
       tabs: state.home.graphTabs,
-      activeKey: state.home.activeKey,
       previewInfo: state.home.previewInfo,
-      dataSourceInfo: state.home.dataSourceInfo
+      dataSourceInfo: state.home.dataSourceInfo,
+      groupNameInfo: state.home.groupNameInfo
     }));
 
   useEffect(() => {
@@ -126,6 +149,20 @@ const LeftEditor = memo(() => {
 
     return () => {
       document.removeEventListener('mousemove', onMouseMove)
+    }
+  }, [])
+  const cancelShowMenu = () => {
+    dispatch(changeStencilMenuInfo({ x: 0, y: 0, showStencilMenu: false, node: null }))
+  }
+  useEffect(() => {
+    const element = document.getElementsByClassName("leftEditor")
+    for (let ele of Array.from(element)) {
+      ele.addEventListener("click", cancelShowMenu)
+    }
+    return () => {
+      for (let ele of Array.from(element)) {
+        ele.removeEventListener("click", cancelShowMenu)
+      }
     }
   }, [])
 
@@ -244,12 +281,13 @@ const LeftEditor = memo(() => {
     setParametersConfig({
       isOutputs: false,
       parametersConfig: parametersConfig,
-      readConfigData: {currentCell, currentPort, id}
+      readConfigData: { currentCell, currentPort, id }
     })
     isModalVisible(true)
   }
   const handleNodeConfigSet = (graph: Graph) => {
-    graph.on("node:port:click", ({node, port}: { node: Node, port: string }) => {
+    
+    graph.on("node:port:click", ({ node, port }: { node: Node, port: string }) => {
       dispatch(changeCurrentSelectNode(node))
 
       if (!node.getData() && node.shape !== "DuplicateOperator") {
@@ -281,7 +319,7 @@ const LeftEditor = memo(() => {
                 setParametersConfig({
                   isOutputs: true,
                   parametersConfig: parametersConfig,
-                  readConfigData: {currentCell: node, currentPort: port, id}
+                  readConfigData: { currentCell: node, currentPort: port, id }
                 })
                 isModalVisible(true)
 
@@ -298,7 +336,7 @@ const LeftEditor = memo(() => {
             setParametersConfig({
               isOutputs: true,
               parametersConfig: parametersConfig,
-              readConfigData: {currentCell: node, currentPort: port, id: port}
+              readConfigData: { currentCell: node, currentPort: port, id: port }
             })
             isModalVisible(true)
           }
@@ -345,7 +383,7 @@ const LeftEditor = memo(() => {
       }
     })
 
-    graph.on("edge:connected", ({isNew, edge, currentCell, currentPort}) => {
+    graph.on("edge:connected", ({ isNew, edge, currentCell, currentPort }) => {
       //创建新边
       if (isNew) {
         //拿到该边的sourcecell和sourcePortId
@@ -401,7 +439,7 @@ const LeftEditor = memo(() => {
           currentCell.setData({
             ...(currentCell.getData() ? currentCell.getData() : {}),
             config: [newConfigObj]
-          }, {overwrite: true});
+          }, { overwrite: true });
           if (sourceCell.shape === "DuplicateOperator") {
             //把input-output config 设置进自定义节点config
             let oldConfigObj = sourceCell.getData()["config"][0]
@@ -409,7 +447,7 @@ const LeftEditor = memo(() => {
             sourceCell.setData({
               ...(sourceCell.getData() ? sourceCell.getData() : {}),
               config: [cloneDeep(oldConfigObj)]
-            }, {overwrite: true})
+            }, { overwrite: true })
           }
           //从node-data 读取config
           readConfigFromData(currentCell, sourceCell, sourcePortId, currentPort, id)
@@ -421,7 +459,7 @@ const LeftEditor = memo(() => {
     isModalVisible(false);
   }
   const handleCancelPort = () => {
-    setShowMenuInfo({...showMenuInfo, show: true, node: null})
+    setShowMenuInfo({ ...showMenuInfo, show: true, node: null })
   }
 
   const handleSubmit = (value: CompareCheckProps) => {
@@ -458,7 +496,7 @@ const LeftEditor = memo(() => {
               node.setData({
                 ...(node?.getData() ? node.getData() : {}),
                 config: [cloneDeep(oldConfigObj)]
-              }, {overwrite: true})
+              }, { overwrite: true })
             }
             configMap.set(id, filterConfigMap);
             let config = strMapToObj(configMap)
@@ -466,7 +504,7 @@ const LeftEditor = memo(() => {
             targetCell!.setData({
               ...(targetCell?.getData() ? targetCell.getData() : {}),
               config: [newConfigObj]
-            }, {overwrite: true});
+            }, { overwrite: true });
           }
         }
       } else {
@@ -505,7 +543,7 @@ const LeftEditor = memo(() => {
           currentNode?.setData({
             ...(currentNode.getData() ? currentNode.getData() : {}),
             config: [newConfigObj]
-          }, {overwrite: true})
+          }, { overwrite: true })
         }
       } else {
         //如果是输入则修改config
@@ -516,7 +554,7 @@ const LeftEditor = memo(() => {
         value.readConfigData.currentCell.setData({
           ...(value.readConfigData.currentCell.getData() ? value.readConfigData.currentCell.getData() : {}),
           config: [newConfigObj]
-        }, {overwrite: true});
+        }, { overwrite: true });
       }
 
     }
@@ -570,7 +608,7 @@ const LeftEditor = memo(() => {
           for (const addPortId of outPortIds!) {
             newConfigObj[addPortId!] = cloneDeep(parametersConfig)
           }
-          node?.setData({...(node.getData() ? node.getData() : {}), config: [newConfigObj]})
+          node?.setData({ ...(node.getData() ? node.getData() : {}), config: [newConfigObj] })
         }
       }
     } else {
@@ -578,13 +616,38 @@ const LeftEditor = memo(() => {
       let configMap: Map<string, ParametersConfigType[]> = new Map();
       configMap.set(value.portName, []);
       let newConfigObj = strMapToObj(configMap)
-      node?.setData({...(node.getData() ? node.getData() : {}), config: [newConfigObj]})
+      node?.setData({ ...(node.getData() ? node.getData() : {}), config: [newConfigObj] })
     }
     message.success("连接桩添加成功！")
 
   }
   const handleShowMenu = (value: boolean) => {
-    setShowMenuInfo({...showMenuInfo, show: value})
+    setShowMenuInfo({ ...showMenuInfo, show: value })
+  }
+
+  const handleGroupNameSubmit = (value: any) => {
+    
+    if (value.type === "ADD") {
+      let subGroupObj: SubGraphCells = value.node && graphRef.current!.cloneSubGraph([graphRef.current!.getCellById(value.node.id)], { deep: true });
+      let groupJson: Cell<Cell.Properties>[] = []
+      subGroupObj && Object.values(subGroupObj).forEach((cls) => {
+        groupJson.push(cls)
+      })
+      saveCustomGroupInfo("/api/zdpx/customer/save", {
+        script: JSON.stringify({ cells: groupJson }),
+        name: value.groupName
+      }).then(res => {
+        warningTip(res.code, res.msg)
+      })
+    } else {
+      changeCustomGroupInfo(`/api/zdpx/customer/oldName/${value.node.prop().name}/newName/${value.groupName}`).then(res => {
+        warningTip(res.code, res.msg)
+      })
+    }
+    dispatch(initFlowDataAction())
+  }
+  const handleGroupNameCancel = () => {
+    dispatch(changeGroupNameInfo({ isShowGroupNameModal: false }))
   }
 
   const handlePreviewCancel = () => {
@@ -629,7 +692,7 @@ const LeftEditor = memo(() => {
     dispatch(changeCurrentSelectNode(node))
   }
   const changePosition = (x: number, y: number) => {
-    dispatch(changePositon({x, y}))
+    dispatch(changePositon({ x, y }))
   }
   //上方面包屑控制画布群组导航
   const tabClick = (clickLayer: number) => {
@@ -659,11 +722,9 @@ const LeftEditor = memo(() => {
     otherTopCells.forEach((cell: Cell) => {
       cell.show()
       if (cell.shape == CustomShape.GROUP_PROCESS) {
-        cell.setAttrs({fo: {visibility: "visible"}})
+        cell.setAttrs({ fo: { visibility: "visible" } })
       }
     });
-
-    window.graph = graph;
     dispatch(removeGraphTabs(clickLayer))
   }
 
@@ -679,9 +740,9 @@ const LeftEditor = memo(() => {
     }
 
     return tabs.map((tab: GroupTabItem, index) =>
-      <Breadcrumb.Item onClick={() => (processTabClick(index))} key={index}>
-        {`subprocess${index}`}
-        <CaretRightOutlined/>
+      <Breadcrumb.Item onClick={() => (processTabClick(index))} key={index} >
+        {<span style={{ cursor: "pointer", display: "inline-block" }}>{`subprocess${index}`}</span>}
+        <CaretRightOutlined />
       </Breadcrumb.Item>
     )
   }
@@ -719,6 +780,7 @@ const LeftEditor = memo(() => {
         // 5、加载自定义的组件图形
         stencilComponentsLoader(graphRef.current, stencil, operatorParameters);
 
+
         // 6、加载数据
 
         const data = localCache.getCache(`${taskName}graphData`)
@@ -743,20 +805,20 @@ const LeftEditor = memo(() => {
 
   return (
     <>
-      <div className={styles['leftEditor']}>
-        <div className={styles['leftEditor-stencil']}>
+      <div className="leftEditor">
+        <div className="leftEditor-stencil">
           <div ref={stencilRef}></div>
         </div>
-        <div className={styles['leftEditor-editor']}>
+        <div className="leftEditor-editor">
 
-          <div className={styles['editor-content']}>
-            <div className={styles["header-bread"]}>
+          <div className="editor-content">
+            <div className="header-bread">
               <Breadcrumb>
                 {getSubprocess()}
               </Breadcrumb>
             </div>
 
-            <div ref={editorContentRef} className={styles['content-graph']}>
+            <div ref={editorContentRef} className="content-graph">
               {showMenuInfo.show && (
                 <CustomMenu
                   top={showMenuInfo.top}
@@ -774,28 +836,38 @@ const LeftEditor = memo(() => {
       </div>
 
       <NodeModalForm onSubmit={(value: any) => handleSubmit(value)}
-                     onCancel={() => handleCancel()}
-                     modalVisible={modalVisible}
-                     values={parametersConfig}/>
+        onCancel={() => handleCancel()}
+        modalVisible={modalVisible}
+        values={parametersConfig} />
 
       {showMenuInfo.node ? <AddModalPort onSubmit={(value: any) => handleSubmitPort(value)}
-                                         onCancel={() => handleCancelPort()}
-                                         modalVisible={!showMenuInfo.show && showMenuInfo.node.shape === "DuplicateOperator"}
-                                         values={showMenuInfo.node}/> : null}
+        onCancel={() => handleCancelPort()}
+        modalVisible={!showMenuInfo.show && showMenuInfo.node.shape === "DuplicateOperator"}
+        values={showMenuInfo.node} /> : null}
 
-      <NodeModalPreview onSubmit={() => handlePreviewSubmit()}
+      <NodeModalPreview
+        onSubmit={() => handlePreviewSubmit()}
         onCancel={() => handlePreviewCancel()}
         modalVisible={previewInfo.isShow}
         values={previewInfo.values}
         node={previewInfo.node} />
 
-      <DataSourceModal onSubmit={(value: any) => handleDataSourceSubmit(value)}
+      <DataSourceModal
+        onSubmit={(value: any) => handleDataSourceSubmit(value)}
         onCancel={() => handleDataSourceCancel()}
         modalVisible={dataSourceInfo.isShowModal}
         values={dataSourceInfo.datas}
         node={dataSourceInfo.node}
         type={dataSourceInfo.type}
       />
+      <GroupName
+        onSubmit={(value: any) => handleGroupNameSubmit(value)}
+        onCancel={() => handleGroupNameCancel()}
+        values={groupNameInfo.node}
+      />
+      {stencilMenuInfo.showStencilMenu &&
+        <StencilMenu />}
+
     </>
 
   );

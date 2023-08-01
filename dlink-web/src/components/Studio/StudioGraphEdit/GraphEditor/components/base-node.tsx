@@ -2,6 +2,7 @@ import { Tooltip } from 'antd';
 import { WarningOutlined, CloseOutlined } from '@ant-design/icons';
 import styles from './index.less';
 import CpnShape, { NodeType } from './cpn-shape';
+import { absolute } from '@antv/x6/lib/registry/port-layout/absolute';
 
 
 const BaseNode = (props: { nodeType: NodeType; iconPath: string, name: string }) => {
@@ -35,22 +36,24 @@ const BaseNode = (props: { nodeType: NodeType; iconPath: string, name: string })
     </>
   }
   return (
-    <div className={styles['custom-calcu-node']}>
-      {node && (
-        <Tooltip title={name}>
-          <div className={styles['custom-calcu-node-label']}>{name}</div>
-        </Tooltip>
-      )}
-      <div className={styles['custom-calcu-node-svg']}>
-        <CpnShape iconPath={iconPath} />
-      </div>
-      {node.prop().isError && (<div className={styles["custom-calcu-node-waring"]} onClick={handleWarning}>
-        <Tooltip title={getErrorMessage()} placement="bottom" overlayClassName='error-msg'>
-          <WarningOutlined />
-        </Tooltip>
-      </div>)}
+    <>
+      {!node.prop().isStencil && <div className={styles['custom-calcu-node-head']}><div style={{ whiteSpace: 'nowrap', textAlign: 'center' }}>{name}</div></div>}
+      <div className={styles['custom-calcu-node']}>
+        {(node&&node.prop().isStencil) && (
+          <Tooltip title={name}>
+            <div className={styles['custom-calcu-node-label']}>{name}</div>
+          </Tooltip>
+        )}
+        <div className={styles['custom-calcu-node-svg']}>
+          <CpnShape iconPath={iconPath} />
+        </div>
+        {node.prop().isError && (<div className={styles["custom-calcu-node-waring"]} onClick={handleWarning}>
+          <Tooltip title={getErrorMessage()} placement="bottom" overlayClassName='error-msg'>
+            <WarningOutlined />
+          </Tooltip>
+        </div>)}
 
-    </div>
+      </div></>
   );
 };
 

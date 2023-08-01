@@ -18,13 +18,13 @@
  */
 
 
-import React, {useCallback, useEffect, useState} from "react";
-import {connect} from "umi";
+import React, { useCallback, useEffect, useState } from "react";
+import { connect } from "umi";
 import styles from './index.less';
 import StudioMenu from "./StudioMenu";
-import {Card, Col, Form, Row} from "antd";
+import { Card, Col, Form, Row } from "antd";
 import StudioTabs from "./StudioTabs";
-import {StateType} from "@/pages/DataStudio/model";
+import { StateType } from "@/pages/DataStudio/model";
 import StudioConsole from "./StudioConsole";
 import StudioLeftTool from "./StudioLeftTool";
 import StudioRightTool from "./StudioRightTool";
@@ -42,13 +42,18 @@ import {
 } from "@/components/Studio/StudioEvent/DDL";
 import DraggleLayout from "@/components/DraggleLayout";
 import DraggleVerticalLayout from "@/components/DraggleLayout/DraggleVerticalLayout";
-import {loadSettings} from "@/pages/SettingCenter/FlinkSettings/function";
-import {l} from "@/utils/intl";
+import { loadSettings } from "@/pages/SettingCenter/FlinkSettings/function";
+import { l } from "@/utils/intl";
+import { useAppDispatch, useAppSelector, } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
+import {
+  changePostionToGroup
+} from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
+
 
 const Studio = (props: any) => {
 
-  const {isFullScreen, rightClickMenu, toolHeight, toolLeftWidth, toolRightWidth, dispatch} = props;
-  const [form] = Form.useForm();
+  const { isFullScreen, rightClickMenu, toolHeight, toolLeftWidth, toolRightWidth, dispatch } = props;
+  const dispatchGraph = useAppDispatch();
   const VIEW = {
     leftToolWidth: 300,
     marginTop: 84,
@@ -58,6 +63,9 @@ const Studio = (props: any) => {
     leftMargin: 36,
     midMargin: 46,
   };
+  dispatchGraph(changePostionToGroup({ x: toolLeftWidth, y: VIEW.marginTop, isFullScreen }))
+  const [form] = Form.useForm();
+
   const [size, setSize] = useState({
     width: document.documentElement.clientWidth,
     height: document.documentElement.clientHeight,
@@ -103,8 +111,8 @@ const Studio = (props: any) => {
 
   return (
     <div onClick={onClick}>
-      <StudioMenu form={form} width={size.width} height={size.height}/>
-      <Card bordered={false} className={styles.card} size="small" id="studio_card" style={{marginBottom: 0}}>
+      <StudioMenu form={form} width={size.width} height={size.height} />
+      <Card bordered={false} className={styles.card} size="small" id="studio_card" style={{ marginBottom: 0 }}>
         <DraggleVerticalLayout
           containerWidth={size.width}
           containerHeight={(size.height - VIEW.marginTop)}
@@ -161,20 +169,20 @@ const Studio = (props: any) => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                  }}/>
+                  }} />
                 </Col>
                 <Col>
-                  {!isFullScreen ? <StudioTabs width={size.width - toolRightWidth - toolLeftWidth}/> : undefined}
+                  {!isFullScreen ? <StudioTabs width={size.width - toolRightWidth - toolLeftWidth} /> : undefined}
                 </Col>
               </DraggleLayout>
               <Col id='StudioRightTool' className={styles["vertical-tabs"]}>
-                <StudioRightTool form={form}/>
+                <StudioRightTool form={form} />
               </Col>
             </DraggleLayout>
           </Row>
           <Row>
             <Col span={24}>
-              <StudioConsole height={size.height - toolHeight - VIEW.marginTop}/>
+              <StudioConsole height={size.height - toolHeight - VIEW.marginTop} />
             </Col>
           </Row>
         </DraggleVerticalLayout>
@@ -183,7 +191,7 @@ const Studio = (props: any) => {
   )
 };
 
-export default connect(({Studio}: { Studio: StateType }) => ({
+export default connect(({ Studio }: { Studio: StateType }) => ({
   isFullScreen: Studio.isFullScreen,
   rightClickMenu: Studio.rightClickMenu,
   toolHeight: Studio.toolHeight,

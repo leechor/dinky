@@ -6,6 +6,6 @@ export type Parameter = {
   feature: {
     icon: string;
   };
-  specification: string;
+  specification: any;
   ports: { inputs: any; outputs: any };
 };

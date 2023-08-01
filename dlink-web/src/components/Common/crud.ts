@@ -101,7 +101,7 @@ export async function getInfoById(url: string, id: number) {
 }
 
 export async function getNodePreviewInfo(url: string, body: any) {
-  
+
   console.log(body);
 
   return request2(url, {
@@ -115,6 +115,31 @@ export async function getDataSourceType(url: string) {
     method: 'GET',
   });
 }
+export async function saveCustomGroupInfo(url: string, params: any) {
+  return request2(url, {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+export async function getCustomGroupInfo(url: string) {
+  return request2(url, {
+    method: 'GET',
+  });
+}
+export async function deleteCustomGroupInfo(url: string) {
+  return request2(url, {
+    method: 'DELETE',
+  });
+}
+export async function changeCustomGroupInfo(url: string) {
+  return request2(url, {
+    method: 'POST',
+  });
+}
+
+
 
 
 

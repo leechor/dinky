@@ -26,10 +26,11 @@ import type { Parameter } from '@/components/Studio/StudioGraphEdit/GraphEditor/
 import { formatDate } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/math"
 import {
   convertAbsoluteToRelativePosition,
-  getGraphViewSize, PreNodeRect
+  getGraphViewSize
 } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper";
-import { changePreviewInfo, changeDataSourceInfo } from '../../../store/modules/home';
+import { changePreviewInfo, changeDataSourceInfo, changeGroupNameInfo } from '../../../store/modules/home';
 import { getNodePreviewInfo, getDataSourceType } from '@/components/Common/crud';
+
 
 type MenuPropsType = {
   top: number;
@@ -102,6 +103,7 @@ function createPackageNode(graph: Graph) {
 }
 
 export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, node, handleShowMenu, show }) => {
+  console.log(top, left, "top,left");
 
   const { taskName, operatorParameters } = useAppSelector((state) => ({
     taskName: state.home.taskName,
@@ -240,18 +242,15 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     cc.forEach(c => c.setData({ ...c.getData(), 'backgroundColor': color }))
     setNoteTextColor(noteTextColor)
   }
-
-
   const onMenuClick = (name: string) => {
-    messageApi.info(`clicked ${name}`);
     handleShowMenu(false)
-
     switch (name) {
       case 'undo':
         graph.undo();
         break;
       case 'redo':
         graph.redo();
+
         break;
       case 'delete':
         graph.clearCells();
@@ -332,6 +331,9 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
       case "preview":
         preview()
         break;
+      case "customGroup":
+        customGroup();
+        break;
       case "setDataSource":
         setDataSource()
         break;
@@ -341,7 +343,9 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     }
   };
 
-
+  const customGroup = () => {
+    dispatch(changeGroupNameInfo({ node, isShowGroupNameModal: true, type: "ADD" }))
+  }
   const createProcess = () => {
     const selectedNodes = graph.getSelectedCells()
       .filter(item => item.isNode())
@@ -359,6 +363,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
 
     const groupNode = graph.addNode(createPackageNode(graph));
     const selectRectangle = graph.getCellsBBox(selectedNodes)!;
+
     let relativeParentPosition = { x: selectRectangle.x, y: selectRectangle.y }
     if (haveSameParent) {
       selectNodeParents[0]?.insertChild(groupNode)
@@ -416,9 +421,6 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     if (code === 0) {
       dispatch(changePreviewInfo({ node, values: datas, isShow: true }))
     }
-
-
-
   }
   const setDataSource = async () => {
 
@@ -437,7 +439,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
   const addOuterPortAndEdge = (outEdge: (Edge | null)[], groupNode: Node, type: OuterEdgeType) => {
     //将外部节点与组节点连线
 
-    if (!outEdge.length) {
+    if (!outEdge.length || (outEdge.every(e => e === null))) {
       //情况1：所选组无连线，默认一个连接装并且无连线
       return
     }
@@ -657,6 +659,11 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
   }
   const onMenuItemClick = () => {
   };
+  const isShowProcessMenu = () => {
+    const rect = graph.model.getCellsBBox(graph.getSelectedCells())
+    const p = graph.localToGraph(rect!)
+    return (left >= p.x! && left <= p.x + p.width) && (top >= p.y! && top <= p.y + p.height)
+  }
   const blankMenu = () => {
 
     return (<Menu hasIcon={true} onClick={onMenuClick}>
@@ -698,21 +705,33 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
         <Divider />
       </>
       }
-      {node && <>
+      {isShowProcessMenu() && <>
         <MenuItem
           onClick={onMenuItemClick}
           name="createProcess"
           icon={<GroupOutlined />}
           text="Move into new subprocess"
         />
-        <MenuItem
+
+
+      </>}
+      {
+        (node && node?.shape !== CustomShape.GROUP_PROCESS) && (<MenuItem
           onClick={onMenuItemClick}
           name="preview"
           icon={<EyeOutlined />}
           text="Node preview"
         />
-
-      </>}
+        )
+      }
+      {
+        node?.shape === CustomShape.GROUP_PROCESS && (<MenuItem
+          onClick={onMenuItemClick}
+          name="customGroup"
+          icon={<EyeOutlined />}
+          text="Custom Group"
+        />)
+      }
       {(node && isDataSource) && <MenuItem
         onClick={onMenuItemClick}
         name="setDataSource"
