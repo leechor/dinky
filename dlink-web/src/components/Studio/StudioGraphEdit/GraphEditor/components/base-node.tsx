@@ -2,8 +2,6 @@ import { Tooltip } from 'antd';
 import { WarningOutlined, CloseOutlined } from '@ant-design/icons';
 import styles from './index.less';
 import CpnShape, { NodeType } from './cpn-shape';
-import { absolute } from '@antv/x6/lib/registry/port-layout/absolute';
-
 
 const BaseNode = (props: { nodeType: NodeType; iconPath: string, name: string }) => {
   const {

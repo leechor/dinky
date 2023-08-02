@@ -18,6 +18,51 @@ import {
 import { getCustomGroupInfo } from '@/components/Common/crud';
 import { warningTip } from '../views/home/cpns/left-editor';
 
+const cloneSubCells = (cell: Cell, graph: Graph) => {
+  if (cell.shape == CustomShape.GROUP_PROCESS && cell.prop().name && cell.prop().isStencil !== undefined) {
+    let addedCells: Cell[] = [];
+    let addedGroup: Cell;
+    //请求该节点对应参数
+    getCustomGroupInfo(`/api/zdpx/customer/${cell.prop().name!}`).then(res => {
+      if (res.code === 0) {
+        graph.removeCell(cell)
+        const { cells } = JSON.parse(res.datas);
+        cells.map((c: Cell) => {
+          if (c.shape === "edge") {
+            const edge = graph.addEdge(c)
+            addedCells.push(edge)
+          } else {
+            const node = graph.addNode(c as Node)
+            if (node.shape === CustomShape.GROUP_PROCESS && !node.hasParent()) {
+              node.prop("name", cell.prop().name!)
+              const { x, y } = (cell as Node).position();
+              node.setPosition(x, y, { relative: true, deep: true });
+              node.prop(PreNodeInfo.PREVIOUS_NODE_RECT, { ...node.position({ relative: true }), ...node.size() })
+              //将新增组节点设置为当前组节点的子节点
+              const tabs = store.getState().home.graphTabs
+              const currentGroupId = tabs[tabs.length - 1];
+              if (currentGroupId.groupCellId) {
+                const currentGroup = graph.getCellById(currentGroupId.groupCellId);
+                currentGroup.insertChild(node)
+              }
+              addedGroup = node;
+              addedCells.push(node)
+            }
+          }
+        })
+        //克隆子图，删除原先子图
+        const clonedCells = graph.cloneSubGraph([addedGroup], { deep: true })
+        Object.values(clonedCells).forEach(cell => {
+          graph.addCell(cell)
+        })
+        graph.removeCells(addedCells)
+
+      }
+      warningTip(res.code, res.msg)
+    })
+  }
+}
+
 /**
  *
  * @param container //画布容器
@@ -310,37 +355,7 @@ export const initGraph = (
     if (cell.shape === 'package') {
       cell.setZIndex(-1);
     }
-    if (cell.shape == CustomShape.GROUP_PROCESS && cell.prop().name) {
-      //请求该节点对应参数
-      getCustomGroupInfo(`/api/zdpx/customer/${cell.prop().name!}`).then(res => {
-        if (res.code === 0) {
-          graph.removeCell(cell)
-          const { cells } = JSON.parse(res.datas);
-          cells.map((c: Cell) => {
-            if (c.shape === "edge") {
-              graph.addEdge(c)
-            } else {
-              const node = graph.addNode(c as Node)
-              if (node.shape === CustomShape.GROUP_PROCESS && !node.hasParent()) {
-                node.prop("name", cell.prop().name!)
-                const { x, y } = (cell as Node).position();
-                node.setPosition(x, y, { relative: true, deep: true });
-                node.prop(PreNodeInfo.PREVIOUS_NODE_RECT, { ...node.position({ relative: true }), ...node.size() })
-                //将新增组节点设置为当前组节点的子节点
-                const tabs = store.getState().home.graphTabs
-                const currentGroupId = tabs[tabs.length - 1];
-                if (currentGroupId.groupCellId) {
-                  const currentGroup = graph.getCellById(currentGroupId.groupCellId);
-                  currentGroup.insertChild(node)
-                }
-              }
-            }
-          })
-
-        }
-        warningTip(res.code, res.msg)
-      })
-    }
+    cloneSubCells(cell, graph)
     // updateGraphData(graph);
   });
 
@@ -451,3 +466,5 @@ export const initGraph = (
   dispatch(changeGraph(graph));
   return graph;
 };
+
+

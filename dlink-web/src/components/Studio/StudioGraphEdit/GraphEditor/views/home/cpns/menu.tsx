@@ -393,16 +393,33 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
       }
       item.hide()
     })
-
+    //此时selectIncomingEdge包含组节点内的output_0_in这类线
     const selectedIncomingEdge: (Edge | null)[] = selectedNodes
       .flatMap(node => graph.model.getIncomingEdges(node))
-      .filter(edge => !selectedNodes.includes(edge?.getSourceNode()!))
+      .filter(edge => !selectedNodes.some((node) => node.id === edge?.getSourceNode()!.id))
+      .filter(edge => edge !== null)
+      .filter(edge => {
+        const portId = edge?.getTargetPortId();
+        const targetCell = edge?.getTargetNode();
+        const portMetadata = portId && targetCell?.getPort(portId)
+        const portGroupType = portMetadata && portMetadata.group
+        return portGroupType !== "innerInputs"
+      })
     addOuterPortAndEdge(selectedIncomingEdge, groupNode, "input")
     removeEdges(selectedIncomingEdge)
 
     const selectedOutgoingEdge: (Edge | null)[] = selectedNodes
       .flatMap(node => graph.model.getOutgoingEdges(node))
-      .filter(edge => !selectedNodes.includes(edge?.getTargetNode()!))
+      .filter(edge => !selectedNodes.some((node) => node.id === edge?.getTargetNode()!.id))
+      .filter(edge => edge !== null)
+      .filter(edge => {
+        const portId = edge?.getSourcePortId();
+        const sourceCell = edge?.getSourceNode();
+        const portMetadata = portId && sourceCell?.getPort(portId)
+        const portGroupType = portMetadata && portMetadata.group
+        return portGroupType !== "innerOutputs"
+
+      })
     addOuterPortAndEdge(selectedOutgoingEdge, groupNode, "output")
     removeEdges(selectedOutgoingEdge)
 
@@ -439,14 +456,14 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
   const addOuterPortAndEdge = (outEdge: (Edge | null)[], groupNode: Node, type: OuterEdgeType) => {
     //将外部节点与组节点连线
 
-    if (!outEdge.length || (outEdge.every(e => e === null))) {
+    if (!outEdge.length) {
       //情况1：所选组无连线，默认一个连接装并且无连线
+
       return
     }
 
     //添加外部输入桩
     if (outEdge.length > 1) {
-
       //根据连线长度，添加n-1个输入桩
       for (let i = 1; i < outEdge.length; i++) {
         //添加连接桩
