@@ -66,7 +66,8 @@ function registerGroupProgress(ports: Partial<PortManager.Metadata> | PortManage
             position: "left",
           },
           id: "input_0"
-        }, {
+        },
+        {
           group: 'outputs',
           zIndex: 999,
           id: "output_0",
@@ -92,7 +93,7 @@ function registerGroupProgress(ports: Partial<PortManager.Metadata> | PortManage
           zIndex: 999,
           attrs: {
             text: {
-              text: `output_0`,
+              text: `input_0_in`,
               style: {
                 visibility: "hidden",
                 fontSize: 10,
@@ -109,13 +110,14 @@ function registerGroupProgress(ports: Partial<PortManager.Metadata> | PortManage
           label: {
             position: "right",
           },
-          id: "output_0_in"
-        }, {
+          id: "input_0_in"
+        },
+        {
           group: 'innerInputs',
           zIndex: 999,
           attrs: {
             text: {
-              text: `input_0_in`,
+              text: `output_0_in`,
               style: {
                 visibility: "hidden",
                 fontSize: 10,
@@ -132,7 +134,7 @@ function registerGroupProgress(ports: Partial<PortManager.Metadata> | PortManage
           label: {
             position: "left",
           },
-          id: "input_0_in"
+          id: "output_0_in"
         }
       ]
     },

@@ -463,7 +463,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     }
 
     //添加外部输入桩
-    if (outEdge.length > 1) {
+    if (outEdge.length > 0) {
       //根据连线长度，添加n-1个输入桩
       for (let i = 1; i < outEdge.length; i++) {
         //添加连接桩
@@ -542,49 +542,52 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
 
     if (type === "output") {
       //添加连接桩
-      groupNode.addPort({
-        id: `${outPortId}_in`, group: "innerOutputs",
-        attrs: {
-          text: {
-            text: outPortId + "_in",
-            style: {
-              visibility: "hidden",
-              fontSize: 10,
-              fill: "#3B4351",
+      if (!groupNode.hasPort(`${outPortId}_in`)) {
+        groupNode.addPort({
+          id: `${outPortId}_in`, group: "innerOutputs",
+          attrs: {
+            text: {
+              text: outPortId + "_in",
+              style: {
+                visibility: "hidden",
+                fontSize: 10,
+                fill: "#3B4351",
+              },
             },
           },
-        },
-        args: {
-          dx: 2,
-        },
-        label: {
-          position: "right",
-        }
+          args: {
+            dx: 2,
+          },
+          label: {
+            position: "right",
+          }
 
-      })
+        })
+      }
       addInnerEdges(groupNode.id, `${outPortId}_in`, "output", targetCell!.id, targetPortId!)
     } else {
       //添加连接桩
-      groupNode.addPort({
-        id: `${outPortId}_in`, group: "innerInputs",
-        attrs: {
-          text: {
-            text: outPortId + "_in",
-            style: {
-              visibility: "hidden",
-              fontSize: 10,
-              fill: "#3B4351",
+      if (!groupNode.hasPort(`${outPortId}_in`)) {
+        groupNode.addPort({
+          id: `${outPortId}_in`, group: "innerInputs",
+          attrs: {
+            text: {
+              text: outPortId + "_in",
+              style: {
+                visibility: "hidden",
+                fontSize: 10,
+                fill: "#3B4351",
+              },
             },
           },
-        },
-        args: {
-          dx: -2
-        },
-        label: {
-          position: "left",
-        }
-
-      })
+          args: {
+            dx: -2
+          },
+          label: {
+            position: "left",
+          }
+        })
+      }
       addInnerEdges(groupNode.id, `${outPortId}_in`, "input", targetCell!.id, targetPortId!)
     }
   }

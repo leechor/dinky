@@ -2,26 +2,26 @@ import 'spectre.css/dist/spectre.css';
 import 'spectre.css/dist/spectre-exp.css';
 import 'spectre.css/dist/spectre-icons.css';
 import styles from './index.less';
-import {textSchema} from "../../../assets/json-data/text-node-schema"
+import { textSchema } from "../../../assets/json-data/text-node-schema"
 
-import {memo, useEffect, useRef} from 'react';
-import {Node} from '@antv/x6';
-import {useAppDispatch, useAppSelector,} from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
-import {JSONEditor, JSONEditorOptions} from '@json-editor/json-editor';
+import { memo, useEffect, useRef } from 'react';
+import { Node } from '@antv/x6';
+import { useAppDispatch, useAppSelector, } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
+import { JSONEditor, JSONEditorOptions } from '@json-editor/json-editor';
 import {
   changeCurrentSelectNode,
   changeCurrentSelectNodeParamsData,
   changeJsonEditor,
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
-import {Tooltip} from "antd";
-import {QuestionCircleOutlined} from "@ant-design/icons";
-import {createRoot} from "react-dom/client";
-import {MyMonacoEditor as myMonaco} from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/my-monaco-editor";
-import {MyAutoCompleteEditor as myautoinput} from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/my-auto-complete-editor";
+import { Tooltip } from "antd";
+import { QuestionCircleOutlined } from "@ant-design/icons";
+import { createRoot } from "react-dom/client";
+import { MyMonacoEditor as myMonaco } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/my-monaco-editor";
+import { MyAutoCompleteEditor as myautoinput } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/my-auto-complete-editor";
 
 const EditorTip = (title: string) => {
   return (<Tooltip title={title}>
-    <QuestionCircleOutlined/>
+    <QuestionCircleOutlined />
   </Tooltip>)
 };
 
@@ -43,7 +43,7 @@ const Editor = memo(() => {
   const jsonRef = useRef<HTMLDivElement>(null);
   let editor: InstanceType<typeof JSONEditor>
   const dispatch = useAppDispatch();
-  const {operatorParameters, currentSelectNode} = useAppSelector(
+  const { operatorParameters, currentSelectNode } = useAppSelector(
     (state) => ({
       operatorParameters: state.home.operatorParameters,
       currentSelectNode: state.home.currentSelectNode,
@@ -97,7 +97,7 @@ const Editor = memo(() => {
     });
 
     editor.on('change', function () {
-      
+
       //先恢复初始值
       dispatch(changeCurrentSelectNodeParamsData([]));
       dispatch(changeCurrentSelectNodeParamsData(editor.getValue()));
@@ -122,7 +122,7 @@ const Editor = memo(() => {
           parameters: editor.getValue(),
           config: currentSelectNode.getData()?.config ?? []
         },
-        {overwrite: true});
+        { overwrite: true });
       dispatch(changeCurrentSelectNode(currentSelectNode));
     });
 
@@ -138,7 +138,9 @@ const Editor = memo(() => {
         const dev = document.createElement('div')
         const root = createRoot(dev);
         root.render(<>{EditorTip(desc.textContent ?? '')}</>)
-        item.append(dev)
+        if (item.querySelector('div') === null) {
+          item.append(dev)
+        }
         desc.remove()
       })
 
@@ -153,14 +155,16 @@ const Editor = memo(() => {
         const dev = document.createElement('div')
         const root = createRoot(dev);
         root.render(<>{EditorTip(desc.textContent ?? '')}</>)
-        item.append(dev)
+        if (item.querySelector('div') === null) {
+          item.append(dev)
+        }
         desc.remove()
       })
 
       //modify delete columns button
       const dataObjects = document.querySelectorAll('.je-object__container')
-      dataObjects.forEach( item => {
-        const deleteButton : HTMLElement | null = item.querySelector(':scope > .btn-group > button[title^="Delete"]')
+      dataObjects.forEach(item => {
+        const deleteButton: HTMLElement | null = item.querySelector(':scope > .btn-group > button[title^="Delete"]')
         if (!deleteButton) {
           return
         }
