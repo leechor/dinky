@@ -59,6 +59,8 @@ public class OperatorSpecializationFieldConfig {
     public static final String FLAG = "flag";
     //字段名称
     public static final String NAME = "name";
+    //中间算子别名
+    public static final String OUT_NAME = "outName";
     //字段类型
     public static final String TYPE = "type";
     //使用到的函数

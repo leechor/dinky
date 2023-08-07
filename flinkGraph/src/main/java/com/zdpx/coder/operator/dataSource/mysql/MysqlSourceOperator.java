@@ -19,12 +19,10 @@
 
 package com.zdpx.coder.operator.dataSource.mysql;
 
-import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.graph.OutputPortObject;
 import com.zdpx.coder.operator.OperatorFeature;
 import com.zdpx.coder.operator.TableInfo;
 import com.zdpx.coder.operator.dataSource.AbstractSqlTable;
-import org.dinky.config.Dialect;
 
 import java.util.Optional;
 
@@ -43,7 +41,7 @@ public class MysqlSourceOperator extends AbstractSqlTable {
     protected void initialize() {
         outputPortObject = new OutputPortObject<>(this, OUTPUT_0);
         getOutputPorts().put(OUTPUT_0, outputPortObject);
-        this.type= Dialect.MYSQL.getValue();
+        this.type= "Mysql";
         setName("MySQL数据源");
     }
 

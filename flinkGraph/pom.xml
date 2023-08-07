@@ -234,10 +234,6 @@ under the License.
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.dinky</groupId>
-            <artifactId>dinky-common</artifactId>
-        </dependency>
     </dependencies>
 
     <build>

@@ -25,11 +25,8 @@ import org.dinky.data.result.Result;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.zdpx.service.TaskFlowGraphService;
@@ -42,11 +39,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/zdpx")
 public class TaskFlowGraphController {
 
-    private final TaskFlowGraphService taskFlowGraphService;
-
-    public TaskFlowGraphController(TaskFlowGraphService taskFlowGraphService) {
-        this.taskFlowGraphService = taskFlowGraphService;
-    }
+    @Autowired
+    private TaskFlowGraphService taskFlowGraphService;
 
     @PutMapping
     public Result<List<CheckInformationModel>> submitSql(@RequestBody Task task) {

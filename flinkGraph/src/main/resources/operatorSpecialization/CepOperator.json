@@ -111,33 +111,23 @@
         "title": "columns",
         "description": " 设置输出字段 ",
         "required": [
-            "parameters",
 			"flag"
         ],
         "properties": {
-            "functionName": {
-                "type": "string",
-                "title": "functionName"
-            },
             "name": {
-                "type": "string",
-				"pattern":"^[A-Za-z0-9_]*$",
-                "title": "outName"
-            },
-            "parameters": {
-                "type": "array",
-                "minItems": 1,
-                "title": "parameters",
-                "items": {
+					"type": "string",
 					"pattern":"^[A-Za-z0-9_]*$",
-                   "type": "string"
-                }
-            },
-			"flag":{
-				"type": "boolean",
-				"default": true,
-				"title": "checked ?"
-			}
+					"title": "outName"
+				},
+				"parameters": {
+				   "title": "inputName",
+				   "$ref": "#/inputName"
+				},
+				"flag":{
+					"type": "boolean",
+					"default": true,
+					"title": "checked ?"
+				}
         }
     }
 },
@@ -168,6 +158,32 @@
                     }
                 }
             }
-          }
+          },
+		  
 
+	   "inputName": {
+	   "type": "array",
+	   "maxItems": 1,
+		"items": {
+			"type": "object",
+			"properties": {
+				"functionName": {
+					"type": "string",
+					"title": "functionName"
+				},
+				"column": {
+					"type": "array",
+					"minItems": 1,
+					"items": {
+					   "type": "string"
+					}
+				},
+				"recursion": {
+				   "title": "recursion",
+				   "$ref": "#/inputName"
+				}
+			}
+		}
+	}
+		
 }

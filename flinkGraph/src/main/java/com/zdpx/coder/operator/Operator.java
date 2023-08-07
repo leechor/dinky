@@ -207,7 +207,8 @@ public abstract class Operator extends Node implements Runnable {
 
     @Override
     public String getSpecification() {
-        return Specifications.readSpecializationFileByClassName(this.getClass().getSimpleName());
+        String simpleName = this.getClass().getSimpleName();
+        return Specifications.readSpecializationFileByClassName(simpleName);
     }
 
     /**
@@ -377,9 +378,9 @@ public abstract class Operator extends Node implements Runnable {
 
     @SuppressWarnings("unchecked")
     public static List<FieldFunction> getFieldFunctions(
-            String primaryTableName, Map<String, Object> parameters , List<Column> inputColumn) {
+            String primaryTableName, Map<String, Object> parameters , List<Column> inputColumn, List<Map<String, Object>> inputColumns) {
         return FieldFunction.analyzeParameters(
-                primaryTableName, (List<Map<String, Object>>) parameters.get(COLUMNS), true,inputColumn);
+                primaryTableName, (List<Map<String, Object>>) parameters.get(COLUMNS), true,inputColumn, inputColumns);
     }
 
     public static Map<String, Object> getJsonAsMap(JsonNode inputs) {

@@ -1,0 +1,7 @@
+{
+    "type": "object",
+	"description": "这是一个组节点",
+    "title": "ProcessGroupOperator",
+	"properties": {
+	}
+}

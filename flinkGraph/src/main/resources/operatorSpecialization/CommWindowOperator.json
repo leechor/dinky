@@ -281,34 +281,26 @@
 					}
 				}
             },
-			
-            "columns": {
+			"columns": {
 				"type": "array",
 				"minItems": 1,
+				"title": "columns",
 				"items": {
 					"type": "object",
 					"title": "columns",
-					"description": "output field",
+					"description": " 设置输出字段 ",
 					"required": [
-						"parameters",
 						"flag"
 					],
 					"properties": {
-						"functionName": {
-							"type": "string"
-						},
 						"name": {
+							"type": "string",
 							"pattern":"^[A-Za-z0-9_]*$",
-							"type": "string"
+							"title": "outName"
 						},
 						"parameters": {
-							"type": "array",
-							"minItems": 1,
-							"items": {
-							   "type": "string",
-							   "pattern":"^[A-Za-z0-9_]*$",
-							   "minLength": 1
-							}
+						   "title": "inputName",
+						   "$ref": "#/inputName"
 						},
 						"flag":{
 							"type": "boolean",
@@ -317,6 +309,30 @@
 						}
 					}
 				}
-            }
-        }
+			}
+        },
+	   "inputName": {
+	   "type": "array",
+	   "maxItems": 1,
+		"items": {
+			"type": "object",
+			"properties": {
+				"functionName": {
+					"type": "string",
+					"title": "functionName"
+				},
+				"column": {
+					"type": "array",
+					"minItems": 1,
+					"items": {
+					   "type": "string"
+					}
+				},
+				"recursion": {
+				   "title": "recursion",
+				   "$ref": "#/inputName"
+				}
+			}
+		}
+	}
 }

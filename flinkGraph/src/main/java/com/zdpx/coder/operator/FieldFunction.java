@@ -115,46 +115,89 @@ public class FieldFunction extends OperatorSpecializationFieldConfig {
      * @param fos 字段配置信息
      * @return 方法定义
      */
-    static FieldFunction processFieldConfigure(String tableName, Map<String, Object> fos , boolean flag) {
+    static FieldFunction processFieldConfigure(String tableName, Map<String, Object> fos , boolean flag, List<Map<String, Object>> inputColumns) {
         FieldFunction fo = new FieldFunction();
         fo.setOutName(fos.get(NAME).equals("")? null:(String) fos.get(NAME));
-        fo.setFunctionName(fos.get(FUNCTION_NAME).equals("") ? null :(String) fos.get(FUNCTION_NAME) );
         fo.setDelimiter((String) fos.get("delimiter"));
         @SuppressWarnings("unchecked")
-        List<Object> fieldParameters = (List<Object>) fos.get(PARAMETERS);
+        Map<String,Object> fieldParameters = ((List<Map<String,Object>>) fos.get(PARAMETERS)).get(0);
 
-        if (fieldParameters == null) {
-            fo.setOutName(insertTableName(tableName, fo, fo.getOutName(),flag));
-            return fo;
-        }
+        fo.setFunctionName(test(tableName, fieldParameters, flag,inputColumns,new StringBuffer()).toString());
 
-        List<Object> result = new ArrayList<>();
-        for (Object fieldParameter : fieldParameters) {
-            if (fieldParameter instanceof Map) {
-                // 表示函数需要递归处理 todo 未实现递归
-                @SuppressWarnings("unchecked")
-                Map<String, Object> fp = (Map<String, Object>) fieldParameter;
-                result.add(processFieldConfigure(tableName, fp,flag));
-            } else if (fieldParameter instanceof String) {
-                String field = (String) fieldParameter;
-                field = insertTableName(tableName, fo, field,flag);
-                result.add(field);
-            } else {
-                result.add(fieldParameter);
-            }
-        }
-        fo.setParameters(result);
+
+
+
+
+
+
+
+
+
+//        fo.setFunctionName(fos.get(FUNCTION_NAME).equals("") ? null :(String) fos.get(FUNCTION_NAME) );
+//        if (fieldParameters == null) {
+//            fo.setOutName(insertTableName(tableName, fo, fo.getOutName(),flag));
+//            return fo;
+//        }
+//
+//        List<Object> result = new ArrayList<>();
+//        for (Object fieldParameter : fieldParameters) {
+//            if (fieldParameter instanceof Map) {
+//                // 表示函数需要递归处理 todo 未实现递归
+//                @SuppressWarnings("unchecked")
+//                Map<String, Object> fp = (Map<String, Object>) fieldParameter;
+//                result.add(processFieldConfigure(tableName, fp,flag));
+//            } else if (fieldParameter instanceof String) {
+//                String field = (String) fieldParameter;
+//                field = insertTableName(tableName, fo, field,flag);
+//                result.add(field);
+//            } else {
+//                result.add(fieldParameter);
+//            }
+//        }
 
         return fo;
+    }
+
+    public static StringBuffer test(String tableName,Map<String,Object> fieldParameters, boolean flag, List<Map<String, Object>> inputColumns,StringBuffer str){
+        String functionName = fieldParameters.get(FUNCTION_NAME).toString();
+        str.append(functionName);
+
+        @SuppressWarnings("unchecked")
+        List<String> column = (List<String>)fieldParameters.get("column");
+
+        if((functionName!=null&&!functionName.equals(""))||
+                column.size()>1){
+            str.append("(");
+        }
+        if(!fieldParameters.get("recursion").toString().equals("[]")){
+            @SuppressWarnings("unchecked")
+            Map<String, Object> recursion = (((List<Map<String, Object>>)fieldParameters.get("recursion"))).get(0);
+            str = test(tableName, recursion, flag,inputColumns,str);
+            str.append(")");
+        }
+
+
+
+        for(String n : column){
+            String name = insertTableName(tableName,n,flag,functionName);
+            if(column.get(column.size()-1).equals(n)){
+                str.append(name);
+                if(functionName!=null&&!functionName.equals("")){
+                    str.append(")");
+                }
+                return str;
+            }
+            str.append(name).append(",");
+        }
+        return str;
     }
 
     /**
      * @param flag 是否需要在列明前增加表名
      * */
-    public static String insertTableName(String primaryTableName, FieldFunction fo, String param , boolean flag) {
+    public static String insertTableName(String primaryTableName, String param , boolean flag ,String functionName) {
         boolean notAt = !param.startsWith("@")
-                && fo != null
-                && Strings.isNotEmpty(fo.getFunctionName());
+                && functionName!=null && !functionName.equals("");
 
         if (notAt || Strings.isBlank(primaryTableName)) {
             return param;
@@ -185,11 +228,11 @@ public class FieldFunction extends OperatorSpecializationFieldConfig {
      * @return {@link FieldFunction}形式的字段处理定义
      */
     public static List<FieldFunction> analyzeParameters(
-            String primaryTableName, List<Map<String, Object>> funcs ,boolean flag ,List<Column> inputColumn) {
+            String primaryTableName, List<Map<String, Object>> funcs ,boolean flag ,List<Column> inputColumn, List<Map<String, Object>> inputColumns) {
         List<FieldFunction> fieldFunctions = new ArrayList<>();
         for (Map<String, Object> fos : funcs) {//此处过滤掉未选中的节点
             if((boolean)fos.get(FLAG)){
-                FieldFunction fo = processFieldConfigure(primaryTableName, fos ,flag);
+                FieldFunction fo = processFieldConfigure(primaryTableName, fos ,flag, inputColumns);
                 fo.setOutType(typeInference(inputColumn, fo,fos));
                 fieldFunctions.add(fo);
             }
