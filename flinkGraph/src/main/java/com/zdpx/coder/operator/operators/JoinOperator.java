@@ -163,10 +163,7 @@ public class JoinOperator extends Operator {
 
     /**
      * 校验内容：
-     * <p>
-     * systemTimeColumn需要主表的时间字段
-     * 输出字段不属于左表或右表
-     * on 的字段是否属于对应表
+     * 无
      */
     @Override
     protected void generateCheckInformation(Map<String, Object> map) {
@@ -175,72 +172,7 @@ public class JoinOperator extends Operator {
         model.setColor(GREEN);
         model.setTableName(map.get(TABLE_NAME).toString());
 
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> config = (List<Map<String, Object>>)map.get(CONFIG);
-        @SuppressWarnings("unchecked")
-        List<Map<String, String>> columnList = (List<Map<String, String>>) map.get("columnList");
 
-        List<String> leftList = new ArrayList<>();
-        List<String> rightList = new ArrayList<>();
-        List<Column> leftInputColumns = primaryInput.getConnection().getFromPort().getPseudoData().getColumns();
-        List<Column> rightInputColumns = secondInput.getConnection().getFromPort().getPseudoData().getColumns();
-        Map<String, List<String>> portInformation = new HashMap<>();
-        List<String> edge = new ArrayList<>();
-
-        boolean systemTimeColumn = true;
-        boolean onLeft = true;
-        boolean onRight = true;
-        if(map.get("forSystemTime")!=null){
-//            String left = columnList.get(0).get("onLeftColumn").split("\\.")[1];
-//            String right = columnList.get(0).get("onRightColumn").split("\\.")[1];
-
-//            String left = columnList.get(0).get("onLeftColumn");
-//            String right = columnList.get(0).get("onRightColumn");
-//
-//            leftInputColumns.stream().filter(l->(map.get("forSystemTime").equals(l.getName())&&!l.getType().contains("TIME")))
-//                    .forEach(l->leftList.add("systemTimeColumn需要主表中的时间属性(如 TIMESTAMP(3)、TIMESTAMP_LTZ等),当前字段值： "+map.get("forSystemTime")+" ,类型： "+l.getType()));
-//
-//            for(Map<String, Object> m : config){
-//                if(m.get(TABLE_NAME).equals(PRIMARY_INPUT)){
-//                    if(m.get(NAME).equals(map.get("forSystemTime"))){
-//                        systemTimeColumn=false;
-//                    }
-//                    if(left.contains(m.get(NAME).toString())){
-//                        onLeft=false;
-//                    }
-//                }else{
-//                    if(right.contains(m.get(NAME).toString())){
-//                        onRight=false;
-//                    }
-//                }
-//            }
-//            if(onLeft){
-//                leftList.add("columnList中的onLeftColumn需要主表中的字段,当前字段值： "+left);
-//            }
-//            if(onRight){
-//                rightList.add("columnList中的onRightColumn需要副表中的字段,当前字段值： "+right);
-//            }
-        }
-        if(systemTimeColumn){
-            leftList.add("systemTimeColumn需要主表中的字段,当前字段值： "+map.get("forSystemTime"));
-        }
-
-//        leftList.addAll(fieldNameCheck(PRIMARY_INPUT,leftInputColumns));
-//        rightList.addAll(fieldNameCheck(SECOND_INPUT,rightInputColumns));
-
-        if(!leftList.isEmpty()||!rightList.isEmpty()){
-            if(!leftList.isEmpty()){
-                edge.add(getInputPorts().get(PRIMARY_INPUT).getConnection().getId());
-                portInformation.put(PRIMARY_INPUT,leftList);
-            }
-            if(!rightList.isEmpty()){
-                edge.add(getInputPorts().get(SECOND_INPUT).getConnection().getId());
-                portInformation.put(SECOND_INPUT,rightList);
-            }
-            model.setColor(RED);
-            model.setEdge(edge);
-            model.setPortInformation(portInformation);
-        }
         this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
     }
 

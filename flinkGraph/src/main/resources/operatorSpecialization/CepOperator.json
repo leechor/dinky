@@ -108,26 +108,41 @@
     "title": "columns",
     "items": {
         "type": "object",
+		"id":"a",
         "title": "columns",
         "description": " 设置输出字段 ",
         "required": [
 			"flag"
         ],
         "properties": {
-            "name": {
-					"type": "string",
-					"pattern":"^[A-Za-z0-9_]*$",
-					"title": "outName"
-				},
-				"parameters": {
-				   "title": "inputName",
-				   "$ref": "#/inputName"
-				},
-				"flag":{
-					"type": "boolean",
-					"default": true,
-					"title": "checked ?"
-				}
+            "outName": {
+                "type": "string",
+				"pattern":"^[A-Za-z0-9_]*$",
+                "title": "outName"
+            },
+			"function": {
+			   "title": "function",
+			   "description": "前端传递该结构至后端，后端返回嵌套结果，前端将结果存放在name字段中",
+			   "$ref": "#/function",
+			   "watch": {
+					"function":"a.function"
+			   }
+            },
+			"name": {
+			   "title": "name",
+			   "type": "string",
+			   "description": "存放函数嵌套过后生成的输入字段名称"
+            },
+			"flag":{
+				"type": "boolean",
+				"default": true,
+				"title": "checked ?"
+			},
+			"decs":{
+				"type": "string",
+				"default": true,
+				"description": "备注"
+			}
         }
     }
 },
@@ -159,31 +174,52 @@
                 }
             }
           },
-		  
 
-	   "inputName": {
-	   "type": "array",
-	   "maxItems": 1,
-		"items": {
-			"type": "object",
-			"properties": {
-				"functionName": {
-					"type": "string",
-					"title": "functionName"
-				},
-				"column": {
-					"type": "array",
-					"minItems": 1,
-					"items": {
-					   "type": "string"
+
+	   "function": {
+		   "type": "array",
+			"items": {
+				"type": "object",
+				"title": "_",
+				"properties": {
+					"functionName": {
+						"type": "string",
+						"title": "functionName"
+					},
+					"recursionFunc": {
+					   "title": "function",
+					   "$ref": "#/function"
+					},
+					"recursionName": {
+					   "title": "name",
+					   "$ref": "#/name"
 					}
-				},
-				"recursion": {
-				   "title": "recursion",
-				   "$ref": "#/inputName"
+				}
+			}
+		},
+		"name": {
+		   "type": "array",
+			"items": {
+				"title": "_",
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "array",
+						"items": {
+							"title": "_",
+						    "type": "string"
+						}
+					},
+					"recursionFunc": {
+					   "title": "function",
+					   "$ref": "#/function"
+					},
+					"recursionName": {
+					   "title": "name",
+					   "$ref": "#/name"
+					}
 				}
 			}
 		}
-	}
 		
 }

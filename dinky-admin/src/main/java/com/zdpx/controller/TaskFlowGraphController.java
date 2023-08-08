@@ -20,10 +20,16 @@
 package com.zdpx.controller;
 
 import com.zdpx.coder.graph.CheckInformationModel;
+import com.zdpx.coder.operator.FieldFunction;
+import com.zdpx.model.CustomerOperator;
+import com.zdpx.model.OperatorFunctionVO;
+import org.dinky.data.enums.CodeEnum;
+import org.dinky.data.enums.Status;
 import org.dinky.data.model.Task;
 import org.dinky.data.result.Result;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -71,6 +77,12 @@ public class TaskFlowGraphController {
     public Result<String> operatorPreview(@RequestBody String graph) {
         String s = taskFlowGraphService.operatorPreview(graph);
         return Result.data(s);
+    }
+
+    @PostMapping("/getFunction")
+    public Result<String> getFunction(@RequestBody List<Map<String, Object>> functions) {
+        StringBuffer pretreatment = FieldFunction.pretreatment("", functions, false, null, new StringBuffer());
+        return Result.succeed(pretreatment.toString());
     }
 
 }

@@ -63,6 +63,8 @@ public class OperatorSpecializationFieldConfig {
     public static final String OUT_NAME = "outName";
     //字段类型
     public static final String TYPE = "type";
+    //原始嵌套的函数字段
+    public static final String FUNCTION = "function";
     //使用到的函数
     public static final String FUNCTION_NAME = "functionName";
 

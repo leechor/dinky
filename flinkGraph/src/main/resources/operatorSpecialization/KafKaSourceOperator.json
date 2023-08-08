@@ -123,6 +123,11 @@
 						"type": "boolean",
 						"default": true,
 						"title": "checked ?"
+					},
+					"decs":{
+						"type": "string",
+						"description": "备注"
+					}
 					}
 				}
 			}
