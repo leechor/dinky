@@ -19,40 +19,25 @@ import NodeModalPreview from '../../../components/node-preview-modal';
 import AddModalPort from '../../../components/add-port-modal';
 import {
   changeCurrentSelectNode,
-  changeDataSourceInfo,
-  changeGroupNameInfo,
   changePositon,
   changePreviewInfo,
-<<<<<<< HEAD
   changeDataSourceInfo,
-  removeGraphTabs,
   changeGroupNameInfo,
+  changeEdgeClickInfo,
   changeStencilMenuInfo,
   GroupTabItem,
-  changeEdgeClickInfo
-=======
-  changeStencilMenuInfo,
-  GroupTabItem,
-  initFlowDataAction,
   removeGraphTabs
->>>>>>> f413ced42f344e1242f631ab1eedf45185b79b17
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import localCache from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/localStorage"
 import CustomShape from '../../../utils/cons';
 import DataSourceModal from '../../../components/data-source-modal';
 import GroupName from '../../../components/group-name-modal';
-<<<<<<< HEAD
 import EdgeClickModal from '../../../components/edge-click-modal';
 import { shrinkGroupNode } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper";
 import { saveCustomGroupInfo, changeCustomGroupInfo } from '@/components/Common/crud';
 import { StencilMenu } from '../../../components/stencil-menu';
 import { initFlowDataAction } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 
-=======
-import {shrinkGroupNode} from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper";
-import {changeCustomGroupInfo, saveCustomGroupInfo} from '@/components/Common/crud';
-import {StencilMenu} from '../../../components/stencil-menu';
->>>>>>> f413ced42f344e1242f631ab1eedf45185b79b17
 
 
 export interface ParametersConfigType {
