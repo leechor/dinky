@@ -1,8 +1,8 @@
 
-package com.zdpx.coder.operator.dataSource.es;
+package com.zdpx.operators.dataSource.customer;
 
-import com.zdpx.coder.operator.dataSource.AbstractSqlTable;
 import com.zdpx.coder.graph.InputPortObject;
+import com.zdpx.operators.dataSource.AbstractSqlTable;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -11,9 +11,9 @@ import java.util.Map;
  *
  */
 @Slf4j
-public class ESSinkOperator extends AbstractSqlTable {
+public class CustomerSinkOperator extends AbstractSqlTable {
 
-    private static final String ES_SINK = "esSink";
+    private static final String CUSTOMER_SINK = "customerSink";
 
     @Override
     protected void initialize() {
@@ -22,11 +22,11 @@ public class ESSinkOperator extends AbstractSqlTable {
 
     @Override
     protected void execute(Map<String, Object> dataModel) {
-        processLogic(null, dataModel);
+        processLogic( null, dataModel);
     }
 
     @Override
     protected String getDefaultName() {
-        return ES_SINK;
+        return CUSTOMER_SINK;
     }
 }

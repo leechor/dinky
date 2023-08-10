@@ -17,31 +17,32 @@
  *
  */
 
-package com.zdpx.coder.operator.operators;
+package com.zdpx.operators;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import com.zdpx.coder.graph.CheckInformationModel;
+import com.zdpx.coder.operator.Parameter;
+import com.zdpx.coder.Specifications;
+import com.zdpx.coder.code.CodeJavaBuilder;
 import com.zdpx.coder.graph.OutputPortObject;
+import com.zdpx.coder.graph.PseudoData;
 import com.zdpx.coder.operator.Operator;
 import com.zdpx.coder.operator.TableInfo;
-
-import static com.zdpx.coder.utils.TableDataStreamConverter.assembleNewTableInfo;
+import com.zdpx.coder.utils.NameHelper;
 
 /**
- * 用于端口数据复制, 转为多路输出
+ *
  */
-public class DuplicateOperator extends Operator {
+public class TableConvertToDataStreamOperator extends Operator {
+
+    private OutputPortObject<TableInfo> outputPortObject;
 
     @Override
     protected void initialize() {
+        parameters.getParameterList().add(new Parameter(Specifications.TABLE_NAME));
+        outputPortObject = registerOutputObjectPort(OUTPUT_0);
         registerInputObjectPort(INPUT_0);
-    }
-
-    @Override
-    protected void handleParameters(String parameters) {
     }
 
     @Override
@@ -56,40 +57,41 @@ public class DuplicateOperator extends Operator {
 
     @Override
     protected Map<String, Object> formatOperatorParameter() {
-        return getFirstParameterMap();
+        return null;
     }
 
     /**
-     * 校验内容： 无
+     * 校验内容：无
      */
     @Override
     protected void generateCheckInformation(Map<String, Object> map) {
-        CheckInformationModel model = new CheckInformationModel();
-        model.setOperatorId(map.get(ID).toString());
-        model.setColor(GREEN);
 
-        this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected void execute(Map<String, Object> map) {
-        final TableInfo pseudoData =
+        String tn =
+                NameHelper.generateVariableName(
+                        parameters.getParameterByName(Specifications.TABLE_NAME));
+        if (!(this.getSchemaUtil().getGenerateResult() instanceof CodeJavaBuilder)) {
+            return;
+        }
+
+        CodeJavaBuilder gjr = (CodeJavaBuilder) this.getSchemaUtil().getGenerateResult();
+        gjr.getCodeContext()
+                .getMain()
+                .addStatement(
+                        "DataStream<Row> $2L = $1L.toDataStream($1L.sqlQuery(\"select * from $2L\"))",
+                        Specifications.TABLE_ENV,
+                        tn)
+                .addCode(System.lineSeparator());
+
+        PseudoData pseudoData =
                 getInputPorts().values().stream()
-                        .map(t -> (TableInfo) t.getConnection().getFromPort().getPseudoData())
+                        .map(t -> t.getConnection().getFromPort().getPseudoData())
                         .findAny()
                         .orElse(null);
 
-        //从config中获取输出字段,数组的长度只可能是1
-        @SuppressWarnings("unchecked")
-        Map<String, Object> firstParameterMap = ((List<Map<String, Object>>) getFirstParameterMap().get(CONFIG)).get(0);
-
-        getOutputPorts()
-                .values()
-                .forEach(t -> {
-                    @SuppressWarnings("unchecked")
-                    List<Map<String, Object>> o = (List<Map<String, Object>>)firstParameterMap.get(t.getName());
-                    ((OutputPortObject<TableInfo>) t).setPseudoData(assembleNewTableInfo(pseudoData, o));
-                });
+        outputPortObject.setPseudoData((TableInfo) pseudoData);
     }
 }

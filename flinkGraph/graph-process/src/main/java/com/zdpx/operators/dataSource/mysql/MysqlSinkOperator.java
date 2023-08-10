@@ -17,36 +17,36 @@
  *
  */
 
-package com.zdpx.coder.operator.dataSource.kafka;
+package com.zdpx.operators.dataSource.mysql;
 
-import com.zdpx.coder.operator.dataSource.AbstractSqlTable;
-import com.zdpx.coder.graph.OutputPortObject;
-import com.zdpx.coder.operator.TableInfo;
+import com.zdpx.operators.dataSource.AbstractSqlTable;
+import com.zdpx.coder.graph.InputPortObject;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 
 /**
  *
  */
-public class KafKaSourceOperator extends AbstractSqlTable {
+@Slf4j
+public class MysqlSinkOperator extends AbstractSqlTable {
 
-    private OutputPortObject<TableInfo> outputPortObject;
-
-    private static final String KAFKA_SOURCE = "KafKaSource";
+    private static final String MYSQL_SINK = "MysqlSink";
 
     @Override
     protected void initialize() {
-        outputPortObject = new OutputPortObject<>(this, OUTPUT_0);
-        getOutputPorts().put(OUTPUT_0, outputPortObject);
+        getInputPorts().put(INPUT_0, new InputPortObject<>(this, INPUT_0));
+        this.type= "Mysql";
+        setName("MysqlSink");
     }
 
     @Override
     protected void execute(Map<String, Object> dataModel) {
-        processLogic(outputPortObject, dataModel);
+        processLogic(null, dataModel);
     }
 
     @Override
     protected String getDefaultName() {
-        return KAFKA_SOURCE;
+        return MYSQL_SINK;
     }
 }

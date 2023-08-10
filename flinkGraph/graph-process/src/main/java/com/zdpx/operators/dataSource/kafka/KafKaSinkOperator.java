@@ -1,7 +1,7 @@
 
-package com.zdpx.coder.operator.dataSource.kafka;
+package com.zdpx.operators.dataSource.kafka;
 
-import com.zdpx.coder.operator.dataSource.AbstractSqlTable;
+import com.zdpx.operators.dataSource.AbstractSqlTable;
 import com.zdpx.coder.graph.InputPortObject;
 import lombok.extern.slf4j.Slf4j;
 

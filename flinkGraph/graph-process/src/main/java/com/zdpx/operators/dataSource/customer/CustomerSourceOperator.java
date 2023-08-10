@@ -17,35 +17,36 @@
  *
  */
 
-package com.zdpx.coder.operator.dataSource.oracle;
+package com.zdpx.operators.dataSource.customer;
 
-import com.zdpx.coder.graph.InputPortObject;
-import com.zdpx.coder.operator.dataSource.AbstractSqlTable;
-import lombok.extern.slf4j.Slf4j;
+import com.zdpx.coder.graph.OutputPortObject;
+import com.zdpx.coder.operator.TableInfo;
+import com.zdpx.operators.dataSource.AbstractSqlTable;
 
 import java.util.Map;
 
 /**
  *
  */
-@Slf4j
-public class OracleSinkOperator extends AbstractSqlTable {
+public class CustomerSourceOperator extends AbstractSqlTable {
 
-    private static final String ORACLE_SINK = "OracleSink";
+    private OutputPortObject<TableInfo> outputPortObject;
+
+    private static final String CUSTOMER_SOURCE = "customerSource";
 
     @Override
     protected void initialize() {
-        getInputPorts().put(INPUT_0, new InputPortObject<>(this, INPUT_0));
-        this.type= "Oracle";
+        outputPortObject = new OutputPortObject<>(this, OUTPUT_0);
+        getOutputPorts().put(OUTPUT_0, outputPortObject);
     }
 
     @Override
     protected void execute(Map<String, Object> dataModel) {
-        processLogic( null, dataModel);
+        processLogic( outputPortObject, dataModel);
     }
 
     @Override
     protected String getDefaultName() {
-        return ORACLE_SINK;
+        return CUSTOMER_SOURCE;
     }
 }

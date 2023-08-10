@@ -1,4 +1,4 @@
-package com.zdpx.coder.operator.operators;
+package com.zdpx.operators;
 
 import com.zdpx.coder.Specifications;
 import com.zdpx.coder.operator.*;

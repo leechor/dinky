@@ -17,7 +17,7 @@
  *
  */
 
-package com.zdpx.coder.operator.operators;
+package com.zdpx.operators;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -17,10 +17,10 @@
  *
  */
 
-package com.zdpx.coder.operator.dataSource.mysql;
+package com.zdpx.operators.dataSource.mysql;
 
 import com.zdpx.coder.operator.OperatorFeature;
-import com.zdpx.coder.operator.dataSource.AbstractSqlTable;
+import com.zdpx.operators.dataSource.AbstractSqlTable;
 import com.zdpx.coder.graph.OutputPortObject;
 import com.zdpx.coder.operator.TableInfo;
 
