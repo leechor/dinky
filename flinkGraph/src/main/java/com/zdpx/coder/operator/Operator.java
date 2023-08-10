@@ -288,19 +288,14 @@ public abstract class Operator extends Node implements Runnable {
         }
 
         parametersLocal.forEach(
-                p -> {
-                    for (Map.Entry<String, Object> entry : p.entrySet()) {
-                        Parameters ps = getParameters();
-                        ps.getParameterList().stream()
-                                .filter(pp -> Objects.equals(pp.getKey(), entry.getKey()))
-                                .findAny()
-                                .ifPresent(
-                                        pp -> {
-                                            pp.setKey(entry.getKey());
-                                            pp.setValue(entry.getValue());
-                                        });
-                    }
-                });
+                p -> p.forEach((key, value) -> getParameters().getParameterList().stream()
+                        .filter(pp -> Objects.equals(pp.getKey(), key))
+                        .findAny()
+                        .ifPresent(
+                                pp -> {
+                                    pp.setKey(key);
+                                    pp.setValue(value);
+                                })));
     }
 
     /**
@@ -384,7 +379,10 @@ public abstract class Operator extends Node implements Runnable {
 
     public static List<Column> getColumnFromFieldFunctions(List<FieldFunction> ffs) {
         return ffs.stream()
-                .map(t -> new Column(getColumnName(t.getOutName() == null ? t.getParameters().get(0).toString() : t.getOutName()), t.getOutType()))
+                .map(t -> {
+                    String columnName = t.getOutName() == null ? t.getParameters().get(0).toString() : t.getOutName();
+                    return new Column(getColumnName(columnName), t.getOutType());
+                })
                 .collect(Collectors.toList());
     }
 
@@ -397,28 +395,21 @@ public abstract class Operator extends Node implements Runnable {
         //从config中获取输入
         @SuppressWarnings("unchecked")
         List<Map<String, List<Map<String, Object>>>> config = (List<Map<String, List<Map<String, Object>>>>) dataModel.get(CONFIG);
+
         List<Map<String, Object>> input = new ArrayList<>();
-        for (Map<String, List<Map<String, Object>>> map : config) {
-            for (Map.Entry<String, List<Map<String, Object>>> m2 : map.entrySet()) {
-                String[] split = m2.getKey().split("&");
-                String tableName = split[split.length-1];
-                List<Map<String, Object>> value = m2.getValue();
-                for (Map<String, Object> l : value) {
-                    if ((boolean) l.get(FLAG)) {
-                        l.put(TABLE_NAME,tableName);
-                        input.add(l);
-                    }
-                }
-            }
-        }
+        config.stream().flatMap(map -> map.entrySet().stream()).forEach(m2 -> {
+            String[] split = m2.getKey().split("&");
+            String tableName = split[split.length - 1];
+            m2.getValue().stream().filter(l -> (boolean) l.get(FLAG)).forEach(l -> {
+                l.put(TABLE_NAME, tableName);
+                input.add(l);
+            });
+        });
+
         //删除没有勾选的字段
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> output = (List<Map<String, Object>>) dataModel.get(COLUMNS);
-        for (Map<String, Object> s : output) {
-            if (!(boolean) s.get(FLAG)) {
-                output.remove(s);
-            }
-        }
+        output.removeIf(s -> !(boolean) s.get(FLAG));
         return input;
     }
 
