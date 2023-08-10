@@ -21,10 +21,6 @@ package com.zdpx.controller;
 
 import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.operator.FieldFunction;
-import com.zdpx.model.CustomerOperator;
-import com.zdpx.model.OperatorFunctionVO;
-import org.dinky.data.enums.CodeEnum;
-import org.dinky.data.enums.Status;
 import org.dinky.data.model.Task;
 import org.dinky.data.result.Result;
 
