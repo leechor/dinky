@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.zdpx.coder.graph.OperatorSpecializationFieldConfig;
 import com.zdpx.coder.operator.Column;
 import com.zdpx.coder.operator.TableInfo;
 import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;

@@ -48,7 +48,7 @@ import lombok.extern.slf4j.Slf4j;
 /** 场景配置类, */
 @Slf4j
 @Data
-public class Scene {
+public class Scene implements IScene {
 
     /** 保存所有已定义算子, 类初始化时进行加载 */
     public static final Map<String, Class<? extends Operator>> OPERATOR_MAP = getOperatorMaps();

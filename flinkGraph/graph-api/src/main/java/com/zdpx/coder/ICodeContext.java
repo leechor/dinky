@@ -2,7 +2,7 @@ package com.zdpx.coder;
 
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
-import com.zdpx.coder.graph.Scene;
+import com.zdpx.coder.graph.IScene;
 
 import java.util.Set;
 
@@ -14,5 +14,5 @@ public interface ICodeContext {
 
     Set<String> getSuppressedWarnings();
 
-    Scene getScene();
+    IScene getScene();
 }
