@@ -133,14 +133,14 @@ public class JoinOperator extends Operator {
         }
         // hints
         @SuppressWarnings("unchecked")
-        List<Map<String, Object>> hints =(List<Map<String, Object>>)parameters.get("hints");
+        List<Map<String, Object>> hints =(List<Map<String, Object>>)parameters.get(HINTS);
         if(hints!=null&&!hints.isEmpty()){
             StringBuffer stringBuffer = new StringBuffer();
             hints.forEach(item->{
-                stringBuffer.append(item.get("joinHints")).append("(");
+                stringBuffer.append(item.get(JOIN_HINTS)).append("(");
 
                 @SuppressWarnings("unchecked")
-                List<String> joinColumn =(List<String>)item.get("joinColumn");
+                List<String> joinColumn =(List<String>)item.get(JOIN_COLUMN);
                 joinColumn.forEach(i->{
                     stringBuffer.append(i);
                     if(!i.equals(joinColumn.get(joinColumn.size()-1))){
@@ -149,7 +149,7 @@ public class JoinOperator extends Operator {
                 });
                 stringBuffer.append(") ");
             });
-            dataModel.put("hints",stringBuffer.toString());
+            dataModel.put(HINTS,stringBuffer.toString());
         }
 
         //修改连接字段的字段名称

@@ -111,9 +111,9 @@ public class CommWindowOperator extends Operator {
         p.put(CONFIG,maps);
 
         @SuppressWarnings("unchecked")
-        Map<String, Object> hints = (Map<String, Object>)parameters.get(OPTIONS);
+        Map<String, Object> hints = (Map<String, Object>)parameters.get(HINTS_OPTIONS);
         if(!hints.get("key").equals("")){
-            p.put(OPTIONS,hints);
+            p.put(HINTS_OPTIONS,hints);
         }
 
         @SuppressWarnings("unchecked")

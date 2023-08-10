@@ -92,42 +92,42 @@
 					"flag"
 				],
 				"properties": {
-					"name": {
-						"type": "string",
-						"minLength": 1,
-						"pattern":"^[A-Za-z0-9_]*$",
-						"title": "name",
-						"examples": [
-							"typ",
-							"taskId",
-							"taskStatus",
-							"dt",
-							"WATERMARK FOR dt AS dt - INTERVAL '15' SECOND",
-							"PRIMARY KEY(taskId) NOT ENFORCED "
-						],
-						"description": "field name"
-					},
-					"type": {
-						"type": "string",
-						"minLength": 1,
-						"title": "type",
-						"default": "STRING",
-						"enum":["CHAR","VARCHAR","STRING","BOOLEAN","BINARY","VARBINARY","BYTES","DECIMAL","TINYINT","SMALLINT","INT","BIGINT","FLOAT","DOUBLE","DATE","TIME","TIMESTAMP","TIMESTAMP(3)","TIMESTAMP_LTZ(3)","INTERVAL","ARRAY","MULTISET","MAP","ROW","RAW"],
-						"examples": [
-							"STRING",
-							"INT",
-							"TIMESTAMP(3)"
-						]
-					},
-					"flag":{
-						"type": "boolean",
-						"default": true,
-						"title": "checked ?"
-					},
-					"decs":{
-						"type": "string",
-						"description": "备注"
-					}
+						"name": {
+							"type": "string",
+							"minLength": 1,
+							"pattern":"^[A-Za-z0-9_]*$",
+							"title": "name",
+							"examples": [
+								"typ",
+								"taskId",
+								"taskStatus",
+								"dt",
+								"WATERMARK FOR dt AS dt - INTERVAL '15' SECOND",
+								"PRIMARY KEY(taskId) NOT ENFORCED "
+							],
+							"description": "field name"
+						},
+						"type": {
+							"type": "string",
+							"minLength": 1,
+							"title": "type",
+							"default": "STRING",
+							"enum":["CHAR","VARCHAR","STRING","BOOLEAN","BINARY","VARBINARY","BYTES","DECIMAL","TINYINT","SMALLINT","INT","BIGINT","FLOAT","DOUBLE","DATE","TIME","TIMESTAMP","TIMESTAMP(3)","TIMESTAMP_LTZ(3)","INTERVAL","ARRAY","MULTISET","MAP","ROW","RAW"],
+							"examples": [
+								"STRING",
+								"INT",
+								"TIMESTAMP(3)"
+							]
+						},
+						"flag":{
+							"type": "boolean",
+							"default": true,
+							"title": "checked ?"
+						},
+						"decs":{
+							"type": "string",
+							"description": "备注"
+						}
 					}
 				}
 			}

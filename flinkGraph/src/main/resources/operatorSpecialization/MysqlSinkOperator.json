@@ -120,7 +120,6 @@
 					},
 					"decs":{
 						"type": "string",
-						"default": true,
 						"description": "备注"
 					}
 				}

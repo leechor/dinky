@@ -21,10 +21,6 @@ package com.zdpx.controller;
 
 import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.operator.FieldFunction;
-import com.zdpx.model.CustomerOperator;
-import com.zdpx.model.OperatorFunctionVO;
-import org.dinky.data.enums.CodeEnum;
-import org.dinky.data.enums.Status;
 import org.dinky.data.model.Task;
 import org.dinky.data.result.Result;
 
@@ -58,6 +54,12 @@ public class TaskFlowGraphController {
         }
     }
 
+    @PutMapping("/store")
+    public Result<Void> store(@RequestBody Task task) {
+        taskFlowGraphService.updateTaskFlowGraph(task);
+        return Result.succeed();
+    }
+
     @PutMapping("testGraphSql")
     public Result<Void> testGraphStatement(@RequestBody String graph) {
         String sql = taskFlowGraphService.testGraphStatement(graph);
@@ -81,7 +83,7 @@ public class TaskFlowGraphController {
 
     @PostMapping("/getFunction")
     public Result<String> getFunction(@RequestBody List<Map<String, Object>> functions) {
-        StringBuffer pretreatment = FieldFunction.pretreatment("", functions, false, null, new StringBuffer());
+        StringBuffer pretreatment = FieldFunction.pretreatment("", functions, false, null, new StringBuffer(),",");
         return Result.succeed(pretreatment.toString());
     }
 

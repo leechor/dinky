@@ -123,16 +123,17 @@ public class FieldFunction extends OperatorSpecializationFieldConfig {
 
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> columns = ((List<Map<String, Object>>) fos.get(FUNCTION));
-        fo.setFunctionName(pretreatment(tableName, columns, flag,inputColumns,new StringBuffer()).toString());
+        fo.setFunctionName(pretreatment(tableName, columns, flag,inputColumns,new StringBuffer(),"").toString());
 
         return fo;
     }
 
-    public static StringBuffer pretreatment(String tableName, List<Map<String, Object>> recursion, boolean flag, List<Map<String, Object>> inputColumns,StringBuffer str) {
+    public static StringBuffer pretreatment(String tableName, List<Map<String, Object>> recursion, boolean flag, List<Map<String, Object>> inputColumns,StringBuffer str,String last) {
 
         for(Map<String, Object> inputName : recursion){
 
             Object functionName = inputName.get(FUNCTION_NAME);
+            String now = separator(functionName, str, false);
             if(functionName!=null&&!functionName.equals("")){
                 str.append(functionName).append("(");
             }
@@ -151,42 +152,46 @@ public class FieldFunction extends OperatorSpecializationFieldConfig {
                         }
                     }
                     if(n1.get(n1.size()-1).equals(n)){
-                        str.append(input).append(",");
+                        str.append(input).append(last);
                         break;
                     }
-                    str.append(input).append(",");
+                    str.append(input).append(last);
                 }
             }
+
 
             //1、当 recursionFunc 不为空时，需要进行递归
-            if(!inputName.get("recursionFunc").toString().equals("[]")){
-                str.append(separator(functionName , str , true));
-                @SuppressWarnings("unchecked")
-                List<Map<String, Object>> recursionFunc = ((List<Map<String, Object>>)inputName.get("recursionFunc"));
-                str = pretreatment(tableName,recursionFunc,flag,inputColumns,str);
-                if(functionName!=null&&!functionName.equals("")){
-                    if(str.toString().endsWith(",")){
-                        str.deleteCharAt(str.length()-1);
-                    }
-                    str.append(")");
-                }
-            }
-
+            recursion( str,inputName, tableName, flag, inputColumns,now , last,functionName,RECURSION_FUNC);
             //2、当 recursionName 不为空时，需要进行递归
-            if(!inputName.get("recursionName").toString().equals("[]")){
-                str.append(separator(functionName , str, true));
-                @SuppressWarnings("unchecked")
-                List<Map<String, Object>> recursionFunc = ((List<Map<String, Object>>)inputName.get("recursionName"));
-                str = pretreatment(tableName,recursionFunc,flag,inputColumns,str);
-                if(functionName!=null&&!functionName.equals("")){
-                    if(str.toString().endsWith(",")){
-                        str.deleteCharAt(str.length()-1);
+            recursion( str,inputName, tableName, flag, inputColumns,now , last,functionName,RECURSION_NAME);
+
+        }
+        return str;
+    }
+
+    public static void recursion(StringBuffer str, Map<String, Object> inputName, String tableName, Boolean flag,
+                                 List<Map<String, Object>> inputColumns, String now , String last, Object functionName , String nameOrFunc){
+        if(!inputName.get(nameOrFunc).toString().equals("[]")){
+            str.append(separator(functionName, str, true));
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> recursionFunc = ((List<Map<String, Object>>)inputName.get(nameOrFunc));
+            pretreatment(tableName, recursionFunc, flag, inputColumns, str, now.equals("") ? last : now);
+
+            if(functionName!=null&&!functionName.equals("")){
+                if(str.toString().endsWith(now)){// 在函数级别上，去除最末尾的一个连接符
+                    str.delete(str.length()-now.length(),str.length());
+                }
+                if(nameOrFunc.equals(RECURSION_FUNC)){ //recursionFunc需要判断参数是否结束
+                    if(inputName.get(RECURSION_NAME).toString().equals("[]")){
+                        str.append(")").append( last );
+                    }else{
+                        str.append( last );
                     }
-                    str.append(")");
+                }else{  //recursionName直接结束
+                    str.append(")").append( last );
                 }
             }
         }
-        return str;
     }
 
     /**
@@ -258,10 +263,10 @@ public class FieldFunction extends OperatorSpecializationFieldConfig {
 
         if(sep!=null&&!sep.equals("")){
 
-            if("to_timestamp".compareToIgnoreCase(sep.toString())==0){
-                separator=" AS ";
-            }else if(str.toString().endsWith("(") && flag){
+            if(str.toString().endsWith("(") && flag){
                 return "";
+            }else if("to_timestamp".compareToIgnoreCase(sep.toString())==0){
+                separator=" AS ";
             }else{
                 separator=",";
             }

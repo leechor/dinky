@@ -19,7 +19,6 @@ public class OperatorSpecializationFieldConfig {
      * */
     //特指算子id，算子校验中需要使用
     public static final String ID = "id";
-
     //标记用户输入的表名称，可为null或""
     public static final String TABLE_NAME = "tableName";
 
@@ -30,6 +29,15 @@ public class OperatorSpecializationFieldConfig {
     public static final String TABLE_NAME_DEFAULT = "tableNameDefault";
     //用于传递tableInfo中的信息
     public static final String TABLE_INFO = "tableInfo";
+
+    //hints动态表功能增强，出现在window算子中
+    public static final String HINTS_OPTIONS = "options";
+    //hints动态表功能增强，出现在join算子中,最外层的字段
+    public static final String HINTS = "hints";
+    //hints动态表功能增强，出现在join算子中,指定连接方式
+    public static final String JOIN_HINTS = "joinHints";
+    //hints动态表功能增强，出现在join算子中,参与连接的列
+    public static final String JOIN_COLUMN = "joinColumn";
 
     /**
      * 输入输出
@@ -57,16 +65,12 @@ public class OperatorSpecializationFieldConfig {
      * */
     //字段是否勾选
     public static final String FLAG = "flag";
-    //字段名称
+    //源算子中直接展示字段名称，中间算子中展示嵌套过后的函数
     public static final String NAME = "name";
     //中间算子别名
     public static final String OUT_NAME = "outName";
     //字段类型
     public static final String TYPE = "type";
-    //原始嵌套的函数字段
-    public static final String FUNCTION = "function";
-    //使用到的函数
-    public static final String FUNCTION_NAME = "functionName";
 
     //给一个字段添加事件时间语义
     public static final String WATERMARK = "watermark";
@@ -79,7 +83,6 @@ public class OperatorSpecializationFieldConfig {
 
     //设置主键
     public static final String PRIMARY = "primary";
-
     //自定义数据源中的参数名称，包含key和value
     public static final String OTHER = "other";
     //自定义数据源中自定义参数的键
@@ -87,8 +90,15 @@ public class OperatorSpecializationFieldConfig {
     //自定义数据源中自定义参数的值
     public static final String VALUES = "values";
 
-    //hints动态表功能增强
-    public static final String OPTIONS = "options";
+    //函数嵌套功能实现，该字段为最外层字段
+    public static final String FUNCTION = "function";
+    //函数嵌套功能实现，嵌套时定义的函数名称
+    public static final String FUNCTION_NAME = "functionName";
+    //函数嵌套功能实现，该字段不为空表示嵌套了函数
+    public static final String RECURSION_FUNC = "recursionFunc";
+    //函数嵌套功能实现，该字段不为空表示嵌套了字段
+    public static final String RECURSION_NAME = "recursionName";
+
 
     /**
      * 函数字段名常量

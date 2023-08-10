@@ -460,6 +460,12 @@ public abstract class Operator extends Node implements Runnable {
         return nodeWrapper.equals(operator.nodeWrapper);
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+//        return Objects.hash(nodeWrapper);
+    }
+
     public Map<String, InputPort<? extends PseudoData<?>>> getInputPorts() {
         return inputPorts;
     }

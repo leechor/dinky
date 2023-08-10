@@ -136,19 +136,11 @@ public class TaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScriptMa
             statement.setStatement("");
             statementService.insert(statement);
         }
-        //更新表zdpx_task_flow_graph
-        String flowGraphScript = task.getStatement();
-        FlowGraph flowGraph = new FlowGraph();
-        flowGraph.setTaskId(task.getId());
-        flowGraph.setScript(flowGraphScript);
-        FlowGraph oldGraph = this.getOne(new QueryWrapper<FlowGraph>().eq("task_id", task.getId()));
-        if(oldGraph==null){
-            this.insert(flowGraph);
-        }else{
-            this.update(flowGraph,new QueryWrapper<FlowGraph>().eq("task_id", oldGraph.getTaskId()));
-        }
 
-        Map<String, Object> checkAndSQL = convertToSql(flowGraphScript);
+        //更新表zdpx_task_flow_graph
+        updateTaskFlowGraph(task);
+
+        Map<String, Object> checkAndSQL = convertToSql(task.getStatement());
         String sql = checkAndSQL.get("SQL").toString();
 
         //sql校验
@@ -176,6 +168,20 @@ public class TaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScriptMa
         map.put("SQL",sql);
         map.put("MSG",list);
         return map;
+    }
+
+    @Override
+    public void updateTaskFlowGraph(Task task){
+        String flowGraphScript = task.getStatement();
+        FlowGraph flowGraph = new FlowGraph();
+        flowGraph.setTaskId(task.getId());
+        flowGraph.setScript(flowGraphScript);
+        FlowGraph oldGraph = this.getOne(new QueryWrapper<FlowGraph>().eq("task_id", task.getId()));
+        if(oldGraph==null){
+            this.insert(flowGraph);
+        }else{
+            this.update(flowGraph,new QueryWrapper<FlowGraph>().eq("task_id", oldGraph.getTaskId()));
+        }
     }
 
     public Map<String, Object> convertToSql(String flowGraphScript) {
