@@ -40,4 +40,6 @@ public interface TaskFlowGraphService extends ISuperService<FlowGraph> {
     List<JsonNode> getOperatorConfigurations();
 
     String operatorPreview(String graph);
+
+    void updateTaskFlowGraph(Task task);
 }

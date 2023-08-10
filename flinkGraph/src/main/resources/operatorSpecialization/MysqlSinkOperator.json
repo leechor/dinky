@@ -116,7 +116,11 @@
 					"flag":{
 						"type": "boolean",
 						"default": true,
-						"title": "是否勾选为输出"
+						"description": "是否勾选为输出"
+					},
+					"decs":{
+						"type": "string",
+						"description": "备注"
 					}
 				}
 			}

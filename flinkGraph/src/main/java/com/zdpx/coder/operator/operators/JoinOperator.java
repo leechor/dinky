@@ -47,7 +47,7 @@ public class JoinOperator extends Operator {
     public static final String TEMPLATE =
             String.format(
                     "<#import \"%s\" as e>CREATE VIEW ${tableName} AS "
-                            + "SELECT<#if hints??> /*+ ${hints} */ </#if>" +
+                            + "SELECT <#if hints??> /*+ ${hints} */ </#if>" +
                             "<@e.fieldsProcess columns/> FROM ${inputTableName} "
                             + "${joinType?upper_case} JOIN ${anotherTableName} "
                             + "<#if systemTimeColumn??>FOR SYSTEM_TIME AS OF ${systemTimeColumn}</#if> "
@@ -110,8 +110,9 @@ public class JoinOperator extends Operator {
             secondColumns = secondInput.getConnection().getFromPort().getPseudoData().getColumns();
         }
 
+        List<Map<String, Object>> config = formatProcessing(parameters);
         //根据config中的字段，确定columns中的字段属于哪张表
-        List<FieldFunction> ffsPrimary = outPutFieldFunction(parameters, primaryTableName, secondTableName,primaryColumns,secondColumns );
+        List<FieldFunction> ffsPrimary = outPutFieldFunction(parameters, primaryTableName, secondTableName,primaryColumns,secondColumns ,config);
 
         Map<String, Object> dataModel = new HashMap<>();
         dataModel.put(TABLE_NAME, outputTableName);
@@ -120,11 +121,11 @@ public class JoinOperator extends Operator {
         dataModel.put(Operator.COLUMNS, ffsPrimary);
         dataModel.put(JOIN_TYPE, joinType);
         dataModel.put(ID, parameters.get(ID));
-        dataModel.put(CONFIG, formatProcessing(parameters));
+        dataModel.put(CONFIG, config);
         if (forSystemTime != null && !forSystemTime.equals("")) {
             dataModel.put(
                     SYSTEM_TIME_COLUMN,
-                    FieldFunction.insertTableName(primaryTableName, null, forSystemTime, true));
+                    FieldFunction.insertTableName(primaryTableName, forSystemTime, true,null));
             dataModel.put("forSystemTime",forSystemTime);
         }
         if (where != null && !where.equals("")) {
@@ -132,14 +133,14 @@ public class JoinOperator extends Operator {
         }
         // hints
         @SuppressWarnings("unchecked")
-        List<Map<String, Object>> hints =(List<Map<String, Object>>)parameters.get("hints");
-        if(hints!=null){
+        List<Map<String, Object>> hints =(List<Map<String, Object>>)parameters.get(HINTS);
+        if(hints!=null&&!hints.isEmpty()){
             StringBuffer stringBuffer = new StringBuffer();
             hints.forEach(item->{
-                stringBuffer.append(item.get("joinHints")).append("(");
+                stringBuffer.append(item.get(JOIN_HINTS)).append("(");
 
                 @SuppressWarnings("unchecked")
-                List<String> joinColumn =(List<String>)item.get("joinColumn");
+                List<String> joinColumn =(List<String>)item.get(JOIN_COLUMN);
                 joinColumn.forEach(i->{
                     stringBuffer.append(i);
                     if(!i.equals(joinColumn.get(joinColumn.size()-1))){
@@ -148,7 +149,7 @@ public class JoinOperator extends Operator {
                 });
                 stringBuffer.append(") ");
             });
-            dataModel.put("hints",stringBuffer.toString());
+            dataModel.put(HINTS,stringBuffer.toString());
         }
 
         //修改连接字段的字段名称
@@ -162,10 +163,7 @@ public class JoinOperator extends Operator {
 
     /**
      * 校验内容：
-     * <p>
-     * systemTimeColumn需要主表的时间字段
-     * 输出字段不属于左表或右表
-     * on 的字段是否属于对应表
+     * 无
      */
     @Override
     protected void generateCheckInformation(Map<String, Object> map) {
@@ -174,69 +172,7 @@ public class JoinOperator extends Operator {
         model.setColor(GREEN);
         model.setTableName(map.get(TABLE_NAME).toString());
 
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> config = (List<Map<String, Object>>)map.get(CONFIG);
-        @SuppressWarnings("unchecked")
-        List<Map<String, String>> columnList = (List<Map<String, String>>) map.get("columnList");
 
-        List<String> leftList = new ArrayList<>();
-        List<String> rightList = new ArrayList<>();
-        List<Column> leftInputColumns = primaryInput.getConnection().getFromPort().getPseudoData().getColumns();
-        List<Column> rightInputColumns = secondInput.getConnection().getFromPort().getPseudoData().getColumns();
-        Map<String, List<String>> portInformation = new HashMap<>();
-        List<String> edge = new ArrayList<>();
-
-        boolean systemTimeColumn = true;
-        boolean onLeft = true;
-        boolean onRight = true;
-        if(map.get("forSystemTime")!=null){
-            String left = columnList.get(0).get("onLeftColumn").split("\\.")[1];
-            String right = columnList.get(0).get("onRightColumn").split("\\.")[1];
-
-            leftInputColumns.stream().filter(l->(map.get("forSystemTime").equals(l.getName())&&!l.getType().contains("TIME")))
-                    .forEach(l->leftList.add("systemTimeColumn需要主表中的时间属性(如 TIMESTAMP(3)、TIMESTAMP_LTZ等),当前字段值： "+map.get("forSystemTime")+" ,类型： "+l.getType()));
-
-            for(Map<String, Object> m : config){
-                if(m.get(TABLE_NAME).equals(PRIMARY_INPUT)){
-                    if(m.get(NAME).equals(map.get("forSystemTime"))){
-                        systemTimeColumn=false;
-                    }
-                    if(left.contains(m.get(NAME).toString())){
-                        onLeft=false;
-                    }
-                }else{
-                    if(right.contains(m.get(NAME).toString())){
-                        onRight=false;
-                    }
-                }
-            }
-            if(onLeft){
-                leftList.add("columnList中的onLeftColumn需要主表中的字段,当前字段值： "+left);
-            }
-            if(onRight){
-                rightList.add("columnList中的onRightColumn需要副表中的字段,当前字段值： "+right);
-            }
-        }
-        if(systemTimeColumn){
-            leftList.add("systemTimeColumn需要主表中的字段,当前字段值： "+map.get("forSystemTime"));
-        }
-
-        leftList.addAll(fieldNameCheck(PRIMARY_INPUT,leftInputColumns));
-        rightList.addAll(fieldNameCheck(SECOND_INPUT,rightInputColumns));
-
-        if(!leftList.isEmpty()||!rightList.isEmpty()){
-            if(!leftList.isEmpty()){
-                edge.add(getInputPorts().get(PRIMARY_INPUT).getConnection().getId());
-                portInformation.put(PRIMARY_INPUT,leftList);
-            }
-            if(!rightList.isEmpty()){
-                edge.add(getInputPorts().get(SECOND_INPUT).getConnection().getId());
-                portInformation.put(SECOND_INPUT,rightList);
-            }
-            model.setColor(RED);
-            model.setEdge(edge);
-            model.setPortInformation(portInformation);
-        }
         this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
     }
 
@@ -257,20 +193,20 @@ public class JoinOperator extends Operator {
 
 
     public void setUpTableName(Map<String, String> l, String tableName, String column) {
-        String onLeftColumn = FieldFunction.insertTableName(tableName, null, l.get(column), true);
+        String onLeftColumn = FieldFunction.insertTableName(tableName, l.get(column), true,null);
         l.put(column, onLeftColumn);
     }
 
 
 
     public List<FieldFunction> outPutFieldFunction(Map<String, Object> parameters, String primaryTableName, String secondTableName,
-                                                   List<Column> primaryColumns,List<Column> secondColumns) {
+                                                   List<Column> primaryColumns,List<Column> secondColumns,List<Map<String, Object>> config) {
 
         List<FieldFunction> ffsPrimary = new ArrayList<>();
         Map<String, List<Map<String, Object>>> inputColumn =getInputColumn(parameters);
 
-        ffsPrimary.addAll(FieldFunction.analyzeParameters(primaryTableName, inputColumn.get(PRIMARY_INPUT), true,primaryColumns));
-        ffsPrimary.addAll(FieldFunction.analyzeParameters(secondTableName, inputColumn.get(SECOND_INPUT), true,secondColumns));
+        ffsPrimary.addAll(FieldFunction.analyzeParameters(primaryTableName, inputColumn.get(PRIMARY_INPUT), true,primaryColumns,config));
+        ffsPrimary.addAll(FieldFunction.analyzeParameters(secondTableName, inputColumn.get(SECOND_INPUT), true,secondColumns,config));
 
         return ffsPrimary;
     }
@@ -299,23 +235,23 @@ public class JoinOperator extends Operator {
     }
 
     //从连接桩中获取输入，验证columns中的参数是否符合需要
-    public List<String> fieldNameCheck(String input,List<Column> columns){
-        List<String> list = new ArrayList<>();
-        for (Map<String, Object> m :inputColumn.get(input)){
-            @SuppressWarnings("unchecked")
-            List<String> list1 = (List<String>)m.get(PARAMETERS);
-            for(String s : list1){
-                for(int i=0;i<columns.size();i++){
-                    if(s.equals(columns.get(i).getName())){
-                        break;
-                    }
-                    if(i==columns.size()-1){
-                        list.add("输入参数中不包含字段 "+s+"，请检查 "+input+" 连接桩的入参");
-                    }
-                }
-            }
-        }
-        return list;
-    }
+//    public List<String> fieldNameCheck(String input,List<Column> columns){
+//        List<String> list = new ArrayList<>();
+//        for (Map<String, Object> m :inputColumn.get(input)){
+//            @SuppressWarnings("unchecked")
+//            List<String> list1 = (List<String>)m.get(PARAMETERS);
+//            for(String s : list1){
+//                for(int i=0;i<columns.size();i++){
+//                    if(s.equals(columns.get(i).getName())){
+//                        break;
+//                    }
+//                    if(i==columns.size()-1){
+//                        list.add("输入参数中不包含字段 "+s+"，请检查 "+input+" 连接桩的入参");
+//                    }
+//                }
+//            }
+//        }
+//        return list;
+//    }
 
 }

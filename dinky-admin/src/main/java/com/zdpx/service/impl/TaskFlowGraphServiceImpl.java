@@ -19,8 +19,13 @@
 
 package com.zdpx.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zdpx.coder.Specifications;
 import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.json.preview.OperatorPreviewBuilder;
+import com.zdpx.mapper.CustomerOperatorMapper;
+import com.zdpx.model.CustomerOperator;
 import org.dinky.data.dto.StudioExecuteDTO;
 import org.dinky.data.model.Statement;
 import org.dinky.data.model.Task;
@@ -63,11 +68,14 @@ public class TaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScriptMa
 
     private final StudioServiceImpl studioServiceImpl;
 
-    public TaskFlowGraphServiceImpl(TaskService taskService, StatementService statementService, FlowGraphScriptMapper flowGraphScriptMapper, StudioServiceImpl studioServiceImpl) {
+    private final CustomerOperatorMapper customerOperatorMapper;
+
+    public TaskFlowGraphServiceImpl(TaskService taskService, StatementService statementService, FlowGraphScriptMapper flowGraphScriptMapper, StudioServiceImpl studioServiceImpl,CustomerOperatorMapper customerOperatorMapper) {
         this.taskService = taskService;
         this.statementService=statementService;
         this.flowGraphScriptMapper = flowGraphScriptMapper;
         this.studioServiceImpl = studioServiceImpl;
+        this.customerOperatorMapper=customerOperatorMapper;
     }
 
     @Override
@@ -82,7 +90,6 @@ public class TaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScriptMa
         Map<String, Object> map = convertConfigToSource(task);
         task.setStatement(map.get("SQL").toString());
         taskService.saveOrUpdateTask(task);
-
         @SuppressWarnings("unchecked")
         List<CheckInformationModel> msg = (List<CheckInformationModel>)map.get("MSG");
         return msg;
@@ -90,7 +97,17 @@ public class TaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScriptMa
 
     @Override
     public List<JsonNode> getOperatorConfigurations() {
-        return Scene.getOperatorConfigurations();
+        List<JsonNode> operatorConfigurations = Scene.getOperatorConfigurations();
+        customerOperatorMapper.selectList(new QueryWrapper<CustomerOperator>().isNull("delete_time")).forEach(item->{
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                item.setSpecification(Specifications.readSpecializationFileByClassName("ProcessGroupOperator"));
+                operatorConfigurations.add(mapper.readTree(item.toString()));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return operatorConfigurations;
     }
 
     @Override
@@ -107,11 +124,8 @@ public class TaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScriptMa
     }
 
     private Map<String, Object> convertConfigToSource(Task task) {
-        String flowGraphScript = task.getStatement();
-        Map<String, Object> checkAndSQL = convertToSql(flowGraphScript);
-        String sql = checkAndSQL.get("SQL").toString();
 
-        //保存json
+        //更新表dinky_task_statement
         Statement statement = new Statement();
         statement.setId(task.getId());
         Statement old = statementService.selectById(task.getId());
@@ -122,16 +136,12 @@ public class TaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScriptMa
             statement.setStatement("");
             statementService.insert(statement);
         }
-        FlowGraph flowGraph = new FlowGraph();
-        flowGraph.setTaskId(task.getId());
-        flowGraph.setScript(flowGraphScript);
 
-        FlowGraph oldGraph = this.getOne(new QueryWrapper<FlowGraph>().eq("task_id", task.getId()));
-        if(oldGraph==null){
-            this.insert(flowGraph);
-        }else{
-            this.update(flowGraph,new QueryWrapper<FlowGraph>().eq("task_id", oldGraph.getTaskId()));
-        }
+        //更新表zdpx_task_flow_graph
+        updateTaskFlowGraph(task);
+
+        Map<String, Object> checkAndSQL = convertToSql(task.getStatement());
+        String sql = checkAndSQL.get("SQL").toString();
 
         //sql校验
         StudioExecuteDTO studio = new StudioExecuteDTO().task2DTO(task);
@@ -158,6 +168,20 @@ public class TaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScriptMa
         map.put("SQL",sql);
         map.put("MSG",list);
         return map;
+    }
+
+    @Override
+    public void updateTaskFlowGraph(Task task){
+        String flowGraphScript = task.getStatement();
+        FlowGraph flowGraph = new FlowGraph();
+        flowGraph.setTaskId(task.getId());
+        flowGraph.setScript(flowGraphScript);
+        FlowGraph oldGraph = this.getOne(new QueryWrapper<FlowGraph>().eq("task_id", task.getId()));
+        if(oldGraph==null){
+            this.insert(flowGraph);
+        }else{
+            this.update(flowGraph,new QueryWrapper<FlowGraph>().eq("task_id", oldGraph.getTaskId()));
+        }
     }
 
     public Map<String, Object> convertToSql(String flowGraphScript) {

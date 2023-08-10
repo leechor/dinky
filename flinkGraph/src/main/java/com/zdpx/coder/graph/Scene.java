@@ -73,6 +73,7 @@ public class Scene {
 
     public static List<Operator> getSinkOperatorNodes(NodeCollection process) {
         List<Operator> originOperator = getAllOperator(process);
+
         return originOperator.stream()
                 .filter(t -> CollectionUtils.isEmpty(t.getOutputPorts().values()))
                 .collect(Collectors.toList());

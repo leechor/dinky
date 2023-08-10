@@ -8,7 +8,7 @@ import { Node, Edge, Graph } from '@antv/x6';
 
 import styles from "./index.less"
 import { getSourceColOrCon, setSourceColumnOrConfig, getTargetConfig, setTargetConfig } from '../../../utils/graph-tools-func';
-import { useAppDispatch, useAppSelector } from '../../../hooks/redux-hooks';
+import { useAppDispatch } from '../../../hooks/redux-hooks';
 import { changeEdgeClickInfo } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home'
 
 type PortProFormProps = {
@@ -40,10 +40,7 @@ export const FORM_LAYOUT_PUBLIC = {
 const EdgeClick: React.FC<PortProFormProps> = (props) => {
     const dispatch = useAppDispatch()
     const actionRef = useRef<ActionType>()
-    const { operatorParameters }
-        = useAppSelector((state) => ({
-            operatorParameters: state.home.operatorParameters,
-        }));
+   
 
     const { sourceNode, sourcePortId, targetNode, targetPortId, edge } = props.edgeInfo;
 

@@ -67,13 +67,14 @@ public class CommWindowOperator extends Operator {
 
     @Override
     protected Map<String, String> declareUdfFunction() {
-        Map<String, Object> parameters = getParameterLists().get(0);
-        List<FieldFunction> ffs = Operator.getFieldFunctions(null, parameters,new ArrayList<>());
-        List<String> functions =
-                ffs.stream().map(FieldFunction::getFunctionName).collect(Collectors.toList());
-        return Scene.getUserDefinedFunctionMaps().entrySet().stream()
-                .filter(k -> functions.contains(k.getKey()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+//        Map<String, Object> parameters = getParameterLists().get(0);
+//        List<FieldFunction> ffs = Operator.getFieldFunctions(parameters.get(TABLE_NAME).toString(), parameters,new ArrayList<>());
+//        List<String> functions =
+//                ffs.stream().map(FieldFunction::getFunctionName).collect(Collectors.toList());
+//        return Scene.getUserDefinedFunctionMaps().entrySet().stream()
+//                .filter(k -> functions.contains(k.getKey()))
+//                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return new HashMap<>();
     }
 
     @Override
@@ -97,7 +98,9 @@ public class CommWindowOperator extends Operator {
             columns = inputPortObject.getConnection().getFromPort().getPseudoData().getColumns();
         }
 
-        List<FieldFunction> ffs = Operator.getFieldFunctions(tableName, parameters,columns);
+        List<Map<String, Object>> maps = formatProcessing(parameters);
+
+        List<FieldFunction> ffs = Operator.getFieldFunctions(tableName, parameters,columns,maps);
         Map<String, Object> p = new HashMap<>();
         p.put(TABLE_NAME, outputTableName);
         p.put(Operator.COLUMNS, ffs);
@@ -105,10 +108,12 @@ public class CommWindowOperator extends Operator {
         p.put(WHERE, parameters.get(WHERE));
         p.put(LIMIT, parameters.get(LIMIT));
         p.put(ID, parameters.get(ID));
-        p.put(CONFIG,formatProcessing(parameters));
+        p.put(CONFIG,maps);
 
-        if(parameters.get(OPTIONS)!=null&&!parameters.get(OPTIONS).equals("")){
-            p.put(OPTIONS,parameters.get(OPTIONS));
+        @SuppressWarnings("unchecked")
+        Map<String, Object> hints = (Map<String, Object>)parameters.get(HINTS_OPTIONS);
+        if(!hints.get("key").equals("")){
+            p.put(HINTS_OPTIONS,hints);
         }
 
         @SuppressWarnings("unchecked")
@@ -214,7 +219,7 @@ public class CommWindowOperator extends Operator {
 
         boolean windowFlag=true;
         List<Column> inputColumns = ((TableInfo) getInputPorts().get(INPUT_0).getConnection().getFromPort().getPseudoData()).getColumns();
-        List<Column> time = inputColumns.stream().filter(item -> item.getType().contains("TIME")).collect(Collectors.toList());
+        List<Column> time = inputColumns.stream().filter(item -> item.getType()!=null&&item.getType().contains("TIME")).collect(Collectors.toList());
         if(map.get(WINDOW)!=null){
             if(time.isEmpty()){
                 list.add("该算子使用了开窗函数，输入需要包含时间属性字段");

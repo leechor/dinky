@@ -62,7 +62,6 @@ public class ProcessGroup extends Operator implements NodeCollection {
 
     @Override
     protected void initialize() {
-        return;
     }
 
     @Override
