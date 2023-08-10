@@ -381,7 +381,7 @@ const StudioMenu = (props: any) => {
 
     //校验
     if (current.task.dialect !== "FlinkSql") {
-      
+
       if (editor instanceof JSONEditor<any>) {
         const errors = editor.validate()
         if (errors.length) {
@@ -393,7 +393,8 @@ const StudioMenu = (props: any) => {
         } else {
           if (graph instanceof Graph) {
             setOriginColor(graph)
-            props.saveTask(current, JSON.stringify(graph.toJSON()));
+            let data = graph.toJSON()
+            props.saveTask(current, JSON.stringify(data));
           }
 
         }

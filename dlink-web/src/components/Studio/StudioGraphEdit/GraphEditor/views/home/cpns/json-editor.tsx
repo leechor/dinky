@@ -18,6 +18,7 @@ import { QuestionCircleOutlined } from "@ant-design/icons";
 import { createRoot } from "react-dom/client";
 import { MyMonacoEditor as myMonaco } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/my-monaco-editor";
 import { MyAutoCompleteEditor as myautoinput } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/my-auto-complete-editor";
+import CustomShape from '../../../utils/cons';
 
 const EditorTip = (title: string) => {
   return (<Tooltip title={title}>
@@ -43,10 +44,11 @@ const Editor = memo(() => {
   const jsonRef = useRef<HTMLDivElement>(null);
   let editor: InstanceType<typeof JSONEditor>
   const dispatch = useAppDispatch();
-  const { operatorParameters, currentSelectNode } = useAppSelector(
+  const { operatorParameters, currentSelectNode, edgeClickInfo } = useAppSelector(
     (state) => ({
       operatorParameters: state.home.operatorParameters,
       currentSelectNode: state.home.currentSelectNode,
+      edgeClickInfo: state.home.edgeClickInfo
     }),
   );
 
@@ -91,13 +93,16 @@ const Editor = memo(() => {
       if (currentSelectNode.getData()?.parameters) {
         //解决bug 防止直接将config的值设置
         editor.setValue(currentSelectNode.getData().parameters)
-      } else if (currentSelectNode.shape === "custom-text-node") {
+      } 
+       if (currentSelectNode.shape === CustomShape.TEXT_NODE) {
         editor.setValue(currentSelectNode.getData())
       }
     });
 
-    editor.on('change', function () {
 
+
+    editor.on('change', function () {
+      
       //先恢复初始值
       dispatch(changeCurrentSelectNodeParamsData([]));
       dispatch(changeCurrentSelectNodeParamsData(editor.getValue()));
@@ -199,7 +204,7 @@ const Editor = memo(() => {
       editor.destroy()
     }
 
-  }, [operatorParameters, currentSelectNode]);
+  }, [operatorParameters, currentSelectNode, edgeClickInfo]);
 
   return <div className={styles['json-editor-content']} ref={jsonRef}></div>;
 });

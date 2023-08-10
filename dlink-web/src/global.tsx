@@ -26,6 +26,7 @@ const isHttps = document.location.protocol === 'https:';
 
 import '@/components/Studio/StudioGraphEdit/GraphEditor/assets/css/iconfont-svg';
 import '@/components/Studio/StudioGraphEdit/GraphEditor/assets/css/iconfont';
+import '@/components/Studio/StudioGraphEdit/GraphEditor/assets/css/iconfont_change_order';
 // if pwa is true
 if (pwa) {
   // Notify user if offline now
