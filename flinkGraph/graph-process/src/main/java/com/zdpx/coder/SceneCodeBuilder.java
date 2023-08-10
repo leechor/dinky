@@ -49,8 +49,8 @@ public class SceneCodeBuilder implements SceneCode {
     public SceneCodeBuilder(Scene scene) {
         this.scene = scene;
         if (scene.getEnvironment().getResultType() == ResultType.JAVA) {
-            CodeContext codeContext = createCodeContext(scene);
-            codeBuilder = new CodeJavaBuilderImpl(codeContext);
+            ICodeContext ICodeContext = createCodeContext(scene);
+            codeBuilder = new CodeJavaBuilderImpl(ICodeContext);
         } else {
             codeBuilder = new CodeSqlBuilderImpl();
         }
@@ -64,11 +64,6 @@ public class SceneCodeBuilder implements SceneCode {
     @Override
     public void setGenerateResult(CodeBuilder codeBuilder) {
         this.codeBuilder = codeBuilder;
-    }
-
-    @Override
-    public Scene getScene() {
-        return scene;
     }
 
     @Override
@@ -160,14 +155,7 @@ public class SceneCodeBuilder implements SceneCode {
         op.run();
     }
 
-    /**
-     * 创建场景代码上下文
-     *
-     * @param scene 场景类
-     * @return 代码上下文
-     */
-    @Override
-    public CodeContext createCodeContext(Scene scene) {
+    public ICodeContext createCodeContext(Scene scene) {
         return CodeContext.newBuilder(scene.getEnvironment().getName()).scene(scene).build();
     }
 

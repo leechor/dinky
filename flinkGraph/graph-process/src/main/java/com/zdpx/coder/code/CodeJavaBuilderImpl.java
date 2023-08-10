@@ -29,7 +29,7 @@ import javax.lang.model.element.Modifier;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
-import com.zdpx.coder.CodeContext;
+import com.zdpx.coder.ICodeContext;
 import com.zdpx.coder.Specifications;
 import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.graph.Environment;
@@ -42,15 +42,15 @@ public class CodeJavaBuilderImpl implements CodeJavaBuilder {
 
     private static final Path directory = Paths.get(SRC_MAIN_JAVA_GENERATE);
 
-    private final CodeContext codeContext;
+    private final ICodeContext ICodeContext;
 
-    public CodeJavaBuilderImpl(CodeContext codeContext) {
-        this.codeContext = codeContext;
+    public CodeJavaBuilderImpl(ICodeContext ICodeContext) {
+        this.ICodeContext = ICodeContext;
     }
 
     @Override
     public void registerUdfFunction(String udfFunctionName, String functionClass) {
-        codeContext
+        ICodeContext
                 .getMain()
                 .addStatement(
                         "$L.createTemporarySystemFunction($S, $S)",
@@ -61,9 +61,9 @@ public class CodeJavaBuilderImpl implements CodeJavaBuilder {
 
     @Override
     public void firstBuild() {
-        final Environment environment = codeContext.getScene().getEnvironment();
+        final Environment environment = ICodeContext.getScene().getEnvironment();
 
-        codeContext
+        ICodeContext
                 .getMain()
                 .addStatement(
                         "$T $L = $T.getExecutionEnvironment()",
@@ -92,7 +92,7 @@ public class CodeJavaBuilderImpl implements CodeJavaBuilder {
                 CodeBlock.builder()
                         .addStatement(Specifications.EXECUTE_SQL, Specifications.TABLE_ENV, sql)
                         .build();
-        this.codeContext.getMain().addCode(cb).addCode(System.lineSeparator());
+        this.ICodeContext.getMain().addCode(cb).addCode(System.lineSeparator());
     }
 
     @Override
@@ -102,22 +102,22 @@ public class CodeJavaBuilderImpl implements CodeJavaBuilder {
 
     @Override
     public void generateJavaFunction(CodeBlock codeBlock) {
-        codeContext.getMain().addCode(codeBlock).addCode(System.lineSeparator());
+        ICodeContext.getMain().addCode(codeBlock).addCode(System.lineSeparator());
     }
 
     @Override
-    public CodeContext getCodeContext() {
-        return codeContext;
+    public ICodeContext getCodeContext() {
+        return ICodeContext;
     }
 
     @Override
     public String lastBuild() {
-        codeContext.getMain().addStatement("$N.execute()", Specifications.ENV);
+        ICodeContext.getMain().addStatement("$N.execute()", Specifications.ENV);
 
         TypeSpec classBody =
-                TypeSpec.classBuilder(codeContext.getScene().getEnvironment().getName())
+                TypeSpec.classBuilder(ICodeContext.getScene().getEnvironment().getName())
                         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                        .addMethod(codeContext.getMain().build())
+                        .addMethod(ICodeContext.getMain().build())
                         .build();
 
         JavaFile javaFile = JavaFile.builder(Specifications.COM_ZDPX_CJPG, classBody).build();

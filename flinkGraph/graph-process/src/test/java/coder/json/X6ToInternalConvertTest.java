@@ -1,21 +1,14 @@
 package coder.json;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zdpx.coder.SceneCode;
 import com.zdpx.coder.json.ResultType;
 import com.zdpx.coder.json.preview.OperatorPreviewBuilder;
-import lombok.SneakyThrows;
-import org.junit.jupiter.api.Test;
 
 import com.zdpx.coder.SceneCodeBuilder;
 import com.zdpx.coder.graph.Scene;
 import com.zdpx.coder.json.x6.X6ToInternalConvert;
-
-import java.util.*;
 
 class X6ToInternalConvertTest {
 

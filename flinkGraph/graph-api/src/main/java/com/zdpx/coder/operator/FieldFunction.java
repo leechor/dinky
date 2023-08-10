@@ -19,12 +19,13 @@
 
 package com.zdpx.coder.operator;
 
-import com.zdpx.coder.graph.OperatorSpecializationFieldConfig;
 import org.apache.logging.log4j.util.Strings;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 
 /**
  * 定义sql语句中每个字段调用的函数, 函数可以嵌套. <b>该函数在freemarker中用于类型判断,所以禁止重命名</b>
@@ -95,7 +96,7 @@ import java.util.Map;
  *
  * @author Licho Sun
  */
-public class FieldFunction extends OperatorSpecializationFieldConfig {
+public class FieldFunction  {
 
     /** 函数需要的参数, 如果类型为{@link FieldFunction}, 会按照嵌套函数处理, */
     List<Object> parameters = new ArrayList<>();

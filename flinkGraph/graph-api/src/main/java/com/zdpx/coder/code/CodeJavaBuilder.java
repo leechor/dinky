@@ -20,12 +20,12 @@
 package com.zdpx.coder.code;
 
 import com.squareup.javapoet.CodeBlock;
-import com.zdpx.coder.CodeContext;
+import com.zdpx.coder.ICodeContext;
 
 /** */
 public interface CodeJavaBuilder extends CodeBuilder {
 
     void generateJavaFunction(CodeBlock codeBlock);
 
-    CodeContext getCodeContext();
+    ICodeContext getCodeContext();
 }

@@ -10,13 +10,9 @@ public interface SceneCode {
 
     void setGenerateResult(CodeBuilder codeBuilder);
 
-    Scene getScene();
-
     Map<String, String> getUdfFunctionMap();
 
     void setUdfFunctionMap(Map<String, String> udfFunctionMap);
 
     Map<String, Object> build();
-
-    CodeContext createCodeContext(Scene scene);
 }

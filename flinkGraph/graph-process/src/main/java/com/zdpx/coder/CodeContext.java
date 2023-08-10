@@ -32,7 +32,7 @@ import com.zdpx.coder.graph.Scene;
  *
  * @author Licho Sun
  */
-public final class CodeContext {
+public final class CodeContext implements ICodeContext {
     // 目标可运行类的构造器
     public final TypeSpec.Builder job;
     // main函数声明生成定义
@@ -75,18 +75,22 @@ public final class CodeContext {
     }
 
     // region getter/setter
+    @Override
     public TypeSpec.Builder getJob() {
         return job;
     }
 
+    @Override
     public MethodSpec.Builder getMain() {
         return main;
     }
 
+    @Override
     public Set<String> getSuppressedWarnings() {
         return suppressedWarnings;
     }
 
+    @Override
     public Scene getScene() {
         return scene;
     }
@@ -112,7 +116,7 @@ public final class CodeContext {
             return this;
         }
 
-        public CodeContext build() {
+        public ICodeContext build() {
             return new CodeContext(this);
         }
     }
