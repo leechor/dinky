@@ -1,4 +1,4 @@
-package com.zdpx.operators;
+package com.zdpx.coder.operators;
 
 import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.Specifications;
@@ -10,6 +10,7 @@ import com.zdpx.coder.operator.Operator;
 import java.util.*;
 
 import static com.zdpx.coder.utils.TableDataStreamConverter.assembleNewTableInfo;
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 
 public class CustomerOperator extends Operator {
 

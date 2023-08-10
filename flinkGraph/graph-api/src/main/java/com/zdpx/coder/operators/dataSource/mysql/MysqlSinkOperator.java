@@ -17,13 +17,14 @@
  *
  */
 
-package com.zdpx.operators.dataSource.mysql;
+package com.zdpx.coder.operators.dataSource.mysql;
 
-import com.zdpx.operators.dataSource.AbstractSqlTable;
+import com.zdpx.coder.operators.dataSource.AbstractSqlTable;
 import com.zdpx.coder.graph.InputPortObject;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 
 /**
  *

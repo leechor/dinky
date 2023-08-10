@@ -17,36 +17,36 @@
  *
  */
 
-package com.zdpx.operators.dataSource.es;
+package com.zdpx.coder.operators.dataSource.oracle;
 
-import com.zdpx.operators.dataSource.AbstractSqlTable;
-import com.zdpx.coder.graph.OutputPortObject;
-import com.zdpx.coder.operator.TableInfo;
+import com.zdpx.coder.graph.InputPortObject;
+import com.zdpx.coder.operators.dataSource.AbstractSqlTable;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 
 /**
  *
  */
-public class ESSourceOperator extends AbstractSqlTable {
+@Slf4j
+public class OracleSinkOperator extends AbstractSqlTable {
 
-    private OutputPortObject<TableInfo> outputPortObject;
-
-    private static final String ES_SOURCE = "esSource";
+    private static final String ORACLE_SINK = "OracleSink";
 
     @Override
     protected void initialize() {
-        outputPortObject = new OutputPortObject<>(this, OUTPUT_0);
-        getOutputPorts().put(OUTPUT_0, outputPortObject);
+        getInputPorts().put(INPUT_0, new InputPortObject<>(this, INPUT_0));
+        this.type= "Oracle";
     }
 
     @Override
     protected void execute(Map<String, Object> dataModel) {
-        processLogic(outputPortObject, dataModel);
+        processLogic( null, dataModel);
     }
 
     @Override
     protected String getDefaultName() {
-        return ES_SOURCE;
+        return ORACLE_SINK;
     }
 }

@@ -17,10 +17,11 @@
  *
  */
 
-package com.zdpx.operators.dataSource;
+package com.zdpx.coder.operators.dataSource;
 
 import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.graph.InputPortObject;
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 import com.zdpx.coder.graph.OutputPortObject;
 import com.zdpx.coder.operator.Column;
 import com.zdpx.coder.utils.TemplateUtils;

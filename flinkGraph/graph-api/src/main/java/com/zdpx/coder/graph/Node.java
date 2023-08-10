@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Optional;
 
 @Slf4j
-public abstract class Node extends OperatorSpecializationFieldConfig implements Identifier {
+public abstract class Node implements Identifier {
     protected String id;
     protected String name;
 

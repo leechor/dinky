@@ -1,9 +1,10 @@
-package com.zdpx.operators;
+package com.zdpx.coder.operators;
 
 import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.operator.Operator;
 import com.zdpx.coder.Specifications;
 import com.zdpx.coder.utils.TemplateUtils;
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 
 import java.io.File;
 import java.lang.reflect.Method;

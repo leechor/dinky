@@ -17,36 +17,39 @@
  *
  */
 
-package com.zdpx.operators.dataSource.kafka;
+package com.zdpx.coder.operators.dataSource.oracle;
 
-import com.zdpx.operators.dataSource.AbstractSqlTable;
 import com.zdpx.coder.graph.OutputPortObject;
 import com.zdpx.coder.operator.TableInfo;
+import com.zdpx.coder.operators.dataSource.AbstractSqlTable;
 
 import java.util.Map;
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 
 /**
  *
  */
-public class KafKaSourceOperator extends AbstractSqlTable {
+public class OracleSourceOperator extends AbstractSqlTable {
 
     private OutputPortObject<TableInfo> outputPortObject;
 
-    private static final String KAFKA_SOURCE = "KafKaSource";
+    private static final String ORACLE_SOURCE = "OracleSource";
 
     @Override
     protected void initialize() {
         outputPortObject = new OutputPortObject<>(this, OUTPUT_0);
         getOutputPorts().put(OUTPUT_0, outputPortObject);
+        this.type= "Oracle";
     }
 
     @Override
     protected void execute(Map<String, Object> dataModel) {
+
         processLogic(outputPortObject, dataModel);
     }
 
     @Override
     protected String getDefaultName() {
-        return KAFKA_SOURCE;
+        return ORACLE_SOURCE;
     }
 }

@@ -1,19 +1,20 @@
 
-package com.zdpx.operators.dataSource.kafka;
+package com.zdpx.coder.operators.dataSource.es;
 
-import com.zdpx.operators.dataSource.AbstractSqlTable;
+import com.zdpx.coder.operators.dataSource.AbstractSqlTable;
 import com.zdpx.coder.graph.InputPortObject;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 
 /**
  *
  */
 @Slf4j
-public class KafKaSinkOperator extends AbstractSqlTable {
+public class ESSinkOperator extends AbstractSqlTable {
 
-    private static final String KAFKA_SINK = "KafKaSink";
+    private static final String ES_SINK = "esSink";
 
     @Override
     protected void initialize() {
@@ -27,6 +28,6 @@ public class KafKaSinkOperator extends AbstractSqlTable {
 
     @Override
     protected String getDefaultName() {
-        return KAFKA_SINK;
+        return ES_SINK;
     }
 }

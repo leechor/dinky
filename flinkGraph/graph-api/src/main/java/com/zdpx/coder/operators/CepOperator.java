@@ -17,7 +17,7 @@
  *
  */
 
-package com.zdpx.operators;
+package com.zdpx.coder.operators;
 
 import java.text.MessageFormat;
 import java.util.*;
@@ -36,6 +36,7 @@ import com.zdpx.coder.operator.OperatorUtil;
 import com.zdpx.coder.operator.TableInfo;
 import com.zdpx.coder.utils.NameHelper;
 import com.zdpx.coder.utils.TemplateUtils;
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 
 /**
  * <b>Complex Event Processing</b> operator, which allows for pattern detection in event streams.

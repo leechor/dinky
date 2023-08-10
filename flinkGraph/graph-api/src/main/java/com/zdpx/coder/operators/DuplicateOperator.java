@@ -17,7 +17,7 @@
  *
  */
 
-package com.zdpx.operators;
+package com.zdpx.coder.operators;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +29,7 @@ import com.zdpx.coder.operator.Operator;
 import com.zdpx.coder.operator.TableInfo;
 
 import static com.zdpx.coder.utils.TableDataStreamConverter.assembleNewTableInfo;
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 
 /**
  * 用于端口数据复制, 转为多路输出

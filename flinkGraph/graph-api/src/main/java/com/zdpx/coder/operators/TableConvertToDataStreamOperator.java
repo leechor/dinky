@@ -17,7 +17,7 @@
  *
  */
 
-package com.zdpx.operators;
+package com.zdpx.coder.operators;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +30,7 @@ import com.zdpx.coder.graph.PseudoData;
 import com.zdpx.coder.operator.Operator;
 import com.zdpx.coder.operator.TableInfo;
 import com.zdpx.coder.utils.NameHelper;
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 
 /**
  *

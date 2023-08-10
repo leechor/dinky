@@ -17,7 +17,7 @@
  *
  */
 
-package com.zdpx.operators;
+package com.zdpx.coder.operators;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,6 +37,7 @@ import com.zdpx.coder.utils.NameHelper;
 import com.zdpx.coder.utils.TemplateUtils;
 
 import lombok.extern.slf4j.Slf4j;
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 
 /**
  * config中选中的输入，对columns中的parameters产生影响，再通过columns中的outPutName指定输出，所以config和outPutName没有直接联系
@@ -117,7 +118,7 @@ public class JoinOperator extends Operator {
         dataModel.put(TABLE_NAME, outputTableName);
         dataModel.put(INPUT_TABLE_NAME, primaryTableName);
         dataModel.put(ANOTHER_TABLE_NAME, secondTableName);
-        dataModel.put(Operator.COLUMNS, ffsPrimary);
+        dataModel.put(COLUMNS, ffsPrimary);
         dataModel.put(JOIN_TYPE, joinType);
         dataModel.put(ID, parameters.get(ID));
         dataModel.put(CONFIG, config);
@@ -181,7 +182,7 @@ public class JoinOperator extends Operator {
 
             String sqlStr = TemplateUtils.format(this.getName(), dataModel, TEMPLATE);
             @SuppressWarnings("unchecked")
-            List<FieldFunction> ffs = (List<FieldFunction>) dataModel.get(Operator.COLUMNS);
+            List<FieldFunction> ffs = (List<FieldFunction>) dataModel.get(COLUMNS);
             registerUdfFunctions(ffs);
 
             List<Column> cls = Operator.getColumnFromFieldFunctions(ffs);

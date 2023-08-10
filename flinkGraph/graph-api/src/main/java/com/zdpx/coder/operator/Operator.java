@@ -20,7 +20,7 @@
 package com.zdpx.coder.operator;
 
 import com.zdpx.coder.SceneCode;
-import com.zdpx.coder.graph.Node;
+import com.zdpx.coder.graph.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.flink.table.functions.UserDefinedFunction;
 
@@ -42,12 +42,6 @@ import com.google.common.collect.Sets;
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.ValidationMessage;
 import com.zdpx.coder.Specifications;
-import com.zdpx.coder.graph.InputPort;
-import com.zdpx.coder.graph.InputPortObject;
-import com.zdpx.coder.graph.NodeWrapper;
-import com.zdpx.coder.graph.OutputPort;
-import com.zdpx.coder.graph.OutputPortObject;
-import com.zdpx.coder.graph.PseudoData;
 import com.zdpx.coder.utils.JsonSchemaValidator;
 
 import lombok.extern.slf4j.Slf4j;
@@ -327,8 +321,8 @@ public abstract class Operator extends Node implements Runnable {
     protected List<Map<String, Object>> getParameterLists() {
         List<Map<String, Object>> parameterLists = getParameterLists(this.nodeWrapper.getParameters());
         Map<String, Object> map = new HashMap<>();
-        map.put(CONFIG, getParameterLists(this.nodeWrapper.getConfig()));
-        map.put(ID, id);//节点校验需要使用
+        map.put(OperatorSpecializationFieldConfig.CONFIG, getParameterLists(this.nodeWrapper.getConfig()));
+        map.put(OperatorSpecializationFieldConfig.ID, id);//节点校验需要使用
 
         parameterLists.add(map);
         return parameterLists;
@@ -375,7 +369,7 @@ public abstract class Operator extends Node implements Runnable {
     public static List<FieldFunction> getFieldFunctions(
             String primaryTableName, Map<String, Object> parameters , List<Column> inputColumn, List<Map<String, Object>> inputColumns) {
         return FieldFunction.analyzeParameters(
-                primaryTableName, (List<Map<String, Object>>) parameters.get(COLUMNS), true,inputColumn, inputColumns);
+                primaryTableName, (List<Map<String, Object>>) parameters.get(OperatorSpecializationFieldConfig.COLUMNS), true,inputColumn, inputColumns);
     }
 
     public static Map<String, Object> getJsonAsMap(JsonNode inputs) {
@@ -398,7 +392,7 @@ public abstract class Operator extends Node implements Runnable {
 
         List<Map<String, Object>> input = new ArrayList<>();
         @SuppressWarnings("unchecked")
-        List<Map<String, List<Map<String, Object>>>> config = (List<Map<String, List<Map<String, Object>>>>) dataModel.get(CONFIG);
+        List<Map<String, List<Map<String, Object>>>> config = (List<Map<String, List<Map<String, Object>>>>) dataModel.get(OperatorSpecializationFieldConfig.CONFIG);
         if (config.isEmpty()) {
             return input;
         }
@@ -407,8 +401,8 @@ public abstract class Operator extends Node implements Runnable {
         for (Map.Entry<String, List<Map<String, Object>>> m2 : config.get(0).entrySet()) {
             String[] split = m2.getKey().split("&");
             m2.getValue().forEach(l->{
-                if ((boolean) l.get(FLAG)) {
-                    l.put(TABLE_NAME,split[split.length-1]);
+                if ((boolean) l.get(OperatorSpecializationFieldConfig.FLAG)) {
+                    l.put(OperatorSpecializationFieldConfig.TABLE_NAME,split[split.length-1]);
                     input.add(l);
                 }
             });
@@ -416,8 +410,8 @@ public abstract class Operator extends Node implements Runnable {
 
         //删除没有勾选的字段
         @SuppressWarnings("unchecked")
-        List<Map<String, Object>> output = (List<Map<String, Object>>) dataModel.get(COLUMNS);
-        output.removeIf(s -> !(boolean) s.get(FLAG));
+        List<Map<String, Object>> output = (List<Map<String, Object>>) dataModel.get(OperatorSpecializationFieldConfig.COLUMNS);
+        output.removeIf(s -> !(boolean) s.get(OperatorSpecializationFieldConfig.FLAG));
 
         return input;
     }

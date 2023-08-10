@@ -17,22 +17,23 @@
  *
  */
 
-package com.zdpx.operators.dataSource.customer;
+package com.zdpx.coder.operators.dataSource.es;
 
+import com.zdpx.coder.operators.dataSource.AbstractSqlTable;
 import com.zdpx.coder.graph.OutputPortObject;
 import com.zdpx.coder.operator.TableInfo;
-import com.zdpx.operators.dataSource.AbstractSqlTable;
 
 import java.util.Map;
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 
 /**
  *
  */
-public class CustomerSourceOperator extends AbstractSqlTable {
+public class ESSourceOperator extends AbstractSqlTable {
 
     private OutputPortObject<TableInfo> outputPortObject;
 
-    private static final String CUSTOMER_SOURCE = "customerSource";
+    private static final String ES_SOURCE = "esSource";
 
     @Override
     protected void initialize() {
@@ -42,11 +43,11 @@ public class CustomerSourceOperator extends AbstractSqlTable {
 
     @Override
     protected void execute(Map<String, Object> dataModel) {
-        processLogic( outputPortObject, dataModel);
+        processLogic(outputPortObject, dataModel);
     }
 
     @Override
     protected String getDefaultName() {
-        return CUSTOMER_SOURCE;
+        return ES_SOURCE;
     }
 }

@@ -26,9 +26,10 @@ import java.util.Map;
 import com.zdpx.coder.graph.OperatorSpecializationFieldConfig;
 import com.zdpx.coder.operator.Column;
 import com.zdpx.coder.operator.TableInfo;
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 
 /** */
-public class TableDataStreamConverter extends OperatorSpecializationFieldConfig {
+public class TableDataStreamConverter {
     private TableDataStreamConverter() {}
 
     //字段非函数格式，使用此方法构建tableInfo

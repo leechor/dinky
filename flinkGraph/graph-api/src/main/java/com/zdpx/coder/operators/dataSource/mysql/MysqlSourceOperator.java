@@ -17,38 +17,50 @@
  *
  */
 
-package com.zdpx.operators.dataSource.oracle;
+package com.zdpx.coder.operators.dataSource.mysql;
 
+import com.zdpx.coder.operator.OperatorFeature;
+import com.zdpx.coder.operators.dataSource.AbstractSqlTable;
 import com.zdpx.coder.graph.OutputPortObject;
 import com.zdpx.coder.operator.TableInfo;
-import com.zdpx.operators.dataSource.AbstractSqlTable;
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
+
+import java.util.Optional;
 
 import java.util.Map;
 
 /**
  *
  */
-public class OracleSourceOperator extends AbstractSqlTable {
+public class MysqlSourceOperator extends AbstractSqlTable {
 
     private OutputPortObject<TableInfo> outputPortObject;
 
-    private static final String ORACLE_SOURCE = "OracleSource";
+    private static final String MYSQL_SOURCE = "MysqlSource";
 
     @Override
     protected void initialize() {
         outputPortObject = new OutputPortObject<>(this, OUTPUT_0);
         getOutputPorts().put(OUTPUT_0, outputPortObject);
-        this.type= "Oracle";
+        this.type= "Mysql";
+        setName("MySQL数据源");
+    }
+
+    @Override
+    public Optional<OperatorFeature> getOperatorFeature() {
+        OperatorFeature operatorFeature = OperatorFeature.builder()
+                .icon("icon-MySQL-icon-02")
+                .build();
+        return Optional.of(operatorFeature);
     }
 
     @Override
     protected void execute(Map<String, Object> dataModel) {
-
-        processLogic(outputPortObject, dataModel);
+        processLogic( outputPortObject, dataModel);
     }
 
     @Override
     protected String getDefaultName() {
-        return ORACLE_SOURCE;
+        return MYSQL_SOURCE;
     }
 }

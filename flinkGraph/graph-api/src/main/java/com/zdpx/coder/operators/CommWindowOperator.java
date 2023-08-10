@@ -1,4 +1,4 @@
-package com.zdpx.operators;
+package com.zdpx.coder.operators;
 
 import com.zdpx.coder.Specifications;
 import com.zdpx.coder.operator.*;
@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 
 /**
  * 通过创建视图的形式进行开窗和窗口聚合
@@ -105,7 +106,7 @@ public class CommWindowOperator extends Operator {
         List<FieldFunction> ffs = Operator.getFieldFunctions(tableName, parameters,columns,maps);
         Map<String, Object> p = new HashMap<>();
         p.put(TABLE_NAME, outputTableName);
-        p.put(Operator.COLUMNS, ffs);
+        p.put(COLUMNS, ffs);
         p.put(INPUT_TABLE_NAME, tableName);
         p.put(WHERE, parameters.get(WHERE));
         p.put(LIMIT, parameters.get(LIMIT));
@@ -257,7 +258,7 @@ public class CommWindowOperator extends Operator {
         this.getSceneCode().getGenerateResult().generate(sqlStr);
 
         @SuppressWarnings("unchecked")
-        List<FieldFunction> ffs = (List<FieldFunction>) p.get(Operator.COLUMNS);
+        List<FieldFunction> ffs = (List<FieldFunction>) p.get(COLUMNS);
         OperatorUtil.postTableOutput(
                 outputPortObject,
                 p.get(TABLE_NAME).toString(),

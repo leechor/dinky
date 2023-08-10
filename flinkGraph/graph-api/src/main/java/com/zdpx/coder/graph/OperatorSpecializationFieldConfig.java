@@ -2,14 +2,17 @@ package com.zdpx.coder.graph;
 
 public class OperatorSpecializationFieldConfig {
 
+    private OperatorSpecializationFieldConfig() {
+    }
+
     /**
      * Json源文件，高层级结构化信息
      * */
     //标记算子填写的参数信息，同级别的参数还有：config
-    protected static final String PARAMETERS = "parameters";
+    public static final String PARAMETERS = "parameters";
 
     //存放输入输出勾选情况的标记
-    protected static final String CONFIG = "config";
+    public static final String CONFIG = "config";
 
     //算子输出字段名称标记，其内容一般为List<Map<String, Object>>类型，可转换为List<FieldFunction> FIELD_FUNCTIONS
     public static final String COLUMNS = "columns";
