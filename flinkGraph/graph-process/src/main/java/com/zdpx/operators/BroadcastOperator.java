@@ -129,7 +129,7 @@ public class BroadcastOperator extends Operator {
 
         if (getOutputPorts().isEmpty()
                 || this.nodeWrapper == null
-                || !(this.getSchemaUtil().getGenerateResult() instanceof CodeJavaBuilder)) {
+                || !(this.getSceneCode().getGenerateResult() instanceof CodeJavaBuilder)) {
             log.error("BroadcastOperator information err.");
             return;
         }
@@ -142,7 +142,7 @@ public class BroadcastOperator extends Operator {
         Map<String, String> outputParams = OperatorParameterUtils.getColumns("output", parameters);
 
         CodeBlock cb = getCodeBlock(primaryParams, broadcastParams, outputParams);
-        CodeJavaBuilder gjr = (CodeJavaBuilder) this.getSchemaUtil().getGenerateResult();
+        CodeJavaBuilder gjr = (CodeJavaBuilder) this.getSceneCode().getGenerateResult();
         gjr.generateJavaFunction(cb);
 
         List<Column> cls = new ArrayList<>();

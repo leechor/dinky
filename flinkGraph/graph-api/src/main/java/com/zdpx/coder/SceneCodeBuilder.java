@@ -39,7 +39,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author Licho Sun
  */
 @Slf4j
-public class SceneCodeBuilder {
+public class SceneCodeBuilder implements SceneCode {
     // 自定义函数操作算子集
     private Map<String, String> udfFunctionMap = new HashMap<>();
 
@@ -56,22 +56,27 @@ public class SceneCodeBuilder {
         }
     }
 
+    @Override
     public CodeBuilder getGenerateResult() {
         return codeBuilder;
     }
 
+    @Override
     public void setGenerateResult(CodeBuilder codeBuilder) {
         this.codeBuilder = codeBuilder;
     }
 
+    @Override
     public Scene getScene() {
         return scene;
     }
 
+    @Override
     public Map<String, String> getUdfFunctionMap() {
         return udfFunctionMap;
     }
 
+    @Override
     public void setUdfFunctionMap(Map<String, String> udfFunctionMap) {
         this.udfFunctionMap = udfFunctionMap;
     }
@@ -81,6 +86,7 @@ public class SceneCodeBuilder {
      *
      * @throws IOException ignore
      */
+    @Override
     public Map<String, Object> build() {
         if (codeBuilder == null) {
             throw new IllegalStateException(String.format("Code Builder %s empty!", codeBuilder));
@@ -150,7 +156,7 @@ public class SceneCodeBuilder {
      * @param op 宏算子
      */
     private void operate(Operator op) {
-        op.setSchemaUtil(this);
+        op.setSceneCode(this);
         op.run();
     }
 
@@ -160,6 +166,7 @@ public class SceneCodeBuilder {
      * @param scene 场景类
      * @return 代码上下文
      */
+    @Override
     public CodeContext createCodeContext(Scene scene) {
         return CodeContext.newBuilder(scene.getEnvironment().getName()).scene(scene).build();
     }

@@ -247,14 +247,14 @@ public class CommWindowOperator extends Operator {
             portInformation.put(inputPortObject.getName(),list);
             model.setPortInformation(portInformation);
         }
-        this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
+        this.getSceneCode().getGenerateResult().addCheckInformation(model);
     }
 
     @Override
     protected void execute(Map<String, Object> p) {
 
         String sqlStr = TemplateUtils.format("CommWindowFunction", p, TEMPLATE);
-        this.getSchemaUtil().getGenerateResult().generate(sqlStr);
+        this.getSceneCode().getGenerateResult().generate(sqlStr);
 
         @SuppressWarnings("unchecked")
         List<FieldFunction> ffs = (List<FieldFunction>) p.get(Operator.COLUMNS);

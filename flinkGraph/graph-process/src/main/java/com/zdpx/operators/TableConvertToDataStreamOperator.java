@@ -73,11 +73,11 @@ public class TableConvertToDataStreamOperator extends Operator {
         String tn =
                 NameHelper.generateVariableName(
                         parameters.getParameterByName(Specifications.TABLE_NAME));
-        if (!(this.getSchemaUtil().getGenerateResult() instanceof CodeJavaBuilder)) {
+        if (!(this.getSceneCode().getGenerateResult() instanceof CodeJavaBuilder)) {
             return;
         }
 
-        CodeJavaBuilder gjr = (CodeJavaBuilder) this.getSchemaUtil().getGenerateResult();
+        CodeJavaBuilder gjr = (CodeJavaBuilder) this.getSceneCode().getGenerateResult();
         gjr.getCodeContext()
                 .getMain()
                 .addStatement(

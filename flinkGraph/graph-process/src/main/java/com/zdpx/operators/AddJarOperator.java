@@ -77,13 +77,13 @@ public class AddJarOperator extends Operator {
             model.setColor(RED);
             model.setOperatorErrorMsg(msg);
         }
-        this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
+        this.getSceneCode().getGenerateResult().addCheckInformation(model);
     }
 
     @Override
     protected void execute(Map<String, Object> map) {
         String sqlStr = TemplateUtils.format("AddJarOperator", map, TEMPLATE);
-        this.getSchemaUtil().getGenerateResult().generate(sqlStr);
+        this.getSceneCode().getGenerateResult().generate(sqlStr);
     }
 
     //动态加载Jar

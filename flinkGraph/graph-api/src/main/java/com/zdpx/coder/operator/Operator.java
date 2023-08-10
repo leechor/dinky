@@ -19,6 +19,7 @@
 
 package com.zdpx.coder.operator;
 
+import com.zdpx.coder.SceneCode;
 import com.zdpx.coder.graph.Node;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.flink.table.functions.UserDefinedFunction;
@@ -40,7 +41,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.ValidationMessage;
-import com.zdpx.coder.SceneCodeBuilder;
 import com.zdpx.coder.Specifications;
 import com.zdpx.coder.graph.InputPort;
 import com.zdpx.coder.graph.InputPortObject;
@@ -67,7 +67,7 @@ public abstract class Operator extends Node implements Runnable {
     private Map<String, OutputPort<? extends PseudoData<?>>> outputPorts = new HashMap<>();
 
     protected Map<String, String> userFunctions;
-    private SceneCodeBuilder sceneCodeBuilder;
+    private SceneCode sceneCode;
 
     protected String type;
 
@@ -161,23 +161,23 @@ public abstract class Operator extends Node implements Runnable {
     }
 
     protected void registerUdfFunctions(String functionName) {
-        sceneCodeBuilder.getUdfFunctionMap().entrySet().stream()
+        sceneCode.getUdfFunctionMap().entrySet().stream()
                 .filter(t -> t.getKey().equals(functionName))
                 .findAny()
                 .ifPresent(
                         t ->
-                                this.getSchemaUtil()
+                                this.getSceneCode()
                                         .getGenerateResult()
                                         .registerUdfFunction(t.getKey(), t.getValue()));
-        sceneCodeBuilder.getUdfFunctionMap().remove(functionName);
+        sceneCode.getUdfFunctionMap().remove(functionName);
     }
 
     protected void registerUdfFunctions(String functionName, String clazz) {
-        this.getSchemaUtil().getGenerateResult().registerUdfFunction(functionName, clazz);
+        this.getSceneCode().getGenerateResult().registerUdfFunction(functionName, clazz);
     }
 
     protected void generate(String sqlStr) {
-        this.getSchemaUtil().getGenerateResult().generate(sqlStr);
+        this.getSceneCode().getGenerateResult().generate(sqlStr);
     }
 
     /**
@@ -347,11 +347,11 @@ public abstract class Operator extends Node implements Runnable {
             return;
         }
 
-        Map<String, String> udfFunctions = getSchemaUtil().getUdfFunctionMap();
+        Map<String, String> udfFunctions = getSceneCode().getUdfFunctionMap();
         Sets.difference(ufs.entrySet(), udfFunctions.entrySet())
                 .forEach(
                         u ->
-                                this.getSchemaUtil()
+                                this.getSceneCode()
                                         .getGenerateResult()
                                         .registerUdfFunction(u.getKey(), u.getValue()));
         udfFunctions.putAll(ufs);
@@ -481,12 +481,12 @@ public abstract class Operator extends Node implements Runnable {
         this.parameters = parameters;
     }
 
-    public SceneCodeBuilder getSchemaUtil() {
-        return sceneCodeBuilder;
+    public SceneCode getSceneCode() {
+        return sceneCode;
     }
 
-    public void setSchemaUtil(SceneCodeBuilder sceneCodeBuilder) {
-        this.sceneCodeBuilder = sceneCodeBuilder;
+    public void setSceneCode(SceneCode sceneCodeBuilder) {
+        this.sceneCode = sceneCodeBuilder;
     }
 
     // endregion

@@ -143,7 +143,7 @@ public abstract class AbstractSqlTable extends Operator {
             portInformation.put(portName,list);
             model.setPortInformation(portInformation);
         }
-        this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
+        this.getSceneCode().getGenerateResult().addCheckInformation(model);
     }
 
     //重复代码提取
@@ -168,7 +168,7 @@ public abstract class AbstractSqlTable extends Operator {
         }
 
         String sqlStr = TemplateUtils.format(tableName, dataModel, TEMPLATE);
-        this.getSchemaUtil().getGenerateResult().generate(sqlStr);
+        this.getSceneCode().getGenerateResult().generate(sqlStr);
 
     }
 
@@ -202,7 +202,7 @@ public abstract class AbstractSqlTable extends Operator {
         data.put(INPUT_TABLE_NAME, tableName);
         data.put(COLUMNS, dataModel.get(COLUMNS));
         String insertSqlStr = TemplateUtils.format("insert", data, INPUT_SQL);
-        this.getSchemaUtil().getGenerateResult().generate(insertSqlStr);
+        this.getSceneCode().getGenerateResult().generate(insertSqlStr);
 
     }
 

@@ -2,6 +2,7 @@ package com.zdpx.coder.json.preview;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zdpx.coder.SceneCode;
 import com.zdpx.coder.graph.Scene;
 import com.zdpx.coder.json.x6.X6ToInternalConvert;
 import com.zdpx.coder.operator.Operator;
@@ -50,8 +51,8 @@ public class OperatorPreviewBuilder{
         //执行算子
         Scene scene = new Scene();
         scene.getEnvironment().setResultType(ResultType.SQL);
-        SceneCodeBuilder sceneCodeBuilder = new SceneCodeBuilder(scene);
-        operator.setSchemaUtil(sceneCodeBuilder);
+        SceneCode sceneCodeBuilder = new SceneCodeBuilder(scene);
+        operator.setSceneCode(sceneCodeBuilder);
         operator.run();
 
         //获取执行结果

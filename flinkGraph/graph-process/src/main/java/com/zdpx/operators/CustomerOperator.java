@@ -144,13 +144,13 @@ public class CustomerOperator extends Operator {
         model.setColor("green");
         model.setTableName(map.get("tableName").toString());
 
-        this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
+        this.getSceneCode().getGenerateResult().addCheckInformation(model);
     }
 
     @Override
     protected void execute(Map<String, Object> result) {
 
-        this.getSchemaUtil().getGenerateResult().generate((String)result.get("sql"));//本算子输入的sql不用转换
+        this.getSceneCode().getGenerateResult().generate((String)result.get("sql"));//本算子输入的sql不用转换
 
         if(getOutputPorts()!=null&&!getOutputPorts().isEmpty()){
 

@@ -5,6 +5,8 @@ import static org.hamcrest.Matchers.equalTo;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zdpx.coder.SceneCode;
+import com.zdpx.coder.json.ResultType;
 import com.zdpx.coder.json.preview.OperatorPreviewBuilder;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
@@ -1186,7 +1188,7 @@ static String x6_json1 = "";
             X6ToInternalConvert x6 = new X6ToInternalConvert();
             Scene result = x6.convert(x6_json1);
             result.getEnvironment().setResultType(ResultType.SQL);
-            SceneCodeBuilder su = new SceneCodeBuilder(result);
+            SceneCode su = new SceneCodeBuilder(result);
             final String build = su.build().get("SQL").toString();
             System.out.println(build);
 

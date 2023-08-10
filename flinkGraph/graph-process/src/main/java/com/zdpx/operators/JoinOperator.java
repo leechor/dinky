@@ -172,7 +172,7 @@ public class JoinOperator extends Operator {
         model.setTableName(map.get(TABLE_NAME).toString());
 
 
-        this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
+        this.getSceneCode().getGenerateResult().addCheckInformation(model);
     }
 
     @Override

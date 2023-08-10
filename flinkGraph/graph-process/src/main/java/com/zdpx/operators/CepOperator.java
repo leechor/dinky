@@ -256,7 +256,7 @@ public class CepOperator extends Operator {
             portInformation.put(INPUT_0,list);
             model.setPortInformation(portInformation);
         }
-        this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
+        this.getSceneCode().getGenerateResult().addCheckInformation(model);
     }
 
     @Override
@@ -265,7 +265,7 @@ public class CepOperator extends Operator {
         Map<String, Object> result = new HashMap<>();
         result.put(CEP, parameterMap);
         String sqlStr = TemplateUtils.format(this.getClass().getName(), result, TEMPLATE);
-        this.getSchemaUtil().getGenerateResult().generate(sqlStr);
+        this.getSceneCode().getGenerateResult().generate(sqlStr);
         @SuppressWarnings("unchecked")
         List<Column> columns = Specifications.convertFieldFunctionToColumns((List<FieldFunction>) parameterMap.get(COLUMNS));
 

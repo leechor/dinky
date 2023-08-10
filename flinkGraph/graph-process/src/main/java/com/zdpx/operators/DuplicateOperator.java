@@ -68,7 +68,7 @@ public class DuplicateOperator extends Operator {
         model.setOperatorId(map.get(ID).toString());
         model.setColor(GREEN);
 
-        this.getSchemaUtil().getGenerateResult().addCheckInformation(model);
+        this.getSceneCode().getGenerateResult().addCheckInformation(model);
     }
 
     @SuppressWarnings("unchecked")
