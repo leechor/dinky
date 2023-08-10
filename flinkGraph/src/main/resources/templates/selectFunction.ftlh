@@ -1,6 +1,6 @@
 <#macro fieldFunction fo>
     <@compress single_line=true>
-        <#if fo.functionName??>${fo.functionName}(</#if>
+        <#if fo.functionName??>${fo.functionName?no_esc}</#if>
         <#list fo.parameters as parameter>
             <#if instanceOf(parameter, "com.zdpx.coder.operator.FieldFunction")>
                 <@fieldFunction parameter/>
@@ -11,7 +11,7 @@
             </#if>
             <#sep>${fo.delimiter!","}
         </#list>
-        <#if fo.functionName??>)</#if>
+        <#if fo.functionName??></#if>
     </@compress>
 </#macro>
 

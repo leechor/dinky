@@ -18,12 +18,12 @@
  */
 
 
-import {PageContainer} from '@ant-design/pro-layout'; //
+import { PageContainer } from '@ant-design/pro-layout'; //
 import styles from './index.less';
-import {Button, Card, Col, Empty, Image, Row, Segmented, Spin, Tabs, Tag, Tree} from 'antd';
-import React, {Key, useEffect, useState} from 'react';
-import {clearMetaDataTable, showMetaDataTable} from '@/components/Studio/StudioEvent/DDL';
-import {getData} from '@/components/Common/crud';
+import { Button, Card, Col, Empty, Image, Row, Segmented, Spin, Tabs, Tag, Tree } from 'antd';
+import React, { Key, useEffect, useRef, useState } from 'react';
+import { clearMetaDataTable, showMetaDataTable } from '@/components/Studio/StudioEvent/DDL';
+import { getData } from '@/components/Common/crud';
 import {
   BarsOutlined,
   CheckCircleOutlined,
@@ -35,22 +35,23 @@ import {
   ReadOutlined,
   TableOutlined,
 } from '@ant-design/icons';
-import {Scrollbars} from 'react-custom-scrollbars';
-import {TreeDataNode} from '@/components/Studio/StudioTree/Function';
+import { Scrollbars } from 'react-custom-scrollbars';
+import { TreeDataNode } from '@/components/Studio/StudioTree/Function';
 import Tables from '@/pages/RegistrationCenter/DataBase/Tables';
 import Columns from '@/pages/RegistrationCenter/DataBase/Columns';
 import Divider from 'antd/es/divider';
 import Generation from '@/pages/RegistrationCenter/DataBase/Generation';
 import TableData from '@/pages/DataCenter/MetaData/TableData';
-import {FALLBACK, getDBImage} from "@/pages/RegistrationCenter/DataBase/DB";
+import { FALLBACK, getDBImage } from "@/pages/RegistrationCenter/DataBase/DB";
 import Meta from "antd/lib/card/Meta";
-import {l} from "@/utils/intl";
+import { l } from "@/utils/intl";
 import Console from './Console';
+import type { DataSourceProps } from '@/components/Studio/StudioGraphEdit/GraphEditor/components/data-source-modal/data-source';
+const { DirectoryTree } = Tree;
+const { TabPane } = Tabs;
 
-const {DirectoryTree} = Tree;
-const {TabPane} = Tabs;
-
-const MetaDataContainer: React.FC<{}> = (props: any) => {
+const MetaDataContainer: React.FC<DataSourceProps> = (props: any) => {
+  const { values, modalVisible, getDBConfigInfo } = props
 
   let [database, setDatabase] = useState<[{
     id: number,
@@ -70,19 +71,23 @@ const MetaDataContainer: React.FC<{}> = (props: any) => {
     time: ''
   }]);
   const [databaseId, setDatabaseId] = useState<number>();
-  const [treeData, setTreeData] = useState<{ tables: [], updateTime: string }>({tables: [], updateTime: "none"});
+  const [treeData, setTreeData] = useState<{ tables: [], updateTime: string }>({ tables: [], updateTime: "none" });
   const [schemeList, setSchemeList] = useState<{}>({});
   const [row, setRow] = useState<TreeDataNode>();
   const [loadingDatabase, setloadingDatabase] = useState(false);
   const [tableChecked, setTableChecked] = useState(true);
-
+  const idRef = useRef<number>()
   const fetchDatabaseList = async () => {
     const res = getData('api/database/listEnabledAll');
     await res.then((result) => {
       database = result.datas;
     });
+    // (values && values.length) ? setDatabase(values) : setDatabase(database)
     setDatabase(database);
   };
+  const fetchDataBaseByNode = () => {
+    setDatabase(values);
+  }
 
   const fetchDatabase = async (databaseId: number) => {
     setloadingDatabase(true);
@@ -95,34 +100,35 @@ const MetaDataContainer: React.FC<{}> = (props: any) => {
         for (let i = 0; i < tables.length; i++) {
           tables[i].title = tables[i].name;
           tables[i].key = tables[i].name;
-          tables[i].icon = <DatabaseOutlined/>;
+          tables[i].icon = <DatabaseOutlined />;
           tables[i].children = tables[i].tables;
 
           for (let j = 0; j < tables[i].children.length; j++) {
             tables[i].children[j].title = tables[i].children[j].name;
             tables[i].children[j].key = tables[i].name + '.' + tables[i].children[j].name;
-            tables[i].children[j].icon = <TableOutlined/>;
+            tables[i].children[j].icon = <TableOutlined />;
             tables[i].children[j].isLeaf = true;
             tables[i].children[j].schema = tables[i].name;
             tables[i].children[j].table = tables[i].children[j].name;
           }
         }
 
-        setTreeData({tables: tables, updateTime: result.time});
+        setTreeData({ tables: tables, updateTime: result.time });
       } else {
-        setTreeData({tables: [], updateTime: "none"});
+        setTreeData({ tables: [], updateTime: "none" });
       }
     });
     setloadingDatabase(false);
   };
 
   useEffect(() => {
-    fetchDatabaseList();
+    modalVisible ? fetchDataBaseByNode() : fetchDatabaseList();
   }, []);
 
   const onChangeDataBase = (value: string | number) => {
     onRefreshTreeData(Number(value));
-    setRow(null);
+    setRow(undefined);
+    idRef.current = Number(value)
   };
 
   const refeshDataBase = (value: string | number) => {
@@ -146,40 +152,40 @@ const MetaDataContainer: React.FC<{}> = (props: any) => {
 
   const buildDatabaseBar = () => {
     return database.map((item) => {
-        return {
-          label: (
-            <Card className={styles.headerCard}
-                  hoverable={false} bordered={false}>
-              <Row>
-                <Col span={11}>
-                  <Image style={{float: "left", paddingRight: "10px"}}
-                         height={50}
-                         preview={false}
-                         src={getDBImage(item.type)}
-                         fallback={FALLBACK}
-                  />
-                </Col>
-                <Col span={11}>
-                  <div>
-                    <p>{item.name}</p>
-                    <Tag color="blue" key={item.groupName}>
-                      {item.groupName}
-                    </Tag>
-                    {(item.status) ?
-                      (<Tag icon={<CheckCircleOutlined/>} color="success">
-                        {l('global.table.status.normal')}
-                      </Tag>) :
-                      <Tag icon={<ExclamationCircleOutlined/>} color="warning">
-                        {l('global.table.status.abnormal')}
-                      </Tag>}
-                  </div>
-                </Col>
-              </Row>
-            </Card>
-          ),
-          value: item.id,
-        }
+      return {
+        label: (
+          <Card className={styles.headerCard}
+            hoverable={false} bordered={false}>
+            <Row>
+              <Col span={11}>
+                <Image style={{ float: "left", paddingRight: "10px" }}
+                  height={50}
+                  preview={false}
+                  src={getDBImage(item.type)}
+                  fallback={FALLBACK}
+                />
+              </Col>
+              <Col span={11}>
+                <div>
+                  <p>{item.name}</p>
+                  <Tag color="blue" key={item.groupName}>
+                    {item.groupName}
+                  </Tag>
+                  {(item.status) ?
+                    (<Tag icon={<CheckCircleOutlined />} color="success">
+                      {l('global.table.status.normal')}
+                    </Tag>) :
+                    <Tag icon={<ExclamationCircleOutlined />} color="warning">
+                      {l('global.table.status.abnormal')}
+                    </Tag>}
+                </div>
+              </Col>
+            </Row>
+          </Card>
+        ),
+        value: item.id,
       }
+    }
     )
   };
 
@@ -188,13 +194,13 @@ const MetaDataContainer: React.FC<{}> = (props: any) => {
       if (item.id == databaseId) {
         return (
           <div>
-            <div style={{position: "absolute", right: "10px"}}>
+            <div style={{ position: "absolute", right: "10px" }}>
               <Button type="link" size="small"
-                      loading={loadingDatabase}
-                      onClick={() => {
-                        refeshDataBase(databaseId)
-                        setTableChecked(true)
-                      }}
+                loading={loadingDatabase}
+                onClick={() => {
+                  refeshDataBase(databaseId)
+                  setTableChecked(true)
+                }}
               >{l('button.refresh')}</Button>
             </div>
             <div>{item.name}</div>
@@ -205,13 +211,18 @@ const MetaDataContainer: React.FC<{}> = (props: any) => {
     return (<div>{l('pages.metadata.NoDatabaseSelected')}</div>)
   }
 
+  const getDBInfo = (value: any) => {
+    getDBConfigInfo && getDBConfigInfo({ tableName: value.tableName, value: value.datas, id: idRef.current })
+
+  }
+
 
   return (
     <PageContainer title={false}>
       <div className={styles.headerBarContent}>
         <Segmented className={styles.headerBar}
-                   options={buildDatabaseBar()}
-                   onChange={onChangeDataBase}
+          options={buildDatabaseBar()}
+          onChange={onChangeDataBase}
         />
       </div>
       <div className={styles.container}>
@@ -220,21 +231,21 @@ const MetaDataContainer: React.FC<{}> = (props: any) => {
             <Spin spinning={loadingDatabase} delay={500}>
               <Card
                 type="inner"
-                bodyStyle={{padding: 0}}
+                bodyStyle={{ padding: 0 }}
               >
                 <Meta title={buildListTitle()}
-                      className={styles.tableListHead}
-                      description={"Last Update：" + treeData.updateTime}
+                  className={styles.tableListHead}
+                  description={"Last Update：" + treeData.updateTime}
                 />
                 {treeData.tables.length > 0 ? (
-                  <Scrollbars style={{height: 800}}>
+                  <Scrollbars style={{ height: 800 }}>
                     <DirectoryTree
                       showIcon
-                      switcherIcon={<DownOutlined/>}
+                      switcherIcon={<DownOutlined />}
                       treeData={treeData.tables}
                       onSelect={(
                         selectedKeys: Key[],
-                        {event, selected, node, selectedNodes, nativeEvent}
+                        { event, selected, node, selectedNodes, nativeEvent }
                       ) => {
                         showTableInfo(selected, node);
                         setTableChecked(false)
@@ -242,7 +253,7 @@ const MetaDataContainer: React.FC<{}> = (props: any) => {
                     />
                   </Scrollbars>
                 ) : (
-                  <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
+                  <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                 )}
               </Card>
             </Spin>
@@ -253,79 +264,79 @@ const MetaDataContainer: React.FC<{}> = (props: any) => {
               <div>
                 <Tabs defaultActiveKey="describe">
                   <TabPane disabled={tableChecked}
-                           tab={
-                             <span>
-                          <ReadOutlined/>
-                               {l('pages.metadata.Description')}
-                        </span>
-                           }
-                           key="describe"
+                    tab={
+                      <span>
+                        <ReadOutlined />
+                        {l('pages.metadata.Description')}
+                      </span>
+                    }
+                    key="describe"
                   >
                     <Divider orientation="left" plain>
                       {l('pages.metadata.TableInfo')}
                     </Divider>
                     {row ? (
-                      <Tables table={row}/>
+                      <Tables table={row} />
                     ) : (
-                      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
+                      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                     )}
                     <Divider orientation="left" plain>
                       {l('pages.metadata.FieldInformation')}
                     </Divider>
                     {row ? (
-                      <Columns dbId={databaseId} schema={row.schema} table={row.table}/>
+                      <Columns dbId={databaseId} schema={row.schema} table={row.table} getDBInfo={getDBInfo} />
                     ) : (
-                      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
+                      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                     )}
                   </TabPane>
 
-                  <TabPane disabled={tableChecked}
-                           tab={
-                             <span>
-                          <BarsOutlined/>
-                               {l('pages.metadata.DataSearch')}
-                        </span>
-                           }
-                           key="exampleData"
+                  {!modalVisible && <><TabPane disabled={tableChecked}
+                    tab={
+                      <span>
+                        <BarsOutlined />
+                        {l('pages.metadata.DataSearch')}
+                      </span>
+                    }
+                    key="exampleData"
                   >
                     {row ? (
-                      <TableData dbId={databaseId} schema={row.schema} table={row.table}/>
+                      <TableData dbId={databaseId} schema={row.schema} table={row.table} />
                     ) : (
-                      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
+                      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                     )}
                   </TabPane>
 
-                  <TabPane disabled={tableChecked}
-                           tab={
-                             <span>
-                          <ConsoleSqlOutlined/>
-                               {l('pages.metadata.GenerateSQL')}
+                    <TabPane disabled={tableChecked}
+                      tab={
+                        <span>
+                          <ConsoleSqlOutlined />
+                          {l('pages.metadata.GenerateSQL')}
                         </span>
-                           }
-                           key="sqlGeneration"
-                  >
-                    {row ? (
-                      <Generation dbId={databaseId} schema={row.schema} table={row.table}/>
-                    ) : (
-                      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
-                    )}
-                  </TabPane>
+                      }
+                      key="sqlGeneration"
+                    >
+                      {row ? (
+                        <Generation dbId={databaseId} schema={row.schema} table={row.table} />
+                      ) : (
+                        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                      )}
+                    </TabPane>
 
-                  <TabPane disabled={tableChecked}
-                           tab={
-                             <span>
+                    <TabPane disabled={tableChecked}
+                      tab={
+                        <span>
                           <LaptopOutlined />
-                               {l('pages.metadata.Console')}
+                          {l('pages.metadata.Console')}
                         </span>
-                           }
-                           key="Console"
-                  >
-                    {schemeList ? (
-                      <Console dbId={databaseId} schemeList={schemeList} database={database} />
-                    ) : (
-                      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
-                    )}
-                  </TabPane>
+                      }
+                      key="Console"
+                    >
+                      {schemeList ? (
+                        <Console dbId={databaseId} schemeList={schemeList} database={database} />
+                      ) : (
+                        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                      )}
+                    </TabPane></>}
 
                 </Tabs>
               </div>

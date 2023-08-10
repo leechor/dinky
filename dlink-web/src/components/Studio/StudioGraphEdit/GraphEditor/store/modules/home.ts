@@ -59,7 +59,31 @@ interface GraphEditorData {
   graphTabs: GroupTabItem[],
   unSelectedCellIds: UnselectedCell[]
   position: Position,
-  verifyOperatorData: []
+  verifyOperDatas: [],
+  previewInfo: {
+    values: string,
+    node: Node | null,
+    isShow: boolean
+  },
+  dataSourceInfo: {
+    isShowModal: false,
+    datas: any,
+    node: Node | null,
+    type: string,
+  },
+  groupNameInfo: {
+    isShowGroupNameModal: boolean,
+    node: Node | null,
+    type: 'ADD' | 'CHANGE'
+  },
+  stencilMenuInfo: {
+    x: number, y: number, showStencilMenu: boolean, node: null | Node
+  },
+  postionToGroup: {
+    x: number,
+    y: number,
+    isFullScreen: boolean,
+  }
 
 }
 const initialState: GraphEditorData = {
@@ -82,7 +106,27 @@ const initialState: GraphEditorData = {
   }],
   unSelectedCellIds: [],
   position: { x: 0, y: 0 },
-  verifyOperatorData: [],
+  verifyOperDatas: [],
+  previewInfo: { values: "", node: null, isShow: false },
+  dataSourceInfo: {
+    isShowModal: false,
+    datas: null,
+    node: null,
+    type: "",
+  },
+  groupNameInfo: {
+    isShowGroupNameModal: false,
+    node: null,
+    type: "ADD"
+  },
+  stencilMenuInfo: {
+    x: 0, y: 0, showStencilMenu: false, node: null
+  },
+  postionToGroup: {
+    x: 0,
+    y: 0,
+    isFullScreen: false,
+  }
 
 }
 const homeSlice = createSlice({
@@ -99,6 +143,7 @@ const homeSlice = createSlice({
     },
     //初始化算子参数stencil
     initOperatorParameters(state, { payload }) {
+      
       state.operatorParameters = payload;
     },
     //保存当前选中的节点信息
@@ -120,8 +165,8 @@ const homeSlice = createSlice({
       state.editor = payload
     },
 
-    addGraphTabs(state, {payload}) {
-      state.graphTabs.push({groupCellId: payload.groupCellId,})
+    addGraphTabs(state, { payload }) {
+      state.graphTabs.push({ groupCellId: payload.groupCellId, })
     },
 
     removeGraphTabs(state, { payload }) {
@@ -143,8 +188,23 @@ const homeSlice = createSlice({
       state.position = payload
     },
     changeVerifyOperDatas(state, { payload }) {
-
       state.verifyOperDatas = payload
+    },
+    changePreviewInfo(state, { payload }) {
+      state.previewInfo = payload
+    },
+    changeDataSourceInfo(state, { payload }) {
+      state.dataSourceInfo = payload
+    },
+    changeGroupNameInfo(state, { payload }) {
+      state.groupNameInfo = payload
+    },
+    changeStencilMenuInfo(state, { payload }) {
+      
+      state.stencilMenuInfo = payload
+    },
+    changePostionToGroup(state, { payload }) {
+      state.postionToGroup = payload
     }
   },
   extraReducers: {},
@@ -160,10 +220,15 @@ export const {
   changeCurrentSelectNodeParamsData,
   changeGraph,
   changeJsonEditor,
-
   addGraphTabs,
   removeGraphTabs,
   changePositon,
+  changeVerifyOperDatas,
+  changePreviewInfo,
+  changeDataSourceInfo,
+  changeGroupNameInfo,
+  changeStencilMenuInfo,
+  changePostionToGroup
 } = homeSlice.actions;
 
 export default homeSlice.reducer;

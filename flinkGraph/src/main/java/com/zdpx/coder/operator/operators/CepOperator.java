@@ -159,15 +159,16 @@ public class CepOperator extends Operator {
             columns = inputPortObject.getConnection().getFromPort().getPseudoData().getColumns();
         }
 
-        @SuppressWarnings("unchecked")
-        List<FieldFunction> ffs =
-                FieldFunction.analyzeParameters(
-                        tableName, (List<Map<String, Object>>) parameters.get(COLUMNS), false, columns); //根据匹配成功的输入事件构造输出事件,字段名不加表名
-
         Object outputTableName = parameters.get(TABLE_NAME);
         if (outputTableName == null || outputTableName.equals("")) {
             outputTableName = NameHelper.generateVariableName("CepOperator");
         }
+
+        List<Map<String, Object>> config = formatProcessing(parameters);
+        @SuppressWarnings("unchecked")
+        List<FieldFunction> ffs =
+                FieldFunction.analyzeParameters(
+                        outputTableName.toString(), (List<Map<String, Object>>) parameters.get(COLUMNS), false, columns,config); //根据匹配成功的输入事件构造输出事件,字段名不加表名
 
         //4 定义匹配成功后的输出方式  ONE ROW PER MATCH/ALL ROWS PER MATCH
         String outPutMode = (String) parameters.get(OUT_PUT_MODE);
@@ -197,7 +198,7 @@ public class CepOperator extends Operator {
 
         parameterMap.put(TABLE_INFO, tableInfo);
         parameterMap.put(ID, parameters.get(ID));
-        parameterMap.put(CONFIG,formatProcessing(parameters));
+        parameterMap.put(CONFIG,config);
 
         return parameterMap;
     }
@@ -215,14 +216,12 @@ public class CepOperator extends Operator {
         CheckInformationModel model = new CheckInformationModel();
         model.setOperatorId(map.get(ID).toString());
         model.setColor(GREEN);
-        model.setTableName(map.get(INPUT_TABLE_NAME).toString());
+        model.setTableName(map.get(OUTPUT_TABLE_NAME).toString());
         List<String> edge = new ArrayList<>();
 
         Map<String, List<String>> portInformation = new HashMap<>();
         List<String> list = new ArrayList<>();
-        List<Column> collect = ((TableInfo) map.get(TABLE_INFO)).getColumns().stream()
-                 .filter(item -> item.getType()!=null)
-                 .filter(item -> item.getType().contains("TIMESTAMP")).collect(Collectors.toList());
+        List<Column> collect = ((TableInfo) map.get(TABLE_INFO)).getColumns().stream().filter(item -> item.getType()!=null&&item.getType().contains("TIMESTAMP")).collect(Collectors.toList());
         if (collect.isEmpty()) {
             list.add("CEP算子入参需要包含时间属性字段，类型包括TIMESTAMP(3)、TIMESTAMP_LTZ(3)等");
         }else{

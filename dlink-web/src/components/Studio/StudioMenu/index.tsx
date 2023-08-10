@@ -87,7 +87,7 @@ import { useAppSelector, useAppDispatch } from '@/components/Studio/StudioGraphE
 import { JSONEditor } from '@json-editor/json-editor';
 import localcache from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/localStorage"
 import { Graph } from '@antv/x6';
-import verifyOperator from '../StudioGraphEdit/GraphEditor/utils/verifyOperator'; 
+import verifyOperator, { setOriginColor } from '../StudioGraphEdit/GraphEditor/utils/verifyOperator';
 
 const StudioMenu = (props: any) => {
   const {
@@ -378,9 +378,10 @@ const StudioMenu = (props: any) => {
   };
 
   const saveSqlAndSettingToTask = () => {
-    
+
     //校验
     if (current.task.dialect !== "FlinkSql") {
+      
       if (editor instanceof JSONEditor<any>) {
         const errors = editor.validate()
         if (errors.length) {
@@ -391,6 +392,7 @@ const StudioMenu = (props: any) => {
           message.warning(errmsg + "-检查算子节点信息")
         } else {
           if (graph instanceof Graph) {
+            setOriginColor(graph)
             props.saveTask(current, JSON.stringify(graph.toJSON()));
           }
 

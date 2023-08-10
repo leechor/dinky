@@ -33,8 +33,9 @@ import StudioGraphEdit from '@/components/Studio/StudioGraphEdit';
 const { TabPane } = Tabs;
 
 const EditorTabs = (props: any) => {
-  
+
   const { tabs, current, toolHeight, width, height } = props;
+
   const onChange = (activeKey: any) => {
     props.saveToolHeight(toolHeight);
     props.changeActiveKey(activeKey);
@@ -78,7 +79,7 @@ const EditorTabs = (props: any) => {
   };
 
   const menu = (pane) => (
-  
+
     <Menu onClick={(e) => handleClickMenu(e, pane)}>
       <Menu.Item key="CLOSE_ALL">
         <span>{l('right.menu.closeAll')}</span>
@@ -109,7 +110,7 @@ const EditorTabs = (props: any) => {
 
   // as different dialet return different Panle
   const getTabPane = (pane, i) => {
-    
+
     if (pane.task.dialect == DIALECT.KUBERNETES_APPLICATION) {
       return (
         <TabPane tab={Tab(pane)} key={pane.key} closable={pane.closable}>
@@ -130,9 +131,7 @@ const EditorTabs = (props: any) => {
           closable={pane.closable}
           style={{ width: '100%', height: '100%' }}
         >
-          <StudioGraphEdit
-            
-          ></StudioGraphEdit>
+          <StudioGraphEdit />
         </TabPane>
       );
     } else {

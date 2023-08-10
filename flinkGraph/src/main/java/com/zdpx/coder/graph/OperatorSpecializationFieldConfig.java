@@ -59,8 +59,12 @@ public class OperatorSpecializationFieldConfig {
     public static final String FLAG = "flag";
     //字段名称
     public static final String NAME = "name";
+    //中间算子别名
+    public static final String OUT_NAME = "outName";
     //字段类型
     public static final String TYPE = "type";
+    //原始嵌套的函数字段
+    public static final String FUNCTION = "function";
     //使用到的函数
     public static final String FUNCTION_NAME = "functionName";
 
@@ -83,6 +87,8 @@ public class OperatorSpecializationFieldConfig {
     //自定义数据源中自定义参数的值
     public static final String VALUES = "values";
 
+    //hints动态表功能增强
+    public static final String OPTIONS = "options";
 
     /**
      * 函数字段名常量

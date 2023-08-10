@@ -115,46 +115,85 @@ public class FieldFunction extends OperatorSpecializationFieldConfig {
      * @param fos 字段配置信息
      * @return 方法定义
      */
-    static FieldFunction processFieldConfigure(String tableName, Map<String, Object> fos , boolean flag) {
+    static FieldFunction processFieldConfigure(String tableName, Map<String, Object> fos, boolean flag, List<Map<String, Object>> inputColumns) {
+
         FieldFunction fo = new FieldFunction();
-        fo.setOutName(fos.get(NAME).equals("")? null:(String) fos.get(NAME));
-        fo.setFunctionName(fos.get(FUNCTION_NAME).equals("") ? null :(String) fos.get(FUNCTION_NAME) );
-        fo.setDelimiter((String) fos.get("delimiter"));
+        fo.setOutName(fos.get(OUT_NAME).equals("")? null:(String) fos.get(OUT_NAME));
+        fo.setDelimiter((String) fos.get("delimiter"));//此字段可以去掉
+
         @SuppressWarnings("unchecked")
-        List<Object> fieldParameters = (List<Object>) fos.get(PARAMETERS);
-
-        if (fieldParameters == null) {
-            fo.setOutName(insertTableName(tableName, fo, fo.getOutName(),flag));
-            return fo;
-        }
-
-        List<Object> result = new ArrayList<>();
-        for (Object fieldParameter : fieldParameters) {
-            if (fieldParameter instanceof Map) {
-                // 表示函数需要递归处理 todo 未实现递归
-                @SuppressWarnings("unchecked")
-                Map<String, Object> fp = (Map<String, Object>) fieldParameter;
-                result.add(processFieldConfigure(tableName, fp,flag));
-            } else if (fieldParameter instanceof String) {
-                String field = (String) fieldParameter;
-                field = insertTableName(tableName, fo, field,flag);
-                result.add(field);
-            } else {
-                result.add(fieldParameter);
-            }
-        }
-        fo.setParameters(result);
+        List<Map<String, Object>> columns = ((List<Map<String, Object>>) fos.get(FUNCTION));
+        fo.setFunctionName(pretreatment(tableName, columns, flag,inputColumns,new StringBuffer()).toString());
 
         return fo;
+    }
+
+    public static StringBuffer pretreatment(String tableName, List<Map<String, Object>> recursion, boolean flag, List<Map<String, Object>> inputColumns,StringBuffer str) {
+
+        for(Map<String, Object> inputName : recursion){
+
+            Object functionName = inputName.get(FUNCTION_NAME);
+            if(functionName!=null&&!functionName.equals("")){
+                str.append(functionName).append("(");
+            }
+
+            //到达最内层时
+            @SuppressWarnings("unchecked")
+            List<String> n1 = ((List<String>)inputName.get(NAME));
+            if(n1!=null&&!n1.isEmpty()){
+                for(String n : n1){
+                    String input= n ;
+                    if(inputColumns!=null){
+                        for(Map<String, Object> map : inputColumns){//出现在输入连接桩中的字段，设置表名称
+                            if(map.get(NAME).equals(n)){
+                                input = insertTableName(tableName,n,flag,functionName);
+                            }
+                        }
+                    }
+                    if(n1.get(n1.size()-1).equals(n)){
+                        str.append(input).append(",");
+                        break;
+                    }
+                    str.append(input).append(",");
+                }
+            }
+
+            //1、当 recursionFunc 不为空时，需要进行递归
+            if(!inputName.get("recursionFunc").toString().equals("[]")){
+                str.append(separator(functionName , str , true));
+                @SuppressWarnings("unchecked")
+                List<Map<String, Object>> recursionFunc = ((List<Map<String, Object>>)inputName.get("recursionFunc"));
+                str = pretreatment(tableName,recursionFunc,flag,inputColumns,str);
+                if(functionName!=null&&!functionName.equals("")){
+                    if(str.toString().endsWith(",")){
+                        str.deleteCharAt(str.length()-1);
+                    }
+                    str.append(")");
+                }
+            }
+
+            //2、当 recursionName 不为空时，需要进行递归
+            if(!inputName.get("recursionName").toString().equals("[]")){
+                str.append(separator(functionName , str, true));
+                @SuppressWarnings("unchecked")
+                List<Map<String, Object>> recursionFunc = ((List<Map<String, Object>>)inputName.get("recursionName"));
+                str = pretreatment(tableName,recursionFunc,flag,inputColumns,str);
+                if(functionName!=null&&!functionName.equals("")){
+                    if(str.toString().endsWith(",")){
+                        str.deleteCharAt(str.length()-1);
+                    }
+                    str.append(")");
+                }
+            }
+        }
+        return str;
     }
 
     /**
      * @param flag 是否需要在列明前增加表名
      * */
-    public static String insertTableName(String primaryTableName, FieldFunction fo, String param , boolean flag) {
-        boolean notAt = !param.startsWith("@")
-                && fo != null
-                && Strings.isNotEmpty(fo.getFunctionName());
+    public static String insertTableName(String primaryTableName, String param , boolean flag ,Object functionName) {
+        boolean notAt = !param.startsWith("@");
 
         if (notAt || Strings.isBlank(primaryTableName)) {
             return param;
@@ -185,34 +224,51 @@ public class FieldFunction extends OperatorSpecializationFieldConfig {
      * @return {@link FieldFunction}形式的字段处理定义
      */
     public static List<FieldFunction> analyzeParameters(
-            String primaryTableName, List<Map<String, Object>> funcs ,boolean flag ,List<Column> inputColumn) {
+            String primaryTableName, List<Map<String, Object>> funcs ,boolean flag ,List<Column> inputColumn, List<Map<String, Object>> inputColumns) {
         List<FieldFunction> fieldFunctions = new ArrayList<>();
         for (Map<String, Object> fos : funcs) {//此处过滤掉未选中的节点
             if((boolean)fos.get(FLAG)){
-                FieldFunction fo = processFieldConfigure(primaryTableName, fos ,flag);
-                fo.setOutType(typeInference(inputColumn, fo,fos));
+                FieldFunction fo = processFieldConfigure(primaryTableName, fos ,flag, inputColumns);
+                fo.setOutType(typeInference(inputColumn, fo,inputColumns));
                 fieldFunctions.add(fo);
             }
         }
         return fieldFunctions;
     }
 
-    public static String typeInference(List<Column> inputColumn,FieldFunction fo,Map<String, Object> list){
+    public static String typeInference(List<Column> inputColumn,FieldFunction fo, List<Map<String, Object>> config){
         if(!inputColumn.isEmpty()&&fo.getOutType()==null){
-            @SuppressWarnings("unchecked")
-            List<String> l = (List<String>)list.get(PARAMETERS);
-            if(l.size()==1){
-                for(Column c :inputColumn){
-                    if(c.getName().equals(l.get(0))){
-                         return c.getType();
-                    }
+
+            for(Column c :inputColumn){//当没有定义函数时，优先使用上一级名称
+                if(c.getName().equals(fo.getFunctionName())){
+                    return c.getType();
+                }
+            }
+            for(Map<String, Object> cof : config){//其次，使用用户设置的类型
+                if(cof.get(NAME).equals(fo.getFunctionName())){
+                    return cof.get(TYPE).toString();
                 }
             }
         }
-        return null;
+        return null;//都不匹配，无法确定类型
     }
 
-    // region g/s
+    public static String separator(Object sep,StringBuffer str ,boolean flag){
+        String separator = "";
+
+        if(sep!=null&&!sep.equals("")){
+
+            if("to_timestamp".compareToIgnoreCase(sep.toString())==0){
+                separator=" AS ";
+            }else if(str.toString().endsWith("(") && flag){
+                return "";
+            }else{
+                separator=",";
+            }
+        }
+
+        return separator;
+    }
 
     public String getOutType() {
         return outType;

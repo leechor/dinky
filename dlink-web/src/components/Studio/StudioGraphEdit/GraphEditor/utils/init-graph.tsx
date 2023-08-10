@@ -1,20 +1,67 @@
-import {Cell, Dom, Edge, Graph, Model, Node, Shape} from '@antv/x6';
+import { Cell, Dom, Edge, Graph, Model, Node, Shape } from '@antv/x6';
 import loadPlugin from './plugin';
-import {removeBtnEdgeRegister, removeBtnNodeRegister} from './remove-btn-register';
-import CustomShape, {PreNodeInfo} from './cons';
+import { removeBtnEdgeRegister, removeBtnNodeRegister } from './remove-btn-register';
+import CustomShape, { PreNodeInfo } from './cons';
+import store from '../store';
 import {
   addGraphTabs,
   changeCurrentSelectNode,
   changeCurrentSelectNodeName,
   changeGraph,
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
-import store from '../store';
 import React from 'react';
 import {
   getGraphViewSize,
   getPointsBox,
   PreNodeRect, shrinkGroupNode
 } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper";
+import { getCustomGroupInfo } from '@/components/Common/crud';
+import { warningTip } from '../views/home/cpns/left-editor';
+
+const cloneSubCells = (cell: Cell, graph: Graph) => {
+  if (cell.shape == CustomShape.GROUP_PROCESS && cell.prop().name && cell.prop().isStencil !== undefined) {
+    let addedCells: Cell[] = [];
+    let addedGroup: Cell;
+    //请求该节点对应参数
+    getCustomGroupInfo(`/api/zdpx/customer/${cell.prop().name!}`).then(res => {
+      if (res.code === 0) {
+        graph.removeCell(cell)
+        const { cells } = JSON.parse(res.datas);
+        cells.map((c: Cell) => {
+          if (c.shape === "edge") {
+            const edge = graph.addEdge(c)
+            addedCells.push(edge)
+          } else {
+            const node = graph.addNode(c as Node)
+            if (node.shape === CustomShape.GROUP_PROCESS && !node.hasParent()) {
+              node.prop("name", cell.prop().name!)
+              const { x, y } = (cell as Node).position();
+              node.setPosition(x, y, { relative: true, deep: true });
+              node.prop(PreNodeInfo.PREVIOUS_NODE_RECT, { ...node.position({ relative: true }), ...node.size() })
+              //将新增组节点设置为当前组节点的子节点
+              const tabs = store.getState().home.graphTabs
+              const currentGroupId = tabs[tabs.length - 1];
+              if (currentGroupId.groupCellId) {
+                const currentGroup = graph.getCellById(currentGroupId.groupCellId);
+                currentGroup.insertChild(node)
+              }
+              addedGroup = node;
+              addedCells.push(node)
+            }
+          }
+        })
+        //克隆子图，删除原先子图
+        const clonedCells = graph.cloneSubGraph([addedGroup], { deep: true })
+        Object.values(clonedCells).forEach(cell => {
+          graph.addCell(cell)
+        })
+        graph.removeCells(addedCells)
+
+      }
+      warningTip(res.code, res.msg)
+    })
+  }
+}
 
 /**
  *
@@ -86,7 +133,7 @@ export const initGraph = (
       },
 
       // 在移动边的时候判断连接是否有效，如果返回 false，当鼠标放开的时候，不会连接到当前元素，否则会连接到当前元素
-      validateConnection({sourceMagnet, targetMagnet}) {
+      validateConnection({ sourceMagnet, targetMagnet }) {
 
         if (!targetMagnet || !sourceMagnet) return false;
 
@@ -164,7 +211,7 @@ export const initGraph = (
 
   }
 
-  graph.on('node:mouseenter', ({cell}) => {
+  graph.on('node:mouseenter', ({ cell }) => {
     if (cell.isNode() && cell.hasPorts()) {
       showAllPorts(true);
     }
@@ -176,13 +223,13 @@ export const initGraph = (
         args: {
           x: 0,
           y: 0,
-          offset: {x: 0, y: 0},
+          offset: { x: 0, y: 0 },
         },
       },
     ]);
   });
 
-  graph.on('node:mouseleave', ({cell}) => {
+  graph.on('node:mouseleave', ({ cell }) => {
     // showAllPorts(false);
 
     //移除删除工具
@@ -198,7 +245,7 @@ export const initGraph = (
     edge.getTargetNode()?.setPortProp(edge.getTargetPortId()!, VISIBILITY_PATH, visibility);
   }
 
-  graph.on('edge:mouseenter', ({e, view, edge, cell}) => {
+  graph.on('edge:mouseenter', ({ e, view, edge, cell }) => {
 
     // edge.attr(LINE_STOKE_WIDTH, 4);
     // showEdgePorts(edge, true);
@@ -212,64 +259,67 @@ export const initGraph = (
       },
     ]);
   });
-  graph.on('edge:mouseleave', ({e, view, edge, cell}) => {
+  graph.on('edge:mouseleave', ({ e, view, edge, cell }) => {
     // edge.setAttrByPath(LINE_STOKE_WIDTH, 2);
     // showEdgePorts(edge, false);
     edge.removeTools();
   });
 
-  graph.on('node:selected', ({node}) => {
-    dispatch(changeCurrentSelectNode(node));
-    dispatch(changeCurrentSelectNodeName(node.shape));
+  graph.on('node:selected', ({ node }) => {
+    console.log(node.shape === CustomShape.GROUP_PROCESS);
 
-    //深拷贝,数组要改变地址子组件才能监听到变化
-    selectedNodes.push(node);
-    setSelectedNodes([...selectedNodes]);
     //组节点放大后不允许选择
     if (node.shape === CustomShape.GROUP_PROCESS
       && (node.getSize().height >= graph.getGraphArea().height
         || node.getSize().width >= graph.getGraphArea().height)) {
       graph.unselect(node)
+    } else {
+      dispatch(changeCurrentSelectNode(node));
+      dispatch(changeCurrentSelectNodeName(node.shape));
+
+      //深拷贝,数组要改变地址子组件才能监听到变化
+      selectedNodes.push(node);
+      setSelectedNodes([...selectedNodes]);
     }
   });
 
   //右键菜单
-  graph.on('node:contextmenu', ({cell, e}) => {
+  graph.on('node:contextmenu', ({ cell, e }) => {
     const p = graph.clientToGraph(e.clientX, e.clientY);
   });
 
-  graph.on('blank:contextmenu', ({e}) => {
+  graph.on('blank:contextmenu', ({ e }) => {
     const p = graph.clientToGraph(e.clientX, e.clientY);
   });
 
-  graph.on('node:collapse', ({cell: node}: any) => {
+  graph.on('node:collapse', ({ cell: node }: any) => {
     node.toggleCollapse(node.isCollapsed());
   });
 
   //群组大小自适应处理
   let ctrlPressed = false;
-  graph.on('node:embedding', ({e}: { e: Dom.MouseMoveEvent }) => {
+  graph.on('node:embedding', ({ e }: { e: Dom.MouseMoveEvent }) => {
   });
 
-  graph.on('node:embedded', ({node, currentParent}) => {
+  graph.on('node:embedded', ({ node, currentParent }) => {
     ctrlPressed = false;
     //设置父节点zindex小于子节点
     currentParent?.toBack();
   });
 
-  graph.on('node:change:size', ({node, options}) => {
+  graph.on('node:change:size', ({ node, options }) => {
     if (options.skipParentHandler) {
       return;
     }
   });
 
-  graph.on('node:change:position', ({node, options}) => {
+  graph.on('node:change:position', ({ node, options }) => {
     if (options.skipParentHandler || ctrlPressed) {
       return;
     }
   });
 
-  graph.on('node:resizing', ({node}) => {
+  graph.on('node:resizing', ({ node }) => {
     node.setAttrs({
       image: {
         width: node.size().width,
@@ -287,7 +337,7 @@ export const initGraph = (
   });
 
   //节点/边被选中时触发。
-  graph.on('cell:selected', ({cell}: { cell: Cell }, options: Model.SetOptions) => {
+  graph.on('cell:selected', ({ cell }: { cell: Cell }, options: Model.SetOptions) => {
     //节点被选中时隐藏连接桩
     const ports = container.querySelectorAll('.x6-port-body');
     showPortsOrLabels(ports, false);
@@ -296,23 +346,24 @@ export const initGraph = (
       console.log(cell.id, 'groupid');
     }
 
+    window.cell = cell;
 
   });
 
-  graph.on('cell:added', ({cell, index, options}) => {
+  graph.on('cell:added', ({ cell }) => {
     //更新表格数据
     if (cell.shape === 'package') {
       cell.setZIndex(-1);
     }
-
+    cloneSubCells(cell, graph)
     // updateGraphData(graph);
   });
 
-  graph.on('cell:removed', ({cell, index, options}) => {
+  graph.on('cell:removed', ({ cell, index, options }) => {
     // updateGraphData(graph);
   });
 
-  graph.on("node:mousemove", ({node, x, y}) => {
+  graph.on("node:mousemove", ({ node, x, y }) => {
   })
 
   function extendGroupNode(groupNode: Node<Node.Properties>) {
@@ -321,7 +372,7 @@ export const initGraph = (
       return;
     }
 
-    dispatch(addGraphTabs({groupCellId: groupNode.id, layer: 1}))
+    dispatch(addGraphTabs({ groupCellId: groupNode.id, layer: 1 }))
 
     graph.getCells().forEach(cell => {
       cell.hide()
@@ -333,7 +384,7 @@ export const initGraph = (
 
     //隐藏组节点, 先显示, 再隐藏, 否则会导致子节点无法显示
     groupNode.show()
-    groupNode.setAttrs({fo: {visibility: "hidden"}})
+    groupNode.setAttrs({ fo: { visibility: "hidden" } })
 
     let children = groupNode.getChildren() ?? [];
     if (!children.length) {
@@ -367,10 +418,10 @@ export const initGraph = (
     groupNode.setPosition(
       groupNode.position().x + graphViewBox.width,
       groupNode.position().y + graphViewBox.height,
-      {relative: true, deep: true});
+      { relative: true, deep: true });
 
-    groupNode.resize(graphViewBox.width / 2, graphViewBox.height / 2, {direction: 'top-left'});
-    groupNode.resize(graphViewBox.width, graphViewBox.height, {direction: 'bottom-right'});
+    groupNode.resize(graphViewBox.width / 2, graphViewBox.height / 2, { direction: 'top-left' });
+    groupNode.resize(graphViewBox.width, graphViewBox.height, { direction: 'bottom-right' });
 
     graph.centerCell(groupNode)
     groupNode.toBack();
@@ -386,13 +437,13 @@ export const initGraph = (
     children?.forEach(item => {
       if (item.isNode()) {
         const preNodeRect = item.prop(PreNodeInfo.PREVIOUS_NODE_RECT) as PreNodeRect
-        const {x: localX, y: localY} = graph.clientToLocal(graphViewBox.x, graphViewBox.y)
+        const { x: localX, y: localY } = graph.clientToLocal(graphViewBox.x, graphViewBox.y)
         const x = (graphViewBox.width - preChildrenBox.width) / 2 + (preNodeRect.x - preChildrenBox.x) + localX
         const y = (graphViewBox.height - preChildrenBox.height) / 2 + (preNodeRect.y - preChildrenBox.y) + localY
         item.setPosition(x, y)
 
         if (item.shape === CustomShape.GROUP_PROCESS) {
-          item.setAttrs({fo: {visibility: "visible"}})
+          item.setAttrs({ fo: { visibility: "visible" } })
         }
       }
 
@@ -402,15 +453,18 @@ export const initGraph = (
 
   }
 
-  graph.on('node:dblclick', ({node, e, view}) => {
+  graph.on('node:dblclick', ({ node, e, view }) => {
     extendGroupNode(node);
   });
 
-  graph.on("edge:click", ({edge}) => {
+  graph.on("edge:click", ({ edge }) => {
     console.log(edge.id, "edgeid");
+    window.edge = edge;
 
   })
 
   dispatch(changeGraph(graph));
   return graph;
 };
+
+

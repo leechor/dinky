@@ -25,6 +25,7 @@
 					"properties": {
 						"order": {
 							"description": "字段名称",
+							"pattern":"^[A-Za-z0-9_]*$",
 							"type": "string"
 						},
 						"sort": {
@@ -46,6 +47,7 @@
 				"maxItems": 2,
 				"items": {
 				   "type": "string",
+				   "pattern":"^[A-Za-z0-9_]*$",
 				   "minLength": 1
 				}
 			},
@@ -68,6 +70,7 @@
 					},
 					"column": {
 						"type": "string",
+						"pattern":"^[A-Za-z0-9_]*$",
 						"minLength": 1
 					}
 				  },
@@ -116,11 +119,13 @@
 					},
 					"table": {
 						"type": "string",
+						"pattern":"^[A-Za-z0-9_]*$",
 						"description": "需要查询的表名称",
 						"enum":["current table"]
 					},
 					"descriptor": {
 						"type": "string",
+						"pattern":"^[A-Za-z0-9_]*$",
 						"description": "时间列名称，需要时间属性字段",
 						"minLength": 1
 					},
@@ -155,11 +160,13 @@
 					},
 					"table": {
 						"type": "string",
+						"pattern":"^[A-Za-z0-9_]*$",
 						"description": "需要查询的表名称",
 						"enum":["current table"]
 					},
 					"descriptor": {
 						"type": "string",
+						"pattern":"^[A-Za-z0-9_]*$",
 						"description": "时间列名称，需要时间属性字段",
 						"minLength": 1
 					},
@@ -216,6 +223,7 @@
 					},
 					"descriptor": {
 						"type": "string",
+						"pattern":"^[A-Za-z0-9_]*$",
 						"description": "时间列名称，需要时间属性字段",
 						"minLength": 1
 					},
@@ -258,31 +266,41 @@
 				}
 			  ]
 			},
-            "columns": {
+			
+			"options": {
+				"type": "object",
+				"description": "SQL hints 动态表选项(OPTIONS)*",
+				"properties": {
+					"key": {
+						"type": "string",
+						"pattern":"^[A-Za-z0-9-_.]*$"
+					},
+					"val": {
+						"pattern":"^[A-Za-z0-9-_.]*$",
+						"type": "string"
+					}
+				}
+            },
+			"columns": {
 				"type": "array",
 				"minItems": 1,
+				"title": "columns",
 				"items": {
 					"type": "object",
 					"title": "columns",
-					"description": "output field",
+					"description": " 设置输出字段 ",
 					"required": [
-						"parameters",
 						"flag"
 					],
 					"properties": {
-						"functionName": {
-							"type": "string"
-						},
 						"name": {
-							"type": "string"
+							"type": "string",
+							"pattern":"^[A-Za-z0-9_]*$",
+							"title": "outName"
 						},
 						"parameters": {
-							"type": "array",
-							"minItems": 1,
-							"items": {
-							   "type": "string",
-							   "minLength": 1
-							}
+						   "title": "inputName",
+						   "$ref": "#/inputName"
 						},
 						"flag":{
 							"type": "boolean",
@@ -291,6 +309,30 @@
 						}
 					}
 				}
-            }
-        }
+			}
+        },
+	   "inputName": {
+	   "type": "array",
+	   "maxItems": 1,
+		"items": {
+			"type": "object",
+			"properties": {
+				"functionName": {
+					"type": "string",
+					"title": "functionName"
+				},
+				"column": {
+					"type": "array",
+					"minItems": 1,
+					"items": {
+					   "type": "string"
+					}
+				},
+				"recursion": {
+				   "title": "recursion",
+				   "$ref": "#/inputName"
+				}
+			}
+		}
+	}
 }

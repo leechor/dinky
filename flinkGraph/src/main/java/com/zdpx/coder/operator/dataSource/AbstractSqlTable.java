@@ -120,12 +120,13 @@ public abstract class AbstractSqlTable extends Operator {
                 list.add("输入字段和输出表中指定的字段数量不匹配");
             }
             linkId = getInputPorts().get(portName).getConnection().getId();
-            TableInfo t = (TableInfo)getInputPorts().get(portName).getConnection().getFromPort().getPseudoData();
             //目前按顺序比较参数类型
-            List<Column> columns1 = t.getColumns();
-            for(int i=0;i<columns.size();i++){
-                if(!columns.get(i).get(TYPE).equals(columns1.get(i).getType())){
-                    list.add("输入字段和输出表中指定参数类型不匹配 ，参数名称： "+columns.get(i).get(NAME)+" 参数类型 ： "+ columns1.get(i).getType()+" -> "+columns.get(i).get(TYPE));
+            List<Column> columns1 = ((TableInfo)getInputPorts().get(portName).getConnection().getFromPort().getPseudoData()).getColumns();
+            if(columns1.size()==columns.size()){
+                for(int i=0;i<columns.size();i++){
+                    if(!columns.get(i).get(TYPE).equals(columns1.get(i).getType())){
+                        list.add("输入字段和输出表中指定参数类型不匹配 ，参数名称： "+columns.get(i).get(NAME)+" 参数类型 ： "+ columns1.get(i).getType()+" -> "+columns.get(i).get(TYPE));
+                    }
                 }
             }
         }
@@ -176,9 +177,7 @@ public abstract class AbstractSqlTable extends Operator {
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> other = (List<Map<String, Object>>) defineList.get(OTHER);
         if (other.size() > 0) {
-            for (Map<String, Object> m : other) {
-                defineList.put(m.get(KEY).toString(), m.get(VALUES));
-            }
+            other.forEach(m->defineList.put(m.get(KEY).toString(), m.get(VALUES)));
         }
         defineList.remove(OTHER);
         return defineList;
@@ -235,13 +234,13 @@ public abstract class AbstractSqlTable extends Operator {
         psFirst.remove(TABLE_NAME);
 
 
+        @SuppressWarnings("unchecked")
+        HashMap<String, Object> ps = (HashMap<String, Object>) result.get(PARAMETERS);
         for (Map.Entry<String, Object> m : psFirst.entrySet()) {
             if (m.getKey().equals(COLUMNS)) {
                 result.put(COLUMNS, m.getValue());
                 continue;
             }
-            @SuppressWarnings("unchecked")
-            HashMap<String, Object> ps = (HashMap<String, Object>) result.get(PARAMETERS);
             ps.put(m.getKey(), m.getValue());
         }
         if (parameterLists.size() > 1) {//文件中存在config

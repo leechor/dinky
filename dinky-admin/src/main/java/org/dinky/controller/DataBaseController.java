@@ -35,17 +35,11 @@ import org.dinky.service.DataBaseService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -156,6 +150,12 @@ public class DataBaseController {
     @GetMapping("/listEnabledAll")
     public Result<List<DataBase>> listEnabledAll() {
         List<DataBase> dataBases = databaseService.listEnabledAll();
+        return Result.succeed(dataBases);
+    }
+
+    @GetMapping("/listEnabledByType/{type}")
+    public Result<List<DataBase>> listEnabledByType(@PathVariable String type) {
+        List<DataBase> dataBases = databaseService.listEnabledAll().stream().filter(item->item.getType().compareToIgnoreCase(type)==0).collect(Collectors.toList());
         return Result.succeed(dataBases);
     }
 

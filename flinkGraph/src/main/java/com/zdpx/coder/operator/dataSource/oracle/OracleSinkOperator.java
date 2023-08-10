@@ -19,11 +19,7 @@
 
 package com.zdpx.coder.operator.dataSource.oracle;
 
-import com.zdpx.coder.graph.CheckInformationModel;
-import com.zdpx.coder.graph.InputPort;
 import com.zdpx.coder.graph.InputPortObject;
-import com.zdpx.coder.graph.PseudoData;
-import com.zdpx.coder.operator.TableInfo;
 import com.zdpx.coder.operator.dataSource.AbstractSqlTable;
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,6 +36,7 @@ public class OracleSinkOperator extends AbstractSqlTable {
     @Override
     protected void initialize() {
         getInputPorts().put(INPUT_0, new InputPortObject<>(this, INPUT_0));
+        this.type= "Oracle";
     }
 
     @Override

@@ -1,81 +1,81 @@
-.leftEditor {
-  width: 75%;
-  height: 100%;
-  display: flex;
-
-  .leftEditor-stencil {
-    width: 25%;
-    position: relative;
-    // background-color: pink;
-    // z-index: 999;
-    // height: 100vh;
-  }
-
-  .leftEditor-editor {
-    flex: 1;
+:global {
+  .leftEditor {
+    width: 75%;
+    height: 100%;
     display: flex;
-    flex-direction: column;
 
-    .editor-header {
-      height: 40px;
-      box-sizing: border-box;
-      line-height: 40px;
-      border: 2px solid #ccc;
-      border-right: none;
-      display: flex;
-
-      .header-save {
-        margin: auto 20px;
-
-        &:hover {
-          cursor: pointer;
-        }
-      }
+    .leftEditor-stencil {
+      width: 25%;
+      position: relative;
     }
 
-    .edit-tabs {
-      :global {
-
-        .ant-tabs-nav,
-        .ant-tabs-bottom>.ant-tabs-nav,
-        .ant-tabs-top>div>.ant-tabs-nav,
-        .ant-tabs-bottom>div>.ant-tabs-nav {
-          margin: 0;
-        }
-
-        .ant-tabs-content {
-          height: 100%;
-
-          .ant-tabs-tabpane {
-            height: 100%;
-          }
-        }
-      }
-    }
-
-
-    .editor-content {
-      margin-top: 1px;
+    .leftEditor-editor {
       flex: 1;
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
 
-      .header-bread {
-        height: 30px;
-        width: 100%;
+      .editor-header {
+        height: 40px;
+        box-sizing: border-box;
+        line-height: 40px;
+        border: 2px solid #ccc;
+        border-right: none;
+        display: flex;
+
+        .header-save {
+          margin: auto 20px;
+
+          &:hover {
+            cursor: pointer;
+          }
+        }
       }
 
-      .content-graph {
-        flex: 1;
-        margin:10px;
-        .x6-graph {
-          width: 100% !important;
-          height: 100% !important;
+      .edit-tabs {
+        :global {
+
+          .ant-tabs-nav,
+          .ant-tabs-bottom>.ant-tabs-nav,
+          .ant-tabs-top>div>.ant-tabs-nav,
+          .ant-tabs-bottom>div>.ant-tabs-nav {
+            margin: 0;
+          }
+
+          .ant-tabs-content {
+            height: 100%;
+
+            .ant-tabs-tabpane {
+              height: 100%;
+            }
+          }
         }
       }
 
 
+      .editor-content {
+        margin-top: 1px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+
+        .header-bread {
+          height: 30px;
+          width: 100%;
+        }
+
+        .content-graph {
+          flex: 1;
+          margin: 10px;
+
+          .x6-graph {
+            width: 100% !important;
+            height: 100% !important;
+          }
+        }
+
+
+      }
     }
   }
 }

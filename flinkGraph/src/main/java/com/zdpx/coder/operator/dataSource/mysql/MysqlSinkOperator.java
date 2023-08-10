@@ -19,7 +19,6 @@
 
 package com.zdpx.coder.operator.dataSource.mysql;
 
-import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.graph.InputPortObject;
 import com.zdpx.coder.operator.dataSource.AbstractSqlTable;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +36,7 @@ public class MysqlSinkOperator extends AbstractSqlTable {
     @Override
     protected void initialize() {
         getInputPorts().put(INPUT_0, new InputPortObject<>(this, INPUT_0));
+        this.type= "Mysql";
         setName("MysqlSink");
     }
 

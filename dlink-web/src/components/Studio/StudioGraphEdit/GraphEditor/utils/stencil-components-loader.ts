@@ -1,5 +1,5 @@
 import { Stencil } from '@antv/x6-plugin-stencil';
-import { Graph, Node } from '@antv/x6';
+import { Graph, Node, Cell } from '@antv/x6';
 import { Parameter } from '@/components/Studio/StudioGraphEdit/GraphEditor/ts-define/parameter';
 import CustomShape from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
 
@@ -16,27 +16,62 @@ export const stencilComponentsLoader = (
   stencil: Stencil,
   operatorParameters: Parameter[],
 ) => {
-  
+
   const registeredStenCpn: { cpn: Node<Node.Properties>; cpnName: string }[] = [];
   const groupsName: { [key: string]: string[] } = {};
+  let node: Node
   //根据算子参数注册stencil组件
+
   operatorParameters?.forEach((param: Parameter) => {
-    const node = graph.createNode({
-      name:param.name,
-      shape: param.code,
-      width: 70,
-      height: 50,
-      attrs: {
-        body: {
-          rx: 7,
-          ry: 6,
+
+    if (param.group === CustomShape.GROUP_PROCESS) {
+      node = graph.createNode({
+        name: param.name,
+        shape: CustomShape.GROUP_PROCESS,
+        width: 70,
+        height: 50,
+        attrs: {
+          body: {
+            rx: 7,
+            ry: 6,
+          },
+          text: {
+            text: param.name,
+            fontSize: 2,
+          },
         },
-        text: {
-          text: param.name,
-          fontSize: 2,
+      });
+      //显示删除按钮
+      node.addTools([
+        {
+          name: 'rm-btn',
+          args: {
+            x: 0,
+            y: 0,
+            offset: { x: 0, y: 0 },
+          },
         },
-      },
-    });
+      ]);
+    } else {
+      node = graph.createNode({
+        name: param.name,
+        shape: param.code,
+        width: 70,
+        height: 50,
+        attrs: {
+          body: {
+            rx: 7,
+            ry: 6,
+          },
+          text: {
+            text: param.name,
+            fontSize: 2,
+          },
+        },
+      });
+
+    }
+    node.prop("isStencil", true)
 
     registeredStenCpn.push({ cpn: node, cpnName: param.code });
     //保存组和节点关系
@@ -74,4 +109,8 @@ export const stencilComponentsLoader = (
 
     stencil.load(groupRegisteredCpn, group);
   });
+
+
+
+
 };

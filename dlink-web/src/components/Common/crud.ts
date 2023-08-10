@@ -100,6 +100,49 @@ export async function getInfoById(url: string, id: number) {
   });
 }
 
+export async function getNodePreviewInfo(url: string, body: any) {
+
+  console.log(body);
+
+  return request2(url, {
+    method: 'PUT',
+    data: body,
+  });
+}
+
+export async function getDataSourceType(url: string) {
+  return request2(url, {
+    method: 'GET',
+  });
+}
+export async function saveCustomGroupInfo(url: string, params: any) {
+  return request2(url, {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+export async function getCustomGroupInfo(url: string) {
+  return request2(url, {
+    method: 'GET',
+  });
+}
+export async function deleteCustomGroupInfo(url: string) {
+  return request2(url, {
+    method: 'DELETE',
+  });
+}
+export async function changeCustomGroupInfo(url: string) {
+  return request2(url, {
+    method: 'POST',
+  });
+}
+
+
+
+
+
 export const handleAddOrUpdate = async (url: string, fields: any) => {
   const tipsTitle = fields.id ? l('app.request.update') : l('app.request.add');
   const hide = message.loading(l('app.request.running') + tipsTitle);
@@ -112,7 +155,7 @@ export const handleAddOrUpdate = async (url: string, fields: any) => {
     } else {
       message.warn(msg);
     }
-    
+
     return datas;
   } catch (error) {
     hide();

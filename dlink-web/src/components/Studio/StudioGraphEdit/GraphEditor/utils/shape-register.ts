@@ -66,7 +66,8 @@ function registerGroupProgress(ports: Partial<PortManager.Metadata> | PortManage
             position: "left",
           },
           id: "input_0"
-        }, {
+        },
+        {
           group: 'outputs',
           zIndex: 999,
           id: "output_0",
@@ -86,6 +87,54 @@ function registerGroupProgress(ports: Partial<PortManager.Metadata> | PortManage
           label: {
             position: "right",
           }
+        },
+        {
+          group: 'innerOutputs',
+          zIndex: 999,
+          attrs: {
+            text: {
+              text: `input_0_in`,
+              style: {
+                visibility: "hidden",
+                fontSize: 10,
+                fill: "#3B4351",
+              },
+            },
+            path: {
+              d: "m-6,2,a5,5.5 0 0 1 12,0"
+            }
+          },
+          args: {
+            dx: 2,
+          },
+          label: {
+            position: "right",
+          },
+          id: "input_0_in"
+        },
+        {
+          group: 'innerInputs',
+          zIndex: 999,
+          attrs: {
+            text: {
+              text: `output_0_in`,
+              style: {
+                visibility: "hidden",
+                fontSize: 10,
+                fill: "#3B4351",
+              },
+            },
+            path: {
+              d: "m-6,2,a5,5.5 0 0 1 12,0"
+            }
+          },
+          args: {
+            dx: -2,
+          },
+          label: {
+            position: "left",
+          },
+          id: "output_0_in"
         }
       ]
     },
@@ -117,6 +166,7 @@ function registerOperatorNode(
     shape: code,
     component: registerCpn,
     ports: { ...ports, items: portItem },
+    effect: ["isError", "errorMsg"]
   });
 }
 

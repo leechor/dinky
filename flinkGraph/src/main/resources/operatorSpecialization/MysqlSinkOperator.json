@@ -90,6 +90,7 @@
 						"type": "string",
 						"minLength": 1,
 						"title": "name",
+						"pattern":"^[A-Za-z0-9_]*$",
 						"examples": [
 							"typ",
 							"taskId",
@@ -105,7 +106,7 @@
 						"minLength": 1,
 						"title": "type",
 						"default": "STRING",
-						"enum":["CHAR","VARCHAR","STRING","BOOLEAN","BINARY","VARBINARY","BYTES","DECIMAL","TINYINT","SMALLINT","INTEGER","BIGINT","FLOAT","DOUBLE","DATE","TIME","TIMESTAMP(3)","TIMESTAMP_LTZ(3)","INTERVAL","ARRAY","MULTISET","MAP","ROW","RAW"],
+						"enum":["CHAR","VARCHAR","STRING","BOOLEAN","BINARY","VARBINARY","BYTES","DECIMAL","TINYINT","SMALLINT","INT","BIGINT","FLOAT","DOUBLE","DATE","TIME","TIMESTAMP","TIMESTAMP(3)","TIMESTAMP_LTZ(3)","INTERVAL","ARRAY","MULTISET","MAP","ROW","RAW"],
 						"examples": [
 							"STRING",
 							"INT",
@@ -115,7 +116,12 @@
 					"flag":{
 						"type": "boolean",
 						"default": true,
-						"title": "是否勾选为输出"
+						"description": "是否勾选为输出"
+					},
+					"decs":{
+						"type": "string",
+						"default": true,
+						"description": "备注"
 					}
 				}
 			}
@@ -130,6 +136,7 @@
 		  "properties": {
 			"column": {
 				"type": "string",
+				"pattern":"^[A-Za-z0-9_]*$",
 				"description": "指定为watermark的列，需要TIMESTAMP或TIMESTAMP_LTZ类型"
 			},
 			"timeSpan": {
