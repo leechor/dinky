@@ -27,6 +27,7 @@ import org.apache.flink.table.functions.UserDefinedFunction;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -38,7 +39,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.zdpx.coder.SceneCodeBuilder;
 import com.zdpx.coder.operator.Operator;
 import com.zdpx.coder.utils.InstantiationUtil;
 
@@ -66,7 +66,7 @@ public class Scene {
      */
     public static Map<String, Class<? extends Operator>> getOperatorMaps() {
         Set<Class<? extends Operator>> operators = Operator.getAllOperatorGenerators();
-        return SceneCodeBuilder.getCodeClassMap(operators);
+        return getCodeClassMap(operators);
     }
 
     public static List<Operator> getSinkOperatorNodes(NodeCollection process) {
@@ -202,5 +202,25 @@ public class Scene {
         rootPortNode.set("inputs", inputPortsNode);
         rootPortNode.set("outputs", outputPortsNode);
         return rootPortNode;
+    }
+
+    /**
+     * 获取operator的定义, key为{@link Identifier#getCode()} 返回值, 目前为Operator类的全限定名 value为类型定义.
+     * 增加排序规则
+     *
+     * @return 返回operator集
+     */
+    public static Map<String, Class<? extends Operator>> getCodeClassMap(
+            Set<Class<? extends Operator>> operators) {
+
+        LinkedHashSet<Class<? extends Operator>> collect = operators.stream()
+                .filter(c -> !Modifier.isAbstract(c.getModifiers()))
+                .sorted(Comparator.comparing(Class::getName, Comparator.reverseOrder()))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        Map<String, Class<? extends Operator>> map = new LinkedHashMap<>();
+        for (Class<? extends Operator> l : collect) {
+            map.put(InstantiationUtil.instantiate(l).getCode(), l);
+        }
+        return map;
     }
 }

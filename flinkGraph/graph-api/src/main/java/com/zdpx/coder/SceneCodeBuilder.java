@@ -20,7 +20,6 @@
 package com.zdpx.coder;
 
 import java.io.IOException;
-import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -28,11 +27,9 @@ import java.util.stream.Collectors;
 import com.zdpx.coder.code.CodeBuilder;
 import com.zdpx.coder.code.CodeJavaBuilderImpl;
 import com.zdpx.coder.graph.Scene;
-import com.zdpx.coder.operator.Identifier;
 import com.zdpx.coder.operator.Operator;
 import com.zdpx.coder.code.CodeSqlBuilderImpl;
 import com.zdpx.coder.json.ResultType;
-import com.zdpx.coder.utils.InstantiationUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -155,26 +152,6 @@ public class SceneCodeBuilder {
     private void operate(Operator op) {
         op.setSchemaUtil(this);
         op.run();
-    }
-
-    /**
-     * 获取operator的定义, key为{@link Identifier#getCode()} 返回值, 目前为Operator类的全限定名 value为类型定义.
-     * 增加排序规则
-     *
-     * @return 返回operator集
-     */
-    public static Map<String, Class<? extends Operator>> getCodeClassMap(
-            Set<Class<? extends Operator>> operators) {
-
-        LinkedHashSet<Class<? extends Operator>> collect = operators.stream()
-                .filter(c -> !Modifier.isAbstract(c.getModifiers()))
-                .sorted(Comparator.comparing(Class::getName, Comparator.reverseOrder()))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-        Map<String, Class<? extends Operator>> map = new LinkedHashMap<>();
-        for (Class<? extends Operator> l : collect) {
-            map.put(InstantiationUtil.instantiate(l).getCode(), l);
-        }
-        return map;
     }
 
     /**
