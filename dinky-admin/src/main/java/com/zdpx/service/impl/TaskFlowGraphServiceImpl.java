@@ -21,6 +21,7 @@ package com.zdpx.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zdpx.coder.SceneCode;
 import com.zdpx.coder.Specifications;
 import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.json.preview.OperatorPreviewBuilder;
@@ -199,7 +200,7 @@ public class TaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScriptMa
 
         ToInternalConvert toic = new X6ToInternalConvert();
         Scene sceneInternal = toic.convert(flowGraphScript);
-        SceneCodeBuilder su = new SceneCodeBuilder(sceneInternal);
+        SceneCode su = new SceneCodeBuilder(sceneInternal);
         su.setUdfFunctionMap(udfAll);
         return su.build();
     }

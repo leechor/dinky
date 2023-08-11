@@ -217,7 +217,7 @@
         </dependency>
         <dependency>
             <groupId>com.zdpx</groupId>
-            <artifactId>flinkGraph</artifactId>
+            <artifactId>graph-process</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
