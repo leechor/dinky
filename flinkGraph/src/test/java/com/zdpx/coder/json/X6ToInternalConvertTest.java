@@ -23,14 +23,24 @@ class X6ToInternalConvertTest {
             "    \"cells\": [\n" +
             "        {\n" +
             "            \"position\": {\n" +
-            "                \"x\": 100,\n" +
-            "                \"y\": 300\n" +
+            "                \"x\": 50,\n" +
+            "                \"y\": 210\n" +
             "            },\n" +
             "            \"size\": {\n" +
             "                \"width\": 70,\n" +
             "                \"height\": 50\n" +
             "            },\n" +
             "            \"view\": \"react-shape-view\",\n" +
+            "            \"attrs\": {\n" +
+            "                \"body\": {\n" +
+            "                    \"rx\": 7,\n" +
+            "                    \"ry\": 6\n" +
+            "                },\n" +
+            "                \"text\": {\n" +
+            "                    \"text\": \"MySQL数据源\",\n" +
+            "                    \"fontSize\": 2\n" +
+            "                }\n" +
+            "            },\n" +
             "            \"shape\": \"MysqlSourceOperator\",\n" +
             "            \"ports\": {\n" +
             "                \"groups\": {\n" +
@@ -104,71 +114,26 @@ class X6ToInternalConvertTest {
             "                    }\n" +
             "                ]\n" +
             "            },\n" +
-            "            \"id\": \"0ce6bc11-1a69-4a5a-baa0-b062de9c5d4f\",\n" +
+            "            \"id\": \"af58e0ea-f72d-48a2-97cc-5c59802d5ab5\",\n" +
             "            \"name\": \"MySQL数据源\",\n" +
             "            \"isStencil\": false,\n" +
             "            \"zIndex\": 1,\n" +
             "            \"data\": {\n" +
             "                \"parameters\": {\n" +
-            "                    \"tableName\": \"generate_result_record\",\n" +
+            "                    \"tableName\": \"\",\n" +
             "                    \"connector\": \"jdbc\",\n" +
-            "                    \"url\": \"jdbc:mysql://192.168.1.51:3306/dinky?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true\",\n" +
+            "                    \"url\": \"asad\",\n" +
             "                    \"username\": \"root\",\n" +
             "                    \"password\": \"123456\",\n" +
             "                    \"other\": [],\n" +
             "                    \"columns\": [\n" +
             "                        {\n" +
-            "                            \"name\": \"id\",\n" +
-            "                            \"type\": \"INT\",\n" +
-            "                            \"flag\": true\n" +
-            "                        },\n" +
-            "                        {\n" +
-            "                            \"name\": \"mission_id\",\n" +
+            "                            \"name\": \"a\",\n" +
             "                            \"type\": \"STRING\",\n" +
             "                            \"flag\": true\n" +
             "                        },\n" +
             "                        {\n" +
-            "                            \"name\": \"mission_name\",\n" +
-            "                            \"type\": \"STRING\",\n" +
-            "                            \"flag\": true\n" +
-            "                        },\n" +
-            "                        {\n" +
-            "                            \"name\": \"scene_id\",\n" +
-            "                            \"type\": \"STRING\",\n" +
-            "                            \"flag\": true\n" +
-            "                        },\n" +
-            "                        {\n" +
-            "                            \"name\": \"station_id\",\n" +
-            "                            \"type\": \"STRING\",\n" +
-            "                            \"flag\": true\n" +
-            "                        },\n" +
-            "                        {\n" +
-            "                            \"name\": \"station_channel_id\",\n" +
-            "                            \"type\": \"STRING\",\n" +
-            "                            \"flag\": true\n" +
-            "                        },\n" +
-            "                        {\n" +
-            "                            \"name\": \"monitor_missile_id\",\n" +
-            "                            \"type\": \"STRING\",\n" +
-            "                            \"flag\": true\n" +
-            "                        },\n" +
-            "                        {\n" +
-            "                            \"name\": \"position_id\",\n" +
-            "                            \"type\": \"STRING\",\n" +
-            "                            \"flag\": true\n" +
-            "                        },\n" +
-            "                        {\n" +
-            "                            \"name\": \"start_time\",\n" +
-            "                            \"type\": \"TIMESTAMP\",\n" +
-            "                            \"flag\": true\n" +
-            "                        },\n" +
-            "                        {\n" +
-            "                            \"name\": \"end_time\",\n" +
-            "                            \"type\": \"TIMESTAMP\",\n" +
-            "                            \"flag\": true\n" +
-            "                        },\n" +
-            "                        {\n" +
-            "                            \"name\": \"monitor_segment\",\n" +
+            "                            \"name\": \"b\",\n" +
             "                            \"type\": \"STRING\",\n" +
             "                            \"flag\": true\n" +
             "                        }\n" +
@@ -181,24 +146,29 @@ class X6ToInternalConvertTest {
             "                    }\n" +
             "                },\n" +
             "                \"config\": []\n" +
-            "            },\n" +
-            "            \"previousNodeColor\": {\n" +
-            "                \"background-color\": \"#c6e5ff\",\n" +
-            "                \"border\": \"1px solid #949494\",\n" +
-            "                \"border-radius\": \"2px\"\n" +
             "            }\n" +
             "        },\n" +
             "        {\n" +
             "            \"position\": {\n" +
-            "                \"x\": 432,\n" +
-            "                \"y\": 300\n" +
+            "                \"x\": 410,\n" +
+            "                \"y\": 210\n" +
             "            },\n" +
             "            \"size\": {\n" +
             "                \"width\": 70,\n" +
             "                \"height\": 50\n" +
             "            },\n" +
             "            \"view\": \"react-shape-view\",\n" +
-            "            \"shape\": \"MysqlSinkOperator\",\n" +
+            "            \"attrs\": {\n" +
+            "                \"body\": {\n" +
+            "                    \"rx\": 7,\n" +
+            "                    \"ry\": 6\n" +
+            "                },\n" +
+            "                \"text\": {\n" +
+            "                    \"text\": \"OracleSinkOperator\",\n" +
+            "                    \"fontSize\": 2\n" +
+            "                }\n" +
+            "            },\n" +
+            "            \"shape\": \"OracleSinkOperator\",\n" +
             "            \"ports\": {\n" +
             "                \"groups\": {\n" +
             "                    \"outputs\": {\n" +
@@ -271,41 +241,28 @@ class X6ToInternalConvertTest {
             "                    }\n" +
             "                ]\n" +
             "            },\n" +
-            "            \"id\": \"eb208286-415c-4f1d-b0af-e45d110d45bf\",\n" +
-            "            \"name\": \"MysqlSink\",\n" +
+            "            \"id\": \"98374b61-f025-4423-b9cc-cb599e0a6ce5\",\n" +
+            "            \"name\": \"OracleSinkOperator\",\n" +
             "            \"isStencil\": false,\n" +
             "            \"zIndex\": 2,\n" +
             "            \"data\": {\n" +
             "                \"parameters\": {\n" +
-            "                    \"tableName\": \"AO_0A5972_NOTIFICATION_SETTING\",\n" +
-            "                    \"connector\": \"jdbc\",\n" +
-            "                    \"url\": \"jdbc:mysql://192.168.1.51:3306/dinky?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true\",\n" +
-            "                    \"username\": \"root\",\n" +
-            "                    \"password\": \"123456\",\n" +
+            "                    \"tableName\": \"aa\",\n" +
+            "                    \"connector\": \"oracle-cdc\",\n" +
+            "                    \"hostname\": \"aa\",\n" +
+            "                    \"port\": 1521,\n" +
+            "                    \"username\": \"asasd\",\n" +
+            "                    \"password\": \"asdas\",\n" +
+            "                    \"database-name\": \"adasd\",\n" +
             "                    \"other\": [],\n" +
             "                    \"columns\": [\n" +
             "                        {\n" +
-            "                            \"name\": \"ID\",\n" +
-            "                            \"type\": \"CHAR\",\n" +
-            "                            \"flag\": true\n" +
-            "                        },\n" +
-            "                        {\n" +
-            "                            \"name\": \"KEY\",\n" +
+            "                            \"name\": \"aa\",\n" +
             "                            \"type\": \"STRING\",\n" +
             "                            \"flag\": true\n" +
             "                        },\n" +
             "                        {\n" +
-            "                            \"name\": \"TYPE\",\n" +
-            "                            \"type\": \"STRING\",\n" +
-            "                            \"flag\": true\n" +
-            "                        },\n" +
-            "                        {\n" +
-            "                            \"name\": \"USER_KEY\",\n" +
-            "                            \"type\": \"STRING\",\n" +
-            "                            \"flag\": true\n" +
-            "                        },\n" +
-            "                        {\n" +
-            "                            \"name\": \"VALUE\",\n" +
+            "                            \"name\": \"bb\",\n" +
             "                            \"type\": \"STRING\",\n" +
             "                            \"flag\": true\n" +
             "                        }\n" +
@@ -318,19 +275,70 @@ class X6ToInternalConvertTest {
             "                    }\n" +
             "                },\n" +
             "                \"config\": [\n" +
-            "                    {}\n" +
+            "                    {\n" +
+            "                        \"e1789214-b444-4e20-be68-07bc5bae3be6&output_0 98374b61-f025-4423-b9cc-cb599e0a6ce5&input_0\": [\n" +
+            "                            {\n" +
+            "                                \"outName\": \"a1\",\n" +
+            "                                \"function\": [\n" +
+            "                                    {\n" +
+            "                                        \"functionName\": \"f1\",\n" +
+            "                                        \"recursionFunc\": [],\n" +
+            "                                        \"recursionName\": [\n" +
+            "                                            {\n" +
+            "                                                \"name\": [\n" +
+            "                                                    \"a\",\n" +
+            "                                                    \"b\",\n" +
+            "                                                    \"c\"\n" +
+            "                                                ],\n" +
+            "                                                \"recursionFunc\": [\n" +
+            "                                                    {\n" +
+            "                                                        \"functionName\": \"f2\",\n" +
+            "                                                        \"recursionFunc\": [],\n" +
+            "                                                        \"recursionName\": [\n" +
+            "                                                            {\n" +
+            "                                                                \"name\": [\n" +
+            "                                                                    \"a~\",\n" +
+            "                                                                    \"b~\"\n" +
+            "                                                                ],\n" +
+            "                                                                \"recursionFunc\": [\n" +
+            "                                                                    {\n" +
+            "                                                                        \"functionName\": \"F3\",\n" +
+            "                                                                        \"recursionFunc\": [],\n" +
+            "                                                                        \"recursionName\": [\n" +
+            "                                                                            {\n" +
+            "                                                                                \"name\": [\n" +
+            "                                                                                    \"A\",\n" +
+            "                                                                                    \"B\"\n" +
+            "                                                                                ],\n" +
+            "                                                                                \"recursionFunc\": [],\n" +
+            "                                                                                \"recursionName\": []\n" +
+            "                                                                            }\n" +
+            "                                                                        ]\n" +
+            "                                                                    }\n" +
+            "                                                                ],\n" +
+            "                                                                \"recursionName\": []\n" +
+            "                                                            }\n" +
+            "                                                        ]\n" +
+            "                                                    }\n" +
+            "                                                ],\n" +
+            "                                                \"recursionName\": []\n" +
+            "                                            }\n" +
+            "                                        ]\n" +
+            "                                    }\n" +
+            "                                ],\n" +
+            "                                \"name\": \"aaaaaaaaaaaaa\",\n" +
+            "                                \"flag\": true,\n" +
+            "                                \"decs\": \"true\"\n" +
+            "                            }\n" +
+            "                        ]\n" +
+            "                    }\n" +
             "                ]\n" +
-            "            },\n" +
-            "            \"previousNodeColor\": {\n" +
-            "                \"background-color\": \"#c6e5ff\",\n" +
-            "                \"border\": \"1px solid #949494\",\n" +
-            "                \"border-radius\": \"2px\"\n" +
             "            }\n" +
             "        },\n" +
             "        {\n" +
             "            \"position\": {\n" +
-            "                \"x\": 257,\n" +
-            "                \"y\": 300\n" +
+            "                \"x\": 196,\n" +
+            "                \"y\": 210\n" +
             "            },\n" +
             "            \"size\": {\n" +
             "                \"width\": 70,\n" +
@@ -343,11 +351,11 @@ class X6ToInternalConvertTest {
             "                    \"ry\": 6\n" +
             "                },\n" +
             "                \"text\": {\n" +
-            "                    \"text\": \"CommWindowOperator\",\n" +
+            "                    \"text\": \"CepOperator\",\n" +
             "                    \"fontSize\": 2\n" +
             "                }\n" +
             "            },\n" +
-            "            \"shape\": \"CommWindowOperator\",\n" +
+            "            \"shape\": \"CepOperator\",\n" +
             "            \"ports\": {\n" +
             "                \"groups\": {\n" +
             "                    \"outputs\": {\n" +
@@ -438,117 +446,100 @@ class X6ToInternalConvertTest {
             "                    }\n" +
             "                ]\n" +
             "            },\n" +
-            "            \"id\": \"45d93365-26b3-459d-ba94-0a49396e4b72\",\n" +
-            "            \"name\": \"CommWindowOperator\",\n" +
+            "            \"id\": \"e1789214-b444-4e20-be68-07bc5bae3be6\",\n" +
+            "            \"name\": \"CepOperator\",\n" +
             "            \"isStencil\": false,\n" +
             "            \"zIndex\": 3,\n" +
             "            \"data\": {\n" +
             "                \"parameters\": {\n" +
             "                    \"tableName\": \"\",\n" +
-            "                    \"orderBy\": [],\n" +
-            "                    \"where\": \"a=aa;\",\n" +
-            "                    \"limit\": [],\n" +
-            "                    \"group\": null,\n" +
-            "                    \"window\": null,\n" +
-            "                    \"options\": {\n" +
-            "                        \"key\": \"\",\n" +
-            "                        \"val\": \"\"\n" +
+            "                    \"partition\": \"a\",\n" +
+            "                    \"orderBy\": \"a\",\n" +
+            "                    \"outPutMode\": \"ONE\",\n" +
+            "                    \"skipStrategy\": {\n" +
+            "                        \"strategy\": \"LAST_ROW\",\n" +
+            "                        \"variable\": 0\n" +
             "                    },\n" +
+            "                    \"timeSpan\": 0,\n" +
+            "                    \"timeUnit\": \"SECOND\",\n" +
+            "                    \"patterns\": [\n" +
+            "                        {\n" +
+            "                            \"variable\": \"e1\",\n" +
+            "                            \"quantifier\": \"+\"\n" +
+            "                        }\n" +
+            "                    ],\n" +
             "                    \"columns\": [\n" +
             "                        {\n" +
-            "                            \"outName\": \"o1\",\n" +
+            "                            \"outName\": \"a1\",\n" +
             "                            \"function\": [\n" +
             "                                {\n" +
-            "                                    \"functionName\": \"to_timestamp\",\n" +
-            "                                    \"recursionFunc\": [\n" +
-            "                                        {\n" +
-            "                                            \"functionName\": \"f1\",\n" +
-            "                                            \"recursionFunc\": [],\n" +
-            "                                            \"recursionName\": [\n" +
-            "                                                {\n" +
-            "                                                    \"name\": [\n" +
-            "                                                        \"a\",\n" +
-            "                                                        \"b\"\n" +
-            "                                                    ],\n" +
-            "                                                    \"recursionFunc\": [],\n" +
-            "                                                    \"recursionName\": []\n" +
-            "                                                }\n" +
-            "                                            ]\n" +
-            "                                        }\n" +
-            "                                    ],\n" +
+            "                                    \"functionName\": \"f1\",\n" +
+            "                                    \"recursionFunc\": [],\n" +
             "                                    \"recursionName\": [\n" +
             "                                        {\n" +
             "                                            \"name\": [\n" +
             "                                                \"a\",\n" +
-            "                                                \"b\"\n" +
+            "                                                \"b\",\n" +
+            "                                                \"c\"\n" +
             "                                            ],\n" +
-            "                                            \"recursionFunc\": [],\n" +
+            "                                            \"recursionFunc\": [\n" +
+            "                                                {\n" +
+            "                                                    \"functionName\": \"f2\",\n" +
+            "                                                    \"recursionFunc\": [],\n" +
+            "                                                    \"recursionName\": [\n" +
+            "                                                        {\n" +
+            "                                                            \"name\": [\n" +
+            "                                                                \"a~\",\n" +
+            "                                                                \"b~\"\n" +
+            "                                                            ],\n" +
+            "                                                            \"recursionFunc\": [\n" +
+            "                                                                {\n" +
+            "                                                                    \"functionName\": \"F3\",\n" +
+            "                                                                    \"recursionFunc\": [],\n" +
+            "                                                                    \"recursionName\": [\n" +
+            "                                                                        {\n" +
+            "                                                                            \"name\": [\n" +
+            "                                                                                \"A\",\n" +
+            "                                                                                \"B\"\n" +
+            "                                                                            ],\n" +
+            "                                                                            \"recursionFunc\": [],\n" +
+            "                                                                            \"recursionName\": []\n" +
+            "                                                                        }\n" +
+            "                                                                    ]\n" +
+            "                                                                }\n" +
+            "                                                            ],\n" +
+            "                                                            \"recursionName\": []\n" +
+            "                                                        }\n" +
+            "                                                    ]\n" +
+            "                                                }\n" +
+            "                                            ],\n" +
             "                                            \"recursionName\": []\n" +
             "                                        }\n" +
             "                                    ]\n" +
             "                                }\n" +
             "                            ],\n" +
-            "                            \"name\": \"\",\n" +
+            "                            \"name\": \"aaaaaaaaaaaaa\",\n" +
             "                            \"flag\": true,\n" +
-            "                            \"decs\": \"\"\n" +
+            "                            \"decs\": \"true\"\n" +
+            "                        }\n" +
+            "                    ],\n" +
+            "                    \"defines\": [\n" +
+            "                        {\n" +
+            "                            \"variable\": \"e1\",\n" +
+            "                            \"condition\": \"eeeeeeeee\"\n" +
             "                        }\n" +
             "                    ]\n" +
             "                },\n" +
             "                \"config\": [\n" +
             "                    {\n" +
-            "                        \"0ce6bc11-1a69-4a5a-baa0-b062de9c5d4f&output_0 45d93365-26b3-459d-ba94-0a49396e4b72&input_0\": [\n" +
+            "                        \"af58e0ea-f72d-48a2-97cc-5c59802d5ab5&output_0 e1789214-b444-4e20-be68-07bc5bae3be6&input_0\": [\n" +
             "                            {\n" +
-            "                                \"name\": \"id\",\n" +
-            "                                \"type\": \"INT\",\n" +
-            "                                \"flag\": true\n" +
-            "                            },\n" +
-            "                            {\n" +
-            "                                \"name\": \"mission_id\",\n" +
+            "                                \"name\": \"a\",\n" +
             "                                \"type\": \"STRING\",\n" +
             "                                \"flag\": true\n" +
             "                            },\n" +
             "                            {\n" +
-            "                                \"name\": \"mission_name\",\n" +
-            "                                \"type\": \"STRING\",\n" +
-            "                                \"flag\": true\n" +
-            "                            },\n" +
-            "                            {\n" +
-            "                                \"name\": \"scene_id\",\n" +
-            "                                \"type\": \"STRING\",\n" +
-            "                                \"flag\": true\n" +
-            "                            },\n" +
-            "                            {\n" +
-            "                                \"name\": \"station_id\",\n" +
-            "                                \"type\": \"STRING\",\n" +
-            "                                \"flag\": true\n" +
-            "                            },\n" +
-            "                            {\n" +
-            "                                \"name\": \"station_channel_id\",\n" +
-            "                                \"type\": \"STRING\",\n" +
-            "                                \"flag\": true\n" +
-            "                            },\n" +
-            "                            {\n" +
-            "                                \"name\": \"monitor_missile_id\",\n" +
-            "                                \"type\": \"STRING\",\n" +
-            "                                \"flag\": true\n" +
-            "                            },\n" +
-            "                            {\n" +
-            "                                \"name\": \"position_id\",\n" +
-            "                                \"type\": \"STRING\",\n" +
-            "                                \"flag\": true\n" +
-            "                            },\n" +
-            "                            {\n" +
-            "                                \"name\": \"start_time\",\n" +
-            "                                \"type\": \"TIMESTAMP\",\n" +
-            "                                \"flag\": true\n" +
-            "                            },\n" +
-            "                            {\n" +
-            "                                \"name\": \"end_time\",\n" +
-            "                                \"type\": \"TIMESTAMP\",\n" +
-            "                                \"flag\": true\n" +
-            "                            },\n" +
-            "                            {\n" +
-            "                                \"name\": \"monitor_segment\",\n" +
+            "                                \"name\": \"b\",\n" +
             "                                \"type\": \"STRING\",\n" +
             "                                \"flag\": true\n" +
             "                            }\n" +
@@ -565,32 +556,13 @@ class X6ToInternalConvertTest {
             "                    \"targetMarker\": \"\"\n" +
             "                }\n" +
             "            },\n" +
-            "            \"id\": \"93280487-17c9-4fbd-ab60-d33ec6a751a2\",\n" +
-            "            \"tools\": {\n" +
-            "                \"items\": [\n" +
-            "                    {\n" +
-            "                        \"name\": \"vertices\",\n" +
-            "                        \"args\": {\n" +
-            "                            \"attrs\": {\n" +
-            "                                \"fill\": \"#666\"\n" +
-            "                            }\n" +
-            "                        }\n" +
-            "                    },\n" +
-            "                    {\n" +
-            "                        \"name\": \"rm-edge-btn\",\n" +
-            "                        \"args\": {\n" +
-            "                            \"distance\": 40.19\n" +
-            "                        }\n" +
-            "                    }\n" +
-            "                ],\n" +
-            "                \"name\": null\n" +
-            "            },\n" +
+            "            \"id\": \"233cc0d0-3e26-48dc-9dd2-2867b4e7c1cc\",\n" +
             "            \"source\": {\n" +
-            "                \"cell\": \"0ce6bc11-1a69-4a5a-baa0-b062de9c5d4f\",\n" +
+            "                \"cell\": \"af58e0ea-f72d-48a2-97cc-5c59802d5ab5\",\n" +
             "                \"port\": \"output_0\"\n" +
             "            },\n" +
             "            \"target\": {\n" +
-            "                \"cell\": \"45d93365-26b3-459d-ba94-0a49396e4b72\",\n" +
+            "                \"cell\": \"e1789214-b444-4e20-be68-07bc5bae3be6\",\n" +
             "                \"port\": \"input_0\"\n" +
             "            },\n" +
             "            \"zIndex\": 4\n" +
@@ -603,13 +575,13 @@ class X6ToInternalConvertTest {
             "                    \"targetMarker\": \"\"\n" +
             "                }\n" +
             "            },\n" +
-            "            \"id\": \"47344642-fed7-4dcd-b87c-e215002174a5\",\n" +
+            "            \"id\": \"b447eeed-8925-4f94-98b5-141879bb55e2\",\n" +
             "            \"source\": {\n" +
-            "                \"cell\": \"45d93365-26b3-459d-ba94-0a49396e4b72\",\n" +
+            "                \"cell\": \"e1789214-b444-4e20-be68-07bc5bae3be6\",\n" +
             "                \"port\": \"output_0\"\n" +
             "            },\n" +
             "            \"target\": {\n" +
-            "                \"cell\": \"eb208286-415c-4f1d-b0af-e45d110d45bf\",\n" +
+            "                \"cell\": \"98374b61-f025-4423-b9cc-cb599e0a6ce5\",\n" +
             "                \"port\": \"input_0\"\n" +
             "            },\n" +
             "            \"zIndex\": 5\n" +
@@ -617,7 +589,7 @@ class X6ToInternalConvertTest {
             "    ]\n" +
             "}";
 
-        public static void main(String [] args){
+    public static void main(String [] args){
 
             X6ToInternalConvert x6 = new X6ToInternalConvert();
             Scene result = x6.convert(x6_json1);

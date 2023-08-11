@@ -183,12 +183,10 @@ public class FieldFunction extends OperatorSpecializationFieldConfig {
                 }
                 if(nameOrFunc.equals(RECURSION_FUNC)){ //recursionFunc需要判断参数是否结束
                     if(inputName.get(RECURSION_NAME).toString().equals("[]")){
-                        str.append(")").append( last );
-                    }else{
-                        str.append( last );
+                        str.append(")");
                     }
                 }else{  //recursionName直接结束
-                    str.append(")").append( last );
+                    str.append(")");
                 }
             }
         }
@@ -229,35 +227,30 @@ public class FieldFunction extends OperatorSpecializationFieldConfig {
      * @return {@link FieldFunction}形式的字段处理定义
      */
     public static List<FieldFunction> analyzeParameters(
-            String primaryTableName, List<Map<String, Object>> funcs ,boolean flag ,List<Column> inputColumn, List<Map<String, Object>> inputColumns) {
+            String primaryTableName, List<Map<String, Object>> funcs ,boolean flag ,List<Column> inputColumn, List<Map<String, Object>> config) {
         List<FieldFunction> fieldFunctions = new ArrayList<>();
         for (Map<String, Object> fos : funcs) {//此处过滤掉未选中的节点
             if((boolean)fos.get(FLAG)){
-                FieldFunction fo = processFieldConfigure(primaryTableName, fos ,flag, inputColumns);
-                fo.setOutType(typeInference(inputColumn, fo,inputColumns));
+                FieldFunction fo = processFieldConfigure(primaryTableName, fos ,flag, config);
+                fo.setOutType(typeInference(inputColumn, fo ,fos.get(TYPE)==null? null:fos.get(TYPE).toString()));
                 fieldFunctions.add(fo);
             }
         }
         return fieldFunctions;
     }
 
-    public static String typeInference(List<Column> inputColumn,FieldFunction fo, List<Map<String, Object>> config){
-        if(!inputColumn.isEmpty()&&fo.getOutType()==null){
-
-            for(Column c :inputColumn){//当没有定义函数时，优先使用上一级名称
+    public static String typeInference(List<Column> inputColumn,FieldFunction fo,String type){
+        if(!inputColumn.isEmpty()){
+            for(Column c :inputColumn){//优先使用上一级名称
                 if(c.getName().equals(fo.getFunctionName())){
                     return c.getType();
                 }
             }
-            for(Map<String, Object> cof : config){//其次，使用用户设置的类型
-                if(cof.get(NAME).equals(fo.getFunctionName())){
-                    return cof.get(TYPE).toString();
-                }
-            }
         }
-        return null;//都不匹配，无法确定类型
+        return type;
     }
 
+    //根据函数名称确定使用的分隔符
     public static String separator(Object sep,StringBuffer str ,boolean flag){
         String separator = "";
 
@@ -271,7 +264,6 @@ public class FieldFunction extends OperatorSpecializationFieldConfig {
                 separator=",";
             }
         }
-
         return separator;
     }
 
