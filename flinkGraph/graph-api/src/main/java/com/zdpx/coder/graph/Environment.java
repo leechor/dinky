@@ -21,7 +21,7 @@ package com.zdpx.coder.graph;
 
 import org.apache.flink.api.common.RuntimeExecutionMode;
 
-import com.zdpx.coder.json.ResultType;
+import com.zdpx.coder.ResultType;
 
 /** flink运行环境信息 */
 public class Environment {

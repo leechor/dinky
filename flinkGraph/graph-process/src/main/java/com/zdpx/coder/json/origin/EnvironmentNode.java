@@ -24,7 +24,7 @@ import com.zdpx.jackson.RuntimeExecutionModeDeserializer;
 import org.apache.flink.api.common.RuntimeExecutionMode;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.zdpx.coder.json.ResultType;
+import com.zdpx.coder.ResultType;
 
 /** */
 public class EnvironmentNode {

@@ -26,7 +26,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.zdpx.coder.json.ResultType;
+import com.zdpx.coder.ResultType;
 
 /** */
 public class ResultTypeDeserializer extends StdDeserializer<ResultType> {

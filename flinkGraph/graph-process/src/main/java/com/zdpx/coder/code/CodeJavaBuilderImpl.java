@@ -29,7 +29,6 @@ import javax.lang.model.element.Modifier;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
-import com.zdpx.coder.ICodeContext;
 import com.zdpx.coder.Specifications;
 import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.graph.Environment;

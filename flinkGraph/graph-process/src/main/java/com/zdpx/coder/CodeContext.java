@@ -25,6 +25,7 @@ import javax.lang.model.element.Modifier;
 
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
+import com.zdpx.coder.code.ICodeContext;
 import com.zdpx.coder.graph.Scene;
 
 /**

@@ -8,7 +8,7 @@ import com.zdpx.coder.json.x6.X6ToInternalConvert;
 import com.zdpx.coder.operator.Operator;
 import com.zdpx.coder.SceneCodeBuilder;
 import com.zdpx.coder.graph.NodeWrapper;
-import com.zdpx.coder.json.ResultType;
+import com.zdpx.coder.ResultType;
 import com.zdpx.coder.json.x6.X6NodeWrapper;
 import lombok.SneakyThrows;
 

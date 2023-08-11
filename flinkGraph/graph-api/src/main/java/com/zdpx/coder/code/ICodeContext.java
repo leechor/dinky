@@ -1,4 +1,4 @@
-package com.zdpx.coder;
+package com.zdpx.coder.code;
 
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;

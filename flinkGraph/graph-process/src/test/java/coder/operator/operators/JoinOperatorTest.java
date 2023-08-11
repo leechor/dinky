@@ -1,5 +1,6 @@
 package coder.operator.operators;
 
+import com.zdpx.coder.operators.CepOperator;
 import org.junit.jupiter.api.Test;
 
 class JoinOperatorTest {
@@ -81,6 +82,5 @@ class JoinOperatorTest {
                 "      ";
         //</editor-fold>
         CepOperator cepOperator = new CepOperator();
-        cepOperator.initialize();
     }
 }

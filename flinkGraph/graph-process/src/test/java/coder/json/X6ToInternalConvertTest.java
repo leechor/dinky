@@ -3,8 +3,7 @@ package coder.json;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.zdpx.coder.SceneCode;
-import com.zdpx.coder.json.ResultType;
-import com.zdpx.coder.json.preview.OperatorPreviewBuilder;
+import com.zdpx.coder.ResultType;
 
 import com.zdpx.coder.SceneCodeBuilder;
 import com.zdpx.coder.graph.Scene;
