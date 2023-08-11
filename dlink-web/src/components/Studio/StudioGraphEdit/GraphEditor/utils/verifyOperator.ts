@@ -12,6 +12,7 @@ interface PortInformation {
     [propName: string]: string[]
 }
 export default (verifyDatas: VerifyOperatorItem[], graph: Graph) => {
+    (graph instanceof Graph)&&setOriginColor(graph);
     (graph instanceof Graph) && graph.getNodes().forEach(node => {
         node.prop("previousNodeColor", node.getAttrByPath("body/style"))
     });
@@ -28,7 +29,7 @@ export default (verifyDatas: VerifyOperatorItem[], graph: Graph) => {
         let errorMsg = {};
         const cell = graph.getCellById(operatorId)
 
-        cell && cell.prop("isError", true)
+
 
         if (sqlErrorMsg) {
             // cell.prop("previousNodeColor", cell.getAttrByPath("body/style"))
@@ -68,20 +69,22 @@ export default (verifyDatas: VerifyOperatorItem[], graph: Graph) => {
         errorMsg["sqlErrorMsg"] = sqlErrorMsg ? sqlErrorMsg : null
         errorMsg["portInformation"] = portInformation ? portInformation : null
         errorMsg["edge"] = edge ? edge : null
+        if (sqlErrorMsg || portInformation || edge) {
+            cell && cell.prop("isError", true)
+        }
         cell && cell.prop("errorMsg", errorMsg)
     })
 }
 
 
 export const setOriginColor = (graph: Graph) => {
-    
     //更新节点、边和连接桩为初始颜色配置
-    graph.getCells().forEach(cell => {
+     graph.getCells().forEach(cell => {
         cell.removeProp("errorMsg")
         cell.removeProp("isError")
     })
 
-    graph.getNodes().forEach(node => {
+     graph.getNodes().forEach(node => {
         const nodeConfig: any = node.prop().previousNodeColor
         nodeConfig && node.attr({
             body: {

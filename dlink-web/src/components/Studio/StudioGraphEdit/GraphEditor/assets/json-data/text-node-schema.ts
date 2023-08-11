@@ -1,7 +1,7 @@
 export let textSchema = {
     type: "object",
     title: "custom-text-node",
-    required: ["fontSize", "fontColor", "backgroundColor", "fontFamily", "fontWeight", "horizontalAlign", "verticalAlign", "tags", "possibleFonts"],
+    required: ["fontSize", "fontColor", "backgroundColor", "fontFamily", "fontWeight", "horizontalAlign", "verticalAlign", "tags","parameters", "possibleFonts"],
     properties: {
         fontSize: {
             format: "select2",
@@ -67,6 +67,10 @@ export let textSchema = {
                 type: "string",
                 enum: ["bold", "italic", "smallcaps"]
             }
+        },
+        parameters:{
+            type:"string",
+            default:"",
         },
         possibleFonts: {
             type: "array",

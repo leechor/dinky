@@ -11,7 +11,6 @@ import {
   EditOutlined,
   ExportOutlined,
   GroupOutlined,
-  RadiusSettingOutlined,
   RedoOutlined,
   ScissorOutlined,
   SnippetsOutlined,
@@ -30,7 +29,7 @@ import {
 } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper";
 import { changePreviewInfo, changeDataSourceInfo, changeGroupNameInfo } from '../../../store/modules/home';
 import { getNodePreviewInfo, getDataSourceType } from '@/components/Common/crud';
-
+import CpnShape from "@/components/Studio/StudioGraphEdit/GraphEditor/components/cpn-shape"
 
 type MenuPropsType = {
   top: number;
@@ -103,7 +102,6 @@ function createPackageNode(graph: Graph) {
 }
 
 export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, node, handleShowMenu, show }) => {
-  console.log(top, left, "top,left");
 
   const { taskName, operatorParameters } = useAppSelector((state) => ({
     taskName: state.home.taskName,
@@ -114,7 +112,6 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
 
   const isDataSource: boolean = operatorParameters.filter((op: Parameter) => op.group.includes("dataSource")).some((op: Parameter) => op.code === node?.shape)
 
-  console.log(operatorParameters, node, "operatorParameters-node");
 
   const convertHorizontalAlign = (align: string) => {
     switch (align) {
@@ -431,7 +428,6 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
   const preview = async () => {
     const data = graph.toJSON().cells.find(cell => cell.id === node!.id)
     const { datas, msg, code } = await getNodePreviewInfo("/api/zdpx/preview", JSON.stringify(data))
-    console.log(datas, msg);
     if (code === 1) {
       messageApi.error(msg)
     }
@@ -443,7 +439,6 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
 
     const op: Parameter = operatorParameters.find((op: Parameter) => op.code === node?.shape)
     const { datas, msg, code } = await getDataSourceType(`/api/database/listEnabledByType/${op.type}`);
-    console.log(datas, msg, code);
     if (code === 1) {
       messageApi.error(msg)
     }
@@ -745,7 +740,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
         )
       }
       {
-        node?.shape === CustomShape.GROUP_PROCESS && (<MenuItem
+        node && (<MenuItem
           onClick={onMenuItemClick}
           name="customGroup"
           icon={<EyeOutlined />}
@@ -796,12 +791,12 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
 
       <Divider />
 
-      <SubMenu name="order" icon={<RadiusSettingOutlined />} text="Change Order">
-        <MenuItem name="front" icon={<RadiusSettingOutlined />} hotkey="Cmd+Shift+F" text="Bring to Front" />
-        <MenuItem name="back" icon={<RadiusSettingOutlined />} hotkey="Cmd+Shift+B" text="Bring to Back" />
+      <SubMenu name="order" icon={<CpnShape iconPath='icon-a-ziyuan52-copy' />} text="Change Order">
+        <MenuItem name="front" icon={<CpnShape iconPath='icon-zhiyudingceng' />} hotkey="Cmd+Shift+F" text="Bring to Front" />
+        <MenuItem name="back" icon={<CpnShape iconPath='icon-zhiyudiceng' />} hotkey="Cmd+Shift+B" text="Bring to Back" />
         <Divider />
-        <MenuItem name="forward" icon={<RadiusSettingOutlined />} hotkey="Cmd+F" text="Bring Forward" />
-        <MenuItem name="backward" icon={<RadiusSettingOutlined />} hotkey="Cmd+B" text="Bring Backward" />
+        <MenuItem name="forward" icon={<CpnShape iconPath='icon-xiangqianyiceng' />} hotkey="Cmd+F" text="Bring Forward" />
+        <MenuItem name="backward" icon={<CpnShape iconPath='icon-xianghouyiceng' />} hotkey="Cmd+B" text="Bring Backward" />
       </SubMenu>
     </Menu>)
   }

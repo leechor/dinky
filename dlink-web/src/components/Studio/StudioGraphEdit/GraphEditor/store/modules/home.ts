@@ -2,7 +2,7 @@
 import { JSONEditor } from '@json-editor/json-editor';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { Parameter } from '@/components/Studio/StudioGraphEdit/GraphEditor/ts-define/parameter';
-import { Graph, Node, Cell } from '@antv/x6';
+import { Edge, Graph, Node } from '@antv/x6';
 import { getOperatorConfigure } from '../../service/request/test';
 import { message } from 'antd';
 export const initFlowDataAction = createAsyncThunk('fetchData', (payload, store) => {
@@ -15,13 +15,6 @@ export const initFlowDataAction = createAsyncThunk('fetchData', (payload, store)
       store.dispatch(initOperatorParameters(res.data.datas));
     }
   });
-  // import(
-  //   '@/components/Studio/StudioGraphEdit/GraphEditor/assets/json-data/operatorParameters.json'
-  // ).then((res: any) => {
-  //   if (res?.datas) {
-  //     store.dispatch(initOperatorParameters(res.datas));
-  //   }
-  // });
 });
 export type GraphTabs = GraphTabsItem[]
 export type Position = {
@@ -83,7 +76,12 @@ interface GraphEditorData {
     x: number,
     y: number,
     isFullScreen: boolean,
-  }
+  },
+  edgeClickInfo: {
+    isShowedgeClickModal: boolean,
+    edgeInfo: { edge: Edge, sourceNode: Node, targetNode: Node, sourcePortId: string, targetPortId: string } | null,
+    data?: any,
+  },
 
 }
 const initialState: GraphEditorData = {
@@ -126,7 +124,12 @@ const initialState: GraphEditorData = {
     x: 0,
     y: 0,
     isFullScreen: false,
-  }
+  },
+  edgeClickInfo: {
+    isShowedgeClickModal: false,
+    edgeInfo: null,
+    data: null,
+  },
 
 }
 const homeSlice = createSlice({
@@ -143,7 +146,7 @@ const homeSlice = createSlice({
     },
     //初始化算子参数stencil
     initOperatorParameters(state, { payload }) {
-      
+
       state.operatorParameters = payload;
     },
     //保存当前选中的节点信息
@@ -172,18 +175,6 @@ const homeSlice = createSlice({
     removeGraphTabs(state, { payload }) {
       state.graphTabs = state.graphTabs.slice(0, payload + 1)
     },
-
-    changeUnselectedCells(state, { payload }) {
-      const unSelectedCellIds = state.unSelectedCellIds;
-      if (payload.type == "push") {
-        unSelectedCellIds.push(payload.data)
-        state.unSelectedCellIds = [...unSelectedCellIds]
-      }
-      if (payload.type == "shift") {
-
-      }
-
-    },
     changePositon(state, { payload }) {
       state.position = payload
     },
@@ -200,12 +191,15 @@ const homeSlice = createSlice({
       state.groupNameInfo = payload
     },
     changeStencilMenuInfo(state, { payload }) {
-      
+
       state.stencilMenuInfo = payload
     },
     changePostionToGroup(state, { payload }) {
       state.postionToGroup = payload
-    }
+    },
+    changeEdgeClickInfo(state, { payload }) {
+      state.edgeClickInfo = payload
+    },
   },
   extraReducers: {},
 });
@@ -228,7 +222,8 @@ export const {
   changeDataSourceInfo,
   changeGroupNameInfo,
   changeStencilMenuInfo,
-  changePostionToGroup
+  changePostionToGroup,
+  changeEdgeClickInfo
 } = homeSlice.actions;
 
 export default homeSlice.reducer;

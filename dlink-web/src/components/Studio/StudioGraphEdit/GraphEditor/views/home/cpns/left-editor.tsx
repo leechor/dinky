@@ -19,22 +19,25 @@ import NodeModalPreview from '../../../components/node-preview-modal';
 import AddModalPort from '../../../components/add-port-modal';
 import {
   changeCurrentSelectNode,
-  changeDataSourceInfo,
-  changeGroupNameInfo,
   changePositon,
   changePreviewInfo,
+  changeDataSourceInfo,
+  changeGroupNameInfo,
+  changeEdgeClickInfo,
   changeStencilMenuInfo,
   GroupTabItem,
-  initFlowDataAction,
   removeGraphTabs
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import localCache from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/localStorage"
 import CustomShape from '../../../utils/cons';
 import DataSourceModal from '../../../components/data-source-modal';
 import GroupName from '../../../components/group-name-modal';
-import {shrinkGroupNode} from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper";
-import {changeCustomGroupInfo, saveCustomGroupInfo} from '@/components/Common/crud';
-import {StencilMenu} from '../../../components/stencil-menu';
+import EdgeClickModal from '../../../components/edge-click-modal';
+import { shrinkGroupNode } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper";
+import { saveCustomGroupInfo, changeCustomGroupInfo } from '@/components/Common/crud';
+import { StencilMenu } from '../../../components/stencil-menu';
+import { initFlowDataAction } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
+
 
 
 export interface ParametersConfigType {
@@ -131,7 +134,7 @@ const LeftEditor = memo(() => {
   }));
 
   const { flowData, operatorParameters: operatorParameters, groupNameInfo,
-    jsonEditor, taskName, tabs, previewInfo, dataSourceInfo }: { tabs: GroupTabItem[], [key: string]: any }
+    jsonEditor, taskName, tabs, previewInfo, dataSourceInfo, edgeClickInfo }: { tabs: GroupTabItem[], [key: string]: any }
     = useAppSelector((state) => ({
       flowData: state.home.flowData,
       operatorParameters: state.home.operatorParameters,
@@ -140,7 +143,8 @@ const LeftEditor = memo(() => {
       tabs: state.home.graphTabs,
       previewInfo: state.home.previewInfo,
       dataSourceInfo: state.home.dataSourceInfo,
-      groupNameInfo: state.home.groupNameInfo
+      groupNameInfo: state.home.groupNameInfo,
+      edgeClickInfo: state.home.edgeClickInfo
     }));
 
   useEffect(() => {
@@ -634,7 +638,10 @@ const LeftEditor = memo(() => {
         name: value.groupName
       }).then(res => {
         warningTip(res.code, res.msg)
+        dispatch(initFlowDataAction())
       })
+
+
     } else {
       changeCustomGroupInfo(`/api/zdpx/customer/oldName/${value.node.prop().name}/newName/${value.groupName}`).then(res => {
         warningTip(res.code, res.msg)
@@ -687,6 +694,12 @@ const LeftEditor = memo(() => {
   const changeNode = (node: Cell) => {
     dispatch(changeCurrentSelectNode(node))
   }
+  const handleEdgeClickSubmit = (value: any) => {
+    dispatch(changeEdgeClickInfo({ ...edgeClickInfo, data: Date.now() }))
+  }
+  const handleEdgeClickCancel = () => {
+    dispatch(changeEdgeClickInfo({ isShowedgeClickModal: false, edgeInfo: null, data: null }))
+  }
   const changePosition = (x: number, y: number) => {
     dispatch(changePositon({ x, y }))
   }
@@ -703,9 +716,7 @@ const LeftEditor = memo(() => {
     }
 
     const graph = graphRef.current;
-    // graph.getCells().forEach(cell => {
-    //   cell.hide()
-    // })
+
     const groupNode = graph.getCellById(tabs[clickLayer + 1].groupCellId) as Node;
     shrinkGroupNode(graph, groupNode);
 
@@ -756,7 +767,8 @@ const LeftEditor = memo(() => {
         editorContentContainer,
         selectedNodes,
         setSelectedNodes,
-        dispatch
+        dispatch,
+        jsonEditor,
       );
       window.graph = graphRef.current
       initMenu(graphRef.current, setShowMenuInfo, changeNode, changePosition);
@@ -863,7 +875,8 @@ const LeftEditor = memo(() => {
       />
       {stencilMenuInfo.showStencilMenu &&
         <StencilMenu />}
-
+      <EdgeClickModal onSubmit={(value: any) => handleEdgeClickSubmit(value)}
+        onCancel={() => handleEdgeClickCancel()} edgeInfo={edgeClickInfo.edgeInfo} graph={graphRef.current!} />
     </>
 
   );

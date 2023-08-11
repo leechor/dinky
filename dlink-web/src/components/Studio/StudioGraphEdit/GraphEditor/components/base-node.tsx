@@ -11,14 +11,14 @@ const BaseNode = (props: { nodeType: NodeType; iconPath: string, name: string })
   } = props;
 
   const handleWarning = () => {
-    console.log(">>>>>");
 
   }
 
   const getErrorMessage = () => {
     const { sqlErrorMsg, portInformation, edge } = node.prop().errorMsg;
+
     return <>
-      {sqlErrorMsg && < div className={styles["error-msg"]} ><div className={styles["error-msg-title"]}><CloseOutlined style={{ color: "red" }} /><span  >节点错误：</span></div><div className={styles["error-msg-body"]} >{sqlErrorMsg}</div></div>
+      {sqlErrorMsg!==null && < div className={styles["error-msg"]} ><div className={styles["error-msg-title"]}><CloseOutlined style={{ color: "red" }} /><span  >节点错误：</span></div><div className={styles["error-msg-body"]} >{sqlErrorMsg}</div></div>
       }
       {edge && <div className={styles["error-msg"]}><div className={styles["error-msg-title"]}><CloseOutlined style={{ color: "red" }} /><span>边错误:</span></div><div className={styles["error-msg-body"]}>{edge.map((e: string) => <div key={e} >{e}</div>)}</div></div>}
       {portInformation && <div className={styles["error-msg"]}>
@@ -37,7 +37,7 @@ const BaseNode = (props: { nodeType: NodeType; iconPath: string, name: string })
     <>
       {!node.prop().isStencil && <div className={styles['custom-calcu-node-head']}><div style={{ whiteSpace: 'nowrap', textAlign: 'center' }}>{name}</div></div>}
       <div className={styles['custom-calcu-node']}>
-        {(node&&node.prop().isStencil) && (
+        {(node && node.prop().isStencil) && (
           <Tooltip title={name}>
             <div className={styles['custom-calcu-node-label']}>{name}</div>
           </Tooltip>

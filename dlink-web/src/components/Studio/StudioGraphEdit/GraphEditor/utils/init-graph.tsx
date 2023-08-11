@@ -7,6 +7,7 @@ import {
   addGraphTabs,
   changeCurrentSelectNode,
   changeCurrentSelectNodeName,
+  changeEdgeClickInfo,
   changeGraph,
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import React from 'react';
@@ -17,6 +18,8 @@ import {
 } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper";
 import { getCustomGroupInfo } from '@/components/Common/crud';
 import { warningTip } from '../views/home/cpns/left-editor';
+import { getSourceNodeAndPort, getTargetNodeAndPort, getSourceTargetByEdge } from './graph-tools-func';
+
 
 const cloneSubCells = (cell: Cell, graph: Graph) => {
   if (cell.shape == CustomShape.GROUP_PROCESS && cell.prop().name && cell.prop().isStencil !== undefined) {
@@ -76,6 +79,7 @@ export const initGraph = (
   selectedNodes: Node<Node.Properties>[],
   setSelectedNodes: React.Dispatch<React.SetStateAction<Node<Node.Properties>[]>>,
   dispatch: any,
+  jsonEditor: any
 ) => {
   const graph = new Graph({
     container,
@@ -121,11 +125,16 @@ export const initGraph = (
             line: {
               stroke: '#b2a2e9',
               strokeWidth: 2,
-              targetMarker: {
-                name: 'classic',
-                size: 10,
-              },
+              targetMarker: "",
             },
+          },
+          tools: {
+            name: "vertices",
+            args: {
+              attrs: {
+                fill: "#666"
+              }
+            }
           },
         });
         edge.toFront()
@@ -259,6 +268,12 @@ export const initGraph = (
       },
     ]);
   });
+  graph.on("node:change", ({ node }: { node: Node }) => {
+    
+    if (node.shape === CustomShape.TEXT_NODE) {
+
+    }
+  })
   graph.on('edge:mouseleave', ({ e, view, edge, cell }) => {
     // edge.setAttrByPath(LINE_STOKE_WIDTH, 2);
     // showEdgePorts(edge, false);
@@ -266,30 +281,22 @@ export const initGraph = (
   });
 
   graph.on('node:selected', ({ node }) => {
-    console.log(node.shape === CustomShape.GROUP_PROCESS);
-
     //组节点放大后不允许选择
     if (node.shape === CustomShape.GROUP_PROCESS
       && (node.getSize().height >= graph.getGraphArea().height
         || node.getSize().width >= graph.getGraphArea().height)) {
       graph.unselect(node)
     } else {
+      if (node.shape == CustomShape.TEXT_NODE) {
+
+       
+      }
       dispatch(changeCurrentSelectNode(node));
       dispatch(changeCurrentSelectNodeName(node.shape));
-
       //深拷贝,数组要改变地址子组件才能监听到变化
       selectedNodes.push(node);
       setSelectedNodes([...selectedNodes]);
     }
-  });
-
-  //右键菜单
-  graph.on('node:contextmenu', ({ cell, e }) => {
-    const p = graph.clientToGraph(e.clientX, e.clientY);
-  });
-
-  graph.on('blank:contextmenu', ({ e }) => {
-    const p = graph.clientToGraph(e.clientX, e.clientY);
   });
 
   graph.on('node:collapse', ({ cell: node }: any) => {
@@ -346,6 +353,7 @@ export const initGraph = (
       console.log(cell.id, 'groupid');
     }
 
+
     window.cell = cell;
 
   });
@@ -356,11 +364,9 @@ export const initGraph = (
       cell.setZIndex(-1);
     }
     cloneSubCells(cell, graph)
-    // updateGraphData(graph);
   });
 
   graph.on('cell:removed', ({ cell, index, options }) => {
-    // updateGraphData(graph);
   });
 
   graph.on("node:mousemove", ({ node, x, y }) => {
@@ -388,7 +394,6 @@ export const initGraph = (
 
     let children = groupNode.getChildren() ?? [];
     if (!children.length) {
-      console.log('没有子节点')
       return
     }
 
@@ -457,8 +462,9 @@ export const initGraph = (
     extendGroupNode(node);
   });
 
-  graph.on("edge:click", ({ edge }) => {
+  graph.on("edge:dblclick", ({ edge }) => {
     console.log(edge.id, "edgeid");
+    getSourceTargetByEdge(graph, edge, dispatch)
     window.edge = edge;
 
   })

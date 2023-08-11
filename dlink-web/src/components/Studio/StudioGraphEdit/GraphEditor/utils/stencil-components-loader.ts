@@ -16,14 +16,13 @@ export const stencilComponentsLoader = (
   stencil: Stencil,
   operatorParameters: Parameter[],
 ) => {
-
+  
   const registeredStenCpn: { cpn: Node<Node.Properties>; cpnName: string }[] = [];
   const groupsName: { [key: string]: string[] } = {};
   let node: Node
   //根据算子参数注册stencil组件
-
   operatorParameters?.forEach((param: Parameter) => {
-
+  
     if (param.group === CustomShape.GROUP_PROCESS) {
       node = graph.createNode({
         name: param.name,
