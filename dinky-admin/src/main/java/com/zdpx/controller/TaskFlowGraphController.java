@@ -46,18 +46,13 @@ public class TaskFlowGraphController {
 
     @PutMapping
     public Result<List<CheckInformationModel>> submitSql(@RequestBody Task task) {
+        taskFlowGraphService.updateTaskFlowGraph(task);//暂存
         List<CheckInformationModel> msg = taskFlowGraphService.saveOrUpdateTask(task);
         if (!msg.isEmpty()) {
             return Result.succeed(msg);
         } else {
             return Result.succeed("保存成功，并且无报错信息");
         }
-    }
-
-    @PutMapping("/store")
-    public Result<Void> store(@RequestBody Task task) {
-        taskFlowGraphService.updateTaskFlowGraph(task);
-        return Result.succeed();
     }
 
     @PutMapping("testGraphSql")
@@ -83,7 +78,7 @@ public class TaskFlowGraphController {
 
     @PostMapping("/getFunction")
     public Result<String> getFunction(@RequestBody List<Map<String, Object>> functions) {
-        StringBuffer pretreatment = FieldFunction.pretreatment("", functions, false, null, new StringBuffer(),",");
+        StringBuffer pretreatment = FieldFunction.pretreatment("", functions, false, null, new StringBuffer(),"");
         return Result.succeed(pretreatment.toString());
     }
 

@@ -50,4 +50,4 @@ gradle-app.setting
 # gradle/wrapper/gradle-wrapper.properties
 
 /target/
-/src/main/java/generate/
+/graph-process/src/main/java/generate/

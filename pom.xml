@@ -634,6 +634,11 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.zdpx</groupId>
+                <artifactId>graph-process</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-data-ldap</artifactId>
                 <version>${spring.ldap.version}</version>
