@@ -22,6 +22,34 @@ import { getSourceNodeAndPort, getTargetNodeAndPort, getSourceTargetByEdge } fro
 
 
 const cloneSubCells = (cell: Cell, graph: Graph) => {
+  window.cell = cell
+
+  let addedCell: Cell[] = [];
+  if (cell.shape !== CustomShape.GROUP_PROCESS && cell.shape.includes("custom-node")) {
+    getCustomGroupInfo(`/api/zdpx/customer/${cell.prop().name!}`).then(res => {
+      if (res.code === 0) {
+        graph.removeCell(cell)
+        const { cells } = JSON.parse(res.datas);
+        cells.map((c: Cell) => {
+          const node = graph.addNode(c as Node)
+          node.prop("name", cell.prop().name!)
+          const { x, y } = (cell as Node).position();
+          node.setPosition(x, y, { relative: true, deep: true });
+          addedCell.push(node)
+        })
+        const clonedCells = graph.cloneCells(addedCell)
+        Object.values(clonedCells).forEach(cell => {
+          graph.addCell(cell)
+        })
+        graph.removeCells(addedCell)
+      }
+      warningTip(res.code, res.msg)
+    })
+  }
+
+
+
+
   if (cell.shape == CustomShape.GROUP_PROCESS && cell.prop().name && cell.prop().isStencil !== undefined) {
     let addedCells: Cell[] = [];
     let addedGroup: Cell;
@@ -269,7 +297,7 @@ export const initGraph = (
     ]);
   });
   graph.on("node:change", ({ node }: { node: Node }) => {
-    
+
     if (node.shape === CustomShape.TEXT_NODE) {
 
     }
@@ -289,7 +317,7 @@ export const initGraph = (
     } else {
       if (node.shape == CustomShape.TEXT_NODE) {
 
-       
+
       }
       dispatch(changeCurrentSelectNode(node));
       dispatch(changeCurrentSelectNodeName(node.shape));

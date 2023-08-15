@@ -8,8 +8,9 @@ import { Node, Edge, Graph } from '@antv/x6';
 
 import styles from "./index.less"
 import { getSourceColOrCon, setSourceColumnOrConfig, getTargetConfig, setTargetConfig } from '../../../utils/graph-tools-func';
-import { useAppDispatch } from '../../../hooks/redux-hooks';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux-hooks';
 import { changeEdgeClickInfo } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home'
+
 
 type PortProFormProps = {
     edgeInfo: { edge: Edge, sourceNode: Node, targetNode: Node, sourcePortId: string, targetPortId: string }
@@ -40,11 +41,12 @@ export const FORM_LAYOUT_PUBLIC = {
 const EdgeClick: React.FC<PortProFormProps> = (props) => {
     const dispatch = useAppDispatch()
     const actionRef = useRef<ActionType>()
-   
+    const { edgeClickInfo } = useAppSelector((state) => ({
+        edgeClickInfo: state.home.edgeClickInfo
+    }));
 
     const { sourceNode, sourcePortId, targetNode, targetPortId, edge } = props.edgeInfo;
-
-    const defaultSourceData: DataSourceType[] = getSourceColOrCon(sourceNode, sourcePortId, targetNode, targetPortId)
+    const defaultSourceData: DataSourceType[] = getSourceColOrCon(sourceNode, sourcePortId, targetNode, targetPortId, edgeClickInfo.data)
     const defaultTargetData: DataSourceType[] = getTargetConfig(sourceNode, sourcePortId, targetNode, targetPortId)
 
     const [editableKeys, setEditableRowKeys] = useState<React.Key[]>(defaultSourceData.map((item) => item.id)
@@ -139,7 +141,7 @@ const EdgeClick: React.FC<PortProFormProps> = (props) => {
         dispatch(changeEdgeClickInfo({
             isShowedgeClickModal: true,
             edgeInfo: { edge, sourceNode, sourcePortId, targetNode, targetPortId },
-            data: null,
+            data: edgeClickInfo.data,
         }))
         const data: DataSourceType[] = getTargetConfig(sourceNode, sourcePortId, targetNode, targetPortId)
         setDataTarget(data)

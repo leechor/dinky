@@ -1,5 +1,5 @@
-import React, { memo, FC } from "react";
-import { Form, Modal } from 'antd';
+import { memo, FC } from "react";
+import { Modal } from 'antd';
 import { Node, Edge, Graph } from "@antv/x6";
 import EdgeClick from "./edge-click";
 import { useAppSelector } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
@@ -22,7 +22,7 @@ const EdgeClickModal: FC<EdgeClickProps> = memo((props) => {
         onSubmit: handleSubmit,
         onCancel: handleModalVisible,
         edgeInfo,
-        graph
+        graph,
     } = props;
 
     /**

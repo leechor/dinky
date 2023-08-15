@@ -139,6 +139,20 @@ export async function changeCustomGroupInfo(url: string) {
   });
 }
 
+export async function getFunctionName(url: string, params: any) {
+  return request2(url, {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+export async function autoPromptFunction(url: string) {
+  return request2(url, {
+    method: 'GET',
+  });
+}
+
 
 
 

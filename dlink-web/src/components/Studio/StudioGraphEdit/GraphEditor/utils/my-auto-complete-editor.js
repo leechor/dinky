@@ -1,7 +1,7 @@
-import {StringEditor} from "@json-editor/json-editor/src/editors/string";
-import {extend} from "@json-editor/json-editor/src/utilities"
+import { StringEditor } from "@json-editor/json-editor/src/editors/string";
+import { extend } from "@json-editor/json-editor/src/utilities"
 import autoComplete from "@tarekraafat/autocomplete.js/dist/autoComplete";
-import helper from "./autocomplete-utils"
+import helper from "./autocomplete-utils.ts"
 
 export class MyAutoCompleteEditor extends StringEditor {
 
@@ -27,7 +27,13 @@ export class MyAutoCompleteEditor extends StringEditor {
       selector: () => this.input,
       data: {
         src: async () => {
-          return helper[options.function.name](options.function.args)
+          try {
+            const { datas } = await helper[options.function.name](options.function.args)
+            return datas
+          } catch (error) {
+            return null
+          }
+
         },
         filter: (list) => {
           // Filter duplicates
@@ -39,16 +45,24 @@ export class MyAutoCompleteEditor extends StringEditor {
         }
       },
       debounce: 300,
+      resultsList: {
+        tag: "ul",
+        element: (list, data) => {
+          list.style = `position: absolute;background: #fff;width: 100%;margin: 0;z-index:999`
+        }
+      },
       resultItem: {
         element: (item, data) => {
           // Modify Results Item Style
           item.style = "display: flex; justify-content: space-between;";
           // Modify Results Item Content
-          item.innerHTML = `
-      <span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
-        ${data.match}
-      </span>
-      `;
+          item.innerHTML = `<span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">${data.match}</span>`;
+          item.addEventListener("mouseenter", () => {
+            item.style.backgroundColor = 'rgb(24, 144, 255)'
+          });
+          item.addEventListener("mouseleave", () => {
+            item.style.backgroundColor = '#fff'
+          })
         },
         highlight: true
       },

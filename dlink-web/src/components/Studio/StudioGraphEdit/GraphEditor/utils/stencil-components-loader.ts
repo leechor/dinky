@@ -16,60 +16,29 @@ export const stencilComponentsLoader = (
   stencil: Stencil,
   operatorParameters: Parameter[],
 ) => {
-  
+
   const registeredStenCpn: { cpn: Node<Node.Properties>; cpnName: string }[] = [];
   const groupsName: { [key: string]: string[] } = {};
   let node: Node
   //根据算子参数注册stencil组件
   operatorParameters?.forEach((param: Parameter) => {
-  
-    if (param.group === CustomShape.GROUP_PROCESS) {
-      node = graph.createNode({
-        name: param.name,
-        shape: CustomShape.GROUP_PROCESS,
-        width: 70,
-        height: 50,
-        attrs: {
-          body: {
-            rx: 7,
-            ry: 6,
-          },
-          text: {
-            text: param.name,
-            fontSize: 2,
-          },
-        },
-      });
-      //显示删除按钮
-      node.addTools([
-        {
-          name: 'rm-btn',
-          args: {
-            x: 0,
-            y: 0,
-            offset: { x: 0, y: 0 },
-          },
-        },
-      ]);
-    } else {
-      node = graph.createNode({
-        name: param.name,
-        shape: param.code,
-        width: 70,
-        height: 50,
-        attrs: {
-          body: {
-            rx: 7,
-            ry: 6,
-          },
-          text: {
-            text: param.name,
-            fontSize: 2,
-          },
-        },
-      });
 
-    }
+    node = graph.createNode({
+      name: param.name,
+      shape: param.code,
+      width: 70,
+      height: 50,
+      attrs: {
+        body: {
+          rx: 7,
+          ry: 6,
+        },
+        text: {
+          text: param.name,
+          fontSize: 2,
+        },
+      },
+    });
     node.prop("isStencil", true)
 
     registeredStenCpn.push({ cpn: node, cpnName: param.code });

@@ -1,5 +1,5 @@
 import { Graph, Node } from '@antv/x6';
-import { register } from '@antv/x6-react-shape';
+import { register, } from '@antv/x6-react-shape';
 import TextNode from '@/components/Studio/StudioGraphEdit/GraphEditor/components/text-node';
 import OperatorNode from '@/components/Studio/StudioGraphEdit/GraphEditor/components/operator-node';
 import { Parameter } from '@/components/Studio/StudioGraphEdit/GraphEditor/ts-define/parameter';
@@ -148,9 +148,9 @@ function registerOperatorNode(
     node: Node;
     graph: Graph;
   }>,
-  portItem: PortManager.PortMetadata[],
+  portItem: PortManager.PortMetadata[], 
 ) {
-
+  Graph.unregisterNode(code)
   register({
     width: 80,
     height: 50,
@@ -175,6 +175,8 @@ export default (
   ports: Partial<PortManager.Metadata> | PortManager.PortMetadata[],
   operatorParameters: Parameter[],
 ) => {
+  console.log(operatorParameters);
+  
   //取消已注册，重新注册
   unRegisterShape(operatorParameters)
   operatorParameters?.forEach((param) => {

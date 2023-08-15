@@ -28,7 +28,7 @@ import {
   getGraphViewSize
 } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper";
 import { changePreviewInfo, changeDataSourceInfo, changeGroupNameInfo } from '../../../store/modules/home';
-import { getNodePreviewInfo, getDataSourceType } from '@/components/Common/crud';
+import { getNodePreviewInfo, getDataSourceType, autoPromptFunction } from '@/components/Common/crud';
 import CpnShape from "@/components/Studio/StudioGraphEdit/GraphEditor/components/cpn-shape"
 
 type MenuPropsType = {
@@ -247,7 +247,6 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
         break;
       case 'redo':
         graph.redo();
-
         break;
       case 'delete':
         graph.clearCells();
@@ -283,6 +282,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
         break;
       case 'print':
         // graph.printPreview();
+
         break;
       case 'copy':
         copy();

@@ -1,3 +1,4 @@
+import { map } from 'rxjs/operators';
 
 import CustomShape from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons';
 import { cloneDeep } from 'lodash';
@@ -7,6 +8,7 @@ import { DataSourceType } from '../components/edge-click-modal/edge-click';
 import type { Parameter } from "@/components/Studio/StudioGraphEdit/GraphEditor/ts-define/parameter"
 import { Graph, Edge, Node, Cell } from "@antv/x6"
 import { changeEdgeClickInfo } from '../store/modules/home';
+import { getFunctionName } from '@/components/Common/crud';
 
 export interface sourceConfigType {
     flag: boolean,
@@ -23,6 +25,7 @@ export const isSourceDataType = (schemaData: Parameter[], node: Node) => {
 }
 //通过边获取源、目标节点及port
 export const getSourceTargetByEdge = (graph: Graph, edge: Edge, dispatch: any) => {
+    
     const targetInfo = getTargetNodeAndPort(edge, graph)
     const sourceInfo = getSourceNodeAndPort(edge, graph)
     if (typeof targetInfo !== null && typeof sourceInfo !== null) {
@@ -30,11 +33,42 @@ export const getSourceTargetByEdge = (graph: Graph, edge: Edge, dispatch: any) =
         const targetPortId = targetInfo?.targetPortId!
         const sourceNode = sourceInfo?.sourceNode!;
         const sourcePortId = sourceInfo?.sourcePortId!;
-        dispatch(changeEdgeClickInfo({
-            isShowedgeClickModal: true,
-            edgeInfo: { edge, sourceNode, sourcePortId, targetNode, targetPortId },
-            data: null,
-        }))
+        const id = getId(sourceNode, sourcePortId, targetNode, targetPortId)
+        if (sourceNode.getData() !== undefined) {
+            if (!sourceNode.getData().hasOwnProperty("parameters") || !sourceNode.getData().hasOwnProperty("config")) {
+                message.warning("请设置数据源参数配置!")
+                return
+            } else {
+                
+                let columns = [];
+                if (sourceNode.shape === CustomShape.DUPLICATE_OPERATOR) {
+                    columns = sourceNode.getData()?.config[0][id]
+                } else {
+                    columns = sourceNode.getData()?.parameters.columns
+                }
+
+                let data: string[] = []
+                getFunctionName("/api/zdpx/getFunction", { columns }).then(res => {
+                    if (res.code === 0) {
+                        data = res.datas
+                        dispatch(changeEdgeClickInfo({
+                            isShowedgeClickModal: true,
+                            edgeInfo: { edge, sourceNode, sourcePortId, targetNode, targetPortId },
+                            data: data,
+                        }))
+                    } else {
+                        message.error("获取函数别名失败" + res.msg)
+                        data = []
+                    }
+
+                })
+
+            }
+        } else {
+            message.warning("请设置数据源参数配置!")
+            return
+        }
+
     } else {
         message.warning("请先确定是否连线！")
     }
@@ -74,29 +108,49 @@ export const getSourceNodeAndPort = (edge: Edge, graph: Graph): { sourceNode: No
     }
 }
 //获取源column或config
-export const getSourceColOrCon = (sourceNode: Node, sourcePortId: string, targetNode: Node, targetPortId: string) => {
+export const getSourceColOrCon = (sourceNode: Node, sourcePortId: string, targetNode: Node, targetPortId: string, data: string[]) => {
+    let columns = []
     const id = getId(sourceNode, sourcePortId, targetNode, targetPortId)
     let dataSource: DataSourceType[];
     if (sourceNode.shape === "DuplicateOperator") {
         //修改（如果是DuplicateOperator则需要从输入节点的config里读取 ）
-        dataSource = sourceNode?.getData()["config"][0][id]
+        columns = sourceNode?.getData()["config"][0][id]
+
     } else {
-        dataSource = sourceNode?.getData()?.parameters.columns;
+        columns = sourceNode?.getData()?.parameters.columns;
     }
-    return dataSource && dataSource.map((item, index) => ({
+    dataSource = columns.map((item: any, index: number) => {
+        return {
+            ...item,
+            name: data[index]
+        }
+    })
+    dataSource = dataSource && dataSource.map((item, index) => ({
         ...item,
         id: (Date.now() + index)
     }))
+    return dataSource
+
 
 }
 export const getTargetConfig = (sourceNode: Node, sourcePortId: string, targetNode: Node, targetPortId: string) => {
     const id = getId(sourceNode, sourcePortId, targetNode, targetPortId)
     let dataTarget: DataSourceType[];
-    dataTarget = targetNode?.getData()["config"][0][id]
-    return dataTarget && dataTarget.map((item, index) => ({
-        ...item,
-        id: (Date.now() + index)
-    }))
+    if (targetNode.getData() !== undefined) {
+        if (targetNode.getData().hasOwnProperty("config")) {
+            dataTarget = targetNode?.getData()["config"][0][id]
+            return dataTarget && dataTarget.map((item, index) => ({
+                ...item,
+                id: (Date.now() + index)
+            }))
+        } else {
+            return []
+        }
+    } else {
+        return []
+    }
+
+
 }
 //返回config 中id
 export const getId = (sourceCell: Cell, sourcePortId: string, targetCell: Cell, targetPortId: string) => {
@@ -104,10 +158,10 @@ export const getId = (sourceCell: Cell, sourcePortId: string, targetCell: Cell, 
 
 }
 //
-export const transDataToColumn = (data: DataSourceType[]) => {
+export const transDataToColumn = (data: any[]) => {
     return cloneDeep(data).map(item => {
-        const { name, flag, type, decs, outName } = item
-        return { name, flag, type, decs, outName }
+        delete item.id
+        return { ...item }
     })
 }
 
@@ -131,11 +185,19 @@ export const strMapToObj = (strMap: Map<string, sourceConfigType[]>) => {
     return obj
 }
 //将configdata设置给节点config
-export const setConfigToNode = (node: Node, config: any) => {
-    node.setData({
-        ...(node.getData() ? node.getData() : {}),
-        config: [config]
-    }, { overwrite: true });
+export const setConfigToNode = (node?: Node | null, config?: any, cell?: Cell) => {
+    if (node) {
+        node.setData({
+            ...(node.getData() ? node.getData() : {}),
+            config: [config]
+        }, { overwrite: true });
+    }
+    if (cell) {
+        cell.setData({
+            ...(cell.getData() ? cell.getData() : {}),
+            config: [config]
+        }, { overwrite: true });
+    }
 }
 
 //设置源column or config
