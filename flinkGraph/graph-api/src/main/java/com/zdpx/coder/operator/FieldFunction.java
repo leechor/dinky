@@ -241,7 +241,7 @@ public class FieldFunction  {
     }
 
     public static String typeInference(List<Column> inputColumn,FieldFunction fo,String type){
-        if(!inputColumn.isEmpty()){
+        if(inputColumn!=null&&!inputColumn.isEmpty()){
             for(Column c :inputColumn){//优先使用上一级名称
                 if(c.getName().equals(fo.getFunctionName())){
                     return c.getType();

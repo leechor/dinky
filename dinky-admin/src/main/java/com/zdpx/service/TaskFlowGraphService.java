@@ -27,6 +27,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.zdpx.model.FlowGraph;
+import org.springframework.web.bind.annotation.PathVariable;
 
 /** */
 public interface TaskFlowGraphService extends ISuperService<FlowGraph> {
@@ -42,4 +43,6 @@ public interface TaskFlowGraphService extends ISuperService<FlowGraph> {
     String operatorPreview(String graph);
 
     void updateTaskFlowGraph(Task task);
+
+    Object generalProcess(String graph, String operate);
 }

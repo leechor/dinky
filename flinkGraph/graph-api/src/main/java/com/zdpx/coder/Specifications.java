@@ -108,7 +108,7 @@ public final class Specifications {
      */
     public static List<Column> convertFieldFunctionToColumns(List<FieldFunction> ffs) {
         return ffs.stream()
-                .map(t -> new Column(t.getOutName()==null? String.valueOf(t.getParameters().get(0)):t.getOutName(), t.getOutType()))
+                .map(t -> new Column(t.getOutName()==null? t.getFunctionName():t.getOutName(), t.getOutType()))
                 .collect(Collectors.toList());
     }
 

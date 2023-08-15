@@ -177,12 +177,14 @@ public class CommWindowOperator extends Operator {
         boolean outPut = true;
 
         for(FieldFunction column : columns){
-            for(int i=0;i<inputName.size();i++){
-                if(column.getOutName().equals(inputName.get(i))){
-                    outPut=false;
-                }
-                if(i==inputName.size()-1&&outPut){
-                    list.add("算子输入不包含该字段, 未匹配的字段名： "+ column.getOutName());
+            if(column.getOutName()!=null){
+                for(int i=0;i<inputName.size();i++){
+                    if(column.getOutName().equals(inputName.get(i))){
+                        outPut=false;
+                    }
+                    if(i==inputName.size()-1&&outPut){
+                        list.add("算子输入不包含该字段, 未匹配的字段名： "+ column.getOutName());
+                    }
                 }
             }
         }

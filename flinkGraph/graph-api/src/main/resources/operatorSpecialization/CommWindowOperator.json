@@ -298,6 +298,11 @@
 							"pattern":"^[A-Za-z0-9_]*$",
 							"title": "outName"
 						},
+						"name": {
+							"type": "string",
+							"title": "name",
+							"description": "字段名称"
+						},
 						"function": {
 						   "title": "function",
 						   "description": "前端传递该结构至后端，后端返回嵌套结果，前端将结果存放在name字段中",
@@ -306,10 +311,17 @@
 								"function":"a.function"
 						   }
 						},
-						"name": {
-						   "title": "name",
-						   "type": "string",
-						   "description": "存放函数嵌套过后生成的输入字段名称"
+						"type": {
+							"type": "string",
+							"minLength": 1,
+							"title": "type",
+							"default": "STRING",
+							"enum":["CHAR","VARCHAR","STRING","BOOLEAN","BINARY","VARBINARY","BYTES","DECIMAL","TINYINT","SMALLINT","INT","BIGINT","FLOAT","DOUBLE","DATE","TIME","TIMESTAMP","TIMESTAMP(3)","TIMESTAMP_LTZ(3)","INTERVAL","ARRAY","MULTISET","MAP","ROW","RAW"],
+							"examples": [
+								"STRING",
+								"INT",
+								"TIMESTAMP(3)"
+							]
 						},
 						"flag":{
 							"type": "boolean",

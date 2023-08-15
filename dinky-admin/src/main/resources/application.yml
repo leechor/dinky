@@ -170,6 +170,6 @@ knife4j:
 #        api-rule-resources:
 #          - org.dinky.controller
 Dinky:
-  version: @project.version@
+  version: project.version
 sms:
   is-print: false
