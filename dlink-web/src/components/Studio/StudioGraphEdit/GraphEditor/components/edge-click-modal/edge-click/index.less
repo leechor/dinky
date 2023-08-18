@@ -1,13 +1,22 @@
 .header {
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
 
-    :first-child {
-        width: 50%;
+    .head {
+        width: 100%;
+        margin: 10px;
+        font-weight: 800;
+        font-size: 16px;
+        display: flex;
+        justify-content: flex-end;
+        
+
+        .head-mid {}
     }
 
-    :last-child {
-        width: 50%;
+    .head-right {
+        flex: 1
     }
 }
 
@@ -16,13 +25,34 @@
     flex-direction: row;
 
     .left {
-        width: 50%;
-        border-right: 1px solid #ccc;
+        width: 75%;
+        // border-right: 1px solid #ccc;
     }
 
     .right {
-        width: 50%;
+        flex:1;
     }
 }
 
-.footer {}
+
+:global {
+    .editable-row {
+        height: 35px !important;
+
+        td {
+            padding: 0px !important;
+        }
+    }
+    .editable-row-target{
+        height: 35px !important;
+        td {
+            font-weight: 600 !important;
+            padding: 0px !important;
+        }
+        
+    }
+    .target-table-title{
+        font-weight: 600 !important;
+    }
+
+}

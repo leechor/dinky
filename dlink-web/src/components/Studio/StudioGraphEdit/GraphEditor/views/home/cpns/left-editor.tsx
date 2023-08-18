@@ -37,14 +37,15 @@ import { shrinkGroupNode } from "@/components/Studio/StudioGraphEdit/GraphEditor
 import { saveCustomGroupInfo, changeCustomGroupInfo } from '@/components/Common/crud';
 import { StencilMenu } from '../../../components/stencil-menu';
 import { initFlowDataAction } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
-import { setConfigToNode, getSourceTargetByEdge } from '../../../utils/graph-tools-func';
+import { setConfigToNode, getSourceTargetByEdge, getTargetNodeAndPort, getSourceNodeAndPort, getId } from '../../../utils/graph-tools-func';
 
 
 
-export interface ParametersConfigType {
+export interface columnType {
   name: string,
-  flag: boolean,
-  type?: string,
+  outName: string,
+  desc: string,
+  type: string,
 }
 
 interface PortTypes {
@@ -53,7 +54,7 @@ interface PortTypes {
 }
 
 interface CompareCheckProps {
-  origin: ParametersConfigType[],
+  origin: columnType[],
   parameters: string[],
   isOutputs: boolean,
   readConfigData: ReadConfigData,
@@ -79,11 +80,11 @@ type MenuInfo = {
 }
 export interface ParametersData {
   isOutputs: boolean,
-  parametersConfig: ParametersConfigType[],
+  parametersConfig: columnType[],
   readConfigData: ReadConfigData
 }
 
-function strMapToObj(strMap: Map<string, ParametersConfigType[]>) {
+function strMapToObj(strMap: Map<string, columnType[]>) {
   let obj = {};
   for (let [key, value] of strMap) {
     obj[key] = value
@@ -280,7 +281,7 @@ const LeftEditor = memo(() => {
       message.warning("请设置输入参数配置!");
       return
     }
-    let parametersConfig: ParametersConfigType[] = parametersByOutPortConfig[id]
+    let parametersConfig: columnType[] = parametersByOutPortConfig[id]
     //c从config读取，是否筛选出flag true,第一次连线，config里均为true,点击确定修改配置后config有false,但也应该显示，所以不删选字段
     // parametersConfig = parametersConfig.filter(item => item.flag)
     setParametersConfig({
@@ -299,56 +300,60 @@ const LeftEditor = memo(() => {
     graph.on("edge:connected", ({ isNew, edge, currentCell, currentPort }) => {
       //创建新边
       if (isNew) {
-        //拿到该边的sourcecell和sourcePortId
-        const sourcePortId = edge.getSourcePortId()
-        const sourceCell = edge.getSourceCell()
-        //获取source的columns
-        if (!sourceCell?.getData()) return
-        let parametersConfig: ParametersConfigType[];
-        if (sourceCell.shape === CustomShape.DUPLICATE_OPERATOR) {
-          //修改（如果是DuplicateOperator则需要从输入节点的config里读取 ）
-          parametersConfig = sourceCell?.getData()["config"][0][sourcePortId!]
-        } else {
-          parametersConfig = sourceCell?.getData()?.parameters.columns;
-        }
-        //将输出数据筛选后设置给输入【flag为true】
-        parametersConfig = parametersConfig.filter(item => item.flag)
-        if (!parametersConfig) return
-        let configMap: Map<string, ParametersConfigType[]> = new Map();
-        //转换为config设置到当前节点的node-data里
-        if (sourceCell && sourcePortId && currentCell && currentPort) {
-          let id = `${sourceCell.id}&${sourcePortId} ${currentCell.id}&${currentPort}`
-          configMap.set(id, parametersConfig);
-          let config = strMapToObj(configMap)
-          let newConfigObj = getNewConfig(currentCell, config)
-          if (currentCell.shape === CustomShape.DUPLICATE_OPERATOR) {
-            //连接的是自定义节点遍历节点config,重新赋值
-            //设置前节点和当前节点连接config
-            let currentNode = edge.getTargetNode()
-            newConfigObj = getNewConfig(currentCell, config)
-            const outPortIds = currentNode?.getPortsByGroup("outputs").map(data => data.id)
-            if (outPortIds) {
-              for (let key of outPortIds) {
-                newConfigObj[key!] = cloneDeep(config)
-              }
-            }
-            const edges = graph.model.getOutgoingEdges(currentCell);
-            if (edges) {
-              for (let edge of edges) {
-                let targetNode = edge.getTargetNode();
-                let targetPortId = edge.getTargetPortId();
-                let sourcePortId = edge.getSourcePortId();
-                let id = `${currentNode!.id}&${sourcePortId} ${targetNode!.id}&${targetPortId}`
-                newConfigObj[id] = cloneDeep(config)
-              }
-            }
+        const targetInfo = getTargetNodeAndPort(edge, graph)
+        const sourceInfo = getSourceNodeAndPort(edge, graph)
+        if (typeof targetInfo !== null && typeof sourceInfo !== null) {
+          const targetNode = targetInfo?.targetNode!
+          const targetPortId = targetInfo?.targetPortId!
+          const sourceNode = sourceInfo?.sourceNode!;
+          const sourcePortId = sourceInfo?.sourcePortId!;
+
+          //获取source的columns
+          if (!sourceNode?.getData()) return
+          let parametersConfig: columnType[];
+          if (sourceNode.shape === CustomShape.DUPLICATE_OPERATOR) {
+            //修改（如果是DuplicateOperator则需要从输入节点的config里读取 ）
+            parametersConfig = sourceNode?.getData()["config"][0][sourcePortId!]
+          } else {
+            parametersConfig = sourceNode?.getData()?.parameters.output.columns;
           }
-          setConfigToNode(null, newConfigObj, currentCell)
-          if (sourceCell.shape === CustomShape.DUPLICATE_OPERATOR) {
-            //把input-output config 设置进自定义节点config
-            let oldConfigObj = sourceCell.getData()["config"][0]
-            oldConfigObj[id] = parametersConfig
-            setConfigToNode(null, cloneDeep(oldConfigObj), sourceCell)
+          if (!parametersConfig) return
+          let configMap: Map<string, columnType[]> = new Map();
+          //转换为config设置到当前节点的node-data里
+          if (sourceNode && sourcePortId && targetNode && targetPortId) {
+            const id = getId(sourceNode, sourcePortId, targetNode, targetPortId)
+            configMap.set(id, parametersConfig);
+            let config = strMapToObj(configMap)
+            let newConfigObj = getNewConfig(targetNode, config)
+            if (targetNode.shape === CustomShape.DUPLICATE_OPERATOR) {
+              //连接的是自定义节点遍历节点config,重新赋值
+              //设置前节点和当前节点连接config
+              let currentNode = edge.getTargetNode()
+              newConfigObj = getNewConfig(targetNode, config)
+              const outPortIds = currentNode?.getPortsByGroup("outputs").map(data => data.id)
+              if (outPortIds) {
+                for (let key of outPortIds) {
+                  newConfigObj[key!] = cloneDeep(config)
+                }
+              }
+              const edges = graph.model.getOutgoingEdges(targetNode);
+              if (edges) {
+                for (let edge of edges) {
+                  let targetNode = edge.getTargetNode();
+                  let targetPortId = edge.getTargetPortId();
+                  let sourcePortId = edge.getSourcePortId();
+                  let id = `${currentNode!.id}&${sourcePortId} ${targetNode!.id}&${targetPortId}`
+                  newConfigObj[id] = cloneDeep(config)
+                }
+              }
+            }
+            setConfigToNode(null, newConfigObj, targetNode)
+            if (sourceNode.shape === CustomShape.DUPLICATE_OPERATOR) {
+              //把input-output config 设置进自定义节点config
+              let oldConfigObj = sourceNode.getData()["config"][0]
+              oldConfigObj[id] = parametersConfig
+              setConfigToNode(null, cloneDeep(oldConfigObj), sourceNode)
+            }
           }
         }
         getSourceTargetByEdge(graph, edge, dispatch)
@@ -401,7 +406,7 @@ const LeftEditor = memo(() => {
             message.warning("请设置输入参数配置!");
             return
           }
-          let parametersConfig: ParametersConfigType[] = parametersByOutPortConfig[id]
+          let parametersConfig: columnType[] = parametersByOutPortConfig[id]
           // 给每个连接桩赋初始值
           let newConfigObj = {};
           newConfigObj[id] = parametersConfig;
@@ -414,7 +419,7 @@ const LeftEditor = memo(() => {
       }
     } else {
       //非连线下直接添加新的config
-      let configMap: Map<string, ParametersConfigType[]> = new Map();
+      let configMap: Map<string, columnType[]> = new Map();
       configMap.set(value.portName, []);
       let newConfigObj = strMapToObj(configMap)
       setConfigToNode(node, newConfigObj)
@@ -468,6 +473,7 @@ const LeftEditor = memo(() => {
   }
   const handlePreviewSubmit = () => { }
   const handleDataSourceSubmit = (datas: any) => {
+    
     const { tableItem, value: data, type, tableName } = datas
     //将数据源配置到config
 
@@ -485,11 +491,11 @@ const LeftEditor = memo(() => {
           }
         }
         const columns = data.map((item: any) => ({
-          flag: true,
           type: getType(item.javaType),
           name: item.name
         }))
-        const newJsonConfig = { ...jsonconfig, url, username, password, columns, tableName }
+        // const newJsonConfig = { ...jsonconfig, url, username, password, columns, tableName }
+        const newJsonConfig = { output: { ...jsonconfig.output, source: columns }, service: { ...jsonconfig.service, tableName, password, username, url } }
         jsonEditor.setValue(newJsonConfig)
         message.success("配置成功！")
         break

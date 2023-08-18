@@ -25,7 +25,7 @@ export const isSourceDataType = (schemaData: Parameter[], node: Node) => {
 }
 //通过边获取源、目标节点及port
 export const getSourceTargetByEdge = (graph: Graph, edge: Edge, dispatch: any) => {
-    
+
     const targetInfo = getTargetNodeAndPort(edge, graph)
     const sourceInfo = getSourceNodeAndPort(edge, graph)
     if (typeof targetInfo !== null && typeof sourceInfo !== null) {
@@ -36,32 +36,40 @@ export const getSourceTargetByEdge = (graph: Graph, edge: Edge, dispatch: any) =
         const id = getId(sourceNode, sourcePortId, targetNode, targetPortId)
         if (sourceNode.getData() !== undefined) {
             if (!sourceNode.getData().hasOwnProperty("parameters") || !sourceNode.getData().hasOwnProperty("config")) {
-                message.warning("请设置数据源参数配置!")
+                message.warning("请设置输出原始配置!")
                 return
             } else {
-                
                 let columns = [];
                 if (sourceNode.shape === CustomShape.DUPLICATE_OPERATOR) {
-                    columns = sourceNode.getData()?.config[0][id]
+                    
+                    columns = sourceNode.getData()["config"][0][id]
                 } else {
-                    columns = sourceNode.getData()?.parameters.columns
+                    columns = sourceNode.getData()?.parameters.output.columns
+                }
+                let data: string[] = []
+                if (columns.length) {
+                    getFunctionName("/api/zdpx/getFunction", { columns }).then(res => {
+                        if (res.code === 0) {
+                            data = res.datas
+                            dispatch(changeEdgeClickInfo({
+                                isShowedgeClickModal: true,
+                                edgeInfo: { edge, sourceNode, sourcePortId, targetNode, targetPortId },
+                                data: data,
+                            }))
+                        } else {
+                            message.error("获取函数别名失败" + res.msg)
+                            data = []
+                        }
+
+                    })
+                } else {
+                    dispatch(changeEdgeClickInfo({
+                        isShowedgeClickModal: true,
+                        edgeInfo: { edge, sourceNode, sourcePortId, targetNode, targetPortId },
+                        data,
+                    }))
                 }
 
-                let data: string[] = []
-                getFunctionName("/api/zdpx/getFunction", { columns }).then(res => {
-                    if (res.code === 0) {
-                        data = res.datas
-                        dispatch(changeEdgeClickInfo({
-                            isShowedgeClickModal: true,
-                            edgeInfo: { edge, sourceNode, sourcePortId, targetNode, targetPortId },
-                            data: data,
-                        }))
-                    } else {
-                        message.error("获取函数别名失败" + res.msg)
-                        data = []
-                    }
-
-                })
 
             }
         } else {
@@ -80,9 +88,20 @@ export const getTargetNodeAndPort = (edge: Edge, graph: Graph): { targetNode: No
         return { targetNode: node, targetPortId: edge.getTargetPortId()! }
     } else {
         const portIdOutter = edge.getTargetPortId();
-        const findEdge = graph.getOutgoingEdges(node)?.filter(edge => {
-            return edge.getSourcePortId() === `${portIdOutter}_in`
-        })
+        let findEdge: Edge<Edge.Properties>[] | undefined
+
+        if (!portIdOutter?.includes("_in")) {
+            //从外面连线
+            findEdge = graph.getOutgoingEdges(node)?.filter(edge => {
+                return edge.getSourcePortId() === `${portIdOutter}_in`
+            })
+        } else {
+            //从里面连线
+            findEdge = graph.getOutgoingEdges(node)?.filter(edge => {
+                return edge.getSourcePortId() === portIdOutter.substring(0, portIdOutter.lastIndexOf("_in"))
+            })
+        }
+
         if (findEdge) {
             return getTargetNodeAndPort(findEdge[0], graph)
         } else {
@@ -97,9 +116,19 @@ export const getSourceNodeAndPort = (edge: Edge, graph: Graph): { sourceNode: No
         return { sourceNode: node, sourcePortId: edge.getSourcePortId()! }
     } else {
         const portIdOutter = edge.getSourcePortId();
-        const findEdge = graph.getIncomingEdges(node)?.filter(edge => {
-            return edge.getTargetPortId() === `${portIdOutter}_in`
-        })
+        let findEdge: Edge<Edge.Properties>[] | undefined;
+        if (!portIdOutter?.includes("_in")) {
+            //从外面连线
+            findEdge = graph.getIncomingEdges(node)?.filter(edge => {
+                return edge.getTargetPortId() === `${portIdOutter}_in`
+            })
+        } else {
+            //从里面连线
+            findEdge = graph.getIncomingEdges(node)?.filter(edge => {
+                return edge.getTargetPortId() === portIdOutter.substring(0, portIdOutter.lastIndexOf("_in"))
+            })
+        }
+
         if (findEdge) {
             return getSourceNodeAndPort(findEdge[0], graph)
         } else {
@@ -112,12 +141,13 @@ export const getSourceColOrCon = (sourceNode: Node, sourcePortId: string, target
     let columns = []
     const id = getId(sourceNode, sourcePortId, targetNode, targetPortId)
     let dataSource: DataSourceType[];
-    if (sourceNode.shape === "DuplicateOperator") {
+    if (sourceNode.shape === CustomShape.DUPLICATE_OPERATOR) {
+        
         //修改（如果是DuplicateOperator则需要从输入节点的config里读取 ）
         columns = sourceNode?.getData()["config"][0][id]
 
     } else {
-        columns = sourceNode?.getData()?.parameters.columns;
+        columns = sourceNode?.getData()?.parameters.output.columns;
     }
     dataSource = columns.map((item: any, index: number) => {
         return {
@@ -127,22 +157,24 @@ export const getSourceColOrCon = (sourceNode: Node, sourcePortId: string, target
     })
     dataSource = dataSource && dataSource.map((item, index) => ({
         ...item,
-        id: (Date.now() + index)
+        id: (Date.now() + index).toString()
     }))
     return dataSource
-
-
 }
 export const getTargetConfig = (sourceNode: Node, sourcePortId: string, targetNode: Node, targetPortId: string) => {
     const id = getId(sourceNode, sourcePortId, targetNode, targetPortId)
     let dataTarget: DataSourceType[];
     if (targetNode.getData() !== undefined) {
         if (targetNode.getData().hasOwnProperty("config")) {
-            dataTarget = targetNode?.getData()["config"][0][id]
-            return dataTarget && dataTarget.map((item, index) => ({
-                ...item,
-                id: (Date.now() + index)
-            }))
+            if (targetNode.getData()["config"].length) {
+                dataTarget = targetNode?.getData()["config"][0][id]
+                return dataTarget && dataTarget.map((item, index) => ({
+                    ...item,
+                    id: (Date.now() + index).toString()
+                }))
+            } else {
+                return []
+            }
         } else {
             return []
         }
@@ -205,64 +237,72 @@ export const setSourceColumnOrConfig = (sourceNode: Node, sourcePortId: string, 
     //修改源 columns
     const columns = transDataToColumn(data)
     //修改目标 config
-    const config = columns.filter(item => item.flag)
+    // const config = columns.filter(item => item.flag)
     const id = getId(sourceNode, sourcePortId, targetNode, targetPortId)
-    if (sourceNode.shape === "DuplicateOperator") {
-
+    if (sourceNode.shape === CustomShape.DUPLICATE_OPERATOR) {
+        
         //修改源 config
         let newConfigObj = {}
+        // for (let key in sourceNode.getData()["config"][0]) {
+        //     newConfigObj[key] = cloneDeep(columns)
+        // }
         for (let key in sourceNode.getData()["config"][0]) {
-            newConfigObj[key] = cloneDeep(columns)
+            if (key !== id) {
+                newConfigObj[key] = cloneDeep(sourceNode.getData()["config"][0][key])
+            } else {
+                newConfigObj[key] = cloneDeep(columns)
+            }
         }
         setConfigToNode(sourceNode, newConfigObj)
 
         // 同步下个cell config
     } else {
-        sourceNode.getData().parameters.columns = columns
+        // 同步自身节点mapcolumns
+        sourceNode.getData().parameters.output.columns = columns
         let configMap: Map<string, sourceConfigType[]> = new Map();
         //转换为config设置到目标节点的node-data里
-        configMap.set(id, config);
+        configMap.set(id, columns);
         let targetConfig = strMapToObj(configMap)
         let newConfigObj = getNewConfig(targetNode, targetConfig)
         setConfigToNode(targetNode, newConfigObj)
     }
 
-    if (targetNode.shape === "DuplicateOperator") {
-
+    if (targetNode.shape === CustomShape.DUPLICATE_OPERATOR) {
+        
         let newConfigObj: any = {};
         //将下个节点的所有连接装都重置(不影响前节点config保持input-output config不变)
         for (let key in targetNode.getData()["config"][0]) {
-            newConfigObj[key] = cloneDeep(config)
+            newConfigObj[key] = cloneDeep(columns)
         }
         setConfigToNode(targetNode, newConfigObj)
 
     } else {
         let configMap: Map<string, sourceConfigType[]> = new Map();
         //转换为config设置到目标节点的node-data里
-        configMap.set(id, config);
+        configMap.set(id, columns);
         let targetConfig = strMapToObj(configMap)
         let newConfigObj = getNewConfig(targetNode, targetConfig)
         setConfigToNode(targetNode, newConfigObj)
     }
 
-    return config
+    return columns
 }
 
 
-export const setTargetConfig = (sourceNode: Node, sourcePortId: string, targetNode: Node, targetPortId: string, data: DataSourceType[], graph: Graph) => {
+export const setTargetConfig = (sourceNode: Node, sourcePortId: string, targetNode: Node, targetPortId: string, data: DataSourceType[]) => {
     const config = transDataToColumn(data)
     //修改目标 config
     // const config = columns.filter(item => item.flag)
     const id = getId(sourceNode, sourcePortId, targetNode, targetPortId)
-    if (targetNode.shape === "DuplicateOperator") {
-
+    if (targetNode.shape === CustomShape.DUPLICATE_OPERATOR) {
+        
         let newConfigObj: any = {};
         //将下个节点的所有连接装都重置(不影响前节点config保持input-output config不变)
         for (let key in targetNode.getData()["config"][0]) {
             if (key !== id) {
-                newConfigObj[key] = cloneDeep(config)
-            } else {
                 newConfigObj[key] = cloneDeep(targetNode.getData()["config"][0][key])
+            } else {
+                newConfigObj[key] =cloneDeep(config)
             }
         }
         setConfigToNode(targetNode, newConfigObj)

@@ -436,7 +436,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     }
   }
   const setDataSource = async () => {
-
+    
     const op: Parameter = operatorParameters.find((op: Parameter) => op.code === node?.shape)
     const { datas, msg, code } = await getDataSourceType(`/api/database/listEnabledByType/${op.type}`);
     if (code === 1) {

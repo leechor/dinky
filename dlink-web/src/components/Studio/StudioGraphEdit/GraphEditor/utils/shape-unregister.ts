@@ -5,5 +5,5 @@ export default (operatorParameters: any) => {
     Graph.unregisterNode(item.code);
   });
   Graph.unregisterNode(CustomShape.TEXT_NODE);
-  Graph.unregisterNode("package");
+
 };

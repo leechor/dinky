@@ -56,17 +56,7 @@ export const stencilComponentsLoader = (
   });
   stencil.load([textAreaNode], 'textArea');
 
-  //组节点
-  const groupNode = graph.createNode({
-    shape: 'package',
-    attrs: {
-      text: {
-        text: 'Group Name',
-      },
-    },
-    data: {},
-  });
-  stencil.load([groupNode], 'groupNode');
+
 
   //算子节点
   Object.entries(groupsName).forEach(([group, groupNames]) => {
@@ -77,8 +67,5 @@ export const stencilComponentsLoader = (
 
     stencil.load(groupRegisteredCpn, group);
   });
-
-
-
 
 };

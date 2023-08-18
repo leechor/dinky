@@ -33,17 +33,6 @@ export const initStencil = (
 
   const otherGroups = [
     {
-      name: 'groupNode',
-      title: '分组',
-      collapsable: true,
-      collapsed: true,
-      layoutOptions: {
-        resizeToFit: false,
-        columns: 1,
-        dx: 50,
-      },
-    },
-    {
       name: 'textArea',
       title: '文本',
       collapsable: true,

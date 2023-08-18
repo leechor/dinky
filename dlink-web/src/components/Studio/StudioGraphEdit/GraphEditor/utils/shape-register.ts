@@ -5,7 +5,6 @@ import OperatorNode from '@/components/Studio/StudioGraphEdit/GraphEditor/compon
 import { Parameter } from '@/components/Studio/StudioGraphEdit/GraphEditor/ts-define/parameter';
 import { PortManager } from '@antv/x6/es/model/port';
 import React from 'react';
-import { GroupNode } from '@/components/Studio/StudioGraphEdit/GraphEditor/components/group-node';
 import unRegisterShape from "./shape-unregister"
 import CustomShape from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
 import GroupProcess from '@/components/Studio/StudioGraphEdit/GraphEditor/components/group-process';
@@ -232,7 +231,6 @@ export default (
   registerTextNode();
   const groupPorts = handleInitGroupPort()
   registerGroupProgress(groupPorts)
-  Graph.registerNode('package', GroupNode);
 
 
 

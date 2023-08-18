@@ -14,10 +14,9 @@ interface configObjType {
 const helper = {
   getFieldsByFunction: () => {
     return new Promise((resolve, reject) => {
-      autoPromptFunction("/api/document/getFillAllByVersion?version=").then(res => {
+      autoPromptFunction("/api/zdpx/getFillAllByVersion").then(res => {
         let { code, datas } = res
         if (code === 0) {
-          datas = datas.map((item: any) => item.name)
           resolve({ datas })
         } else {
           resolve({ datas: null })

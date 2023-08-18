@@ -1,143 +1,76 @@
-import React, { useRef, useState } from 'react';
-import type { ActionType, ProColumns } from '@ant-design/pro-components'
-import { EditableProTable, ProCard, ProFormField } from '@ant-design/pro-components';
-import { Button } from "antd"
+import React, { useEffect, useState } from 'react';
 import { Node, Edge, Graph } from '@antv/x6';
-
-
+import { Button, message, Modal, Tooltip } from 'antd';
 
 import styles from "./index.less"
-import { getSourceColOrCon, setSourceColumnOrConfig, getTargetConfig, setTargetConfig } from '../../../utils/graph-tools-func';
+import { getSourceColOrCon, setSourceColumnOrConfig, getTargetConfig, setTargetConfig, getId } from '../../../utils/graph-tools-func';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux-hooks';
-import { changeEdgeClickInfo } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home'
+import SetColumnConfig, { originDataType } from '../../set-column-config';
+import SourceTable from "./source-table"
+import TargetTable from "./target-table"
+import { changeEdgeClickInfo } from '../../../store/modules/home';
+import { FileAddOutlined } from '@ant-design/icons';
+import CustomShape from '../../../utils/cons';
+import { ProCard, ProFormField } from '@ant-design/pro-components';
 
 
+const NORMAL_MODAL_OPTIONS = {
+    width: "60%",
+    bodyStyle: { padding: "20px 30px 10px" },
+    destroyOnClose: true,
+    maskClosable: false,
+    footer: null
+};
+export type DataSourceType = {
+    id: string;
+    name: string;
+    desc: string;
+    outName: string;
+    type: string;
+}
 type PortProFormProps = {
     edgeInfo: { edge: Edge, sourceNode: Node, targetNode: Node, sourcePortId: string, targetPortId: string }
     graph: Graph
 };
-
-export type DataSourceType = {
-    id: React.Key;
-    name: string;
-    decs: string;
-    outName: string;
-    flag: boolean;
-    type: string;
-    children?: DataSourceType[];
-};
-
-
-const optionsType = ["CHAR", "VARCHAR", "STRING",
-    "BOOLEAN", "BINARY", "VARBINARY", "BYTES",
-    "DECIMAL", "TINYINT", "SMALLINT", "INT", "BIGINT",
-    "FLOAT", "DOUBLE", "DATE", "TIME", "TIMESTAMP", "TIMESTAMP(3)",
-    "TIMESTAMP_LTZ(3)", "INTERVAL", "ARRAY", "MULTISET", "MAP", "ROW", "RAW"].map(type => ({ label: type, value: type }))
-
 export const FORM_LAYOUT_PUBLIC = {
     labelCol: { span: 5 },
     wrapperCol: { span: 15 },
 };
 const EdgeClick: React.FC<PortProFormProps> = (props) => {
-    const dispatch = useAppDispatch()
-    const actionRef = useRef<ActionType>()
     const { edgeClickInfo } = useAppSelector((state) => ({
         edgeClickInfo: state.home.edgeClickInfo
     }));
-
+    const dispatch = useAppDispatch()
     const { sourceNode, sourcePortId, targetNode, targetPortId, edge } = props.edgeInfo;
     const defaultSourceData: DataSourceType[] = getSourceColOrCon(sourceNode, sourcePortId, targetNode, targetPortId, edgeClickInfo.data)
     const defaultTargetData: DataSourceType[] = getTargetConfig(sourceNode, sourcePortId, targetNode, targetPortId)
-
-    const [editableKeys, setEditableRowKeys] = useState<React.Key[]>(defaultSourceData.map((item) => item.id)
-    );
-    const [editableKeysTarget, setEditableRowKeysTarget] = useState<React.Key[]>(defaultTargetData.map((item) => item.id)
-    );
-
+    const [isShowConfigModal, setIsShowConfig] = useState(false)
     const [dataSource, setDataSource] = useState<DataSourceType[]>(
         () => defaultSourceData
     );
     const [dataTarget, setDataTarget] = useState<DataSourceType[]>(
         () => defaultTargetData
     );
-
-    const vallidateType = (rule: any, val: string, callback: any) => {
-        if (!val) {
-            callback("请选择类型")
+    const getDataConfig = () => {
+        let dataconfig = [];
+        if (sourceNode.shape !== CustomShape.DUPLICATE_OPERATOR) {
+            dataconfig = sourceNode?.getData()?.parameters.output.source
         } else {
-            callback()
+            const id = getId(sourceNode, sourcePortId, targetNode, targetPortId)
+            dataconfig = sourceNode?.getData()["config"][0][id]
         }
+        return dataconfig.length ? dataconfig.map((item: any, index: number) => ({ ...item, id: (Date.now() + index).toString() })) : []
     }
-    const columns: ProColumns<DataSourceType>[] = [
-        {
-            title: "字段名称",
-            dataIndex: "name",
-            width: 100,
-            formItemProps: {
-                rules: [
-                    {
-                        required: true,
-                        whitespace: true,
-                        message: "此项必填",
-                    },
-                ],
-            },
-        },
-        {
-            title: "类型",
-            width: 110,
-            key: "type",
-            dataIndex: "type",
-            valueType: "select",
-            fieldProps: {
-                options: optionsType,
-            },
-            formItemProps: {
-                rules: [
-                    { validator: (rule, val, callback) => { vallidateType(rule, val, callback) } }],
-            },
-
-        },
-        {
-            title: "是否勾选",
-            dataIndex: "flag",
-            width: 100,
-            valueType: "switch",
-            fieldProps: {
-                options: [
-                    { label: "是", value: true },
-                    { label: "否", value: false },
-                ]
-            }
-        },
-        {
-            title: "操作",
-            valueType: "option",
-            width: 40,
-            render: () => {
-                return null;
-            },
-        },
-        {
-            title: "别名",
-            width: 100,
-            key: "outName",
-            dataIndex: "outName",
-        },
+    const dataConfig: originDataType[] = getDataConfig()
 
 
-        {
-            title: "注释",
-            width: 100,
-            dataIndex: "decs",
-        },
 
-
-    ];
-
-    const setColumnOrConfig = () => {
-        //设置column/config
-        setSourceColumnOrConfig(sourceNode, sourcePortId, targetNode, targetPortId, dataSource)
+    const handleCancel = () => {
+        setIsShowConfig(false)
+    }
+    const handleSourceDataChange = (newData: DataSourceType[]) => {
+        // //设置column/config
+        setSourceColumnOrConfig(sourceNode, sourcePortId, targetNode, targetPortId, newData)
         dispatch(changeEdgeClickInfo({
             isShowedgeClickModal: true,
             edgeInfo: { edge, sourceNode, sourcePortId, targetNode, targetPortId },
@@ -145,135 +78,53 @@ const EdgeClick: React.FC<PortProFormProps> = (props) => {
         }))
         const data: DataSourceType[] = getTargetConfig(sourceNode, sourcePortId, targetNode, targetPortId)
         setDataTarget(data)
+
     }
-    const setTargetColumnOrConfig = () => {
-        //设置column/config
-        setTargetConfig(sourceNode, sourcePortId, targetNode, targetPortId, dataTarget, props.graph)
+    const handleTargetDataChange = (newData: DataSourceType[]) => {
+        setTargetConfig(sourceNode, sourcePortId, targetNode, targetPortId, newData)
+        setSourceColumnOrConfig(sourceNode, sourcePortId, targetNode, targetPortId, newData)
+        setDataSource([...newData])
     }
+    const handleOriginDataChange = (newData: originDataType[]) => {
+        if (newData.length) {
+            let transData: DataSourceType[] = newData.map((item, index) => ({ ...item, outName: '', id: (Date.now() + index).toString() }))
+            let joinData = [...dataSource, ...transData]
+            setSourceColumnOrConfig(sourceNode, sourcePortId, targetNode, targetPortId, joinData)
+            setDataSource(joinData)
+            dispatch(changeEdgeClickInfo({
+                isShowedgeClickModal: true,
+                edgeInfo: { edge, sourceNode, sourcePortId, targetNode, targetPortId },
+                data: edgeClickInfo.data,
+            }))
+            const data: DataSourceType[] = getTargetConfig(sourceNode, sourcePortId, targetNode, targetPortId)
+            setDataTarget(data)
+        }
+        setIsShowConfig(false)
+        message.success("同步成功")
+
+    }
+    const setColumnOrConfig = () => {
+        setIsShowConfig(true)
+    }
+    useEffect(() => {
+        handleSourceDataChange(dataSource)
+    }, [])
+
     /**
      * construct role form
      * @constructor
      */
+
     const renderSourceForm = () => {
         return <>
-            <EditableProTable<DataSourceType>
-                headerTitle={sourceNode.shape}
-                columns={columns}
-                rowKey="id"
-                value={dataSource}
-                onChange={setDataSource}
-                recordCreatorProps={{
-                    newRecordType: "dataSource",
-                    record: () => ({
-                        id: Date.now(),
-                        name: "",
-                        decs: "",
-                        outName: "",
-                        flag: true,
-                        type: ""
-                    }),
-                }}
-                toolBarRender={() => {
-                    return [
-                        <Button
-                            type="primary"
-                            key="save"
-                            onClick={() => {
-                                // dataSource 就是当前数据，可以调用 api 将其保存
-                                setColumnOrConfig()
-                            }}
-                        >
-                            保存数据
-                        </Button>,
-                    ];
-                }}
-                editable={{
-                    type: "multiple",
-                    editableKeys,
-                    actionRender: (row, config, defaultDoms) => {
-                        return [defaultDoms.delete];
-                    },
-                    onValuesChange: (record, recordList) => {
-                        setDataSource(recordList);
-                    },
-                    onChange: setEditableRowKeys,
-                }}
-            />
-            <ProCard title="数据展示" headerBordered collapsible defaultCollapsed>
-                <ProFormField
-                    ignoreFormItem
-                    fieldProps={{
-                        style: {
-                            width: "100%",
-                        },
-                    }}
-                    mode="read"
-                    valueType="jsonCode"
-                    text={JSON.stringify(dataSource)}
-                />
-            </ProCard>
+            <SourceTable dataSource={dataSource} dataChange={handleSourceDataChange} editable={sourceNode.shape !== CustomShape.DUPLICATE_OPERATOR} />
         </>
     };
     const renderTargetForm = () => {
         return <>
-            <EditableProTable<DataSourceType>
-                headerTitle={targetNode.shape}
-                columns={columns}
-                rowKey="id"
-                actionRef={actionRef}
-                value={dataTarget}
-                onChange={setDataTarget}
-                recordCreatorProps={{
-                    newRecordType: "dataSource",
-                    record: () => ({
-                        id: Date.now(),
-                        name: "",
-                        decs: "",
-                        outName: "",
-                        flag: true,
-                        type: ""
 
-                    }),
-                }}
-                toolBarRender={() => {
-                    return [
-                        <Button
-                            type="primary"
-                            key="save"
-                            onClick={() => {
-                                // dataSource 就是当前数据，可以调用 api 将其保存
-                                setTargetColumnOrConfig()
-                            }}
-                        >
-                            保存数据
-                        </Button>,
-                    ];
-                }}
-                editable={{
-                    type: "multiple",
-                    editableKeys: editableKeysTarget,
-                    actionRender: (row, config, defaultDoms) => {
-                        return [defaultDoms.delete];
-                    },
-                    onValuesChange: (record, recordList) => {
-                        setDataTarget(recordList);
-                    },
-                    onChange: setEditableRowKeysTarget,
-                }}
-            />
-            <ProCard title="数据展示" headerBordered collapsible defaultCollapsed>
-                <ProFormField
-                    ignoreFormItem
-                    fieldProps={{
-                        style: {
-                            width: "100%",
-                        },
-                    }}
-                    mode="read"
-                    valueType="jsonCode"
-                    text={JSON.stringify(dataTarget)}
-                />
-            </ProCard>
+            <TargetTable dataTarget={dataTarget} dataChange={handleTargetDataChange} />
+
         </>
     };
 
@@ -282,11 +133,17 @@ const EdgeClick: React.FC<PortProFormProps> = (props) => {
      */
     return <>
         <div className={styles["header"]}>
-            <div>source</div>
-            <div>target</div>
+            <div className={styles["head"]}>
+                <div className={styles["head-mid"]}>
+                    <Tooltip title="根据元数据配置输出">
+                        <Button type='primary' onClick={setColumnOrConfig} icon={<FileAddOutlined />}>配置项</Button>
+                    </Tooltip>
+                </div>
+            </div>
         </div>
         <div className={styles["container"]}>
             <div className={styles["left"]}>
+
                 {/* sourceForm */}
                 {renderSourceForm()}
             </div>
@@ -295,8 +152,30 @@ const EdgeClick: React.FC<PortProFormProps> = (props) => {
                 {renderTargetForm()}
 
             </div>
+
         </div>
-        <div className={styles["footer"]}>footer</div>
+        <ProCard title="映射数据展示" headerBordered collapsible defaultCollapsed>
+            <ProFormField
+                ignoreFormItem
+                fieldProps={{
+                    style: {
+                        width: "100%",
+                    },
+                }}
+                mode="read"
+                valueType="jsonCode"
+                text={JSON.stringify(dataTarget)}
+            />
+        </ProCard>
+        <Modal
+            {...NORMAL_MODAL_OPTIONS}
+            title={sourceNode && `${sourceNode.shape}输出配置选择`}
+            open={isShowConfigModal}
+            onCancel={() => handleCancel()}
+
+        >
+            <SetColumnConfig dataConfig={dataConfig} dataChange={handleOriginDataChange} />
+        </Modal>
     </>
 };
 export default EdgeClick;

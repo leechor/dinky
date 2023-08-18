@@ -5,10 +5,11 @@ import EdgeClick from "./edge-click";
 import { useAppSelector } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
 
 const NORMAL_MODAL_OPTIONS = {
-    width: "85%",
+    width: "60%",
     bodyStyle: { padding: "20px 30px 10px" },
     destroyOnClose: true,
     maskClosable: false,
+    footer:null
 };
 type EdgeClickProps = {
     onCancel: (flag?: boolean) => void;

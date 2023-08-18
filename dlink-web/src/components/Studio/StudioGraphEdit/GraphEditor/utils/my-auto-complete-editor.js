@@ -6,7 +6,12 @@ import helper from "./autocomplete-utils.ts"
 export class MyAutoCompleteEditor extends StringEditor {
 
   build() {
-    this.options.format = 'textarea' /* Force format into "textarea" */
+
+    if (this.options.schema.autoinput.function.hasOwnProperty("args")) {
+      this.options.format = 'textarea'
+    } else {
+      this.options.format = 'text'
+    }
     super.build()
     this.input_type = this.schema.format /* Restore original format */
     this.input.setAttribute('data-schemaformat', this.input_type)
