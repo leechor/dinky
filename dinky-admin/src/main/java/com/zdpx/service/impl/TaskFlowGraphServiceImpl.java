@@ -23,6 +23,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zdpx.coder.SceneCode;
 import com.zdpx.coder.Specifications;
+import com.zdpx.coder.general.GeneralProcess;
+import com.zdpx.coder.general.impl.GeneralProcessImpl;
 import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.json.preview.OperatorPreviewBuilder;
 import com.zdpx.mapper.CustomerOperatorMapper;
@@ -101,8 +103,15 @@ public class TaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScriptMa
         List<JsonNode> operatorConfigurations = Scene.getOperatorConfigurations();
         customerOperatorMapper.selectList(new QueryWrapper<CustomerOperator>().isNull("delete_time")).forEach(item->{
             ObjectMapper mapper = new ObjectMapper();
+            // 获取自定义节点和自定义组节点所属的结构信息
             try {
-                item.setSpecification(Specifications.readSpecializationFileByClassName("ProcessGroupOperator"));
+                String[] split = item.getCode().split("-");
+                String s = split[split.length - 1];
+                // 组节点。原名：group-process ，类名称：ProcessGroupOperator
+                if(s.equals("process")){
+                    s="ProcessGroupOperator";
+                }
+                item.setSpecification(Specifications.readSpecializationFileByClassName(s));
                 operatorConfigurations.add(mapper.readTree(item.toString()));
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
@@ -182,6 +191,21 @@ public class TaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScriptMa
             this.insert(flowGraph);
         }else{
             this.update(flowGraph,new QueryWrapper<FlowGraph>().eq("task_id", oldGraph.getTaskId()));
+        }
+    }
+
+    @Override
+    public Object generalProcess(String graph, String operate) {
+
+        GeneralProcess generalProcess = new GeneralProcessImpl();
+
+        switch (operate){
+            case "preview": // 算子预览
+                return generalProcess.operatorPreview(graph);
+            case "function": //获取函数嵌套结果
+                return generalProcess.getFunction(graph);
+            default:
+                return null;
         }
     }
 

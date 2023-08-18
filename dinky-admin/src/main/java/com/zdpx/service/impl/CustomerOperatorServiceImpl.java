@@ -29,11 +29,13 @@ public class CustomerOperatorServiceImpl extends SuperServiceImpl<CustomerOperat
         if(cus!=null){
             return "算子名称重复，添加失败";
         }else{
-
-            //此处的信息可写死
-            customerOperator.setCode("group-process");
             customerOperator.setFeature(null);
             customerOperator.setGroups("group-process");
+            customerOperator.setCode("custom-node-"+customerOperator.getName()+"-"+customerOperator.getCode());
+            if(customerOperator.getCode().equals("group-process")){
+                customerOperator.setCode(customerOperator.getCode());
+            }
+
             customerOperator.setType(null);
             customerOperator.setPorts("{\"inputs\":[],\"outputs\":[]}");
 

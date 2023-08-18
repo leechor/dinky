@@ -91,6 +91,13 @@
 						"minLength": 1,
 						"title": "name",
 						"pattern":"^[A-Za-z0-9_]*$",
+						"format": "autoinput",
+						"autoinput": {
+							  "name": "my-autoComplete",
+							  "function": {
+								"name": "getFieldsByConfig"
+							}
+						  },
 						"examples": [
 							"typ",
 							"taskId",
@@ -127,6 +134,13 @@
 		},
 		"primary":{
 			"type": "string",
+			"format": "autoinput",
+			"autoinput": {
+			  "name": "my-autoComplete",
+			  "function": {
+				"name": "getFieldsByConfig"
+			}
+		  },
 			"description": "设置主键"
 		},
 		
@@ -135,6 +149,13 @@
 		  "properties": {
 			"column": {
 				"type": "string",
+				"format": "autoinput",
+				"autoinput": {
+					  "name": "my-autoComplete",
+					  "function": {
+						"name": "getFieldsByConfig"
+					}
+				  },
 				"pattern":"^[A-Za-z0-9_]*$",
 				"description": "指定为watermark的列，需要TIMESTAMP或TIMESTAMP_LTZ类型"
 			},

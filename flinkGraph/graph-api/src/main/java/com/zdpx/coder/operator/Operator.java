@@ -88,7 +88,7 @@ public abstract class Operator extends Node implements Runnable {
      * @return 节点定义集合
      */
     public static Set<Class<? extends Operator>> getAllOperatorGenerators() {
-        Reflections reflections = new Reflections(Operator.class.getPackage().getName());
+        Reflections reflections = new Reflections("com.zdpx.coder.operators");
         return reflections.getSubTypesOf(Operator.class);
     }
 
