@@ -58,6 +58,11 @@ interface GraphEditorData {
     node: Node | null,
     isShow: boolean
   },
+  addPortInfo: {
+    isShow: boolean,
+    node: Node | null,
+    values: string,
+  }
   dataSourceInfo: {
     isShowModal: false,
     datas: any,
@@ -83,6 +88,7 @@ interface GraphEditorData {
     data?: any,
   },
 
+
 }
 const initialState: GraphEditorData = {
   flowData: {},
@@ -106,6 +112,7 @@ const initialState: GraphEditorData = {
   position: { x: 0, y: 0 },
   verifyOperDatas: [],
   previewInfo: { values: "", node: null, isShow: false },
+  addPortInfo: { values: "", node: null, isShow: false },
   dataSourceInfo: {
     isShowModal: false,
     datas: null,
@@ -184,6 +191,9 @@ const homeSlice = createSlice({
     changePreviewInfo(state, { payload }) {
       state.previewInfo = payload
     },
+    changeAddPortInfo(state, { payload }) {
+      state.addPortInfo = payload
+    },
     changeDataSourceInfo(state, { payload }) {
       state.dataSourceInfo = payload
     },
@@ -200,6 +210,11 @@ const homeSlice = createSlice({
     changeEdgeClickInfo(state, { payload }) {
       state.edgeClickInfo = payload
     },
+    initGraphAndEditorInfo(state) {
+      state.graphTabs = [{
+        groupCellId: ""
+      }]
+    }
   },
   extraReducers: {},
 });
@@ -219,11 +234,13 @@ export const {
   changePositon,
   changeVerifyOperDatas,
   changePreviewInfo,
+  changeAddPortInfo,
   changeDataSourceInfo,
   changeGroupNameInfo,
   changeStencilMenuInfo,
   changePostionToGroup,
-  changeEdgeClickInfo
+  changeEdgeClickInfo,
+  initGraphAndEditorInfo,
 } = homeSlice.actions;
 
 export default homeSlice.reducer;

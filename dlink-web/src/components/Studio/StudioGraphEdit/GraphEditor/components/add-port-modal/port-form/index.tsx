@@ -1,41 +1,27 @@
-/*
- *
- *  Licensed to the Apache Software Foundation (ASF) under one or more
- *  contributor license agreements.  See the NOTICE file distributed with
- *  this work for additional information regarding copyright ownership.
- *  The ASF licenses this file to You under the Apache License, Version 2.0
- *  (the "License"); you may not use this file except in compliance with
- *  the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *
- */
-
 
 import React from 'react';
 import { FormInstance } from "antd/es/form/hooks/useForm";
 import { Values } from "async-validator";
-import { Input, Form, Row, Col } from "antd"
-import { Cell, Node } from '@antv/x6';
+import { Input, Form, Row, Col, Button } from "antd"
+import {  Node } from '@antv/x6';
+import CustomShape from '../../../utils/cons';
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 type PortProFormProps = {
     values: Node;
     form: FormInstance<Values>;
 };
 export const FORM_LAYOUT_PUBLIC = {
-    labelCol: { span: 5 },
-    wrapperCol: { span: 15 },
+    labelCol: { xs: { span: 24 }, sm: { span: 5 } },
+    wrapperCol: { xs: { span: 24 }, sm: { span: 20 } },
+};
+export const FORM_LAYOUT_PUBLIC_LABEL = {
+    wrapperCol: { xs: { span: 24, offset: 0 }, sm: { span: 20, offset: 5 } }
 };
 const PortForm: React.FC<PortProFormProps> = (props) => {
 
     const { values, form, } = props;
-    const vallidatePortName = (rule:any, val: string, callback:any) => {
-        
+    const vallidatePortName = (rule: any, val: string, callback: any) => {
+
         if (val === "") {
             callback("portName 不能为空")
         } else {
@@ -51,11 +37,92 @@ const PortForm: React.FC<PortProFormProps> = (props) => {
      * construct role form
      * @constructor
      */
-    const renderRoleForm = () => {
+    const renderDuplicatePorts = () => {
         return <>
             <Form.Item name="portName" label="portName" rules={[{ required: true, message: "portName不能为空" }, { validator: (rule, val, callback) => { vallidatePortName(rule, val, callback) } }]}>
                 <Input placeholder='input portName...' />
             </Form.Item>
+        </>
+    };
+    const renderCustomerPorts = () => {
+        return <>
+            <Row>
+                <Col span={12}><Form.List name="inputPort">
+                    {(fields, { add, remove }, { errors }) => (
+                        <>
+                            {fields.map((field, index) =>
+                                <Form.Item
+                                    {...(index === 0 ? FORM_LAYOUT_PUBLIC : FORM_LAYOUT_PUBLIC_LABEL)}
+                                    label={index === 0 ? "inputPort" : ""}
+                                    required={false}
+                                    key={field.key}>
+                                    <Form.Item
+                                        {...field}
+                                        noStyle
+                                        validateTrigger={["onChange", "onBlur"]}
+                                        rules={[
+                                            {
+                                                required: true,
+                                                whitespace: true,
+                                                message: "please input portName"
+                                            }, {
+                                                validator(rule, value, callback) {
+                                                    vallidatePortName(rule, value, callback)
+                                                },
+                                            }
+                                        ]}
+                                    >
+                                        <Input placeholder='input portName...' style={{ width: "50%" }}></Input>
+                                    </Form.Item>
+                                    {fields.length > 1 ? (<MinusCircleOutlined className='dynamic-delete-button' onClick={() => remove(field.name)} />) : null}
+                                </Form.Item>)}
+
+                            <Form.Item>
+                                <Button type='dashed' onClick={() => add()} style={{ width: "50%" }} icon={<PlusOutlined />}>Add inputPort</Button>
+                                <Form.ErrorList errors={errors} />
+                            </Form.Item>
+                        </>
+                    )}
+                </Form.List></Col>
+                <Col span={12}><Form.List name="outputPort">
+                    {(fields, { add, remove }, { errors }) => (
+                        <>
+                            {fields.map((field, index) =>
+                                <Form.Item
+                                    {...(index === 0 ? FORM_LAYOUT_PUBLIC : FORM_LAYOUT_PUBLIC_LABEL)}
+                                    label={index === 0 ? "outputPort:" : ""}
+                                    required={false}
+                                    key={field.key}>
+                                    <Form.Item
+                                        {...field}
+                                        noStyle
+                                        validateTrigger={["onChange", "onBlur"]}
+                                        rules={[
+                                            {
+                                                required: true,
+                                                whitespace: true,
+                                                message: "please input portName"
+                                            }, {
+                                                validator(rule, value, callback) {
+                                                    vallidatePortName(rule, value, callback)
+                                                },
+                                            }
+                                        ]}
+                                    >
+                                        <Input placeholder='input portName...' style={{ width: "50%" }}></Input>
+                                    </Form.Item>
+                                    {fields.length > 1 ? (<MinusCircleOutlined className='dynamic-delete-button' onClick={() => remove(field.name)} />) : null}
+                                </Form.Item>)}
+
+                            <Form.Item>
+                                <Button type='dashed' onClick={() => add()} style={{ width: "50%" }} icon={<PlusOutlined />}>Add outputPort</Button>
+                                <Form.ErrorList errors={errors} />
+                            </Form.Item>
+                        </>
+                    )}
+                </Form.List></Col>
+            </Row>
+
         </>
     };
 
@@ -64,13 +131,11 @@ const PortForm: React.FC<PortProFormProps> = (props) => {
      */
     return <>
         <Form
-            {...FORM_LAYOUT_PUBLIC}
             form={form}
-            layout={'horizontal'}
+            {...FORM_LAYOUT_PUBLIC_LABEL}
             preserve={false}
         >
-
-            {renderRoleForm()}
+            {values.shape === CustomShape.DUPLICATE_OPERATOR ? renderDuplicatePorts() : renderCustomerPorts()}
         </Form>
     </>
 };

@@ -229,6 +229,7 @@ const SourceTable: React.FC<SourceTableProps> = (props) => {
         <><Form form={form} component={false}>
             <Table
                 size="small"
+                tableLayout="fixed"
                 components={{ body: { cell: EditableCell } }}
                 bordered
                 dataSource={data}

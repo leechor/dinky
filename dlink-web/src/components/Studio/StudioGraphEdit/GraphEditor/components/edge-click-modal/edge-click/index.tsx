@@ -53,7 +53,7 @@ const EdgeClick: React.FC<PortProFormProps> = (props) => {
     );
     const getDataConfig = () => {
         let dataconfig = [];
-        if (sourceNode.shape !== CustomShape.DUPLICATE_OPERATOR) {
+        if (sourceNode.shape !== CustomShape.DUPLICATE_OPERATOR && sourceNode.shape !== CustomShape.CUSTOMER_OPERATOR) {
             dataconfig = sourceNode?.getData()?.parameters.output.source
         } else {
             const id = getId(sourceNode, sourcePortId, targetNode, targetPortId)
@@ -76,6 +76,7 @@ const EdgeClick: React.FC<PortProFormProps> = (props) => {
             edgeInfo: { edge, sourceNode, sourcePortId, targetNode, targetPortId },
             data: edgeClickInfo.data,
         }))
+        setDataSource([...newData])
         const data: DataSourceType[] = getTargetConfig(sourceNode, sourcePortId, targetNode, targetPortId)
         setDataTarget(data)
 
@@ -83,7 +84,7 @@ const EdgeClick: React.FC<PortProFormProps> = (props) => {
     const handleTargetDataChange = (newData: DataSourceType[]) => {
         setTargetConfig(sourceNode, sourcePortId, targetNode, targetPortId, newData)
         setSourceColumnOrConfig(sourceNode, sourcePortId, targetNode, targetPortId, newData)
-        setDataSource([...newData])
+        // setDataSource([...newData])
     }
     const handleOriginDataChange = (newData: originDataType[]) => {
         if (newData.length) {
@@ -109,6 +110,9 @@ const EdgeClick: React.FC<PortProFormProps> = (props) => {
     useEffect(() => {
         handleSourceDataChange(dataSource)
     }, [])
+    useEffect(() => {
+        handleTargetDataChange(dataTarget)
+    }, [dataTarget])
 
     /**
      * construct role form

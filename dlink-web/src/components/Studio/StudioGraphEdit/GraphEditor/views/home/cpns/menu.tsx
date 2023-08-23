@@ -27,8 +27,8 @@ import {
   convertAbsoluteToRelativePosition,
   getGraphViewSize
 } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper";
-import { changePreviewInfo, changeDataSourceInfo, changeGroupNameInfo } from '../../../store/modules/home';
-import { getNodePreviewInfo, getDataSourceType, autoPromptFunction } from '@/components/Common/crud';
+import { changePreviewInfo, changeDataSourceInfo, changeGroupNameInfo, changeAddPortInfo } from '../../../store/modules/home';
+import { getNodePreviewInfo, getDataSourceType } from '@/components/Common/crud';
 import CpnShape from "@/components/Studio/StudioGraphEdit/GraphEditor/components/cpn-shape"
 
 type MenuPropsType = {
@@ -79,7 +79,7 @@ const NoteTextColorValue: { [key in NoteTextColor]: string } = {
 }
 
 const DuplicateOperatorMenu = () => {
-  return <Menu.Item icon={<EditOutlined />} name="add-port" text="添加输出桩" />
+  return <Menu.Item icon={<EditOutlined />} name="add-port" text="Add Port" />
 }
 
 function createPackageNode(graph: Graph) {
@@ -309,6 +309,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
         // graph.fromJSON({cells:[graph.toJSON().cells[0],graph.toJSON().cells[1]]})
         break;
       case 'add-port':
+        dispatch(changeAddPortInfo({ isShow: true, values: "", node }))
         break;
       case 'front':
         front();
@@ -436,7 +437,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     }
   }
   const setDataSource = async () => {
-    
+
     const op: Parameter = operatorParameters.find((op: Parameter) => op.code === node?.shape)
     const { datas, msg, code } = await getDataSourceType(`/api/database/listEnabledByType/${op.type}`);
     if (code === 1) {
@@ -672,8 +673,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
       message.warning("每次只能上传一个文件！")
     }
   }
-  const onMenuItemClick = () => {
-  };
+
   const isShowProcessMenu = () => {
     const rect = graph.model.getCellsBBox(graph.getSelectedCells())
     const p = graph.localToGraph(rect!)
@@ -682,7 +682,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
   const blankMenu = () => {
 
     return (<Menu hasIcon={true} onClick={onMenuClick}>
-      {(node?.shape === "DuplicateOperator") && DuplicateOperatorMenu()}
+      {(node?.shape === CustomShape.CUSTOMER_OPERATOR || node?.shape === CustomShape.DUPLICATE_OPERATOR) && DuplicateOperatorMenu()}
 
       {node?.shape == CustomShape.TEXT_NODE && <>
         <SubMenu name="align" icon={<AlignCenterOutlined />} text="Text alignment">
@@ -722,7 +722,6 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
       }
       {isShowProcessMenu() && <>
         <MenuItem
-          onClick={onMenuItemClick}
           name="createProcess"
           icon={<GroupOutlined />}
           text="Move into new subprocess"
@@ -732,7 +731,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
       </>}
       {
         (node && node?.shape !== CustomShape.GROUP_PROCESS) && (<MenuItem
-          onClick={onMenuItemClick}
+
           name="preview"
           icon={<EyeOutlined />}
           text="Node preview"
@@ -741,20 +740,17 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
       }
       {
         node && (<MenuItem
-          onClick={onMenuItemClick}
           name="customGroup"
           icon={<EyeOutlined />}
           text="Custom Group"
         />)
       }
       {(node && isDataSource) && <MenuItem
-        onClick={onMenuItemClick}
         name="setDataSource"
         icon={<DatabaseOutlined />}
         text="Select dataSource"
       />}
       <MenuItem
-        onClick={onMenuItemClick}
         name="undo"
         icon={<UndoOutlined />}
         hotkey="Cmd+Z"
@@ -762,7 +758,6 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
       />
       <MenuItem name="redo" icon={<RedoOutlined />} hotkey="Cmd+Shift+Z" text="Redo" />
       <MenuItem
-        onClick={onMenuItemClick}
         name="import"
         icon={<UploadOutlined />}
         // text={<Upload maxCount={1} onChange={onFileChange} beforeUpload={beforeUpload}>import</Upload>}

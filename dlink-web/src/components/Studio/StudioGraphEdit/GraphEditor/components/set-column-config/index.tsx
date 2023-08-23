@@ -30,7 +30,7 @@ const SetColumnConfig: React.FC<PortProFormProps> = (props) => {
     const [currentSelectedRows, setCurrentSelectedRows] = useState<originDataType[]>([])
     const dataSource = props.dataConfig;
     const dataChange = props.dataChange
-    
+
 
 
     const onChange = (selectedRowKeys: React.Key[], selectedRows: originDataType[]) => {
@@ -72,12 +72,14 @@ const SetColumnConfig: React.FC<PortProFormProps> = (props) => {
         return <>
             <EditableProTable<originDataType>
                 size='small'
-                pagination={{ position: ["bottomRight"], showSizeChanger: true }}
                 rowSelection={{
                     type: "checkbox",
                     selectedRowKeys: mySelectedRowKeys,
                     onChange,
                 }}
+                scroll={
+                    {y: 500 }
+                }
                 tableAlertRender={() => {
                     return `已选择 ${mySelectedRowKeys.length} 项`
                 }}

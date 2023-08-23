@@ -1,5 +1,4 @@
-import { map } from 'rxjs/operators';
-
+import { JSONEditor } from '@json-editor/json-editor';
 import CustomShape from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons';
 import { cloneDeep } from 'lodash';
 
@@ -7,19 +6,19 @@ import { message } from 'antd';
 import { DataSourceType } from '../components/edge-click-modal/edge-click';
 import type { Parameter } from "@/components/Studio/StudioGraphEdit/GraphEditor/ts-define/parameter"
 import { Graph, Edge, Node, Cell } from "@antv/x6"
-import { changeEdgeClickInfo } from '../store/modules/home';
+import { changeEdgeClickInfo, initGraphAndEditorInfo } from '../store/modules/home';
 import { getFunctionName } from '@/components/Common/crud';
-
+import store from '../store';
 export interface sourceConfigType {
-    flag: boolean,
     name: string,
     type: string,
-    decs: string,
+    desc: string,
     outName: string,
 }
 
 //判断是否为数据源类型节点
-export const isSourceDataType = (schemaData: Parameter[], node: Node) => {
+export const isSourceDataType = (node: Node) => {
+    const schemaData: Parameter[] = store.getState().home.operatorParameters
     const itemData = schemaData.find(item => item.code === node.shape)
     return itemData!.group.includes("dataSource")
 }
@@ -40,8 +39,8 @@ export const getSourceTargetByEdge = (graph: Graph, edge: Edge, dispatch: any) =
                 return
             } else {
                 let columns = [];
-                if (sourceNode.shape === CustomShape.DUPLICATE_OPERATOR) {
-                    
+                if (sourceNode.shape === CustomShape.DUPLICATE_OPERATOR || sourceNode.shape === CustomShape.CUSTOMER_OPERATOR) {
+
                     columns = sourceNode.getData()["config"][0][id]
                 } else {
                     columns = sourceNode.getData()?.parameters.output.columns
@@ -141,14 +140,15 @@ export const getSourceColOrCon = (sourceNode: Node, sourcePortId: string, target
     let columns = []
     const id = getId(sourceNode, sourcePortId, targetNode, targetPortId)
     let dataSource: DataSourceType[];
-    if (sourceNode.shape === CustomShape.DUPLICATE_OPERATOR) {
-        
+    if (sourceNode.shape === CustomShape.DUPLICATE_OPERATOR || sourceNode.shape === CustomShape.CUSTOMER_OPERATOR) {
+
         //修改（如果是DuplicateOperator则需要从输入节点的config里读取 ）
         columns = sourceNode?.getData()["config"][0][id]
 
     } else {
         columns = sourceNode?.getData()?.parameters.output.columns;
     }
+    
     dataSource = columns.map((item: any, index: number) => {
         return {
             ...item,
@@ -168,10 +168,11 @@ export const getTargetConfig = (sourceNode: Node, sourcePortId: string, targetNo
         if (targetNode.getData().hasOwnProperty("config")) {
             if (targetNode.getData()["config"].length) {
                 dataTarget = targetNode?.getData()["config"][0][id]
-                return dataTarget && dataTarget.map((item, index) => ({
+                return dataTarget ? dataTarget.map((item, index) => ({
                     ...item,
                     id: (Date.now() + index).toString()
-                }))
+                })) : []
+
             } else {
                 return []
             }
@@ -236,11 +237,11 @@ export const setConfigToNode = (node?: Node | null, config?: any, cell?: Cell) =
 export const setSourceColumnOrConfig = (sourceNode: Node, sourcePortId: string, targetNode: Node, targetPortId: string, data: DataSourceType[]) => {
     //修改源 columns
     const columns = transDataToColumn(data)
+    const transColumns = transOutNameToName(columns)
     //修改目标 config
     // const config = columns.filter(item => item.flag)
     const id = getId(sourceNode, sourcePortId, targetNode, targetPortId)
     if (sourceNode.shape === CustomShape.DUPLICATE_OPERATOR) {
-        
         //修改源 config
         let newConfigObj = {}
         // for (let key in sourceNode.getData()["config"][0]) {
@@ -268,18 +269,18 @@ export const setSourceColumnOrConfig = (sourceNode: Node, sourcePortId: string, 
     }
 
     if (targetNode.shape === CustomShape.DUPLICATE_OPERATOR) {
-        
+
         let newConfigObj: any = {};
         //将下个节点的所有连接装都重置(不影响前节点config保持input-output config不变)
         for (let key in targetNode.getData()["config"][0]) {
-            newConfigObj[key] = cloneDeep(columns)
+            newConfigObj[key] = cloneDeep(transColumns)
         }
         setConfigToNode(targetNode, newConfigObj)
 
     } else {
         let configMap: Map<string, sourceConfigType[]> = new Map();
         //转换为config设置到目标节点的node-data里
-        configMap.set(id, columns);
+        configMap.set(id, transColumns);
         let targetConfig = strMapToObj(configMap)
         let newConfigObj = getNewConfig(targetNode, targetConfig)
         setConfigToNode(targetNode, newConfigObj)
@@ -291,18 +292,33 @@ export const setSourceColumnOrConfig = (sourceNode: Node, sourcePortId: string, 
 
 export const setTargetConfig = (sourceNode: Node, sourcePortId: string, targetNode: Node, targetPortId: string, data: DataSourceType[]) => {
     const config = transDataToColumn(data)
+    const transConfig = transOutNameToName(config)
     //修改目标 config
     // const config = columns.filter(item => item.flag)
     const id = getId(sourceNode, sourcePortId, targetNode, targetPortId)
+    if (sourceNode.shape === CustomShape.CUSTOMER_OPERATOR) {
+        //修改自身config中的信息
+        let newConfigObj: any = {};
+        //将下个节点的所有连接装都重置(不影响前节点config保持input-output config不变)
+        for (let key in sourceNode.getData()["config"][0]) {
+            if (key !== id) {
+                newConfigObj[key] = cloneDeep(sourceNode.getData()["config"][0][key])
+            } else {
+                newConfigObj[key] = cloneDeep(config)
+            }
+        }
+        setConfigToNode(sourceNode, newConfigObj)
+
+    }
     if (targetNode.shape === CustomShape.DUPLICATE_OPERATOR) {
-        
+
         let newConfigObj: any = {};
         //将下个节点的所有连接装都重置(不影响前节点config保持input-output config不变)
         for (let key in targetNode.getData()["config"][0]) {
             if (key !== id) {
                 newConfigObj[key] = cloneDeep(targetNode.getData()["config"][0][key])
             } else {
-                newConfigObj[key] =cloneDeep(config)
+                newConfigObj[key] = cloneDeep(transConfig)
             }
         }
         setConfigToNode(targetNode, newConfigObj)
@@ -310,9 +326,28 @@ export const setTargetConfig = (sourceNode: Node, sourcePortId: string, targetNo
     } else {
         let configMap: Map<string, sourceConfigType[]> = new Map();
         //转换为config设置到目标节点的node-data里
-        configMap.set(id, config);
+        configMap.set(id, transConfig);
         let targetConfig = strMapToObj(configMap)
         let newConfigObj = getNewConfig(targetNode, targetConfig)
         setConfigToNode(targetNode, newConfigObj)
     }
+}
+export const transOutNameToName = (originColumn: sourceConfigType[]) => {
+    return originColumn.map((column: sourceConfigType) => {
+        return {
+            ...column,
+            name: column.outName ? column.outName : column.name,
+        }
+    })
+}
+export const initGraphAndEditor = (dispatch: any, graph: any, editor: any) => {
+
+    if (editor instanceof JSONEditor<any>) {
+        editor.destroy()
+    }
+    if (graph instanceof Graph) {
+        graph.dispose()
+    }
+    dispatch(initGraphAndEditorInfo())
+
 }

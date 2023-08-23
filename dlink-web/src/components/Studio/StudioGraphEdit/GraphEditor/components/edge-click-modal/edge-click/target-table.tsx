@@ -102,7 +102,7 @@ const TargetTable: React.FC<TargetTableProps> = (props) => {
             dataIndex: "name",
             width: "20%",
             editable: false,
-            className:"target-table-title"
+            className: "target-table-title"
         },
         // {
         //     title: () => (<span>{"类型"}<Tooltip title='映射类型'><QuestionCircleOutlined /></Tooltip></span>),
@@ -158,6 +158,7 @@ const TargetTable: React.FC<TargetTableProps> = (props) => {
         <><Form form={form} component={false}>
             <Table
                 size="small"
+                tableLayout="fixed"
                 components={{ body: { cell: EditableCell } }}
                 bordered
                 dataSource={data}

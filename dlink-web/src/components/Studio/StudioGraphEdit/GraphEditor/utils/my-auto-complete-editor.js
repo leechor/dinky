@@ -15,6 +15,7 @@ export class MyAutoCompleteEditor extends StringEditor {
     super.build()
     this.input_type = this.schema.format /* Restore original format */
     this.input.setAttribute('data-schemaformat', this.input_type)
+    this.input.setAttribute('autocomplete', "off")
   }
 
   postBuild() {

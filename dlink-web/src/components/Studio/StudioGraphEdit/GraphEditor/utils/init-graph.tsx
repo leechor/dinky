@@ -7,7 +7,6 @@ import {
   addGraphTabs,
   changeCurrentSelectNode,
   changeCurrentSelectNodeName,
-  changeEdgeClickInfo,
   changeGraph,
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import React from 'react';
@@ -18,7 +17,7 @@ import {
 } from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper";
 import { getCustomGroupInfo } from '@/components/Common/crud';
 import { warningTip } from '../views/home/cpns/left-editor';
-import { getSourceNodeAndPort, getTargetNodeAndPort, getSourceTargetByEdge } from './graph-tools-func';
+import { getSourceTargetByEdge } from './graph-tools-func';
 
 
 const cloneSubCells = (cell: Cell, graph: Graph) => {
@@ -285,7 +284,7 @@ export const initGraph = (
   graph.on('edge:mouseenter', ({ e, view, edge, cell }) => {
 
     // edge.attr(LINE_STOKE_WIDTH, 4);
-    // showEdgePorts(edge, true);
+    showEdgePorts(edge, true);
 
     edge.addTools([
       {
@@ -294,6 +293,7 @@ export const initGraph = (
           distance: view.path.length() / 2,
         },
       },
+      // "vertices",
     ]);
   });
   graph.on("node:change", ({ node }: { node: Node }) => {
@@ -304,7 +304,7 @@ export const initGraph = (
   })
   graph.on('edge:mouseleave', ({ e, view, edge, cell }) => {
     // edge.setAttrByPath(LINE_STOKE_WIDTH, 2);
-    // showEdgePorts(edge, false);
+    showEdgePorts(edge, false);
     edge.removeTools();
   });
 

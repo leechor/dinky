@@ -9,7 +9,8 @@ const NORMAL_MODAL_OPTIONS = {
     bodyStyle: { padding: "20px 30px 10px" },
     destroyOnClose: true,
     maskClosable: false,
-    footer:null
+    footer: null,
+
 };
 type EdgeClickProps = {
     onCancel: (flag?: boolean) => void;
@@ -46,6 +47,7 @@ const EdgeClickModal: FC<EdgeClickProps> = memo((props) => {
     return <>
         <Modal
             {...NORMAL_MODAL_OPTIONS}
+           
             title={edgeInfo && `${edgeInfo.sourceNode.shape}-${edgeInfo.targetNode.shape}`}
             open={edgeClickInfo.isShowedgeClickModal}
             onCancel={() => handleCancel()}

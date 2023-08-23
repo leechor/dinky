@@ -29,12 +29,20 @@ import { Dispatch } from '@@/plugin-dva/connect';
 import StudioKubernetes from '@/components/Studio/StudioKubernetes';
 import { l } from '@/utils/intl';
 import StudioGraphEdit from '@/components/Studio/StudioGraphEdit';
+import { initGraphAndEditor } from '../StudioGraphEdit/GraphEditor/utils/graph-tools-func';
+import { useAppSelector, useAppDispatch } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
+
 
 const { TabPane } = Tabs;
 
 const EditorTabs = (props: any) => {
 
   const { tabs, current, toolHeight, width, height } = props;
+  const graphDispatch = useAppDispatch();
+  const { graph, editor } = useAppSelector((state) => ({
+    graph: state.home.graph,
+    editor: state.home.editor
+  }));
 
   const onChange = (activeKey: any) => {
     props.saveToolHeight(toolHeight);
@@ -58,6 +66,10 @@ const EditorTabs = (props: any) => {
     let newActiveKey = tabs.activeKey;
     let lastIndex = 0;
     tabs.panes.forEach((pane, i) => {
+      if (pane.isGraph) {
+        //初始化画布相关数据
+        initGraphAndEditor(graphDispatch, graph, editor)
+      }
       if (pane.key.toString() === targetKey) {
         lastIndex = i - 1;
       }
