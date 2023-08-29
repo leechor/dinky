@@ -19,10 +19,20 @@ import { getCustomGroupInfo } from '@/components/Common/crud';
 import { warningTip } from '../views/home/cpns/left-editor';
 import { getSourceTargetByEdge } from './graph-tools-func';
 
+const setParentAndSelection = (graph: Graph, preGroupNodeId: string, node: Cell) => {
+  if (preGroupNodeId) {
+    const currentGroup = graph.getCellById(preGroupNodeId);
+    currentGroup.insertChild(node)
 
+    //新加进来的节点可选择
+    graph.setSelectionFilter((cell) => {
+      return currentGroup.getChildren()!.map(c => c.id).includes(cell.id)
+    })
+  }
+}
 const cloneSubCells = (cell: Cell, graph: Graph) => {
-  window.cell = cell
-
+  const tabs = store.getState().home.graphTabs
+  const currentGroupId = tabs[tabs.length - 1];
   let addedCell: Cell[] = [];
   if (cell.shape !== CustomShape.GROUP_PROCESS && cell.shape.includes("custom-node")) {
     getCustomGroupInfo(`/api/zdpx/customer/${cell.prop().name!}`).then(res => {
@@ -38,7 +48,9 @@ const cloneSubCells = (cell: Cell, graph: Graph) => {
         })
         const clonedCells = graph.cloneCells(addedCell)
         Object.values(clonedCells).forEach(cell => {
+          //考虑到组节点父子关系与位置关系，再次进行处理,同时新加进来的节点可选择
           graph.addCell(cell)
+          setParentAndSelection(graph, currentGroupId.groupCellId, cell)
         })
         graph.removeCells(addedCell)
       }
@@ -69,8 +81,7 @@ const cloneSubCells = (cell: Cell, graph: Graph) => {
               node.setPosition(x, y, { relative: true, deep: true });
               node.prop(PreNodeInfo.PREVIOUS_NODE_RECT, { ...node.position({ relative: true }), ...node.size() })
               //将新增组节点设置为当前组节点的子节点
-              const tabs = store.getState().home.graphTabs
-              const currentGroupId = tabs[tabs.length - 1];
+
               if (currentGroupId.groupCellId) {
                 const currentGroup = graph.getCellById(currentGroupId.groupCellId);
                 currentGroup.insertChild(node)
@@ -81,15 +92,26 @@ const cloneSubCells = (cell: Cell, graph: Graph) => {
           }
         })
         //克隆子图，删除原先子图
+        window.addedGroup = addedGroup
         const clonedCells = graph.cloneSubGraph([addedGroup], { deep: true })
         Object.values(clonedCells).forEach(cell => {
+          //考虑到组节点父子关系与位置关系，再次进行处理
           graph.addCell(cell)
+          if (cell.shape === CustomShape.GROUP_PROCESS && !cell.hasParent()) {
+            //将新增组节点设置为当前组节点的子节点
+            setParentAndSelection(graph, currentGroupId.groupCellId, cell)
+          }
+
         })
         graph.removeCells(addedCells)
 
       }
       warningTip(res.code, res.msg)
     })
+  }
+
+  if (cell.shape === CustomShape.TEXT_NODE) {
+    setParentAndSelection(graph, currentGroupId.groupCellId, cell)
   }
 }
 
@@ -150,19 +172,38 @@ export const initGraph = (
         let edge = new Shape.Edge({
           attrs: {
             line: {
-              stroke: '#b2a2e9',
+              // stroke: '#b2a2e9',
+              stroke: {
+                type: "linearGradient",
+                stops: [
+                  { offset: "0%", color: "#b2a2e9" },
+                  { offset: "50%", color: "#8c7ccf" },
+                  { offset: "100%", color: "#b2a2e9" },
+                ]
+              },
               strokeWidth: 2,
               targetMarker: "",
+              // filter: {
+              //   name: "dropShadow",
+              //   args: {
+              //     color: "#c6b7f1",
+              //     width: 2,
+              //     dx:10,
+              //     dy:10,
+              //     blur: 0,
+              //     opacity: 0.5
+              //   }
+              // }
             },
           },
-          tools: {
-            name: "vertices",
-            args: {
-              attrs: {
-                fill: "#666"
-              }
-            }
-          },
+          // tools: {
+          //   name: "vertices",
+          //   args: {
+          //     attrs: {
+          //       fill: "#666"
+          //     }
+          //   }
+          // },
         });
         edge.toFront()
         return edge
@@ -195,23 +236,11 @@ export const initGraph = (
           },
         },
       },
-      embedding: {
-        name: 'stroke',
-        args: {
-          padding: -1,
-          rx: 4,
-          ry: 4,
-          attrs: {
-            stroke: '#f6a548',
-            strokeWidth: 2,
-          },
-        },
-      },
     },
     //  将一个节点拖动到另一个节点中，使其成为另一节点的子节点
-    embedding: {
-      enabled: true,
-    },
+    // embedding: {
+    //   enabled: true,
+    // },
     background: {
       //画布背景色
       color: '#fff',
@@ -266,7 +295,7 @@ export const initGraph = (
   });
 
   graph.on('node:mouseleave', ({ cell }) => {
-    // showAllPorts(false);
+    showAllPorts(false);
 
     //移除删除工具
     cell.removeTools();
@@ -331,16 +360,7 @@ export const initGraph = (
     node.toggleCollapse(node.isCollapsed());
   });
 
-  //群组大小自适应处理
-  let ctrlPressed = false;
-  graph.on('node:embedding', ({ e }: { e: Dom.MouseMoveEvent }) => {
-  });
 
-  graph.on('node:embedded', ({ node, currentParent }) => {
-    ctrlPressed = false;
-    //设置父节点zindex小于子节点
-    currentParent?.toBack();
-  });
 
   graph.on('node:change:size', ({ node, options }) => {
     if (options.skipParentHandler) {
@@ -348,11 +368,7 @@ export const initGraph = (
     }
   });
 
-  graph.on('node:change:position', ({ node, options }) => {
-    if (options.skipParentHandler || ctrlPressed) {
-      return;
-    }
-  });
+
 
   graph.on('node:resizing', ({ node }) => {
     node.setAttrs({
@@ -391,6 +407,10 @@ export const initGraph = (
     if (cell.shape === 'package') {
       cell.setZIndex(-1);
     }
+    window.store = store
+    // setTimeout(() => {
+    //   console.log(store.getState().home.currentClickLayer, "store.getState().home.graphTabs");
+    // }, 2000);
     cloneSubCells(cell, graph)
   });
 
@@ -496,6 +516,29 @@ export const initGraph = (
     window.edge = edge;
 
   })
+  // graph.on("history:undo", (cmds: any, options: any) => {
+  //   console.log(cmds, options);
+
+  // })
+  // graph.on("history:redo", (cmds: any, options: any) => {
+  //   console.log(cmds, options);
+
+  // })
+  // graph.on("history:cancel", (cmds: any, options: any) => {
+  //   console.log(cmds, options);
+  // })
+  // graph.on("history:add", (cmds: any, options: any) => {
+  //   console.log(cmds, options);
+  // })
+  // graph.on("history:clean", (cmds: any, options: any) => {
+  //   console.log(cmds, options);
+  // })
+  // graph.on("history:change", (cmds: any, options: any) => {
+  //   console.log(cmds, options);
+  // })
+  // graph.on("history:batch", (cmds: any, options: any) => {
+  //   console.log(cmds, options);
+  // })
 
   dispatch(changeGraph(graph));
   return graph;

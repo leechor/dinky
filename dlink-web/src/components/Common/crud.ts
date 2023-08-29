@@ -153,8 +153,30 @@ export async function autoPromptFunction(url: string) {
   });
 }
 
+export async function mutlipleFuction(url: string, params: any) {
+  return request2(url, {
+    method: "POST",
+    data: {
+      ...params
+    }
+  })
+}
 
+export async function handleMultipleFuction(url: string, data: any) {
+  try {
+    const { code, datas, msg } = await mutlipleFuction(url, { ...data })
+    console.log(code, datas, msg);
+    if (code == CODE.SUCCESS) {
+      message.success(msg);
+    } else {
+      message.warn(msg);
+    }
+    return datas;
 
+  } catch (error) {
+    return null;
+  }
+}
 
 
 export const handleAddOrUpdate = async (url: string, fields: any) => {

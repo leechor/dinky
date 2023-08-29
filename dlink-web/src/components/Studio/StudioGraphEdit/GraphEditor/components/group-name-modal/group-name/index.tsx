@@ -34,15 +34,16 @@ export const FORM_LAYOUT_PUBLIC = {
 const GroupName: React.FC<PortProFormProps> = (props) => {
 
     const { values, form, } = props;
-    const vallidateGroupName = (rule:any, val: string, callback:any) => {
-        
+    const vallidateGroupName = (rule: any, val: string, callback: any) => {
+
         if (val === "") {
             callback("GroupName 不能为空")
         } else {
-            const found = values.getPorts().find(item => item.id === val)
-            if (!found) { callback() } else {
-                callback("portName 不能重复")
-            }
+            // const found = values.getPorts().find(item => item.id === val)
+            // if (!found) { callback() } else {
+            //     callback("portName 不能重复")
+            // }
+            callback()
 
         }
     }

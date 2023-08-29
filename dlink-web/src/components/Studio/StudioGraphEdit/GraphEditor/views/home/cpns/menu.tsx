@@ -79,10 +79,12 @@ const NoteTextColorValue: { [key in NoteTextColor]: string } = {
 }
 
 const DuplicateOperatorMenu = () => {
-  return <Menu.Item icon={<EditOutlined />} name="add-port" text="Add Port" />
+  return <Menu.Item icon={<EditOutlined />} name="add-port" text="Add Port" key="add-port" />
 }
 
 function createPackageNode(graph: Graph) {
+  graph.startBatch("createProcess")
+
   const node = graph.createNode({
     shape: CustomShape.GROUP_PROCESS,
     width: 70,
@@ -98,6 +100,7 @@ function createPackageNode(graph: Graph) {
       },
     },
   });
+  graph.stopBatch("createProcess")
   return node;
 }
 
@@ -105,7 +108,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
 
   const { taskName, operatorParameters } = useAppSelector((state) => ({
     taskName: state.home.taskName,
-    operatorParameters: state.home.operatorParameters
+    operatorParameters: state.home.operatorParameters,
 
   }));
   const dispatch = useAppDispatch();
@@ -243,10 +246,10 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     handleShowMenu(false)
     switch (name) {
       case 'undo':
-        graph.undo();
+        graph.undo({ name: "test" });
         break;
       case 'redo':
-        graph.redo();
+        graph.redo({ name: "test" });
         break;
       case 'delete':
         graph.clearCells();
@@ -280,10 +283,6 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
           DataUri.downloadDataUri(dataUri, 'chart.jpeg');
         });
         break;
-      case 'print':
-        // graph.printPreview();
-
-        break;
       case 'copy':
         copy();
         setIsDisablePaste(false);
@@ -305,8 +304,6 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
         a.href = window.URL.createObjectURL(blob);
         a.dataset.downloadurl = ['text/json', a.download, a.href].join(':');
         a.dispatchEvent(e);
-
-        // graph.fromJSON({cells:[graph.toJSON().cells[0],graph.toJSON().cells[1]]})
         break;
       case 'add-port':
         dispatch(changeAddPortInfo({ isShow: true, values: "", node }))
@@ -360,6 +357,9 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
     }
 
     const groupNode = graph.addNode(createPackageNode(graph));
+    window.groupNode = groupNode
+
+    dispatch(changeGroupNameInfo({ node: groupNode, isShowGroupNameModal: true, type: "CREAT_GROUP_NAME" }))
     const selectRectangle = graph.getCellsBBox(selectedNodes)!;
 
     let relativeParentPosition = { x: selectRectangle.x, y: selectRectangle.y }
@@ -685,37 +685,37 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
       {(node?.shape === CustomShape.CUSTOMER_OPERATOR || node?.shape === CustomShape.DUPLICATE_OPERATOR) && DuplicateOperatorMenu()}
 
       {node?.shape == CustomShape.TEXT_NODE && <>
-        <SubMenu name="align" icon={<AlignCenterOutlined />} text="Text alignment">
-          <Radio.Group name="horizontal" onChange={horizontalAlignHandler} value={horizontalAlign}>
-            <Space.Compact direction="vertical">
-              <Radio value={HorizontalAlignState.LEFT}>Left</Radio>
-              <Radio value={HorizontalAlignState.CENTER}>H-Center</Radio>
-              <Radio value={HorizontalAlignState.RIGHT}>Right</Radio>
-            </Space.Compact>
+        <SubMenu key="align" name="align" icon={<AlignCenterOutlined />} text="Text alignment">
+          <Radio.Group key="horizontal" name="horizontal" onChange={horizontalAlignHandler} value={horizontalAlign}>
+            <Space key="Space-horizontal" direction="vertical">
+              <Radio key="LEFT" name="horizontal" value={HorizontalAlignState.LEFT}>Left</Radio>
+              <Radio key="CENTER" name="horizontal" value={HorizontalAlignState.CENTER}>H-Center</Radio>
+              <Radio key="RIGHT" name="horizontal" value={HorizontalAlignState.RIGHT}>Right</Radio>
+            </Space>
           </Radio.Group>
           <Divider />
-          <Radio.Group name="vertical" onChange={verticalAlignHandler} value={verticalAlign}>
-            <Space.Compact direction="vertical">
-              <Radio value={VerticalAlignState.TOP}>Top</Radio>
-              <Radio value={VerticalAlignState.CENTER}>V-Center</Radio>
-              <Radio value={VerticalAlignState.BOTTOM}>Bottom</Radio>
-            </Space.Compact>
+          <Radio.Group key="vertical" name="vertical" onChange={verticalAlignHandler} value={verticalAlign}>
+            <Space direction="vertical" key="Space-vertical">
+              <Radio key="Top" name="vertical" value={VerticalAlignState.TOP}>Top</Radio>
+              <Radio key="V-Center" name="vertical" value={VerticalAlignState.CENTER}>V-Center</Radio>
+              <Radio key="Bottom" name="vertical" value={VerticalAlignState.BOTTOM}>Bottom</Radio>
+            </Space>
           </Radio.Group>
         </SubMenu>
-        <SubMenu name="color" icon={<BgColorsOutlined />} text="Note Color">
-          <Radio.Group name="color" size="small" onChange={noteTextColorHandler} value={noteTextColor}>
-            <Space.Compact direction="horizontal">
+        <SubMenu key="color" name="color" icon={<BgColorsOutlined />} text="Note Color">
+          <MenuItem><Radio.Group name="color" size="small" onChange={noteTextColorHandler} value={noteTextColor}>
+            <Space direction="horizontal" key="Space-color">
               {Object.keys(NoteTextColor).filter(key => !isNaN(Number(NoteTextColor[key]))).map(
                 (key) =>
                 (
-                  <>
+                  <div key={key}>
                     <style>{`.ant-radio > input#radio-text-${key} + span.ant-radio-inner {background-color: ${NoteTextColorValue[NoteTextColor[key]]}}`}</style>
                     <Radio id={`radio-text-${key}`} value={NoteTextColor[key]} />
-                  </>
+                  </div>
                 )
               )}
-            </Space.Compact>
-          </Radio.Group>
+            </Space>
+          </Radio.Group></MenuItem>
         </SubMenu>
         <Divider />
       </>
@@ -725,6 +725,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
           name="createProcess"
           icon={<GroupOutlined />}
           text="Move into new subprocess"
+          key="createProcess"
         />
 
 
@@ -735,11 +736,13 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
           name="preview"
           icon={<EyeOutlined />}
           text="Node preview"
+          key="preview"
         />
         )
       }
       {
         node && (<MenuItem
+          key="customGroup"
           name="customGroup"
           icon={<EyeOutlined />}
           text="Custom Group"
@@ -747,11 +750,13 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
       }
       {(node && isDataSource) && <MenuItem
         name="setDataSource"
+        key="setDataSource"
         icon={<DatabaseOutlined />}
         text="Select dataSource"
       />}
       <MenuItem
         name="undo"
+        key="undo"
         icon={<UndoOutlined />}
         hotkey="Cmd+Z"
         text="Undo"
@@ -760,41 +765,43 @@ export const CustomMenu: FC<MenuPropsType> = memo(({ top = 0, left = 0, graph, n
       <MenuItem
         name="import"
         icon={<UploadOutlined />}
-        // text={<Upload maxCount={1} onChange={onFileChange} beforeUpload={beforeUpload}>import</Upload>}
-        text={"import"}
+        key="import"
+        text="Import"
       />
-      {!node && <SubMenu text="Export" icon={<ExportOutlined />}>
-        <MenuItem name="save-PNG" text="Save As PNG" />
-        <MenuItem name="save-SVG" text="Save As SVG" />
-        <MenuItem name="save-JPEG" text="Save As JPEG" />
-        <MenuItem name="save-JSON" text="Save As JSON" />
+      {!node && <SubMenu key="Export" text="Export" icon={<ExportOutlined />}>
+        <MenuItem key="save-PNG" name="save-PNG" text="Save As PNG" />
+        <MenuItem key="save-SVG" name="save-SVG" text="Save As SVG" />
+        <MenuItem key="save-JPEG" name="save-JPEG" text="Save As JPEG" />
+        <MenuItem key="save-JSON" name="save-JSON" text="Save As JSON" />
       </SubMenu>}
 
       <Divider />
 
-      <MenuItem icon={<ScissorOutlined />} name="cut" hotkey="Cmd+X" text="Cut" />
-      <MenuItem icon={<CopyOutlined />} name="copy" hotkey="Cmd+C" text="Copy" />
+      <MenuItem key="cut" icon={<ScissorOutlined />} name="cut" hotkey="Cmd+X" text="Cut" />
+      <MenuItem key="copy" icon={<CopyOutlined />} name="copy" hotkey="Cmd+C" text="Copy" />
 
       <MenuItem
+        key="paste"
         name="paste"
         icon={<SnippetsOutlined />}
         hotkey="Cmd+V"
         disabled={isDisablePaste}
         text="Paste"
       />
-      <MenuItem name="delete" icon={<DeleteOutlined />} hotkey="Delete" text="Delete" />
+      <MenuItem key="delete" name="delete" icon={<DeleteOutlined />} hotkey="Delete" text="Delete" />
 
       <Divider />
 
-      <SubMenu name="order" icon={<CpnShape iconPath='icon-a-ziyuan52-copy' />} text="Change Order">
-        <MenuItem name="front" icon={<CpnShape iconPath='icon-zhiyudingceng' />} hotkey="Cmd+Shift+F" text="Bring to Front" />
-        <MenuItem name="back" icon={<CpnShape iconPath='icon-zhiyudiceng' />} hotkey="Cmd+Shift+B" text="Bring to Back" />
+      <SubMenu name="order" key="order" icon={<CpnShape iconPath='icon-a-ziyuan52-copy' />} text="Change Order">
+        <MenuItem key="front" name="front" icon={<CpnShape iconPath='icon-zhiyudingceng' />} hotkey="Cmd+Shift+F" text="Bring to Front" />
+        <MenuItem key="back" name="back" icon={<CpnShape iconPath='icon-zhiyudiceng' />} hotkey="Cmd+Shift+B" text="Bring to Back" />
         <Divider />
-        <MenuItem name="forward" icon={<CpnShape iconPath='icon-xiangqianyiceng' />} hotkey="Cmd+F" text="Bring Forward" />
-        <MenuItem name="backward" icon={<CpnShape iconPath='icon-xianghouyiceng' />} hotkey="Cmd+B" text="Bring Backward" />
+        <MenuItem key="forward" name="forward" icon={<CpnShape iconPath='icon-xiangqianyiceng' />} hotkey="Cmd+F" text="Bring Forward" />
+        <MenuItem key="backward" name="backward" icon={<CpnShape iconPath='icon-xianghouyiceng' />} hotkey="Cmd+B" text="Bring Backward" />
       </SubMenu>
     </Menu>)
   }
+
 
   const styleObj: any = {
     position: 'absolute',

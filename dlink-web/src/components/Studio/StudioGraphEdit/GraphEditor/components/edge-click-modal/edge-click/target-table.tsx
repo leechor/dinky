@@ -104,38 +104,6 @@ const TargetTable: React.FC<TargetTableProps> = (props) => {
             editable: false,
             className: "target-table-title"
         },
-        // {
-        //     title: () => (<span>{"类型"}<Tooltip title='映射类型'><QuestionCircleOutlined /></Tooltip></span>),
-        //     dataIndex: "type",
-        //     width: "15%",
-        //     editable: false,
-        // },
-        // {
-        //     title: () => (<span>{"别名"}<Tooltip title='映射别名'><QuestionCircleOutlined /></Tooltip></span>),
-        //     dataIndex: "outName",
-        //     width: "15%",
-        //     editable: false,
-        // },
-        // {
-        //     title: () => (<span>{"注释"}<Tooltip title='映射注释'><QuestionCircleOutlined /></Tooltip></span>),
-        //     dataIndex: "desc",
-        //     width: "15%",
-        //     editable: false,
-        // },
-        // {
-        //     title: "操作",
-        //     width: "30%",
-        //     dataIndex: "operation",
-        //     render: (_: any, record: DataSourceType) => {
-        //         return (
-        //             <Button
-        //                 type="link"
-        //                 icon={<DeleteOutlined />}
-        //                 danger
-        //                 onClick={() => deleteItem(record)}/>
-        //         );
-        //     },
-        // },
     ];
 
     const mergedColumns: any = columns.map((col) => {

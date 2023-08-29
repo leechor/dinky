@@ -465,7 +465,7 @@ const Model: ModelType = {
     },
     closeTabs(state, { payload }) {
       const { deleteType, current } = payload;
-      const newTabs = state.tabs;
+      const newTabs = state!.tabs;
       let newCurrent = newTabs.panes[0];
       if (deleteType == 'CLOSE_OTHER') {
         const keys = [current.key];
@@ -502,7 +502,7 @@ const Model: ModelType = {
     saveTaskData(state, { payload }) {
       const newTabs = state.tabs;
       let newCurrent = state.current;
-      for (const element of newTabs.panes) {
+      for (const element of newTabs!.panes!) {
         if (element.key == payload.key) {
           element.task = payload;
           element.isModified = false;

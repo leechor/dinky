@@ -14,7 +14,6 @@ import unRegisterShape from '@/components/Studio/StudioGraphEdit/GraphEditor/uti
 import { useAppDispatch, useAppSelector, } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
 import { CustomMenu } from './menu';
 import { initMenu } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/init-menu';
-import NodeModalForm from '@/components/Studio/StudioGraphEdit/GraphEditor/components/node-modal-form';
 import NodeModalPreview from '../../../components/node-preview-modal';
 import AddModalPort from '../../../components/add-port-modal';
 import {
@@ -305,12 +304,6 @@ const LeftEditor = memo(() => {
               //设置前节点和当前节点连接config
               let currentNode = edge.getTargetNode()
               newConfigObj = getNewConfig(targetNode, config)
-              // const outPortIds = currentNode?.getPortsByGroup("outputs").map(data => data.id)
-              // if (outPortIds) {
-              //   for (let key of outPortIds) {
-              //     newConfigObj[key!] = cloneDeep(config)
-              //   }
-              // }
               const edges = graph.model.getOutgoingEdges(targetNode);
               if (edges) {
                 for (let edge of edges) {
@@ -326,6 +319,9 @@ const LeftEditor = memo(() => {
             if (sourceNode.shape === CustomShape.DUPLICATE_OPERATOR || sourceNode.shape === CustomShape.CUSTOMER_OPERATOR) {
               //把input-output config 设置进自定义节点config
               let oldConfigObj = sourceNode.getData()["config"][0]
+              if (!oldConfigObj) {
+                oldConfigObj = {}
+              }
               oldConfigObj[id] = parametersConfig
               setConfigToNode(null, cloneDeep(oldConfigObj), sourceNode)
             }
@@ -448,6 +444,12 @@ const LeftEditor = memo(() => {
       } else {
         let subGroupObj: SubGraphCells = node && graph.cloneCells([graph.getCellById(node.id)]);
         subGroupObj && Object.values(subGroupObj).forEach((cls) => {
+          if (cls.getData().hasOwnProperty("config")) {
+            cls.setData({
+              ...(node.getData() ? node.getData() : {}),
+              config: []
+            }, { overwrite: true });
+          }
           groupJson.push(cls)
         })
       }
@@ -459,14 +461,17 @@ const LeftEditor = memo(() => {
         warningTip(res.code, res.msg)
         dispatch(initFlowDataAction())
       })
-    } else {
+    } else if (type === "CHANGE") {
 
       window.mynode = node;
       changeCustomGroupInfo(`/api/zdpx/customer/oldName/${node.prop().name}/newName/${groupName}`).then(res => {
         warningTip(res.code, res.msg)
       })
+      dispatch(initFlowDataAction())
+    } else {
+      node.prop("name", groupName)
     }
-    dispatch(initFlowDataAction())
+
   }
   const handleGroupNameCancel = () => {
     dispatch(changeGroupNameInfo({ isShowGroupNameModal: false }))
@@ -498,7 +503,6 @@ const LeftEditor = memo(() => {
           type: getType(item.javaType),
           name: item.name
         }))
-        // const newJsonConfig = { ...jsonconfig, url, username, password, columns, tableName }
         const newJsonConfig = { output: { ...jsonconfig.output, source: columns }, service: { ...jsonconfig.service, tableName, password, username, url } }
         jsonEditor.setValue(newJsonConfig)
         message.success("配置成功！")
@@ -688,7 +692,7 @@ const LeftEditor = memo(() => {
         onCancel={() => handleGroupNameCancel()}
         values={groupNameInfo.node}
       />
-      {stencilMenuInfo.showStencilMenu &&
+      {(stencilMenuInfo.showStencilMenu) &&
         <StencilMenu />}
       <EdgeClickModal onSubmit={(value: any) => handleEdgeClickSubmit(value)}
         onCancel={() => handleEdgeClickCancel()} edgeInfo={edgeClickInfo.edgeInfo} graph={graphRef.current!} />

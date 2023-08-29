@@ -10,4 +10,8 @@ export enum PreNodeInfo {
   PREVIOUS_NODE_RECT = 'preNodeRect'
 }
 
+
+export enum FunctionType {
+  ANALYSE = "analyse" //算子解析
+}
 export default CustomShape;

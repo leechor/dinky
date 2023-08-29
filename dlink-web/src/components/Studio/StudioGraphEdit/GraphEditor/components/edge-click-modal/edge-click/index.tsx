@@ -83,7 +83,7 @@ const EdgeClick: React.FC<PortProFormProps> = (props) => {
     }
     const handleTargetDataChange = (newData: DataSourceType[]) => {
         setTargetConfig(sourceNode, sourcePortId, targetNode, targetPortId, newData)
-        setSourceColumnOrConfig(sourceNode, sourcePortId, targetNode, targetPortId, newData)
+        // setSourceColumnOrConfig(sourceNode, sourcePortId, targetNode, targetPortId, newData)
         // setDataSource([...newData])
     }
     const handleOriginDataChange = (newData: originDataType[]) => {

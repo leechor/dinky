@@ -4,7 +4,7 @@ import styles from './index.less';
 import CpnShape, { NodeType } from './cpn-shape';
 import { useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks/redux-hooks';
-import {  changeStencilMenuInfo } from '../store/modules/home';
+import { changeStencilMenuInfo } from '../store/modules/home';
 
 const BaseNode = (props: { nodeType: NodeType; iconPath: string, name: string }) => {
   const dispatch = useAppDispatch();
@@ -17,19 +17,23 @@ const BaseNode = (props: { nodeType: NodeType; iconPath: string, name: string })
     iconPath,
     name,
   } = props;
+
   const handleWarning = () => {
 
   }
+  const isShowMenu = node.shape.includes("custom-node") && node.prop().isStencil
   const eventRef = useRef<any>([])
   useEffect(() => {
-    if (node.shape.includes("custom-node" && node.prop().isStencil)) {
+    if (isShowMenu && node.prop().isStencil) {
       const nodeEle = document.getElementsByClassName('custom-calcu-node')
       for (let ele of Array.from(nodeEle)) {
         let timer = ele?.addEventListener("contextmenu", (event: any) => {
           const x = ele.getBoundingClientRect().left + document.documentElement.scrollLeft;
           const y = ele.getBoundingClientRect().top + document.documentElement.scrollTop
-          node.prop().name && (postionToGroup.isFullScreen ? dispatch(changeStencilMenuInfo({ x, y, showStencilMenu: true, node })) :
-            dispatch(changeStencilMenuInfo({ x: x - postionToGroup.x, y: y - postionToGroup.y, showStencilMenu: true, node })))
+          console.log(node, isShowMenu, node.shape);
+
+          node.prop().name && (postionToGroup.isFullScreen ? dispatch(changeStencilMenuInfo({ x, y, showStencilMenu: isShowMenu, node })) :
+            dispatch(changeStencilMenuInfo({ x: x - postionToGroup.x, y: y - postionToGroup.y, showStencilMenu: isShowMenu, node })))
         })
         eventRef.current.push(timer)
       }
@@ -64,7 +68,7 @@ const BaseNode = (props: { nodeType: NodeType; iconPath: string, name: string })
   return (
     <>
       {!node.prop().isStencil && <div className={styles['custom-calcu-node-head']}><div style={{ whiteSpace: 'nowrap', textAlign: 'center' }}>{node.prop().name ? node.prop().name : name}</div></div>}
-      <div className={`${styles['custom-calcu-node']} custom-calcu-node`}>
+      <div className={`${styles['custom-calcu-node']} ${isShowMenu ? "custom-calcu-node" : ''}`}>
         {(node && node.prop().isStencil) && (
           <Tooltip title={name ? name : node.prop().name}>
             <div className={styles['custom-calcu-node-label']}>{name ? name : node.prop().name}</div>

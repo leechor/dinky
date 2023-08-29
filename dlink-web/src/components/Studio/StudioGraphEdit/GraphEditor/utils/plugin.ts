@@ -47,7 +47,7 @@ export const keyboard = (graph: Graph) => {
     }),
   );
 
-  graph.bindKey(['meta+c', 'ctrl+c'], () => {
+  graph.bindKey(['meta+c', 'ctrl+c'], (e) => {
     const cells = graph.getSelectedCells();
     if (cells.length) {
       graph.copy(cells);
@@ -55,7 +55,7 @@ export const keyboard = (graph: Graph) => {
     return false;
   });
 
-  graph.bindKey(['meta+x', 'ctrl+x'], () => {
+  graph.bindKey(['meta+x', 'ctrl+x'], (e) => {
     const cells = graph.getSelectedCells();
     if (cells.length) {
       graph.cut(cells);
@@ -63,7 +63,7 @@ export const keyboard = (graph: Graph) => {
     return false;
   });
 
-  graph.bindKey(['meta+v', 'ctrl+v'], () => {
+  graph.bindKey(['meta+v', 'ctrl+v'], (e) => {
     if (!graph.isClipboardEmpty()) {
       const cells = graph.paste({ offset: 32 });
       graph.cleanSelection();
@@ -85,6 +85,18 @@ export const history = (graph: Graph) => {
   graph.use(
     new History({
       enabled: true,
+      // beforeAddCommand(event,args){
+      //   console.log("beforeAddCommand",event,args);
+        
+      // },
+      // afterAddCommand(event,args,cmd){
+      //   console.log("afterAddCommand",event,args,cmd);
+
+      // },
+      // executeCommand(cmd,revert,options){
+      //   console.log("executeCommand",cmd,revert,options);
+
+      // }
     }),
   );
   //undo redo

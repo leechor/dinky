@@ -45,7 +45,7 @@ interface GraphEditorData {
   //当前选中的算子节点名称
   currentSelectNodeName: '',
   //当前选中的节点参数数据
-  currentSelectNodeParamsData: [],
+  currentSelectNodeParamsData: any,
   //保存graph在其他组件中调用
   graph: Graph,
   editor: {} | InstanceType<typeof JSONEditor>,
@@ -72,7 +72,7 @@ interface GraphEditorData {
   groupNameInfo: {
     isShowGroupNameModal: boolean,
     node: Node | null,
-    type: 'ADD' | 'CHANGE'
+    type: 'ADD' | 'CHANGE' | 'CREAT_GROUP_NAME'
   },
   stencilMenuInfo: {
     x: number, y: number, showStencilMenu: boolean, node: null | Node
@@ -87,6 +87,7 @@ interface GraphEditorData {
     edgeInfo: { edge: Edge, sourceNode: Node, targetNode: Node, sourcePortId: string, targetPortId: string } | null,
     data?: any,
   },
+  currentClickLayer: number
 
 
 }
@@ -100,7 +101,7 @@ const initialState: GraphEditorData = {
   //当前选中的算子节点名称
   currentSelectNodeName: '',
   //当前选中的节点参数数据
-  currentSelectNodeParamsData: [],
+  currentSelectNodeParamsData: "",
   //保存graph在其他组件中调用
   graph: {} as Graph,
   //保存jsoneditor 示例用作保存校验
@@ -137,6 +138,7 @@ const initialState: GraphEditorData = {
     edgeInfo: null,
     data: null,
   },
+  currentClickLayer: 0,
 
 }
 const homeSlice = createSlice({
@@ -177,11 +179,14 @@ const homeSlice = createSlice({
 
     addGraphTabs(state, { payload }) {
       state.graphTabs.push({ groupCellId: payload.groupCellId, })
+      state.currentClickLayer += payload.layer
     },
 
     removeGraphTabs(state, { payload }) {
       state.graphTabs = state.graphTabs.slice(0, payload + 1)
+      state.currentClickLayer -= payload
     },
+
     changePositon(state, { payload }) {
       state.position = payload
     },
