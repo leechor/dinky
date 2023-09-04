@@ -17,24 +17,23 @@
  *
  */
 
+import { Col, Form, Row, Select, Switch } from 'antd';
+import { StateType } from '@/pages/DataStudio/model';
+import { connect } from 'umi';
+import styles from './index.less';
+import React, { useEffect } from 'react';
+import { l } from '@/utils/intl';
 
-import {Col, Form, Row, Select, Switch} from "antd";
-import {StateType} from "@/pages/DataStudio/model";
-import {connect} from "umi";
-import styles from "./index.less";
-import React, {useEffect} from "react";
-import {l} from "@/utils/intl";
-
-const {Option} = Select;
+const { Option } = Select;
 
 export type BarChartConfig = {
-  isGroup: boolean,
-  isStack: boolean,
-  isPercent: boolean,
-  xField: string,
-  yField: string,
-  seriesField?: string,
-  label?: {},
+  isGroup: boolean;
+  isStack: boolean;
+  isPercent: boolean;
+  xField: string;
+  yField: string;
+  seriesField?: string;
+  label?: {};
 };
 
 export type BarChartProps = {
@@ -44,13 +43,12 @@ export type BarChartProps = {
 };
 
 const BarChartSetting: React.FC<BarChartProps> = (props) => {
-  const {current, column, onChange: handleChange, dispatch} = props;
+  const { current, column, onChange: handleChange, dispatch } = props;
   const [form] = Form.useForm();
 
   useEffect(() => {
     form.setFieldsValue(current.console.chart);
   }, [current.console.chart]);
-
 
   const onValuesChange = (change: any, all: any) => {
     let config: BarChartConfig = {
@@ -78,82 +76,103 @@ const BarChartSetting: React.FC<BarChartProps> = (props) => {
   const getColumnOptions = () => {
     const itemList = [];
     for (const item of column) {
-      itemList.push(<Option key={item} value={item} label={item}>
-        {item}
-      </Option>)
+      itemList.push(
+        <Option key={item} value={item} label={item}>
+          {item}
+        </Option>,
+      );
     }
     return itemList;
   };
 
   return (
     <>
-      <Form
-        form={form}
-        className={styles.form_setting}
-        onValuesChange={onValuesChange}
-      >
+      <Form form={form} className={styles.form_setting} onValuesChange={onValuesChange}>
         <Row>
           <Col span={12}>
-            <Form.Item
-              label={l('chart.xAxis')} className={styles.form_item} name="xField"
-            >
+            <Form.Item label={l('chart.xAxis')} className={styles.form_item} name="xField">
               {column && column.length > 0 ? (
-                <Select allowClear showSearch
-                        defaultValue={column[0]} value={column[0]}>
+                <Select allowClear showSearch defaultValue={column[0]} value={column[0]}>
                   {getColumnOptions()}
-                </Select>) : (<Select allowClear showSearch>
-                {column && getColumnOptions()}
-              </Select>)}
+                </Select>
+              ) : (
+                <Select allowClear showSearch>
+                  {column && getColumnOptions()}
+                </Select>
+              )}
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item
-              label={l('chart.yAxis')} className={styles.form_item} name="yField"
-            >
+            <Form.Item label={l('chart.yAxis')} className={styles.form_item} name="yField">
               {column && column.length > 1 ? (
-                <Select allowClear showSearch
-                        defaultValue={column[1]} value={column[1]}>
+                <Select allowClear showSearch defaultValue={column[1]} value={column[1]}>
                   {getColumnOptions()}
-                </Select>) : (<Select allowClear showSearch>
-                {column && getColumnOptions()}
-              </Select>)}
+                </Select>
+              ) : (
+                <Select allowClear showSearch>
+                  {column && getColumnOptions()}
+                </Select>
+              )}
             </Form.Item>
           </Col>
         </Row>
         <Row>
           <Col span={12}>
             <Form.Item
-              label={l('chart.groupColumns')} className={styles.form_item} name="seriesField"
+              label={l('chart.groupColumns')}
+              className={styles.form_item}
+              name="seriesField"
             >
               {column && column.length > 0 ? (
                 <Select allowClear showSearch>
                   {getColumnOptions()}
-                </Select>) : (<Select allowClear showSearch>
-                {column && getColumnOptions()}
-              </Select>)}
+                </Select>
+              ) : (
+                <Select allowClear showSearch>
+                  {column && getColumnOptions()}
+                </Select>
+              )}
             </Form.Item>
           </Col>
           <Col span={12}>
             <Form.Item
-              label={l('chart.group')} className={styles.form_item} name="isGroup" valuePropName="checked"
+              label={l('chart.group')}
+              className={styles.form_item}
+              name="isGroup"
+              valuePropName="checked"
             >
-              <Switch checkedChildren={l('button.enable')} unCheckedChildren={l('button.disable')}/>
+              <Switch
+                checkedChildren={l('button.enable')}
+                unCheckedChildren={l('button.disable')}
+              />
             </Form.Item>
           </Col>
         </Row>
         <Row>
           <Col span={12}>
             <Form.Item
-              label={l('chart.stack')} className={styles.form_item} name="isStack" valuePropName="checked"
+              label={l('chart.stack')}
+              className={styles.form_item}
+              name="isStack"
+              valuePropName="checked"
             >
-              <Switch checkedChildren={l('button.enable')} unCheckedChildren={l('button.disable')}/>
+              <Switch
+                checkedChildren={l('button.enable')}
+                unCheckedChildren={l('button.disable')}
+              />
             </Form.Item>
           </Col>
           <Col span={12}>
             <Form.Item
-              label={l('chart.percentage')} className={styles.form_item} name="isPercent" valuePropName="checked"
+              label={l('chart.percentage')}
+              className={styles.form_item}
+              name="isPercent"
+              valuePropName="checked"
             >
-              <Switch checkedChildren={l('button.enable')} unCheckedChildren={l('button.disable')}/>
+              <Switch
+                checkedChildren={l('button.enable')}
+                unCheckedChildren={l('button.disable')}
+              />
             </Form.Item>
           </Col>
         </Row>
@@ -162,7 +181,7 @@ const BarChartSetting: React.FC<BarChartProps> = (props) => {
   );
 };
 
-export default connect(({Studio}: { Studio: StateType }) => ({
+export default connect(({ Studio }: { Studio: StateType }) => ({
   current: Studio.current,
   result: Studio.result,
 }))(BarChartSetting);

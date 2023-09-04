@@ -17,14 +17,13 @@
  *
  */
 
-
 import {
   DOCKER_CONFIG_NAME_LIST,
   FLINK_CONFIG_NAME_LIST,
   HADOOP_CONFIG_NAME_LIST,
-  KUBERNETES_CONFIG_NAME_LIST
-} from "@/pages/RegistrationCenter/ClusterManage/ClusterConfiguration/conf";
-import {ClusterConfigurationTableListItem} from "@/pages/RegistrationCenter/data";
+  KUBERNETES_CONFIG_NAME_LIST,
+} from '@/pages/RegistrationCenter/ClusterManage/ClusterConfiguration/conf';
+import { ClusterConfigurationTableListItem } from '@/pages/RegistrationCenter/data';
 
 export function getConfig(values: any) {
   let flinkConfig = addValueToMap(values, FLINK_CONFIG_NAME_LIST());
@@ -53,11 +52,11 @@ export function getConfig(values: any) {
       userJarPath: values.userJarPath,
       flinkConfig,
     };
-  }else if(values.type=='KubernetesOperator') {
+  } else if (values.type == 'KubernetesOperator') {
     let kubernetesConfig = addValueToMap(values, KUBERNETES_CONFIG_NAME_LIST());
     addListToMap(values.kubernetesConfigList, kubernetesConfig);
     let dockerConfig = addValueToMap(values, DOCKER_CONFIG_NAME_LIST());
-    let flinkVersion = values.flinkVersion
+    let flinkVersion = values.flinkVersion;
     return {
       flinkLibPath: values.flinkLibPath,
       flinkConfigPath: values.flinkConfigPath,
@@ -65,17 +64,17 @@ export function getConfig(values: any) {
       dockerConfig,
       userJarPath: values.userJarPath,
       flinkConfig,
-      flinkVersion
+      flinkVersion,
     };
   } else {
     //all code paths must return a value.
-    return {}
+    return {};
   }
 }
 
 type ConfigItem = {
-  name: string,
-  value: string,
+  name: string;
+  value: string;
 };
 
 function addListToMap(list: [ConfigItem], config: {}) {
@@ -87,13 +86,13 @@ function addListToMap(list: [ConfigItem], config: {}) {
   }
 }
 
-function addValueToMap(values: {}, keys: string []) {
+function addValueToMap(values: {}, keys: string[]) {
   let config = {};
   if (!values) {
     return config;
   }
   for (let i in keys) {
-    if(values[keys[i]]){
+    if (values[keys[i]]) {
       config[keys[i]] = values[keys[i]];
     }
   }
@@ -101,18 +100,10 @@ function addValueToMap(values: {}, keys: string []) {
 }
 
 export function getConfigFormValues(values: any) {
-
   if (!values.id) {
-    return {type: values.type};
+    return { type: values.type };
   }
-  let formValues = addValueToMap(values, [
-    'id',
-    'name',
-    'type',
-    'note',
-    'enabled',
-    'enabled',
-  ]);
+  let formValues = addValueToMap(values, ['id', 'name', 'type', 'note', 'enabled', 'enabled']);
   let config = JSON.parse(values.configJson);
 
   let configValues = addValueToMap(config, [
@@ -141,8 +132,8 @@ export function getConfigFormValues(values: any) {
     dockerConfigList,
     userJarPath,
     ...flinkConfig,
-    flinkConfigList
-  }
+    flinkConfigList,
+  };
 }
 
 function addMapToList(map: {}, keys: string[]) {
@@ -152,16 +143,19 @@ function addMapToList(map: {}, keys: string[]) {
       list.push({
         name: i,
         value: map[i],
-      })
+      });
     }
   }
   return list;
 }
 
-export function getHadoopConfigPathFromClusterConfigurationsById(id: number, clusterConfigurations: ClusterConfigurationTableListItem[]) {
+export function getHadoopConfigPathFromClusterConfigurationsById(
+  id: number,
+  clusterConfigurations: ClusterConfigurationTableListItem[],
+) {
   for (let i in clusterConfigurations) {
     if (clusterConfigurations[i].id == id) {
-      return getConfigFormValues(clusterConfigurations[i])['hadoopConfigPath']
+      return getConfigFormValues(clusterConfigurations[i])['hadoopConfigPath'];
     }
   }
   return undefined;

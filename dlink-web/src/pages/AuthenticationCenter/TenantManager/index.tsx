@@ -17,18 +17,17 @@
  *
  */
 
-
-import React, {useRef, useState} from "react";
-import {DownOutlined, PlusOutlined} from '@ant-design/icons';
-import ProTable, {ActionType, ProColumns} from "@ant-design/pro-table";
-import {Button, Drawer, Dropdown, Menu, Modal} from 'antd';
-import {FooterToolbar, PageContainer} from '@ant-design/pro-layout';
+import React, { useRef, useState } from 'react';
+import { DownOutlined, PlusOutlined } from '@ant-design/icons';
+import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
+import { Button, Drawer, Dropdown, Menu, Modal } from 'antd';
+import { FooterToolbar, PageContainer } from '@ant-design/pro-layout';
 import ProDescriptions from '@ant-design/pro-descriptions';
-import {handleAddOrUpdate, handleRemove, queryData} from "@/components/Common/crud";
-import {TenantTableListItem} from "@/pages/AuthenticationCenter/data.d";
-import TenantForm from "@/pages/AuthenticationCenter/TenantManager/components/TenantForm";
-import GrantTenantTransfer from "@/pages/AuthenticationCenter/TenantManager/components/GrantTenantTransfer";
-import {l} from "@/utils/intl";
+import { handleAddOrUpdate, handleRemove, queryData } from '@/components/Common/crud';
+import { TenantTableListItem } from '@/pages/AuthenticationCenter/data.d';
+import TenantForm from '@/pages/AuthenticationCenter/TenantManager/components/TenantForm';
+import GrantTenantTransfer from '@/pages/AuthenticationCenter/TenantManager/components/GrantTenantTransfer';
+import { l } from '@/utils/intl';
 
 const url = '/api/tenant';
 const TenantFormList: React.FC<{}> = (props: any) => {
@@ -40,7 +39,6 @@ const TenantFormList: React.FC<{}> = (props: any) => {
   const actionRef = useRef<ActionType>();
   const [selectedRowsState, setSelectedRows] = useState<TenantTableListItem[]>([]);
   const [formValues, setFormValues] = useState({});
-
 
   const editAndDelete = (key: string | number, currentItem: TenantTableListItem) => {
     if (key === 'edit') {
@@ -55,66 +53,77 @@ const TenantFormList: React.FC<{}> = (props: any) => {
         onOk: async () => {
           await handleRemove(url, [currentItem]);
           actionRef.current?.reloadAndRest?.();
-        }
+        },
       });
     }
   };
 
   const MoreBtn: React.FC<{
     item: TenantTableListItem;
-  }> = ({item}) => (
+  }> = ({ item }) => (
     <Dropdown
       overlay={
-        <Menu onClick={({key}) => editAndDelete(key, item)}>
+        <Menu onClick={({ key }) => editAndDelete(key, item)}>
           <Menu.Item key="edit">{l('button.edit')}</Menu.Item>
           <Menu.Item key="delete">{l('button.delete')}</Menu.Item>
         </Menu>
       }
     >
       <a>
-        {l('button.more')} <DownOutlined/>
+        {l('button.more')} <DownOutlined />
       </a>
     </Dropdown>
   );
 
-
   const handleGrantTenantForm = () => {
     return (
-      <Modal title={l('pages.tenant.AssignUser')} visible={handleGrantTenant}
-             destroyOnClose={true} width={"90%"}
-             onCancel={() => {
-               setHandleGrantTenant(false);
-             }}
-             footer={[
-               <Button key="back" onClick={() => {
-                 setHandleGrantTenant(false);
-               }}>
-                 {l('button.close')}
-               </Button>,
-               <Button type="primary" onClick={async () => {
-                 // to save
-                 const success = await handleAddOrUpdate(url + "/grantTenantToUser", {
-                   tenantId: formValues.id,
-                   users: tenantRelFormValues
-                 });
-                 if (success) {
-                   setHandleGrantTenant(false);
-                   setFormValues({});
-                   if (actionRef.current) {
-                     actionRef.current.reload();
-                   }
-                 }
-               }}
-               >
-                 {l('button.confirm')}
-               </Button>,
-             ]}>
-        <GrantTenantTransfer tenant={formValues} onChange={(value) => {
-          setTenantRelFormValues(value);
-        }}/>
+      <Modal
+        title={l('pages.tenant.AssignUser')}
+        visible={handleGrantTenant}
+        destroyOnClose={true}
+        width={'90%'}
+        onCancel={() => {
+          setHandleGrantTenant(false);
+        }}
+        footer={[
+          <Button
+            key="back"
+            onClick={() => {
+              setHandleGrantTenant(false);
+            }}
+          >
+            {l('button.close')}
+          </Button>,
+          <Button
+            type="primary"
+            onClick={async () => {
+              // to save
+              const success = await handleAddOrUpdate(url + '/grantTenantToUser', {
+                tenantId: formValues.id,
+                users: tenantRelFormValues,
+              });
+              if (success) {
+                setHandleGrantTenant(false);
+                setFormValues({});
+                if (actionRef.current) {
+                  actionRef.current.reload();
+                }
+              }
+            }}
+          >
+            {l('button.confirm')}
+          </Button>,
+        ]}
+      >
+        <GrantTenantTransfer
+          tenant={formValues}
+          onChange={(value) => {
+            setTenantRelFormValues(value);
+          }}
+        />
       </Modal>
-    )
-  }
+    );
+  };
 
   const columns: ProColumns<TenantTableListItem>[] = [
     {
@@ -190,7 +199,7 @@ const TenantFormList: React.FC<{}> = (props: any) => {
         >
           {l('pages.tenant.AssignUser')}
         </a>,
-        <MoreBtn key="more" item={record}/>,
+        <MoreBtn key="more" item={record} />,
       ],
     },
   ];
@@ -206,10 +215,10 @@ const TenantFormList: React.FC<{}> = (props: any) => {
         }}
         toolBarRender={() => [
           <Button type="primary" onClick={() => handleModalVisible(true)}>
-            <PlusOutlined/> {l('button.create')}
+            <PlusOutlined /> {l('button.create')}
           </Button>,
         ]}
-        request={(params, sorter, filter) => queryData(url, {...params, sorter, filter})}
+        request={(params, sorter, filter) => queryData(url, { ...params, sorter, filter })}
         columns={columns}
         rowSelection={{
           onChange: (_, selectedRows) => setSelectedRows(selectedRows),
@@ -223,28 +232,29 @@ const TenantFormList: React.FC<{}> = (props: any) => {
         <FooterToolbar
           extra={
             <div>
-              {l('tips.selected', '',
-                {
-                  total: <a
-                    style={{fontWeight: 600}}>{selectedRowsState.length}</a>
-                })}  &nbsp;&nbsp;
+              {l('tips.selected', '', {
+                total: <a style={{ fontWeight: 600 }}>{selectedRowsState.length}</a>,
+              })}{' '}
+              &nbsp;&nbsp;
             </div>
           }
         >
-          <Button type="primary" danger
-                  onClick={() => {
-                    Modal.confirm({
-                      title: l('pages.tenant.delete'),
-                      content: l('pages.tenant.deleteConfirm'),
-                      okText: l('button.confirm'),
-                      cancelText: l('button.cancel'),
-                      onOk: async () => {
-                        await handleRemove(url, selectedRowsState);
-                        setSelectedRows([]);
-                        actionRef.current?.reloadAndRest?.();
-                      }
-                    });
-                  }}
+          <Button
+            type="primary"
+            danger
+            onClick={() => {
+              Modal.confirm({
+                title: l('pages.tenant.delete'),
+                content: l('pages.tenant.deleteConfirm'),
+                okText: l('button.confirm'),
+                cancelText: l('button.cancel'),
+                onOk: async () => {
+                  await handleRemove(url, selectedRowsState);
+                  setSelectedRows([]);
+                  actionRef.current?.reloadAndRest?.();
+                },
+              });
+            }}
           >
             {l('button.batchDelete')}
           </Button>
@@ -267,28 +277,26 @@ const TenantFormList: React.FC<{}> = (props: any) => {
         modalVisible={modalVisible}
         values={{}}
       />
-      {
-        formValues && Object.keys(formValues).length ? (
-          <TenantForm
-            onSubmit={async (value) => {
-              const success = await handleAddOrUpdate(url, value);
-              if (success) {
-                handleUpdateModalVisible(false);
-                setFormValues({});
-                if (actionRef.current) {
-                  actionRef.current.reload();
-                }
-              }
-            }}
-            onCancel={() => {
+      {formValues && Object.keys(formValues).length ? (
+        <TenantForm
+          onSubmit={async (value) => {
+            const success = await handleAddOrUpdate(url, value);
+            if (success) {
               handleUpdateModalVisible(false);
               setFormValues({});
-            }}
-            modalVisible={updateModalVisible}
-            values={formValues}
-          />
-        ) : undefined
-      }
+              if (actionRef.current) {
+                actionRef.current.reload();
+              }
+            }
+          }}
+          onCancel={() => {
+            handleUpdateModalVisible(false);
+            setFormValues({});
+          }}
+          modalVisible={updateModalVisible}
+          values={formValues}
+        />
+      ) : undefined}
       <Drawer
         width={600}
         visible={!!row}

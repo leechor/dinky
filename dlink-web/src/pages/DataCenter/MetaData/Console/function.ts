@@ -17,15 +17,14 @@
  *
  */
 
-import keyWordJsonData from "@/services/keyword.json";
+import keyWordJsonData from '@/services/keyword.json';
 
 function parseKeyWordJson(type: string) {
-  return JSON.parse(JSON.stringify(keyWordJsonData))[type]
+  return JSON.parse(JSON.stringify(keyWordJsonData))[type];
 }
 
 export function getKeyWordByType(dbType: string) {
   // fragments && sql key word
-  let result = parseKeyWordJson(dbType).concat(parseKeyWordJson("fragments"));
+  let result = parseKeyWordJson(dbType).concat(parseKeyWordJson('fragments'));
   return result;
-
 }

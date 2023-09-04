@@ -1,4 +1,4 @@
-import XKRequest from "../http";
+import XKRequest from '../http';
 //设置某一个实例
 const xkrequest = new XKRequest({
   // baseURL: process.env.VUE_APP_BASE_URL,

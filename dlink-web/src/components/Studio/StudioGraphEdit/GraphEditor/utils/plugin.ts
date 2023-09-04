@@ -1,4 +1,4 @@
-import { Graph, Shape } from '@antv/x6';
+import { Graph, KeyValue, Shape } from '@antv/x6';
 import { Clipboard } from '@antv/x6-plugin-clipboard';
 import { Selection } from '@antv/x6-plugin-selection';
 import { Keyboard } from '@antv/x6-plugin-keyboard';
@@ -7,7 +7,7 @@ import { History } from '@antv/x6-plugin-history';
 import { Scroller } from '@antv/x6-plugin-scroller';
 import { Transform } from '@antv/x6-plugin-transform';
 import { Export } from '@antv/x6-plugin-export';
-import CustomShape from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
+import CustomShape from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons';
 
 //复制粘贴
 export const clipboard = (graph: Graph) => {
@@ -82,23 +82,39 @@ export const keyboard = (graph: Graph) => {
 };
 
 export const history = (graph: Graph) => {
-  graph.use(
-    new History({
-      enabled: true,
-      // beforeAddCommand(event,args){
-      //   console.log("beforeAddCommand",event,args);
-        
-      // },
-      // afterAddCommand(event,args,cmd){
-      //   console.log("afterAddCommand",event,args,cmd);
+  const history = new History({
+    enabled: true,
+    ignoreChange: true,
+    beforeAddCommand(event, args: any) {
+      if (args.options) {
+        return args.options.ignored !== true;
+      }
+    },
+    // afterAddCommand(event,args,cmd){
+    //   console.log("afterAddCommand",event,args,cmd);
 
-      // },
-      // executeCommand(cmd,revert,options){
-      //   console.log("executeCommand",cmd,revert,options);
+    // },
+    // executeCommand(cmd,revert,options){
+    //   console.log("executeCommand",cmd,revert,options);
 
-      // }
-    }),
-  );
+    // }
+  });
+  graph.use(history);
+  // history.on("batch", ({ cmd, options }: { cmd: any, options: any }) => {
+  //   switch (cmd.event) {
+  //     case "cell:change:ports":
+  //       const cell = graph.getCellById(cmd.data.id)
+  //       if (cell.isNode()) {
+  //         const nextPortId = cmd.data.next.ports.items.map((item: any) => item.id)
+  //         const prePortId = cmd.data.next.ports.items.map((item: any) => item.id)
+  //         const changedPortId = nextPortId.find((nId: string) => !prePortId.includes(nId))
+  //         cell.removePort(changedPortId)
+  //       }
+
+  //       break;
+  //   }
+
+  // })
   //undo redo
   graph.bindKey(['meta+z', 'ctrl+z'], () => {
     if (graph.canUndo()) {
@@ -116,15 +132,15 @@ export const scroller = (graph: Graph) => {
   graph.use(
     new Scroller({
       pannable: true,
-      modifiers: ["ctrl", "alt"],
+      modifiers: ['ctrl', 'alt'],
       pageBreak: true,
       pageVisible: true,
       pageHeight: graph.getGraphArea().height,
-      pageWidth: graph.getGraphArea().width
+      pageWidth: graph.getGraphArea().width,
     }),
   );
   // graph.centerContent();
-  graph.lockScroller()
+  graph.lockScroller();
 };
 
 export const transform = (graph: Graph) => {
@@ -133,13 +149,12 @@ export const transform = (graph: Graph) => {
       resizing: {
         enabled(node) {
           if (node.shape === CustomShape.GROUP_PROCESS) {
-            return false
+            return false;
           } else {
-            return true
+            return true;
           }
         },
         orthogonal: false,
-
       },
     }),
   );
@@ -157,5 +172,5 @@ export default function loadPlugin(graph: Graph) {
   keyboard(graph);
   history(graph);
   transform(graph);
-  scroller(graph)
+  scroller(graph);
 }

@@ -83,11 +83,16 @@ import StudioTabs from '@/components/Studio/StudioTabs';
 import { isDeletedTask, JOB_LIFE_CYCLE } from '@/components/Common/JobLifeCycle';
 import DolphinPush from '@/components/Studio/StudioMenu/DolphinPush';
 import { l } from '@/utils/intl';
-import { useAppSelector, useAppDispatch } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
+import {
+  useAppSelector,
+  useAppDispatch,
+} from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
 import { JSONEditor } from '@json-editor/json-editor';
-import localcache from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/localStorage"
+import localcache from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/localStorage';
 import { Graph } from '@antv/x6';
-import verifyOperator, { setOriginColor } from '../StudioGraphEdit/GraphEditor/utils/verifyOperator';
+import verifyOperator, {
+  setOriginColor,
+} from '../StudioGraphEdit/GraphEditor/utils/verifyOperator';
 
 const StudioMenu = (props: any) => {
   const {
@@ -100,7 +105,7 @@ const StudioMenu = (props: any) => {
     refs,
     dispatch,
     currentSession,
-    verifyOperDatas
+    verifyOperDatas,
   } = props;
   const [modalVisible, handleModalVisible] = useState<boolean>(false);
   const [exportModalVisible, handleExportModalVisible] = useState<boolean>(false);
@@ -118,7 +123,6 @@ const StudioMenu = (props: any) => {
 
   const onKeyDown = useCallback(
     (e) => {
-
       if (e.keyCode === 83 && (e.ctrlKey === true || e.metaKey)) {
         e.preventDefault();
         if (current) {
@@ -128,13 +132,11 @@ const StudioMenu = (props: any) => {
       if (e.keyCode === 113) {
         e.preventDefault();
         if (current) {
-
           // handleEditModalVisible(true);
           props.changeFullScreen(true);
           if (graph instanceof Graph) {
-            localcache.setCache(`${current.task.name}graphData`, graph.toJSON())
+            localcache.setCache(`${current.task.name}graphData`, graph.toJSON());
           }
-
         }
       }
     },
@@ -143,18 +145,15 @@ const StudioMenu = (props: any) => {
 
   const { graph, editor } = useAppSelector((state) => ({
     graph: state.home.graph,
-    editor: state.home.editor
+    editor: state.home.editor,
   }));
-
 
   useEffect(() => {
     document.addEventListener('keydown', onKeyDown);
-    verifyOperator(verifyOperDatas, graph)
+    verifyOperator(verifyOperDatas, graph);
     return () => {
       document.removeEventListener('keydown', onKeyDown);
     };
-
-
   }, [current, verifyOperDatas]);
 
   const execute = () => {
@@ -367,9 +366,8 @@ const StudioMenu = (props: any) => {
       props.changeFullScreen(true);
       //保存当前画布中json信息
       if (graph instanceof Graph) {
-        localcache.setCache(`${current.task.name}graphData`, graph.toJSON())
+        localcache.setCache(`${current.task.name}graphData`, graph.toJSON());
       }
-
     }
   };
 
@@ -378,34 +376,27 @@ const StudioMenu = (props: any) => {
   };
 
   const saveSqlAndSettingToTask = () => {
-
     //校验
-    if (current.task.dialect !== "FlinkSql") {
-
+    if (current.task.dialect !== 'FlinkSql') {
       if (editor instanceof JSONEditor<any>) {
-        const errors = editor.validate()
+        const errors = editor.validate();
         if (errors.length) {
-          let errmsg = ""
-          errors.forEach(error => {
-            errmsg += error.message
-          })
-          message.warning(errmsg + "-检查算子节点信息")
+          let errmsg = '';
+          errors.forEach((error) => {
+            errmsg += error.message;
+          });
+          message.warning(errmsg + '-检查算子节点信息');
         } else {
           if (graph instanceof Graph) {
-            setOriginColor(graph)
-            let data = graph.toJSON()
+            setOriginColor(graph);
+            let data = graph.toJSON();
             props.saveTask(current, JSON.stringify(data));
           }
-
         }
       }
     } else {
       props.saveTask(current);
     }
-
-
-
-
   };
 
   const exportSql = () => {
@@ -658,7 +649,7 @@ const StudioMenu = (props: any) => {
       title: current.task.jobName + l('pages.datastudio.editor.api.doc'),
       width: 1000,
       content: <TaskAPI task={current.task} />,
-      onOk() { },
+      onOk() {},
     });
   };
 
@@ -667,7 +658,7 @@ const StudioMenu = (props: any) => {
       title: l('pages.datastudio.editor.usehelp'),
       width: 1000,
       content: <StudioHelp />,
-      onOk() { },
+      onOk() {},
     });
   };
 
@@ -816,7 +807,7 @@ const StudioMenu = (props: any) => {
                 </Tooltip>
               ) : undefined}
               {current.task.step != JOB_LIFE_CYCLE.ONLINE &&
-                current.task.step != JOB_LIFE_CYCLE.CANCEL ? (
+              current.task.step != JOB_LIFE_CYCLE.CANCEL ? (
                 <Tooltip title={l('pages.datastudio.editor.delete')}>
                   <Button type="text" icon={<DeleteTwoTone />} onClick={toCancelTask} />
                 </Tooltip>
@@ -920,7 +911,7 @@ const StudioMenu = (props: any) => {
           onCancel={() => {
             props.changeFullScreen(false);
             if (graph instanceof Graph) {
-              localcache.setCache(`${current.task.name}graphData`, graph.toJSON())
+              localcache.setCache(`${current.task.name}graphData`, graph.toJSON());
             }
           }}
         >
@@ -933,10 +924,10 @@ const StudioMenu = (props: any) => {
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   saveTask: (current: any, statement?: string) => {
-
     dispatch({
       type: 'Studio/saveTask',
-      payload: current.task.dialect !== "FlinkSql" ? { ...current.task, statement } : { ...current.task }
+      payload:
+        current.task.dialect !== 'FlinkSql' ? { ...current.task, statement } : { ...current.task },
     });
   },
 
@@ -976,7 +967,7 @@ export default connect(
     tabs: Studio.tabs,
     refs: Studio.refs,
     currentSession: Studio.currentSession,
-    verifyOperDatas: Studio.verifyOperDatas
+    verifyOperDatas: Studio.verifyOperDatas,
   }),
   mapDispatchToProps,
 )(StudioMenu);

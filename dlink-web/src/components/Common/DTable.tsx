@@ -17,26 +17,24 @@
  *
  */
 
-
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
 import ProTable from '@ant-design/pro-table';
-import { getData } from "@/components/Common/crud";
-import { Button, Input, Space } from "antd";
-import { l } from "@/utils/intl";
+import { getData } from '@/components/Common/crud';
+import { Button, Input, Space } from 'antd';
+import { l } from '@/utils/intl';
 
 const DTable = (props: any) => {
-
   const { dataSource, columns, scroll, getDBInfo } = props;
 
   const [data, setData] = useState<[]>([]);
 
   const refreshData = async () => {
     const msg = await getData(dataSource.url, dataSource.params);
-    console.log(msg, "msg>>>>>>>>>>>>>>>>>");
-    
+    console.log(msg, 'msg>>>>>>>>>>>>>>>>>');
+
     setData(msg.datas);
-    getDBInfo({ datas: msg.datas, tableName: dataSource.params.tableName })
+    getDBInfo({ datas: msg.datas, tableName: dataSource.params.tableName });
   };
 
   const buildColumn = () => {
@@ -60,21 +58,21 @@ const DTable = (props: any) => {
               return value1.localeCompare(value2);
             },
             ...column,
-          }
+          };
         } else {
           column = {
             sorter: (a, b) => a[column.dataIndex] - b[column.dataIndex],
             ...column,
-          }
+          };
         }
       }
       if (openSearch === 'like') {
-        column = { ...column, ...getColumnSearchProps(column.dataIndex), }
+        column = { ...column, ...getColumnSearchProps(column.dataIndex) };
       } else if (openSearch === 'dict') {
         column = {
           onFilter: (value, record) => record[column.dataIndex] === value,
           ...column,
-        }
+        };
       }
       columnList.push({
         ...column,
@@ -82,7 +80,7 @@ const DTable = (props: any) => {
       });
     });
     return columnList;
-  }
+  };
 
   useEffect(() => {
     if (dataSource && dataSource.url) {
@@ -116,7 +114,7 @@ export const getColumnSearchProps = (dIndex) => ({
       <Input
         placeholder={l('pages.searchTable.keyword')}
         value={selectedKeys[0]}
-        onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+        onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
         onPressEnter={() => handleSearch(selectedKeys, confirm, dIndex)}
         style={{ marginBottom: 8, display: 'block' }}
       />
@@ -136,11 +134,9 @@ export const getColumnSearchProps = (dIndex) => ({
       </Space>
     </div>
   ),
-  filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+  filterIcon: (filtered) => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
   onFilter: (value, record) =>
-    record[dIndex]
-      ? record[dIndex].toString().toLowerCase().includes(value.toLowerCase())
-      : '',
+    record[dIndex] ? record[dIndex].toString().toLowerCase().includes(value.toLowerCase()) : '',
 });
 
 const handleSearch = (selectedKeys, confirm, dIndex) => {

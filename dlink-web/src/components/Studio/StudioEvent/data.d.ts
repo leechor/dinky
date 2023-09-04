@@ -17,17 +17,16 @@
  *
  */
 
-
 export type SqlMetaData = {
-  statement?: string,
-  metaData?: MetaData[],
+  statement?: string;
+  metaData?: MetaData[];
 };
 export type MetaData = {
-  table: string,
-  connector: string,
-  columns: Column[],
+  table: string;
+  connector: string;
+  columns: Column[];
 };
 export type Column = {
-  name: string,
-  type: string,
+  name: string;
+  type: string;
 };

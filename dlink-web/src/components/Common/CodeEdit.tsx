@@ -17,9 +17,8 @@
  *
  */
 
-
-import MonacoEditor from "react-monaco-editor";
-import {useState} from "react";
+import MonacoEditor from 'react-monaco-editor';
+import { useState } from 'react';
 
 export type CodeEditFormProps = {
   height?: string;
@@ -31,7 +30,6 @@ export type CodeEditFormProps = {
 };
 
 const CodeEdit = (props: CodeEditFormProps) => {
-
   const {
     height = '100%',
     width = '100%',
@@ -46,17 +44,19 @@ const CodeEdit = (props: CodeEditFormProps) => {
     code,
   } = props;
 
-  return (<>
-    <MonacoEditor
-      width={width}
-      height={height}
-      language={language}
-      value={code}
-      options={options}
-      onChange={onChange}
-      theme='vs-dark'
-    />
-  </>)
+  return (
+    <>
+      <MonacoEditor
+        width={width}
+        height={height}
+        language={language}
+        value={code}
+        options={options}
+        onChange={onChange}
+        theme="vs-dark"
+      />
+    </>
+  );
 };
 
 export default CodeEdit;

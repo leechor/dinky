@@ -17,20 +17,21 @@
  *
  */
 
-
-import {Reducer} from "umi";
-import {AlertGroupTableListItem, AlertInstanceTableListItem} from "@/pages/RegistrationCenter/data";
+import { Reducer } from 'umi';
+import {
+  AlertGroupTableListItem,
+  AlertInstanceTableListItem,
+} from '@/pages/RegistrationCenter/data';
 
 export type AlertStateType = {
-  instance:AlertInstanceTableListItem[],
-  group:AlertGroupTableListItem[]
+  instance: AlertInstanceTableListItem[];
+  group: AlertGroupTableListItem[];
 };
 
 export type AlertModelType = {
   namespace: string;
   state: AlertStateType;
-  effects: {
-  };
+  effects: {};
   reducers: {
     saveInstance: Reducer<AlertStateType>;
     saveGroup: Reducer<AlertStateType>;
@@ -40,22 +41,20 @@ export type AlertModelType = {
 const AlertModel: AlertModelType = {
   namespace: 'Alert',
   state: {
-    instance:[],
-    group:[],
+    instance: [],
+    group: [],
   },
 
-  effects: {
-
-  },
+  effects: {},
 
   reducers: {
-    saveInstance(state, {payload}) {
+    saveInstance(state, { payload }) {
       return {
         ...state,
         instance: payload,
       };
     },
-    saveGroup(state, {payload}) {
+    saveGroup(state, { payload }) {
       return {
         ...state,
         group: payload,

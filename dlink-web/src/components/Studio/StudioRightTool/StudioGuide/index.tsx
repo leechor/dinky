@@ -17,85 +17,131 @@
  *
  */
 
-
-import {Typography} from 'antd';
+import { Typography } from 'antd';
 import React from 'react';
-import {StateType} from '@/pages/DataStudio/model';
-import {Scrollbars} from 'react-custom-scrollbars';
-import {connect, history} from 'umi';
-import {l} from "@/utils/intl";
+import { StateType } from '@/pages/DataStudio/model';
+import { Scrollbars } from 'react-custom-scrollbars';
+import { connect, history } from 'umi';
+import { l } from '@/utils/intl';
 
-const {Title, Paragraph, Link, Text} = Typography;
+const { Title, Paragraph, Link, Text } = Typography;
 
 const StudioGuide = (props: any) => {
-
-  const {toolHeight} = props;
+  const { toolHeight } = props;
 
   return (
-    <Scrollbars style={{height: toolHeight}}>
-      <Typography style={{padding: '15px'}}>
+    <Scrollbars style={{ height: toolHeight }}>
+      <Typography style={{ padding: '15px' }}>
         <Title level={5}>{l('pages.datastudio.label.quickguide')}</Title>
         <Paragraph>
           <ul>
             <li>
-              <Link onClick={() => {
-                history.push('/registration/cluster/clusterInstance')
-              }}>{l('pages.datastudio.label.registcluster')}</Link>
+              <Link
+                onClick={() => {
+                  history.push('/registration/cluster/clusterInstance');
+                }}
+              >
+                {l('pages.datastudio.label.registcluster')}
+              </Link>
             </li>
             <li>
-              <Link onClick={() => {
-                history.push('/registration/cluster/clusterConfiguration')
-              }}>{l('pages.datastudio.label.registclusterconfig')}</Link>
+              <Link
+                onClick={() => {
+                  history.push('/registration/cluster/clusterConfiguration');
+                }}
+              >
+                {l('pages.datastudio.label.registclusterconfig')}
+              </Link>
             </li>
             <li>
-              <Link onClick={() => {
-                history.push('/registration/jar')
-              }}>{l('pages.datastudio.label.registjar')}</Link>
+              <Link
+                onClick={() => {
+                  history.push('/registration/jar');
+                }}
+              >
+                {l('pages.datastudio.label.registjar')}
+              </Link>
             </li>
             <li>
-              <Link onClick={() => {
-                history.push('/registration/database')
-              }}>{l('pages.datastudio.label.registdatasource')}</Link>
+              <Link
+                onClick={() => {
+                  history.push('/registration/database');
+                }}
+              >
+                {l('pages.datastudio.label.registdatasource')}
+              </Link>
             </li>
             <li>
-              <Link onClick={() => {
-                history.push('/datacenter/metadata')
-              }}>{l('pages.datastudio.label.metadata')}</Link>
+              <Link
+                onClick={() => {
+                  history.push('/datacenter/metadata');
+                }}
+              >
+                {l('pages.datastudio.label.metadata')}
+              </Link>
             </li>
             <li>
-              <Link onClick={() => {
-                history.push('/registration/alert/alertInstance')
-              }}>{l('pages.datastudio.label.alarmInstance')}</Link>
+              <Link
+                onClick={() => {
+                  history.push('/registration/alert/alertInstance');
+                }}
+              >
+                {l('pages.datastudio.label.alarmInstance')}
+              </Link>
             </li>
             <li>
-              <Link onClick={() => {
-                history.push('/registration/alert/alertGroup')
-              }}>{l('pages.datastudio.label.alarmGroup')}</Link>
+              <Link
+                onClick={() => {
+                  history.push('/registration/alert/alertGroup');
+                }}
+              >
+                {l('pages.datastudio.label.alarmGroup')}
+              </Link>
             </li>
             <li>
-              <Link onClick={() => {
-                history.push('/registration/fragment')
-              }}>{l('pages.datastudio.label.val')}</Link>
+              <Link
+                onClick={() => {
+                  history.push('/registration/fragment');
+                }}
+              >
+                {l('pages.datastudio.label.val')}
+              </Link>
             </li>
             <li>
-              <Link onClick={() => {
-                history.push('/registration/document')
-              }}>{l('pages.datastudio.label.registdocument')}</Link>
+              <Link
+                onClick={() => {
+                  history.push('/registration/document');
+                }}
+              >
+                {l('pages.datastudio.label.registdocument')}
+              </Link>
             </li>
             <li>
-              <Link onClick={() => {
-                history.push('/settingCenter/flinkSettings')
-              }}>{l('pages.datastudio.label.configsystemconfig')}</Link>
+              <Link
+                onClick={() => {
+                  history.push('/settingCenter/flinkSettings');
+                }}
+              >
+                {l('pages.datastudio.label.configsystemconfig')}
+              </Link>
             </li>
             <li>
-              <Link onClick={() => {
-                history.push('/settingCenter/udfTemplate')
-              }}>{l('pages.datastudio.label.udfTemplate')}</Link>
+              <Link
+                onClick={() => {
+                  history.push('/settingCenter/udfTemplate');
+                }}
+              >
+                {l('pages.datastudio.label.udfTemplate')}
+              </Link>
             </li>
             <li>
-              <Link onClick={() => {
-                history.push('/settingCenter/systemInfo')
-              }}>{l('pages.datastudio.label.systemInfo')}</Link>
+              <Link
+                onClick={() => {
+                  history.push('/settingCenter/systemInfo');
+                }}
+              >
+                {l('pages.datastudio.label.systemInfo')}
+              </Link>
             </li>
           </ul>
         </Paragraph>
@@ -104,7 +150,7 @@ const StudioGuide = (props: any) => {
   );
 };
 
-export default connect(({Studio}: { Studio: StateType }) => ({
+export default connect(({ Studio }: { Studio: StateType }) => ({
   current: Studio.current,
   sql: Studio.sql,
   tabs: Studio.tabs,

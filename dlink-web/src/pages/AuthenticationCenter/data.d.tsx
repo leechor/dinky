@@ -17,7 +17,6 @@
  *
  */
 
-
 export type UserTableListItem = {
   id?: number;
   enabled?: boolean;
@@ -39,7 +38,6 @@ export type PasswordItem = {
   newPasswordCheck?: string;
 };
 
-
 export type TenantTableListItem = {
   id?: number;
   tenantCode?: string;
@@ -48,7 +46,6 @@ export type TenantTableListItem = {
   createTime?: Date;
   updateTime?: Date;
 };
-
 
 export type RoleTableListItem = {
   id?: number;
@@ -85,4 +82,3 @@ export type NameSpaceTableListItem = {
   createTime?: Date;
   updateTime?: Date;
 };
-

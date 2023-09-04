@@ -39,7 +39,7 @@ declare namespace API {
       isAdmin?: boolean;
       createTime?: Date;
       updateTime?: Date;
-    }
+    };
     roleList?: Role[];
     tenantList?: Tenant[];
     currentTenant?: Tenant;
@@ -64,7 +64,6 @@ declare namespace API {
     createTime?: Date;
     updateTime?: Date;
   };
-
 
   /*type LoginResult = {
     code?: number;

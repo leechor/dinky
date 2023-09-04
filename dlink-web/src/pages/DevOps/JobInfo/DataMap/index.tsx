@@ -17,18 +17,16 @@
  *
  */
 
+import { Empty, Tabs } from 'antd';
+import { getLineage } from '@/pages/DevOps/service';
+import { useEffect, useState } from 'react';
+import Lineage from '@/components/Lineage';
+import { l } from '@/utils/intl';
 
-import {Empty, Tabs} from 'antd';
-import {getLineage} from "@/pages/DevOps/service";
-import {useEffect, useState} from "react";
-import Lineage from "@/components/Lineage";
-import {l} from "@/utils/intl";
-
-const {TabPane} = Tabs;
+const { TabPane } = Tabs;
 
 const DataMap = (props: any) => {
-
-  const {job} = props;
+  const { job } = props;
 
   const [data, setData] = useState(undefined);
 
@@ -36,7 +34,7 @@ const DataMap = (props: any) => {
     setData(undefined);
     const res = getLineage(job.instance?.id);
     res.then((result) => {
-      result.datas?.tables.forEach(table => {
+      result.datas?.tables.forEach((table) => {
         table.isExpand = true;
         table.isFold = false;
       });
@@ -48,15 +46,22 @@ const DataMap = (props: any) => {
     getData();
   }, []);
 
-  return (<>
-    <Tabs defaultActiveKey="Lineage" size="small" tabPosition="top" style={{
-      border: "1px solid #f0f0f0"
-    }}>
-      <TabPane tab={<span>{l('pages.devops.jobinfo.lineage')}</span>} key="Lineage">
-        {data ? <Lineage datas={data}/> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>}
-      </TabPane>
-    </Tabs>
-  </>)
+  return (
+    <>
+      <Tabs
+        defaultActiveKey="Lineage"
+        size="small"
+        tabPosition="top"
+        style={{
+          border: '1px solid #f0f0f0',
+        }}
+      >
+        <TabPane tab={<span>{l('pages.devops.jobinfo.lineage')}</span>} key="Lineage">
+          {data ? <Lineage datas={data} /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
+        </TabPane>
+      </Tabs>
+    </>
+  );
 };
 
 export default DataMap;

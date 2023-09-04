@@ -17,20 +17,19 @@
  *
  */
 
-
 export type CatalogueTableListItem = {
-  id: number,
-  taskId: number,
-  name: string,
-  type: string,
-  isLeaf: string,
-  parentId: number,
+  id: number;
+  taskId: number;
+  name: string;
+  type: string;
+  isLeaf: string;
+  parentId: number;
 };
 
 export type TaskTableListItem = {
-  id: number,
-  name: string,
-  dialect: string,
-  config: Object<string, object>,
-  parentId: number,
+  id: number;
+  name: string;
+  dialect: string;
+  config: Object<string, object>;
+  parentId: number;
 };

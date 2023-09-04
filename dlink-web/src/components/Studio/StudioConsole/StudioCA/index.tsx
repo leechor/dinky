@@ -17,22 +17,21 @@
  *
  */
 
+import { Button, Empty, message, Modal, Tabs, Tooltip } from 'antd';
+import { SearchOutlined, SnippetsOutlined } from '@ant-design/icons';
+import { StateType } from '@/pages/DataStudio/model';
+import { connect } from 'umi';
+import { getLineage, getStreamGraph } from '@/pages/DataStudio/service';
+import { useState } from 'react';
+import Lineage from '@/components/Lineage';
+import CodeShow from '@/components/Common/CodeShow';
+import { DIALECT } from '@/components/Studio/conf';
+import { l } from '@/utils/intl';
 
-import {Button, Empty, message, Modal, Tabs, Tooltip} from "antd";
-import {SearchOutlined, SnippetsOutlined} from "@ant-design/icons";
-import {StateType} from "@/pages/DataStudio/model";
-import {connect} from "umi";
-import {getLineage, getStreamGraph} from "@/pages/DataStudio/service";
-import {useState} from "react";
-import Lineage from "@/components/Lineage";
-import CodeShow from "@/components/Common/CodeShow";
-import {DIALECT} from "@/components/Studio/conf";
-import {l} from "@/utils/intl";
-
-const {TabPane} = Tabs;
+const { TabPane } = Tabs;
 
 const StudioCA = (props: any) => {
-  const {current} = props;
+  const { current } = props;
   const [data, setData] = useState(undefined);
 
   const handleLineage = () => {
@@ -48,9 +47,9 @@ const StudioCA = (props: any) => {
       if (result.datas) {
         setData(result.datas);
       } else {
-        message.error(l('pages.datastudio.label.lineage.query.error','',{msg : result.msg}));
+        message.error(l('pages.datastudio.label.lineage.query.error', '', { msg: result.msg }));
       }
-    })
+    });
   };
 
   const handleExportStreamGraphPlan = () => {
@@ -64,48 +63,54 @@ const StudioCA = (props: any) => {
         title: current.task.alias + l('pages.datastudio.label.lineage.streamplan'),
         width: 1000,
         content: (
-          <CodeShow code={JSON.stringify((result.datas ? result.datas : result.msg), null, "\t")} language='json'
-                    height='500px' theme="vs-dark"/>
+          <CodeShow
+            code={JSON.stringify(result.datas ? result.datas : result.msg, null, '\t')}
+            language="json"
+            height="500px"
+            theme="vs-dark"
+          />
         ),
-        onOk() {
-        },
+        onOk() {},
       });
-    })
+    });
   };
 
-  return (<>
-    <Tabs defaultActiveKey="Lineage" size="small" tabPosition="top" style={{border: "1px solid #f0f0f0"}}
-          tabBarExtraContent={
-            <>
-              <Tooltip title= {l('pages.datastudio.label.lineage.recalculate')}>
+  return (
+    <>
+      <Tabs
+        defaultActiveKey="Lineage"
+        size="small"
+        tabPosition="top"
+        style={{ border: '1px solid #f0f0f0' }}
+        tabBarExtraContent={
+          <>
+            <Tooltip title={l('pages.datastudio.label.lineage.recalculate')}>
+              <Button type="text" icon={<SearchOutlined />} onClick={handleLineage}>
+                {l('pages.datastudio.label.lineage.calculate')}
+              </Button>
+            </Tooltip>
+            {!current.task.dialect || current.task.dialect == DIALECT.FLINKSQL ? (
+              <Tooltip title={l('pages.datastudio.label.lineage.export')}>
                 <Button
                   type="text"
-                  icon={<SearchOutlined/>}
-                  onClick={handleLineage}
+                  icon={<SnippetsOutlined />}
+                  onClick={handleExportStreamGraphPlan}
                 >
-                  {l('pages.datastudio.label.lineage.calculate')}
+                  StreamGraphPlan
                 </Button>
               </Tooltip>
-              {(!current.task.dialect || current.task.dialect == DIALECT.FLINKSQL) ?
-                <Tooltip title={l('pages.datastudio.label.lineage.export')}>
-                  <Button
-                    type="text"
-                    icon={<SnippetsOutlined/>}
-                    onClick={handleExportStreamGraphPlan}
-                  >
-                    StreamGraphPlan
-                  </Button>
-                </Tooltip> : undefined
-              }
-            </>}
-    >
-      <TabPane tab={<span>{l('pages.devops.jobinfo.lineage')}</span>} key="Lineage">
-        {data ? <Lineage datas={data}/> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>}
-      </TabPane>
-    </Tabs>
-  </>)
+            ) : undefined}
+          </>
+        }
+      >
+        <TabPane tab={<span>{l('pages.devops.jobinfo.lineage')}</span>} key="Lineage">
+          {data ? <Lineage datas={data} /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
+        </TabPane>
+      </Tabs>
+    </>
+  );
 };
 
-export default connect(({Studio}: { Studio: StateType }) => ({
+export default connect(({ Studio }: { Studio: StateType }) => ({
   current: Studio.current,
 }))(StudioCA);

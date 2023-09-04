@@ -17,18 +17,22 @@
  *
  */
 
+import { postAll } from '@/components/Common/crud';
+import { message } from 'antd';
+import { ClusterConfigurationTableListItem } from '@/pages/RegistrationCenter/data';
+import { l } from '@/utils/intl';
 
-import {postAll} from "@/components/Common/crud";
-import {message} from "antd";
-import {ClusterConfigurationTableListItem} from "@/pages/RegistrationCenter/data";
-import {l} from "@/utils/intl";
-
-export async function testClusterConfigurationConnect(clusterConfiguration: ClusterConfigurationTableListItem) {
+export async function testClusterConfigurationConnect(
+  clusterConfiguration: ClusterConfigurationTableListItem,
+) {
   const hide = message.loading(l('app.request.test.connection'));
   try {
-    const {code,msg} = await postAll('/api/clusterConfiguration/testConnect',clusterConfiguration);
+    const { code, msg } = await postAll(
+      '/api/clusterConfiguration/testConnect',
+      clusterConfiguration,
+    );
     hide();
-    code==0?message.success(msg):message.error(msg);
+    code == 0 ? message.success(msg) : message.error(msg);
   } catch (error) {
     hide();
     message.error(l('app.request.failed'));

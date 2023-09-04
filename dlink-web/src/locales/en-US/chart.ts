@@ -33,5 +33,4 @@ export default {
   'chart.openStepType': 'Step Line',
   'chart.angleField': 'Arc Axis',
   'chart.colorField': 'Color',
-
-}
+};

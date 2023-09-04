@@ -17,16 +17,15 @@
  *
  */
 
+import React, { useEffect, useState } from 'react';
+import { Button, Cascader, Form, Input, Modal, Select } from 'antd';
 
-import React, {useEffect, useState} from 'react';
-import {Button, Cascader, Form, Input, Modal, Select} from 'antd';
+import type { TaskTableListItem } from '../data.d';
+import { DIALECT } from '@/components/Studio/conf';
+import { l } from '@/utils/intl';
+import { postAll } from '@/components/Common/crud';
 
-import type {TaskTableListItem} from '../data.d';
-import {DIALECT} from "@/components/Studio/conf";
-import {l} from "@/utils/intl";
-import {postAll} from "@/components/Common/crud";
-
-const {Option} = Select;
+const { Option } = Select;
 
 export type UpdateFormProps = {
   onCancel: (flag?: boolean, formVals?: Partial<TaskTableListItem>) => void;
@@ -37,17 +36,15 @@ export type UpdateFormProps = {
   values: Partial<TaskTableListItem>;
 };
 
-
 const formLayout = {
-  labelCol: {span: 7},
-  wrapperCol: {span: 13},
+  labelCol: { span: 7 },
+  wrapperCol: { span: 13 },
 };
 const isUDF = (dialect: string) => {
-  return (dialect == DIALECT.SCALA || dialect == DIALECT.PYTHON || dialect == DIALECT.JAVA)
-}
+  return dialect == DIALECT.SCALA || dialect == DIALECT.PYTHON || dialect == DIALECT.JAVA;
+};
 
 const SimpleTaskForm: React.FC<UpdateFormProps> = (props) => {
-
   const [formVals, setFormVals] = useState<Partial<TaskTableListItem>>({
     id: props.values.id,
     name: props.values.name,
@@ -56,20 +53,19 @@ const SimpleTaskForm: React.FC<UpdateFormProps> = (props) => {
     config: props.values.config,
   });
 
-  const [dialect, setDialect] = useState<string>(DIALECT.FLINKSQL)
-  const [isShowUDFClassName, setShowUDFClassName] = useState<boolean>(true)
-  const [templateTree, setTemplateTree] = useState<Object[]>([])
-  const [templateData, setTemplateData] = useState<Object[]>([])
+  const [dialect, setDialect] = useState<string>(DIALECT.FLINKSQL);
+  const [isShowUDFClassName, setShowUDFClassName] = useState<boolean>(true);
+  const [templateTree, setTemplateTree] = useState<Object[]>([]);
+  const [templateData, setTemplateData] = useState<Object[]>([]);
   const [form] = Form.useForm();
 
-
   const getTemplateTreeData = async () => {
-    const resp = await postAll("/api/udf/template/tree")
-    return resp.datas
-  }
+    const resp = await postAll('/api/udf/template/tree');
+    return resp.datas;
+  };
   useEffect(() => {
-    getTemplateTreeData().then(r => setTemplateTree(r))
-  }, [])
+    getTemplateTreeData().then((r) => setTemplateTree(r));
+  }, []);
 
   const {
     onSubmit: handleUpdate,
@@ -79,54 +75,66 @@ const SimpleTaskForm: React.FC<UpdateFormProps> = (props) => {
     isCreate,
   } = props;
 
-
   const submitForm = async () => {
     const fieldsValue = await form.validateFields();
-    const data = {...formVals, ...fieldsValue};
+    const data = { ...formVals, ...fieldsValue };
     try {
       data.config = {
         templateId: String(data['config.templateId'].lastItem),
         className: data['config.className'],
-      }
-    } catch (e) {
-    }
+      };
+    } catch (e) {}
     setFormVals(data);
     handleUpdate(data);
   };
   const handlerChangeUdf = (value: any[]) => {
     if (value[1] == 0) {
-      setShowUDFClassName(false)
+      setShowUDFClassName(false);
     } else {
-      setShowUDFClassName(true)
+      setShowUDFClassName(true);
     }
-  }
+  };
 
   const handlerSetDialect = (value: string) => {
-    setDialect(value)
+    setDialect(value);
     if (isUDF(value)) {
-      templateTree.map(x => {
+      templateTree.map((x) => {
         if (x.label == value) {
-          const data = x.children
-          data.splice(data.length, 0, {label: "Empty", value: "Empty", children: [{label: "Empty", value: 0}]})
-          setTemplateData(data)
-          setShowUDFClassName(true)
-          form.setFieldsValue({"config.templateId": [x.children[0].label, x.children[0].children[0].label, x.children[0].children[0].value]})
+          const data = x.children;
+          data.splice(data.length, 0, {
+            label: 'Empty',
+            value: 'Empty',
+            children: [{ label: 'Empty', value: 0 }],
+          });
+          setTemplateData(data);
+          setShowUDFClassName(true);
+          form.setFieldsValue({
+            'config.templateId': [
+              x.children[0].label,
+              x.children[0].children[0].label,
+              x.children[0].children[0].value,
+            ],
+          });
         }
-      })
+      });
     }
-  }
+  };
 
   const renderContent = () => {
     return (
       <>
         <Form.Item
-          label="作业类型" name="dialect"
-          tooltip='指定作业类型，默认为 FlinkSql,创建后类型不可修改'
-          rules={[{required: true, message: '必选！'}]}
+          label="作业类型"
+          name="dialect"
+          tooltip="指定作业类型，默认为 FlinkSql,创建后类型不可修改"
+          rules={[{ required: true, message: '必选！' }]}
         >
-          <Select disabled={!isCreate} defaultValue={DIALECT.FLINKSQL}
-                  value={DIALECT.FLINKSQL}
-                  onChange={handlerSetDialect}>
+          <Select
+            disabled={!isCreate}
+            defaultValue={DIALECT.FLINKSQL}
+            value={DIALECT.FLINKSQL}
+            onChange={handlerSetDialect}
+          >
             <Option value={DIALECT.FLINKSQL}>{DIALECT.FLINKSQL}</Option>
             <Option value={DIALECT.KUBERNETES_APPLICATION}>{DIALECT.KUBERNETES_APPLICATION}</Option>
             <Option value={DIALECT.GRAPH_SQL}>{DIALECT.GRAPH_SQL}</Option>
@@ -142,37 +150,46 @@ const SimpleTaskForm: React.FC<UpdateFormProps> = (props) => {
             <Option value={DIALECT.PHOENIX}>{DIALECT.PHOENIX}</Option>
             <Option value={DIALECT.STARROCKS}>{DIALECT.STARROCKS}</Option>
             <Option value={DIALECT.PRESTO}>{DIALECT.PRESTO}</Option>
-            <Option key={DIALECT.JAVA} value={DIALECT.JAVA}>{DIALECT.JAVA}</Option>
-            <Option key={DIALECT.SCALA} value={DIALECT.SCALA}>{DIALECT.SCALA}</Option>
-            <Option key={DIALECT.PYTHON} value={DIALECT.PYTHON}>{DIALECT.PYTHON}</Option>
+            <Option key={DIALECT.JAVA} value={DIALECT.JAVA}>
+              {DIALECT.JAVA}
+            </Option>
+            <Option key={DIALECT.SCALA} value={DIALECT.SCALA}>
+              {DIALECT.SCALA}
+            </Option>
+            <Option key={DIALECT.PYTHON} value={DIALECT.PYTHON}>
+              {DIALECT.PYTHON}
+            </Option>
             <Option value={DIALECT.SQL}>{DIALECT.SQL}</Option>
           </Select>
         </Form.Item>
         <Form.Item
           name="name"
           label="作业名称"
-          tooltip={"此处为提交的任务的 Pipeline 名称"}
-          rules={[{required: true, message: '请输入任务的 Pipeline 名称！'}]}>
-          <Input placeholder="任务的 Pipeline 名称！"/>
+          tooltip={'此处为提交的任务的 Pipeline 名称'}
+          rules={[{ required: true, message: '请输入任务的 Pipeline 名称！' }]}
+        >
+          <Input placeholder="任务的 Pipeline 名称！" />
         </Form.Item>
-        {isUDF(dialect) ? (<>
-          <Form.Item
-            name="config.templateId"
-            label="UDF 模板"
-            rules={[{required: true, message: '请选择udf模板!'}]}>
-            {<Cascader
-              displayRender={(label: string[]) => label.slice(0, 2).join(" / ")}
-              options={templateData}
-              onChange={handlerChangeUdf}
-            />}
-          </Form.Item>
-          <Form.Item
-            hidden={!isShowUDFClassName}
-            name="config.className"
-            label="类名或方法名">
-            <Input placeholder="请输入"/>
-          </Form.Item>
-        </>) : undefined}
+        {isUDF(dialect) ? (
+          <>
+            <Form.Item
+              name="config.templateId"
+              label="UDF 模板"
+              rules={[{ required: true, message: '请选择udf模板!' }]}
+            >
+              {
+                <Cascader
+                  displayRender={(label: string[]) => label.slice(0, 2).join(' / ')}
+                  options={templateData}
+                  onChange={handlerChangeUdf}
+                />
+              }
+            </Form.Item>
+            <Form.Item hidden={!isShowUDFClassName} name="config.className" label="类名或方法名">
+              <Input placeholder="请输入" />
+            </Form.Item>
+          </>
+        ) : undefined}
       </>
     );
   };
@@ -180,7 +197,9 @@ const SimpleTaskForm: React.FC<UpdateFormProps> = (props) => {
   const renderFooter = () => {
     return (
       <>
-        <Button onClick={() => handleUpdateModalVisible(false, values)}>{l('button.cancel')}</Button>
+        <Button onClick={() => handleUpdateModalVisible(false, values)}>
+          {l('button.cancel')}
+        </Button>
         <Button type="primary" onClick={() => submitForm()}>
           {l('button.finish')}
         </Button>
@@ -191,9 +210,9 @@ const SimpleTaskForm: React.FC<UpdateFormProps> = (props) => {
   return (
     <Modal
       width={640}
-      bodyStyle={{padding: '32px 40px 48px'}}
+      bodyStyle={{ padding: '32px 40px 48px' }}
       destroyOnClose
-      title={isCreate ? '创建新作业' : ('重命名作业-' + formVals.name)}
+      title={isCreate ? '创建新作业' : '重命名作业-' + formVals.name}
       visible={updateModalVisible}
       footer={renderFooter()}
       onCancel={() => handleUpdateModalVisible()}

@@ -17,17 +17,16 @@
  *
  */
 
-
-import {Tag} from 'antd';
+import { Tag } from 'antd';
 import {
   CheckCircleOutlined,
   ClockCircleOutlined,
   CloseCircleOutlined,
   MinusCircleOutlined,
   QuestionCircleOutlined,
-  SyncOutlined
-} from "@ant-design/icons";
-import {l} from "@/utils/intl";
+  SyncOutlined,
+} from '@ant-design/icons';
+import { l } from '@/utils/intl';
 
 export type JobStatusFormProps = {
   status: string | undefined;
@@ -60,40 +59,48 @@ export function isStatusDone(type: string) {
     default:
       return false;
   }
-};
+}
 
 const JobStatus = (props: JobStatusFormProps) => {
+  const { status } = props;
 
-  const {status} = props;
-
-  return (<>
-    {(status === 'FINISHED') ?
-      (<Tag icon={<CheckCircleOutlined/>} color="blue">
-        {l('pages.devops.jobstatus.FINISHED')}
-      </Tag>) : (status === 'RUNNING') ?
-        (<Tag icon={<SyncOutlined spin/>} color="green">
+  return (
+    <>
+      {status === 'FINISHED' ? (
+        <Tag icon={<CheckCircleOutlined />} color="blue">
+          {l('pages.devops.jobstatus.FINISHED')}
+        </Tag>
+      ) : status === 'RUNNING' ? (
+        <Tag icon={<SyncOutlined spin />} color="green">
           {l('pages.devops.jobstatus.RUNNING')}
-        </Tag>) : (status === 'FAILED') ?
-          (<Tag icon={<CloseCircleOutlined/>} color="error">
-            {l('pages.devops.jobstatus.FAILED')}
-          </Tag>) : (status === 'CANCELED') ?
-            (<Tag icon={<MinusCircleOutlined/>} color="orange">
-              {l('pages.devops.jobstatus.CANCELED')}
-            </Tag>) : (status === 'INITIALIZING') ?
-              (<Tag icon={<ClockCircleOutlined/>} color="default">
-                {l('pages.devops.jobstatus.INITIALIZING')}
-              </Tag>) : (status === 'RESTARTING') ?
-                (<Tag icon={<ClockCircleOutlined/>} color="default">
-                  {l('pages.devops.jobstatus.RESTARTING')}
-                </Tag>) : (status === 'CREATED') ?
-                  (<Tag icon={<ClockCircleOutlined/>} color="default">
-                    {l('pages.devops.jobstatus.CREATED')}
-                  </Tag>) :
-                  (<Tag icon={<QuestionCircleOutlined/>} color="default">
-                    {l('pages.devops.jobstatus.UNKNOWN')}
-                  </Tag>)
-    }
-  </>)
+        </Tag>
+      ) : status === 'FAILED' ? (
+        <Tag icon={<CloseCircleOutlined />} color="error">
+          {l('pages.devops.jobstatus.FAILED')}
+        </Tag>
+      ) : status === 'CANCELED' ? (
+        <Tag icon={<MinusCircleOutlined />} color="orange">
+          {l('pages.devops.jobstatus.CANCELED')}
+        </Tag>
+      ) : status === 'INITIALIZING' ? (
+        <Tag icon={<ClockCircleOutlined />} color="default">
+          {l('pages.devops.jobstatus.INITIALIZING')}
+        </Tag>
+      ) : status === 'RESTARTING' ? (
+        <Tag icon={<ClockCircleOutlined />} color="default">
+          {l('pages.devops.jobstatus.RESTARTING')}
+        </Tag>
+      ) : status === 'CREATED' ? (
+        <Tag icon={<ClockCircleOutlined />} color="default">
+          {l('pages.devops.jobstatus.CREATED')}
+        </Tag>
+      ) : (
+        <Tag icon={<QuestionCircleOutlined />} color="default">
+          {l('pages.devops.jobstatus.UNKNOWN')}
+        </Tag>
+      )}
+    </>
+  );
 };
 
 export default JobStatus;

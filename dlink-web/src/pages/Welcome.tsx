@@ -18,14 +18,14 @@
  */
 
 import React from 'react';
-import {Alert, Card, Timeline, Typography} from 'antd';
-import {FormattedMessage} from 'umi';
+import { Alert, Card, Timeline, Typography } from 'antd';
+import { FormattedMessage } from 'umi';
 import styles from './Welcome.less';
-import {VERSION} from "@/components/Common/Version";
-import {l} from "@/utils/intl";
+import { VERSION } from '@/components/Common/Version';
+import { l } from '@/utils/intl';
 
-const {Text, Link, Paragraph} = Typography;
-const CodePreview: React.FC = ({children}) => (
+const { Text, Link, Paragraph } = Typography;
+const CodePreview: React.FC = ({ children }) => (
   <pre className={styles.pre}>
     <code>
       <Typography.Text copyable>{children}</Typography.Text>
@@ -34,12 +34,11 @@ const CodePreview: React.FC = ({children}) => (
 );
 
 export default (): React.ReactNode => {
-
   return (
     <>
       <Card>
         <Alert
-          message={l('pages.welcome.alertMessage', '', {version: VERSION})}
+          message={l('pages.welcome.alertMessage', '', { version: VERSION })}
           type="success"
           showIcon
           banner
@@ -49,13 +48,13 @@ export default (): React.ReactNode => {
           }}
         />
         <Typography.Text strong>
-          <FormattedMessage id="pages.welcome.Community" defaultMessage="官方社区"/>{' '}
-          <FormattedMessage id="pages.welcome.link" defaultMessage="欢迎加入"/>
+          <FormattedMessage id="pages.welcome.Community" defaultMessage="官方社区" />{' '}
+          <FormattedMessage id="pages.welcome.link" defaultMessage="欢迎加入" />
         </Typography.Text>
         <Paragraph>
           <Typography.Text strong>
-            <FormattedMessage id="pages.welcome.QQ" defaultMessage="QQ官方社区群"/>{' '}
-            <FormattedMessage id="pages.welcome.QQcode" defaultMessage="543709668"/>
+            <FormattedMessage id="pages.welcome.QQ" defaultMessage="QQ官方社区群" />{' '}
+            <FormattedMessage id="pages.welcome.QQcode" defaultMessage="543709668" />
           </Typography.Text>
         </Paragraph>
         <CodePreview>微信公众号：Dinky 开源</CodePreview>
@@ -65,38 +64,42 @@ export default (): React.ReactNode => {
             marginBottom: 12,
           }}
         >
-          <FormattedMessage id="pages.welcome.advancedLayout" defaultMessage="Github"/>{' '}
-          <a
-            href=""
-            rel="noopener noreferrer"
-            target="__blank"
-          >
-            <FormattedMessage id="pages.welcome.star" defaultMessage="欢迎 Star "/>
+          <FormattedMessage id="pages.welcome.advancedLayout" defaultMessage="Github" />{' '}
+          <a href="" rel="noopener noreferrer" target="__blank">
+            <FormattedMessage id="pages.welcome.star" defaultMessage="欢迎 Star " />
           </a>
         </Typography.Text>
         <Paragraph>
           <Typography.Text strong>
-            <FormattedMessage id="pages.welcome.upgrade" defaultMessage="更新日志"/>
+            <FormattedMessage id="pages.welcome.upgrade" defaultMessage="更新日志" />
           </Typography.Text>
         </Paragraph>
         <p></p>
-        <Timeline pending={<><Text code>0.8.0</Text>
-          <Text type="secondary">{l('global.stay.tuned')}</Text>
-          <p></p>
-          <Paragraph>
-            <ul>
-              <li>
-                <Link>代码重构</Link>
-              </li>
-              <li>
-                <Link>数据链路分析</Link>
-              </li>
-              <li>
-                <Link>CDAS & CTAS 语法支持</Link>
-              </li>
-            </ul>
-          </Paragraph></>} reverse={true}>
-          <Timeline.Item><Text code>0.1.0</Text> <Text type="secondary">2021-06-06</Text>
+        <Timeline
+          pending={
+            <>
+              <Text code>0.8.0</Text>
+              <Text type="secondary">{l('global.stay.tuned')}</Text>
+              <p></p>
+              <Paragraph>
+                <ul>
+                  <li>
+                    <Link>代码重构</Link>
+                  </li>
+                  <li>
+                    <Link>数据链路分析</Link>
+                  </li>
+                  <li>
+                    <Link>CDAS & CTAS 语法支持</Link>
+                  </li>
+                </ul>
+              </Paragraph>
+            </>
+          }
+          reverse={true}
+        >
+          <Timeline.Item>
+            <Text code>0.1.0</Text> <Text type="secondary">2021-06-06</Text>
             <p></p>
             <Paragraph>
               <ul>
@@ -115,7 +118,8 @@ export default (): React.ReactNode => {
               </ul>
             </Paragraph>
           </Timeline.Item>
-          <Timeline.Item><Text code>0.2.0</Text> <Text type="secondary">2021-06-08</Text>
+          <Timeline.Item>
+            <Text code>0.2.0</Text> <Text type="secondary">2021-06-08</Text>
             <p></p>
             <Paragraph>
               <ul>
@@ -126,13 +130,16 @@ export default (): React.ReactNode => {
                   <Link>支持以 SPI 的方式扩展任意 Connector，同 Flink 官网</Link>
                 </li>
                 <li>
-                  <Link>提供了 dlink-connector-jdbc，额外支持 Oracle 和 ClickHouse 读写，该扩展包可直接上传 Flink 集群的
-                    lib
-                    进行远程使用，无需重新编译</Link>
+                  <Link>
+                    提供了 dlink-connector-jdbc，额外支持 Oracle 和 ClickHouse
+                    读写，该扩展包可直接上传 Flink 集群的 lib 进行远程使用，无需重新编译
+                  </Link>
                 </li>
                 <li>
-                  <Link>提供了 dlink-client-1.12，支持 Flink 1.12.0+ 多集群的远程使用与本地隔离使用，1.10、1.11 和 1.13
-                    集群可能存在问题</Link>
+                  <Link>
+                    提供了 dlink-client-1.12，支持 Flink 1.12.0+
+                    多集群的远程使用与本地隔离使用，1.10、1.11 和 1.13 集群可能存在问题
+                  </Link>
                 </li>
                 <li>
                   <Link>优化了 FlinkSQL 执行与提交到远程集群的任务名，默认为作业的中文别名</Link>
@@ -149,7 +156,8 @@ export default (): React.ReactNode => {
               </ul>
             </Paragraph>
           </Timeline.Item>
-          <Timeline.Item><Text code>0.2.1</Text> <Text type="secondary">2021-06-11</Text>
+          <Timeline.Item>
+            <Text code>0.2.1</Text> <Text type="secondary">2021-06-11</Text>
             <p></p>
             <Paragraph>
               <ul>
@@ -183,7 +191,8 @@ export default (): React.ReactNode => {
               </ul>
             </Paragraph>
           </Timeline.Item>
-          <Timeline.Item><Text code>0.2.2</Text> <Text type="secondary">2021-06-17</Text>
+          <Timeline.Item>
+            <Text code>0.2.2</Text> <Text type="secondary">2021-06-17</Text>
             <p></p>
             <Paragraph>
               <ul>
@@ -235,7 +244,8 @@ export default (): React.ReactNode => {
               </ul>
             </Paragraph>
           </Timeline.Item>
-          <Timeline.Item><Text code>0.2.3</Text> <Text type="secondary">2021-06-21</Text>
+          <Timeline.Item>
+            <Text code>0.2.3</Text> <Text type="secondary">2021-06-21</Text>
             <p></p>
             <Paragraph>
               <ul>
@@ -266,7 +276,8 @@ export default (): React.ReactNode => {
               </ul>
             </Paragraph>
           </Timeline.Item>
-          <Timeline.Item><Text code>0.3.0</Text> <Text type="secondary">2021-07-27</Text>
+          <Timeline.Item>
+            <Text code>0.3.0</Text> <Text type="secondary">2021-07-27</Text>
             <p></p>
             <Paragraph>
               <ul>
@@ -300,7 +311,8 @@ export default (): React.ReactNode => {
               </ul>
             </Paragraph>
           </Timeline.Item>
-          <Timeline.Item><Text code>0.3.1</Text> <Text type="secondary">2021-08-25</Text>
+          <Timeline.Item>
+            <Text code>0.3.1</Text> <Text type="secondary">2021-08-25</Text>
             <p></p>
             <Paragraph>
               <ul>
@@ -328,7 +340,8 @@ export default (): React.ReactNode => {
               </ul>
             </Paragraph>
           </Timeline.Item>
-          <Timeline.Item><Text code>0.3.2</Text> <Text type="secondary">2021-10-22</Text>
+          <Timeline.Item>
+            <Text code>0.3.2</Text> <Text type="secondary">2021-10-22</Text>
             <p></p>
             <Paragraph>
               <ul>
@@ -368,7 +381,8 @@ export default (): React.ReactNode => {
               </ul>
             </Paragraph>
           </Timeline.Item>
-          <Timeline.Item><Text code>0.4.0</Text> <Text type="secondary">2021-12-02</Text>
+          <Timeline.Item>
+            <Text code>0.4.0</Text> <Text type="secondary">2021-12-02</Text>
             <p></p>
             <Paragraph>
               <ul>
@@ -465,7 +479,8 @@ export default (): React.ReactNode => {
               </ul>
             </Paragraph>
           </Timeline.Item>
-          <Timeline.Item><Text code>0.5.0</Text> <Text type="secondary">2022-01-16</Text>
+          <Timeline.Item>
+            <Text code>0.5.0</Text> <Text type="secondary">2022-01-16</Text>
             <p></p>
             <Paragraph>
               <ul>
@@ -491,7 +506,9 @@ export default (): React.ReactNode => {
                   <Link>新增 SavePoint 的 restAPI 实现</Link>
                 </li>
                 <li>
-                  <Link>新增 OpenAPI 的执行sql、校验sql、获取计划图、获取StreamGraph、获取预览数据接口</Link>
+                  <Link>
+                    新增 OpenAPI 的执行sql、校验sql、获取计划图、获取StreamGraph、获取预览数据接口
+                  </Link>
                 </li>
                 <li>
                   <Link>新增 OpenAPI 的执行Jar、停止、SavePoint接口</Link>
@@ -580,7 +597,8 @@ export default (): React.ReactNode => {
               </ul>
             </Paragraph>
           </Timeline.Item>
-          <Timeline.Item><Text code>0.5.1</Text> <Text type="secondary">2022-01-24</Text>
+          <Timeline.Item>
+            <Text code>0.5.1</Text> <Text type="secondary">2022-01-24</Text>
             <p></p>
             <Paragraph>
               <ul>
@@ -641,7 +659,8 @@ export default (): React.ReactNode => {
               </ul>
             </Paragraph>
           </Timeline.Item>
-          <Timeline.Item><Text code>0.6.0</Text> <Text type="secondary">2022-03-20</Text>
+          <Timeline.Item>
+            <Text code>0.6.0</Text> <Text type="secondary">2022-03-20</Text>
             <p></p>
             <Paragraph>
               <ul>
@@ -801,7 +820,8 @@ export default (): React.ReactNode => {
               </ul>
             </Paragraph>
           </Timeline.Item>
-          <Timeline.Item><Text code>0.6.1</Text> <Text type="secondary">2022-04-01</Text>
+          <Timeline.Item>
+            <Text code>0.6.1</Text> <Text type="secondary">2022-04-01</Text>
             <p></p>
             <Paragraph>
               <ul>
@@ -871,7 +891,8 @@ export default (): React.ReactNode => {
               </ul>
             </Paragraph>
           </Timeline.Item>
-          <Timeline.Item><Text code>0.6.2</Text> <Text type="secondary">2022-04-17</Text>
+          <Timeline.Item>
+            <Text code>0.6.2</Text> <Text type="secondary">2022-04-17</Text>
             <p></p>
             <Paragraph>
               <ul>
@@ -888,7 +909,10 @@ export default (): React.ReactNode => {
                   <Link>新增 docker 镜像文件</Link>
                 </li>
                 <li>
-                  <Link>新增 Remote mode（Standalone、Yarn Session、Kubernetes Session）从 SavePoint 恢复作业</Link>
+                  <Link>
+                    新增 Remote mode（Standalone、Yarn Session、Kubernetes Session）从 SavePoint
+                    恢复作业
+                  </Link>
                 </li>
                 <li>
                   <Link>新增 Oracle CDC 多源合并</Link>
@@ -962,7 +986,8 @@ export default (): React.ReactNode => {
               </ul>
             </Paragraph>
           </Timeline.Item>
-          <Timeline.Item><Text code>0.6.3</Text> <Text type="secondary">2022-05-09</Text>
+          <Timeline.Item>
+            <Text code>0.6.3</Text> <Text type="secondary">2022-05-09</Text>
             <p></p>
             <Paragraph>
               <ul>
@@ -1044,7 +1069,8 @@ export default (): React.ReactNode => {
               </ul>
             </Paragraph>
           </Timeline.Item>
-          <Timeline.Item><Text code>0.6.4</Text> <Text type="secondary">2022-06-05</Text>
+          <Timeline.Item>
+            <Text code>0.6.4</Text> <Text type="secondary">2022-06-05</Text>
             <p></p>
             <Paragraph>
               <ul>
@@ -1138,7 +1164,8 @@ export default (): React.ReactNode => {
               </ul>
             </Paragraph>
           </Timeline.Item>
-          <Timeline.Item><Text code>0.6.5</Text> <Text type="secondary">2022-07-03</Text>
+          <Timeline.Item>
+            <Text code>0.6.5</Text> <Text type="secondary">2022-07-03</Text>
             <p></p>
             <Paragraph>
               <ul>
@@ -1259,7 +1286,8 @@ export default (): React.ReactNode => {
               </ul>
             </Paragraph>
           </Timeline.Item>
-          <Timeline.Item><Text code>0.6.6</Text> <Text type="secondary">2022-07-23</Text>
+          <Timeline.Item>
+            <Text code>0.6.6</Text> <Text type="secondary">2022-07-23</Text>
             <p></p>
             <Paragraph>
               <ul>
@@ -1356,7 +1384,8 @@ export default (): React.ReactNode => {
               </ul>
             </Paragraph>
           </Timeline.Item>
-          <Timeline.Item><Text code>0.6.7</Text> <Text type="secondary">2022-09-06</Text>
+          <Timeline.Item>
+            <Text code>0.6.7</Text> <Text type="secondary">2022-09-06</Text>
             <p></p>
             <Paragraph>
               <ul>
@@ -1642,7 +1671,8 @@ export default (): React.ReactNode => {
               </ul>
             </Paragraph>
           </Timeline.Item>
-          <Timeline.Item><Text code>0.7.0</Text> <Text type="secondary">2022-11-24</Text>
+          <Timeline.Item>
+            <Text code>0.7.0</Text> <Text type="secondary">2022-11-24</Text>
             <p></p>
             <Paragraph>
               <ul>
@@ -1767,7 +1797,10 @@ export default (): React.ReactNode => {
                   <Link>修复连续单击任务项将打开多个选项卡问题</Link>
                 </li>
                 <li>
-                  <Link>修复 cdcsource KafkaSink 不支持添加 transactionalIdPrefix 导致 kafka product 发送消息失败</Link>
+                  <Link>
+                    修复 cdcsource KafkaSink 不支持添加 transactionalIdPrefix 导致 kafka product
+                    发送消息失败
+                  </Link>
                 </li>
                 <li>
                   <Link>修复当集群别名为空时集群无法展示</Link>

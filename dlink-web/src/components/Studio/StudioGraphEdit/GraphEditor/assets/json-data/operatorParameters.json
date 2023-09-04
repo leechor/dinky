@@ -33,27 +33,19 @@
           "type": "object",
           "default": {},
           "title": "A Schema",
-          "required": [
-            "tableName",
-            "connector",
-            "columns"
-          ],
+          "required": ["tableName", "connector", "columns"],
           "properties": {
             "tableName": {
               "type": "string",
               "default": "",
               "title": "The tableName Schema",
-              "examples": [
-                "TS"
-              ]
+              "examples": ["TS"]
             },
             "connector": {
               "type": "string",
               "default": "",
               "title": "The connector Schema",
-              "examples": [
-                "task"
-              ]
+              "examples": ["task"]
             },
             "columns": {
               "type": "array",
@@ -62,10 +54,7 @@
               "items": {
                 "type": "object",
                 "title": "A Schema",
-                "required": [
-                  "name",
-                  "type"
-                ],
+                "required": ["name", "type"],
                 "properties": {
                   "name": {
                     "type": "string",
@@ -82,12 +71,7 @@
                   "type": {
                     "type": "string",
                     "title": "The type Schema",
-                    "examples": [
-                      "STRING",
-                      "INT",
-                      "TIMESTAMP(3)",
-                      ""
-                    ]
+                    "examples": ["STRING", "INT", "TIMESTAMP(3)", ""]
                   }
                 },
                 "examples": [
@@ -243,15 +227,7 @@
       "specification": {
         "title": "Person",
         "type": "object",
-        "required": [
-          "name",
-          "age",
-          "date",
-          "favorite_color",
-          "gender",
-          "location",
-          "pets"
-        ],
+        "required": ["name", "age", "date", "favorite_color", "gender", "location", "pets"],
         "properties": {
           "name": {
             "type": "string",
@@ -273,11 +249,7 @@
           },
           "gender": {
             "type": "string",
-            "enum": [
-              "male",
-              "female",
-              "other"
-            ]
+            "enum": ["male", "female", "other"]
           },
           "date": {
             "type": "string",
@@ -320,13 +292,7 @@
               "properties": {
                 "type": {
                   "type": "string",
-                  "enum": [
-                    "cat",
-                    "dog",
-                    "bird",
-                    "reptile",
-                    "other"
-                  ],
+                  "enum": ["cat", "dog", "bird", "reptile", "other"],
                   "default": "dog"
                 },
                 "name": {
@@ -480,11 +446,7 @@
                 }
               }
             },
-            "required": [
-              "pattern",
-              "measures",
-              "defines"
-            ]
+            "required": ["pattern", "measures", "defines"]
           }
         }
       },
@@ -552,10 +514,7 @@
             "type": "object",
             "title": "Photo",
             "multiple": true,
-            "required": [
-              "_localId",
-              "Picture"
-            ],
+            "required": ["_localId", "Picture"],
             "properties": {
               "Picture": {
                 "type": "string",
@@ -589,9 +548,7 @@
             "type": "object",
             "title": "Person",
             "multiple": true,
-            "required": [
-              "_localId"
-            ],
+            "required": ["_localId"],
             "properties": {
               "Age": {
                 "type": "string",
@@ -601,10 +558,7 @@
                 "propertyOrder": 4
               },
               "Sex": {
-                "enum": [
-                  "Male",
-                  "Female"
-                ],
+                "enum": ["Male", "Female"],
                 "type": "string",
                 "fieldType": "selectlist",
                 "displayType": "select",
@@ -619,12 +573,7 @@
                 "propertyOrder": 0
               },
               "Injury": {
-                "enum": [
-                  "Fatal",
-                  "Serious",
-                  "Minor",
-                  "Not injured"
-                ],
+                "enum": ["Fatal", "Serious", "Minor", "Not injured"],
                 "type": "string",
                 "fieldType": "selectlist",
                 "displayType": "select",
@@ -668,12 +617,7 @@
                 "pattern": "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
               },
               "Involvment": {
-                "enum": [
-                  "Pedestrian",
-                  "Witness",
-                  "Passenger",
-                  "Driver"
-                ],
+                "enum": ["Pedestrian", "Witness", "Passenger", "Driver"],
                 "type": "string",
                 "fieldType": "selectlist",
                 "displayType": "select",
@@ -698,10 +642,7 @@
                 "propertyOrder": 6
               },
               "Alcohol/drugs": {
-                "enum": [
-                  "Alcohol suspected",
-                  "Drugs suspected"
-                ],
+                "enum": ["Alcohol suspected", "Drugs suspected"],
                 "type": "string",
                 "fieldType": "selectlist",
                 "displayType": "select",
@@ -716,11 +657,7 @@
                 "propertyOrder": 2
               },
               "Seat belt/helmet": {
-                "enum": [
-                  "Seat belt/helmet worn",
-                  "Not worn",
-                  "Not worn correctly"
-                ],
+                "enum": ["Seat belt/helmet worn", "Not worn", "Not worn correctly"],
                 "type": "string",
                 "fieldType": "selectlist",
                 "displayType": "select",
@@ -736,9 +673,7 @@
             "type": "object",
             "title": "Vehicle",
             "multiple": true,
-            "required": [
-              "_localId"
-            ],
+            "required": ["_localId"],
             "properties": {
               "Make": {
                 "type": "string",
@@ -755,15 +690,7 @@
                 "propertyOrder": 2
               },
               "Damage": {
-                "enum": [
-                  "None",
-                  "Front",
-                  "Rear",
-                  "Right",
-                  "Left",
-                  "Roof",
-                  "Multiple"
-                ],
+                "enum": ["None", "Front", "Rear", "Right", "Left", "Roof", "Multiple"],
                 "type": "string",
                 "fieldType": "selectlist",
                 "displayType": "select",
@@ -771,14 +698,7 @@
                 "propertyOrder": 11
               },
               "Defect": {
-                "enum": [
-                  "None",
-                  "Lights",
-                  "Brakes",
-                  "Steering",
-                  "Tires",
-                  "Multiple"
-                ],
+                "enum": ["None", "Lights", "Brakes", "Steering", "Tires", "Multiple"],
                 "type": "string",
                 "fieldType": "selectlist",
                 "displayType": "select",
@@ -786,11 +706,7 @@
                 "propertyOrder": 10
               },
               "Loading": {
-                "enum": [
-                  "Legal",
-                  "Over loaded",
-                  "Unsafe load"
-                ],
+                "enum": ["Legal", "Over loaded", "Unsafe load"],
                 "type": "string",
                 "fieldType": "selectlist",
                 "displayType": "select",
@@ -827,12 +743,7 @@
                 "pattern": "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
               },
               "Direction": {
-                "enum": [
-                  "North",
-                  "South",
-                  "East",
-                  "West"
-                ],
+                "enum": ["North", "South", "East", "West"],
                 "type": "string",
                 "fieldType": "selectlist",
                 "displayType": "select",
@@ -897,16 +808,10 @@
             "title": "Accident Details",
             "details": true,
             "multiple": false,
-            "required": [
-              "_localId"
-            ],
+            "required": ["_localId"],
             "properties": {
               "Severity": {
-                "enum": [
-                  "Fatal",
-                  "Injury",
-                  "Property"
-                ],
+                "enum": ["Fatal", "Injury", "Property"],
                 "type": "string",
                 "fieldType": "selectlist",
                 "displayType": "select",
@@ -921,11 +826,7 @@
                 "pattern": "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
               },
               "Main cause": {
-                "enum": [
-                  "Vehicle defect",
-                  "Road defect",
-                  "Human error"
-                ],
+                "enum": ["Vehicle defect", "Road defect", "Human error"],
                 "type": "string",
                 "fieldType": "selectlist",
                 "displayType": "select",
@@ -947,12 +848,7 @@
                 "propertyOrder": 5
               },
               "Surface type": {
-                "enum": [
-                  "Concrete",
-                  "Asphalt",
-                  "Gravel",
-                  "Earth"
-                ],
+                "enum": ["Concrete", "Asphalt", "Gravel", "Earth"],
                 "type": "string",
                 "fieldType": "selectlist",
                 "displayType": "select",
@@ -960,10 +856,7 @@
                 "propertyOrder": 12
               },
               "Street lights": {
-                "enum": [
-                  "Lit",
-                  "Unlit"
-                ],
+                "enum": ["Lit", "Unlit"],
                 "type": "string",
                 "fieldType": "selectlist",
                 "displayType": "select",
@@ -1007,12 +900,7 @@
                 "propertyOrder": 8
               },
               "Surface condition": {
-                "enum": [
-                  "Dry",
-                  "Wet",
-                  "Muddy",
-                  "Flooded"
-                ],
+                "enum": ["Dry", "Wet", "Muddy", "Flooded"],
                 "type": "string",
                 "fieldType": "selectlist",
                 "displayType": "select",

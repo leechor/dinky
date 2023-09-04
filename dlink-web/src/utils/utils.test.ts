@@ -17,7 +17,6 @@
  *
  */
 
-
 import { isUrl } from './utils';
 
 describe('isUrl tests', () => {

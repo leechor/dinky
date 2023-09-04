@@ -17,13 +17,12 @@
  *
  */
 
-
-import React, {useState} from 'react';
-import {Button, Form, Input, Modal, Select, Switch} from 'antd';
-import {DocumentTableListItem} from "@/pages/RegistrationCenter/data";
-import TextArea from "antd/es/input/TextArea";
-import {getDocumentFormData,} from "@/pages/RegistrationCenter/Document/function";
-import {l} from "@/utils/intl";
+import React, { useState } from 'react';
+import { Button, Form, Input, Modal, Select, Switch } from 'antd';
+import { DocumentTableListItem } from '@/pages/RegistrationCenter/data';
+import TextArea from 'antd/es/input/TextArea';
+import { getDocumentFormData } from '@/pages/RegistrationCenter/Document/function';
+import { l } from '@/utils/intl';
 
 export type DocumentFormProps = {
   onCancel: (flag?: boolean) => void;
@@ -36,15 +35,12 @@ export type DocumentFormProps = {
 const FormItem = Form.Item;
 const Option = Select.Option;
 
-
 const formLayout = {
-  labelCol: {span: 7},
-  wrapperCol: {span: 13},
+  labelCol: { span: 7 },
+  wrapperCol: { span: 13 },
 };
 
 const DocumentForm: React.FC<DocumentFormProps> = (props) => {
-
-
   const [form] = Form.useForm();
   const [formVals, setFormVals] = useState<Partial<DocumentTableListItem>>({
     id: props.values.id,
@@ -59,17 +55,12 @@ const DocumentForm: React.FC<DocumentFormProps> = (props) => {
     enabled: props.values.enabled ? props.values.enabled : true,
   });
 
-  const {
-    onSubmit: handleSubmit,
-    onCancel: handleModalVisible,
-    modalVisible,
-  } = props;
-
+  const { onSubmit: handleSubmit, onCancel: handleModalVisible, modalVisible } = props;
 
   const submitForm = async () => {
     const fieldsValue = await form.validateFields();
-    setFormVals({...formVals, ...fieldsValue});
-    handleSubmit({...formVals, ...fieldsValue});
+    setFormVals({ ...formVals, ...fieldsValue });
+    handleSubmit({ ...formVals, ...fieldsValue });
   };
 
   const renderContent = (formVals) => {
@@ -78,13 +69,14 @@ const DocumentForm: React.FC<DocumentFormProps> = (props) => {
         <FormItem
           name="name"
           label={l('pages.rc.doc.name')}
-          rules={[{required: true, message: l('pages.rc.doc.namePlaceholder')}]}>
-          <Input placeholder={l('pages.rc.doc.namePlaceholder')}/>
+          rules={[{ required: true, message: l('pages.rc.doc.namePlaceholder') }]}
+        >
+          <Input placeholder={l('pages.rc.doc.namePlaceholder')} />
         </FormItem>
         <FormItem
           name="category"
           label={l('pages.rc.doc.category')}
-          rules={[{required: true, message: l('pages.rc.doc.categoryPlaceholder')}]}
+          rules={[{ required: true, message: l('pages.rc.doc.categoryPlaceholder') }]}
         >
           <Select allowClear>
             <Option value="Method">Method</Option>
@@ -120,7 +112,7 @@ const DocumentForm: React.FC<DocumentFormProps> = (props) => {
         <FormItem
           name="type"
           label={l('pages.rc.doc.functionType')}
-          rules={[{required: true, message: l('pages.rc.doc.typePlaceholder')}]}
+          rules={[{ required: true, message: l('pages.rc.doc.typePlaceholder') }]}
         >
           <Select allowClear>
             <Option value="优化参数">优化参数</Option>
@@ -135,7 +127,7 @@ const DocumentForm: React.FC<DocumentFormProps> = (props) => {
         <FormItem
           name="subtype"
           label={l('pages.rc.doc.subFunctionType')}
-          rules={[{required: true, message: l('pages.rc.doc.subTypePlaceholder')}]}
+          rules={[{ required: true, message: l('pages.rc.doc.subTypePlaceholder') }]}
         >
           <Select allowClear>
             <Option value="比较函数">比较函数</Option>
@@ -156,26 +148,28 @@ const DocumentForm: React.FC<DocumentFormProps> = (props) => {
             <Option value="其他函数">其他函数</Option>
           </Select>
         </FormItem>
-        <FormItem
-          name="description"
-          label={l('pages.rc.doc.description')}
-        >
-          <TextArea placeholder={l('pages.rc.doc.descriptionPlaceholder')} allowClear autoSize={{minRows: 3, maxRows: 10}}/>
+        <FormItem name="description" label={l('pages.rc.doc.description')}>
+          <TextArea
+            placeholder={l('pages.rc.doc.descriptionPlaceholder')}
+            allowClear
+            autoSize={{ minRows: 3, maxRows: 10 }}
+          />
         </FormItem>
         <FormItem
           name="fillValue"
           label={l('pages.rc.doc.fillValue')}
-          rules={[{required: true, message: l('pages.rc.doc.fillValueHelp')}]}
+          rules={[{ required: true, message: l('pages.rc.doc.fillValueHelp') }]}
         >
           <TextArea
-            placeholder={ l('pages.rc.doc.fillValuePlaceholder')}
+            placeholder={l('pages.rc.doc.fillValuePlaceholder')}
             allowClear
-            autoSize={{minRows: 3, maxRows: 10}}/>
+            autoSize={{ minRows: 3, maxRows: 10 }}
+          />
         </FormItem>
         <FormItem
           name="version"
           label={l('pages.rc.doc.version')}
-          rules={[{required: true, message: l('pages.rc.doc.versionPlaceholder')}]}
+          rules={[{ required: true, message: l('pages.rc.doc.versionPlaceholder') }]}
         >
           <Select allowClear>
             <Option value="1.13">Flink-1.13</Option>
@@ -188,10 +182,13 @@ const DocumentForm: React.FC<DocumentFormProps> = (props) => {
         <FormItem
           name="enabled"
           label={l('global.table.isEnable')}
-          rules={[{required: true, message: l('pages.rc.doc.enabledPlaceholder')}]}
+          rules={[{ required: true, message: l('pages.rc.doc.enabledPlaceholder') }]}
         >
-          <Switch  checkedChildren={l('button.enable')} unCheckedChildren={l('button.disable')}
-                  defaultChecked={formVals.enabled}/>
+          <Switch
+            checkedChildren={l('button.enable')}
+            unCheckedChildren={l('button.disable')}
+            defaultChecked={formVals.enabled}
+          />
         </FormItem>
       </>
     );
@@ -201,15 +198,17 @@ const DocumentForm: React.FC<DocumentFormProps> = (props) => {
     return (
       <>
         <Button onClick={() => handleModalVisible(false)}>{l('button.cancel')}</Button>
-        <Button type="primary" onClick={() => submitForm()}>{l('button.finish')}</Button>
+        <Button type="primary" onClick={() => submitForm()}>
+          {l('button.finish')}
+        </Button>
       </>
     );
   };
 
   return (
     <Modal
-      width={"40%"}
-      bodyStyle={{padding: '32px 40px 48px'}}
+      width={'40%'}
+      bodyStyle={{ padding: '32px 40px 48px' }}
       destroyOnClose
       title={formVals.id ? l('pages.rc.doc.modify') : l('pages.rc.doc.create')}
       visible={modalVisible}

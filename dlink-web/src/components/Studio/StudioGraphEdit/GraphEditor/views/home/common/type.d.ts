@@ -1,3 +1,3 @@
 interface Window {
-    [propName:string]:any
+  [propName: string]: any;
 }

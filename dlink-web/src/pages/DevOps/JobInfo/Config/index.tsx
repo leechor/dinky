@@ -17,93 +17,120 @@
  *
  */
 
+import { Descriptions, Divider, Tag, Typography } from 'antd';
+import { RocketOutlined } from '@ant-design/icons';
+import { l } from '@/utils/intl';
 
-import {Descriptions, Divider, Tag, Typography} from 'antd';
-import {RocketOutlined} from '@ant-design/icons';
-import {l} from "@/utils/intl";
-
-const {Text, Link} = Typography;
+const { Text, Link } = Typography;
 
 const Config = (props: any) => {
+  const { job } = props;
 
-  const {job} = props;
-
-
-  return <>
+  return (
     <>
-      <Divider children={"Dinky Job Configuration"} orientation={"left"}/>
-      <Descriptions bordered size="small">
-        <Descriptions.Item label={l('pages.devops.config.exec.mode')}>{job?.history?.type ? (
-          <Tag color="blue" key={job?.history?.type}>
-            <RocketOutlined/> {job?.history?.type}
-          </Tag>
-        ) : undefined}
-        </Descriptions.Item>
-        <Descriptions.Item label={l('pages.devops.config.alias')}>
-          {job?.cluster?.alias ? <Link>{job?.cluster?.alias}</Link> : '-'}
-        </Descriptions.Item>
-        <Descriptions.Item label={l('pages.devops.config.clusterConfiguration')}>
-          {job?.clusterConfiguration?.name ? <Link>{job?.clusterConfiguration?.name}</Link> : '-'}
-        </Descriptions.Item>
-        <Descriptions.Item label={l('pages.devops.config.session')}>
-          {job?.history?.session ? <Link>{job?.history?.session}</Link> : l('button.disable')}
-        </Descriptions.Item>
-        <Descriptions.Item label={l('pages.devops.config.useSqlFragment')}>{job?.history?.config.useSqlFragment ? l('button.enable') : l('button.disable')}</Descriptions.Item>
-        <Descriptions.Item label={l('pages.devops.config.useStatementSet')}>{job?.history?.config.useStatementSet ? l('button.enable') : l('button.disable')}</Descriptions.Item>
-        <Descriptions.Item label={l('pages.devops.config.isJarTask')}>{job?.history?.config.isJarTask ? 'Jar' : 'FlinkSQL'}</Descriptions.Item>
-        <Descriptions.Item label={l('pages.devops.config.useBatchModel')}>{job?.history?.config.useBatchModel ? l('button.enable') : l('button.disable')}</Descriptions.Item>
-        <Descriptions.Item label={l('pages.devops.config.checkpoint')}>{job?.history?.config.checkpoint}</Descriptions.Item>
-        <Descriptions.Item label={l('pages.devops.config.savePointStrategy')}>
-          {job?.history?.config.savePointStrategy == 'NONE' ? l('global.savepoint.strategy.disabled') :
-            job?.history?.config.savePointStrategy == 'LATEST' ? l('global.savepoint.strategy.latest') :
-              job?.history?.config.savePointStrategy == 'EARLIEST' ? l('global.savepoint.strategy.earliest') :
-                job?.history?.config.savePointStrategy == 'CUSTOM' ? l('global.savepoint.strategy.custom') : l('global.savepoint.strategy.disabled')}
-        </Descriptions.Item>
-        <Descriptions.Item label={l('pages.devops.config.savePointPath')} span={2}>{job?.history?.config.savePointPath}</Descriptions.Item>
-        {job?.jar ? <>
-          <Descriptions.Item label={l('pages.devops.config.jarpath')}>{job?.jar?.path}</Descriptions.Item>
-          <Descriptions.Item label={l('pages.devops.config.jarmainclass')}>{job?.jar?.mainClass}</Descriptions.Item>
-          <Descriptions.Item label={l('pages.devops.config.jarparams')}>{job?.jar?.paras}</Descriptions.Item>
-        </> : undefined}
-      </Descriptions>
+      <>
+        <Divider children={'Dinky Job Configuration'} orientation={'left'} />
+        <Descriptions bordered size="small">
+          <Descriptions.Item label={l('pages.devops.config.exec.mode')}>
+            {job?.history?.type ? (
+              <Tag color="blue" key={job?.history?.type}>
+                <RocketOutlined /> {job?.history?.type}
+              </Tag>
+            ) : undefined}
+          </Descriptions.Item>
+          <Descriptions.Item label={l('pages.devops.config.alias')}>
+            {job?.cluster?.alias ? <Link>{job?.cluster?.alias}</Link> : '-'}
+          </Descriptions.Item>
+          <Descriptions.Item label={l('pages.devops.config.clusterConfiguration')}>
+            {job?.clusterConfiguration?.name ? <Link>{job?.clusterConfiguration?.name}</Link> : '-'}
+          </Descriptions.Item>
+          <Descriptions.Item label={l('pages.devops.config.session')}>
+            {job?.history?.session ? <Link>{job?.history?.session}</Link> : l('button.disable')}
+          </Descriptions.Item>
+          <Descriptions.Item label={l('pages.devops.config.useSqlFragment')}>
+            {job?.history?.config.useSqlFragment ? l('button.enable') : l('button.disable')}
+          </Descriptions.Item>
+          <Descriptions.Item label={l('pages.devops.config.useStatementSet')}>
+            {job?.history?.config.useStatementSet ? l('button.enable') : l('button.disable')}
+          </Descriptions.Item>
+          <Descriptions.Item label={l('pages.devops.config.isJarTask')}>
+            {job?.history?.config.isJarTask ? 'Jar' : 'FlinkSQL'}
+          </Descriptions.Item>
+          <Descriptions.Item label={l('pages.devops.config.useBatchModel')}>
+            {job?.history?.config.useBatchModel ? l('button.enable') : l('button.disable')}
+          </Descriptions.Item>
+          <Descriptions.Item label={l('pages.devops.config.checkpoint')}>
+            {job?.history?.config.checkpoint}
+          </Descriptions.Item>
+          <Descriptions.Item label={l('pages.devops.config.savePointStrategy')}>
+            {job?.history?.config.savePointStrategy == 'NONE'
+              ? l('global.savepoint.strategy.disabled')
+              : job?.history?.config.savePointStrategy == 'LATEST'
+              ? l('global.savepoint.strategy.latest')
+              : job?.history?.config.savePointStrategy == 'EARLIEST'
+              ? l('global.savepoint.strategy.earliest')
+              : job?.history?.config.savePointStrategy == 'CUSTOM'
+              ? l('global.savepoint.strategy.custom')
+              : l('global.savepoint.strategy.disabled')}
+          </Descriptions.Item>
+          <Descriptions.Item label={l('pages.devops.config.savePointPath')} span={2}>
+            {job?.history?.config.savePointPath}
+          </Descriptions.Item>
+          {job?.jar ? (
+            <>
+              <Descriptions.Item label={l('pages.devops.config.jarpath')}>
+                {job?.jar?.path}
+              </Descriptions.Item>
+              <Descriptions.Item label={l('pages.devops.config.jarmainclass')}>
+                {job?.jar?.mainClass}
+              </Descriptions.Item>
+              <Descriptions.Item label={l('pages.devops.config.jarparams')}>
+                {job?.jar?.paras}
+              </Descriptions.Item>
+            </>
+          ) : undefined}
+        </Descriptions>
+      </>
+      <>
+        {!JSON.stringify(job?.jobHistory?.config).includes('errors') && job?.jobHistory?.config && (
+          <>
+            <br />
+            <Divider children={'Flink Job Configuration'} orientation={'left'} />
+            <Descriptions bordered size="small">
+              <Descriptions.Item label="Execution Mode">
+                <Tag color="blue" title={'Execution Mode'}>
+                  {job?.jobHistory?.config['execution-config']['execution-mode']}
+                </Tag>
+              </Descriptions.Item>
+              <Descriptions.Item label="Restart Strategy">
+                <Tag color="blue" title={'Restart Strategy'}>
+                  {job?.jobHistory?.config['execution-config']['restart-strategy']}
+                </Tag>
+              </Descriptions.Item>
+
+              <Descriptions.Item label="Job Parallelism">
+                <Tag color="blue" title={'Job Parallelism'}>
+                  {job?.jobHistory?.config['execution-config']['job-parallelism']}
+                </Tag>
+              </Descriptions.Item>
+
+              <Descriptions.Item label="Object Reuse Mode">
+                <Tag color="blue" title={'Object Reuse Mode'}>
+                  {job?.jobHistory?.config['execution-config']['object-reuse-mode'].toString()}
+                </Tag>
+              </Descriptions.Item>
+
+              <Descriptions.Item label="Flink User Configuration" span={3}>
+                <Text code>
+                  {JSON.stringify(job?.jobHistory?.config['execution-config']['user-config'])}
+                </Text>
+              </Descriptions.Item>
+            </Descriptions>
+          </>
+        )}
+      </>
     </>
-    <>
-      {(!JSON.stringify(job?.jobHistory?.config).includes("errors") && job?.jobHistory?.config) &&
-        <>
-          <br/>
-          <Divider children={"Flink Job Configuration"} orientation={"left"}/>
-          <Descriptions bordered size="small">
-            <Descriptions.Item label="Execution Mode">
-              <Tag color="blue" title={"Execution Mode"}>
-                {job?.jobHistory?.config['execution-config']['execution-mode']}
-              </Tag>
-            </Descriptions.Item>
-            <Descriptions.Item label="Restart Strategy">
-              <Tag color="blue" title={"Restart Strategy"}>
-                {job?.jobHistory?.config['execution-config']['restart-strategy']}
-              </Tag>
-            </Descriptions.Item>
-
-            <Descriptions.Item label="Job Parallelism">
-              <Tag color="blue" title={"Job Parallelism"}>
-                {job?.jobHistory?.config['execution-config']['job-parallelism']}
-              </Tag>
-            </Descriptions.Item>
-
-            <Descriptions.Item label="Object Reuse Mode">
-              <Tag color="blue" title={"Object Reuse Mode"}>
-                {job?.jobHistory?.config['execution-config']['object-reuse-mode'].toString()}
-              </Tag>
-            </Descriptions.Item>
-
-            <Descriptions.Item label="Flink User Configuration" span={3}>
-              <Text
-                code>{JSON.stringify(job?.jobHistory?.config['execution-config']['user-config'])}</Text>
-            </Descriptions.Item>
-          </Descriptions></>
-      }
-    </>
-  </>
+  );
 };
 
 export default Config;

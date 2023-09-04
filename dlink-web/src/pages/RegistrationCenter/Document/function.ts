@@ -17,9 +17,8 @@
  *
  */
 
-
-import {DocumentTableListItem} from "@/pages/RegistrationCenter/data";
+import { DocumentTableListItem } from '@/pages/RegistrationCenter/data';
 
 export const getDocumentFormData = (values: DocumentTableListItem) => {
   return values;
-}
+};

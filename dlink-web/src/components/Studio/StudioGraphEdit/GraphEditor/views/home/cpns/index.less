@@ -1,26 +1,26 @@
 :global {
   .leftEditor {
+    display: flex;
     width: 75%;
     height: 100%;
-    display: flex;
 
     .leftEditor-stencil {
-      width: 25%;
       position: relative;
+      width: 25%;
     }
 
     .leftEditor-editor {
-      flex: 1;
       display: flex;
+      flex: 1;
       flex-direction: column;
 
       .editor-header {
-        height: 40px;
+        display: flex;
         box-sizing: border-box;
+        height: 40px;
         line-height: 40px;
         border: 2px solid #ccc;
         border-right: none;
-        display: flex;
 
         .header-save {
           margin: auto 20px;
@@ -33,11 +33,10 @@
 
       .edit-tabs {
         :global {
-
           .ant-tabs-nav,
-          .ant-tabs-bottom>.ant-tabs-nav,
-          .ant-tabs-top>div>.ant-tabs-nav,
-          .ant-tabs-bottom>div>.ant-tabs-nav {
+          .ant-tabs-bottom > .ant-tabs-nav,
+          .ant-tabs-top > div > .ant-tabs-nav,
+          .ant-tabs-bottom > div > .ant-tabs-nav {
             margin: 0;
           }
 
@@ -51,68 +50,65 @@
         }
       }
 
-
       .editor-content {
-        margin-top: 1px;
-        flex: 1;
         display: flex;
+        flex: 1;
         flex-direction: column;
         justify-content: flex-start;
+        margin-top: 1px;
 
         .header-bread {
-          height: 30px;
           width: 100%;
+          height: 30px;
         }
 
         .content-graph {
+          display: flex;
           flex: 1;
           margin: 10px;
 
           .x6-graph {
-            width: 100% !important;
-            height: 100% !important;
+            flex: 1;
+            // width: 100% !important;
+            // height: 100% !important;
           }
         }
-
-
       }
     }
   }
 }
 
 .rightDetail {
-  box-sizing: border-box;
   flex: 1;
+  box-sizing: border-box;
 
   .rightDetail-header {
-    background-color: #f5f5f5;
-    font-weight: 800;
-    height: 40px;
-    text-align: center;
-    vertical-align: center;
-    line-height: 40px;
-    border-top: 2px solid #ccc;
-    border-left: 2px solid #ccc;
     display: flex;
     flex-direction: row;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    height: 40px;
+    font-weight: 800;
+    line-height: 40px;
+    text-align: center;
+    vertical-align: center;
+    background-color: #f5f5f5;
+    border-top: 2px solid #ccc;
+    border-left: 2px solid #ccc;
   }
 
   .rightDetail-content {
-    // text-align: center;
-    border: 2px solid #ccc;
     // flex: 1;
     height: calc(100% - 40px);
+    // text-align: center;
+    border: 2px solid #ccc;
 
     .json-editor-content {
-      background-color: #f5f5f5;
-      height: 100% !important;
       width: 100%;
-      overflow-y: scroll;
+      height: 100% !important;
       overflow-x: scroll;
-
-
+      overflow-y: scroll;
+      background-color: #f5f5f5;
     }
 
     :global {
@@ -120,44 +116,42 @@
         box-sizing: border-box;
 
         h4 {
-          font-size: 0.8rem;
-          margin: 0;
-          line-height: 1;
           display: flex !important;
           flex-direction: row;
           align-items: center;
+          margin: 0;
+          font-size: 0.8rem;
+          line-height: 1;
         }
 
-        button+label {
-          font-size: 0.8rem;
+        button + label {
           margin: 0;
+          font-size: 0.8rem;
           line-height: 1;
         }
 
         label.je-label {
           display: flex;
-          flex-direction: row;
           flex: auto;
+          flex-direction: row;
         }
 
         div.form-group {
           align-items: center;
         }
 
-
         .je-panel .columns .form-group {
           label {
-            +.form-select {
+            + .form-select {
               box-sizing: border-box;
             }
-
           }
         }
 
         select.form-select,
         input.form-input {
-          padding: 0.1rem 0.2rem;
           height: 1.3rem;
+          padding: 0.1rem 0.2rem;
         }
 
         button.btn.btn-primary {
@@ -165,14 +159,13 @@
           height: 1fr;
           margin: 5px !important;
           padding: 0 !important;
-          box-shadow: none;
-          outline-color: transparent;
           background-color: transparent;
           border: transparent;
+          outline-color: transparent;
+          box-shadow: none;
 
           i.icon {
             color: #000000;
-
           }
         }
 
@@ -183,44 +176,44 @@
         .btn {
           .btn-group.btn-sm.btn-primary {
             display: flex;
-            height: 1em;
             flex-direction: row;
             flex-wrap: nowrap;
+            height: 1em;
           }
         }
 
         .je-panel {
-          background-color: #e1e3e1;
           box-sizing: border-box;
+          background-color: #e1e3e1;
 
           // auto complete
           .toggle {
             display: flex;
-            border: 1px solid #ffc6c6;
-            height: 35px;
-            width: 120px;
-            border-radius: 50px;
-            justify-content: flex-start;
             align-content: center;
+            justify-content: flex-start;
+            width: 120px;
+            height: 35px;
+            border: 1px solid #ffc6c6;
+            border-radius: 50px;
             transition: var(--transition-2);
           }
 
           .toggler {
             display: grid;
-            cursor: pointer;
-            background-color: rgba(255, 198, 198, 1);
-            color: #fff;
-            height: 25px;
-            width: 60px;
-            border-radius: 50px;
-            margin: 5px;
-            text-align: center;
             align-content: center;
             align-self: flex-start;
+            width: 60px;
+            height: 25px;
+            margin: 5px;
+            color: #fff;
+            text-align: center;
+            background-color: rgba(255, 198, 198, 1);
+            border-radius: 50px;
+            cursor: pointer;
             transition: var(--transition-2);
-            user-select: none;
             -webkit-user-select: none;
             -moz-user-select: none;
+            user-select: none;
             -webkit-touch-callout: none;
           }
 
@@ -243,9 +236,9 @@
 
           .selection {
             margin-top: 25vh;
-            font-size: 2rem;
-            font-weight: bold;
             color: #ffc6c6;
+            font-weight: bold;
+            font-size: 2rem;
             transition: var(--transition-1);
           }
 
@@ -253,7 +246,7 @@
             color: #64ceaa;
           }
 
-          textarea.form-input[data-schemaformat="autoinput"] {
+          textarea.form-input[data-schemaformat='autoinput'] {
             height: 1.3em;
           }
 
@@ -263,9 +256,7 @@
 
           .columns {
             &:first-child {
-
               border-top: 1px solid #ccc;
-
             }
 
             .column {
@@ -274,38 +265,37 @@
             }
 
             .form-group {
-              padding: 4px 0;
               display: flex;
               flex-direction: row;
               justify-content: stretch;
+              padding: 4px 0;
 
               .form-label {
-                font-size: 12px;
-                font-weight: 400;
                 margin-right: 5%;
+                font-weight: 400;
+                font-size: 12px;
               }
 
               .je-desc {
                 flex-wrap: wrap;
                 color: #1677ff;
                 font-style: oblique;
-                word-break: break-word;
                 white-space: pre-wrap;
+                word-break: break-word;
               }
             }
           }
-
         }
 
         .btn.btn-primary {
           background-color: #6c757d;
           border: #6c757d;
-          border-radius: 5px
+          border-radius: 5px;
         }
 
         .je-object__title {
-          font-size: 15px;
           font-weight: 800;
+          font-size: 15px;
         }
       }
     }

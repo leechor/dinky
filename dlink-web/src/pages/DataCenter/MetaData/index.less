@@ -17,52 +17,51 @@
  *
  */
 
-
 //主体样式
 .container {
   margin-top: 5px;
-  background: #ffffff;
   //height: 95vh;
-  padding: 8px
+  padding: 8px;
+  background: #ffffff;
 }
 //顶部数据库列表父组件样式，覆盖原有seagement样式
 .headerBarContent {
-  overflow-x: scroll;
   width: 100%;
-  background-color:#fafafa;
-  :global{
-    .ant-segmented:not(.ant-segmented-disabled):hover, .ant-segmented:not(.ant-segmented-disabled):focus{
-      background-color:#fafafa;
+  overflow-x: scroll;
+  background-color: #fafafa;
+  :global {
+    .ant-segmented:not(.ant-segmented-disabled):hover,
+    .ant-segmented:not(.ant-segmented-disabled):focus {
+      background-color: #fafafa;
     }
   }
 }
 //顶部数据库列表样式
 .headerBar {
-  background: #fafafa;
   padding: 8px;
+  background: #fafafa;
 }
 //数据库列表单条car样式
 .headerCard {
-  width:200px;
-  :global{
-    .ant-card-body{
+  width: 200px;
+  :global {
+    .ant-card-body {
       padding: 8px;
     }
   }
 }
 
 //table标题样式
-.tableListHead{
-  background-color: #f9f9f9;
+.tableListHead {
   padding: 8px;
-  :global{
-    .ant-card-meta-title{
+  background-color: #f9f9f9;
+  :global {
+    .ant-card-meta-title {
       font-size: 14px;
     }
-    .ant-card-meta-description{
+    .ant-card-meta-description {
       color: rgba(0, 0, 0, 0.45);
       font-size: 10px;
-
     }
   }
 }

@@ -1,32 +1,35 @@
-import { Cell, Graph, Node } from "@antv/x6";
+import { Cell, Graph, Node } from '@antv/x6';
 
 export type DispatchMenuInfo = React.Dispatch<
   React.SetStateAction<{
     show: boolean;
     top: number;
     left: number;
-    node: Node | null
+    node: Node | null;
   }>
 >;
 
-export function initMenu(graph: Graph, isShowMenuInfo: DispatchMenuInfo, changeNode: (node: Cell) => void, changePositon: (x: number, y: number) => void) {
+export function initMenu(
+  graph: Graph,
+  isShowMenuInfo: DispatchMenuInfo,
+  changeNode: (node: Cell) => void,
+  changePositon: (x: number, y: number) => void,
+) {
   //右键菜单点击node时
-  graph.on("node:contextmenu", ({ cell, e }) => {
-
+  graph.on('node:contextmenu', ({ cell, e }) => {
     const p = graph.clientToGraph(e.clientX, e.clientY);
-    changePositon(p.x, p.y)
-    changeNode(cell)
+    changePositon(p.x, p.y);
+    changeNode(cell);
     isShowMenuInfo({
       show: true,
       top: p.y,
       left: p.x,
-      node: cell
+      node: cell,
     });
-
   });
 
   //画图区域右键
-  graph.on("blank:contextmenu", ({ e }) => {
+  graph.on('blank:contextmenu', ({ e }) => {
     const p = graph.clientToGraph(e.clientX, e.clientY);
     isShowMenuInfo({
       show: true,
@@ -36,12 +39,12 @@ export function initMenu(graph: Graph, isShowMenuInfo: DispatchMenuInfo, changeN
     });
   });
 
-  graph.on("blank:click", () => {
+  graph.on('blank:click', () => {
     isShowMenuInfo({
       show: false,
       top: 0,
       left: 0,
-      node: null
+      node: null,
     });
   });
 }

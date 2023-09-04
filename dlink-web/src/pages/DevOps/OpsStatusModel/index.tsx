@@ -17,54 +17,53 @@
  *
  */
 
-import React, {useEffect, useRef, useState} from 'react'
-import {Button, Card, Checkbox, Col, Divider, Form, Modal, Row, Select, TreeSelect} from 'antd'
-import {queryOnClickOperatingTask} from '../service'
-import type {CheckboxChangeEvent} from 'antd/es/checkbox';
-import type {CheckboxValueType} from 'antd/es/checkbox/Group';
-import {l} from "@/utils/intl";
+import React, { useEffect, useRef, useState } from 'react';
+import { Button, Card, Checkbox, Col, Divider, Form, Modal, Row, Select, TreeSelect } from 'antd';
+import { queryOnClickOperatingTask } from '../service';
+import type { CheckboxChangeEvent } from 'antd/es/checkbox';
+import type { CheckboxValueType } from 'antd/es/checkbox/Group';
+import { l } from '@/utils/intl';
 
 interface IOpsStatusModalProps {
   opsStatusVisible: boolean;
   opsStatus: string;
   opsStatusListTree: any;
-  onOpsStatusCallBack: (values?: any) => void
+  onOpsStatusCallBack: (values?: any) => void;
 }
 
 export const OpsStatusLabel = {
   '1': l('pages.devops.lable.online'),
-  '0': l('pages.devops.lable.offline')
-}
+  '0': l('pages.devops.lable.offline'),
+};
 
-const {Option} = Select
+const { Option } = Select;
 const CheckboxGroup = Checkbox.Group;
 
 const OpsStatusModal: React.FC<IOpsStatusModalProps> = (props): React.ReactElement => {
-
-  const {opsStatusVisible, opsStatus, opsStatusListTree, onOpsStatusCallBack} = props
-  const formRef = useRef<any>(null)
-  const [opsStatusList, setOpsStatusList] = useState<any[]>([])
+  const { opsStatusVisible, opsStatus, opsStatusListTree, onOpsStatusCallBack } = props;
+  const formRef = useRef<any>(null);
+  const [opsStatusList, setOpsStatusList] = useState<any[]>([]);
   const [treeValue, setTreeValue] = useState<number | null>(null);
 
   useEffect(() => {
-    setTreeValue(null)
-    setOpsStatusList([])
-    formRef.current?.resetFields(['tasks', 'checkoutAll'])
-    console.log(opsStatus)
+    setTreeValue(null);
+    setOpsStatusList([]);
+    formRef.current?.resetFields(['tasks', 'checkoutAll']);
+    console.log(opsStatus);
     if (opsStatus === '1') {
       formRef.current?.setFieldsValue({
-        taskOperatingSavepointSelect: '0'
-      })
+        taskOperatingSavepointSelect: '0',
+      });
     }
-  }, [opsStatusVisible, opsStatus])
+  }, [opsStatusVisible, opsStatus]);
 
   /**
    * onCheckAllChange 全选
    * */
   const onCheckAllChange = (e: CheckboxChangeEvent) => {
     formRef.current?.setFieldsValue({
-      tasks: e.target.checked ? opsStatusList.map((item: any) => item.id) : []
-    })
+      tasks: e.target.checked ? opsStatusList.map((item: any) => item.id) : [],
+    });
   };
 
   /**
@@ -72,8 +71,8 @@ const OpsStatusModal: React.FC<IOpsStatusModalProps> = (props): React.ReactEleme
    * */
   const onChangeCheckout = (list: CheckboxValueType[]) => {
     formRef.current?.setFieldsValue({
-      checkoutAll: list.length === opsStatusList.length ? true : false
-    })
+      checkoutAll: list.length === opsStatusList.length ? true : false,
+    });
   };
 
   /**
@@ -81,52 +80,60 @@ const OpsStatusModal: React.FC<IOpsStatusModalProps> = (props): React.ReactEleme
    * */
   const onTreeChange = (newValue: number) => {
     setTreeValue(newValue);
-
   };
 
   /**
    * onSubmit 提交
    * */
   const onSubmit = () => {
-    formRef.current.validateFields(['tasks', 'taskOperatingSavepointSelect']).then((values: any) => {
-      const {tasks, ...rest} = values
-      onOpsStatusCallBack({
-        ...rest,
-        operating: opsStatus,
-        tasks: tasks.map((item: any) => {
-          return {
-            id: item,
-            name: opsStatusList.find((items: any) => items.id === item).name
-          }
-        })
-      })
-    })
-  }
+    formRef.current
+      .validateFields(['tasks', 'taskOperatingSavepointSelect'])
+      .then((values: any) => {
+        const { tasks, ...rest } = values;
+        onOpsStatusCallBack({
+          ...rest,
+          operating: opsStatus,
+          tasks: tasks.map((item: any) => {
+            return {
+              id: item,
+              name: opsStatusList.find((items: any) => items.id === item).name,
+            };
+          }),
+        });
+      });
+  };
 
   /**
    * onSubmitTree 树型选择提交
    * */
   const onSubmitTree = async () => {
     try {
-      const {datas} = await queryOnClickOperatingTask({
+      const { datas } = await queryOnClickOperatingTask({
         operating: opsStatus,
-        catalogueId: treeValue
-      })
-      setOpsStatusList(datas)
+        catalogueId: treeValue,
+      });
+      setOpsStatusList(datas);
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
-  }
+  };
 
   // options = {opsStatusList}
   // value = {checkedList}
   // onChange = {onChange}
   return (
-    <Modal width={800} okText={l('button.submit')} onCancel={() => {
-      onOpsStatusCallBack()
-    }} onOk={() => {
-      onSubmit()
-    }} title={OpsStatusLabel[opsStatus]} visible={opsStatusVisible}>
+    <Modal
+      width={800}
+      okText={l('button.submit')}
+      onCancel={() => {
+        onOpsStatusCallBack();
+      }}
+      onOk={() => {
+        onSubmit();
+      }}
+      title={OpsStatusLabel[opsStatus]}
+      visible={opsStatusVisible}
+    >
       <Form ref={formRef}>
         <Card>
           <Row>
@@ -135,9 +142,9 @@ const OpsStatusModal: React.FC<IOpsStatusModalProps> = (props): React.ReactEleme
                 showSearch
                 allowClear
                 treeDataSimpleMode
-                style={{width: '100%'}}
-                dropdownStyle={{maxHeight: 400, overflow: 'auto'}}
-                fieldNames={{label: 'name', value: 'id'}}
+                style={{ width: '100%' }}
+                dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                fieldNames={{ label: 'name', value: 'id' }}
                 treeNodeFilterProp={'name'}
                 placeholder={l('pages.devops.lable.pleaseSelect')}
                 onChange={onTreeChange}
@@ -146,49 +153,57 @@ const OpsStatusModal: React.FC<IOpsStatusModalProps> = (props): React.ReactEleme
               />
             </Col>
             <Col push={2}>
-              <Button type={'primary'} onClick={() => {
-                onSubmitTree()
-              }}>{l('button.query')}</Button>
+              <Button
+                type={'primary'}
+                onClick={() => {
+                  onSubmitTree();
+                }}
+              >
+                {l('button.query')}
+              </Button>
             </Col>
           </Row>
-          <Divider/>
+          <Divider />
           <Row>
             <Col>
               <Form.Item name={'checkoutAll'} label={'全选'}>
-                <Checkbox onChange={onCheckAllChange}/>
+                <Checkbox onChange={onCheckAllChange} />
               </Form.Item>
             </Col>
             <Col push={15}>
-              {
-                opsStatus === '1' &&
-                <Form.Item name={'taskOperatingSavepointSelect'} label={' '} colon={false}
-                           rules={[{message: l('tips.enter'), required: true}]}>
-                  <Select style={{width: '150px'}}>
+              {opsStatus === '1' && (
+                <Form.Item
+                  name={'taskOperatingSavepointSelect'}
+                  label={' '}
+                  colon={false}
+                  rules={[{ message: l('tips.enter'), required: true }]}
+                >
+                  <Select style={{ width: '150px' }}>
                     <Option value={'0'}>{l('pages.devops.lable.line.piontConfig.default')}</Option>
                     <Option value={'1'}>{l('pages.devops.lable.line.piontConfig.last')}</Option>
                   </Select>
-                </Form.Item>}
+                </Form.Item>
+              )}
             </Col>
           </Row>
-          <Divider/>
+          <Divider />
           <Form.Item name={'tasks'}>
             <CheckboxGroup onChange={onChangeCheckout}>
               <Row>
-                {
-                  opsStatusList.map((item: any) => {
-                    return <Col key={item.id} span={8}>
+                {opsStatusList.map((item: any) => {
+                  return (
+                    <Col key={item.id} span={8}>
                       <Checkbox value={item.id}>{item.name}</Checkbox>
                     </Col>
-                  })
-                }
+                  );
+                })}
               </Row>
             </CheckboxGroup>
           </Form.Item>
-
         </Card>
       </Form>
     </Modal>
-  )
-}
+  );
+};
 
-export default OpsStatusModal
+export default OpsStatusModal;

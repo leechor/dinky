@@ -17,18 +17,18 @@
  *
  */
 
-import {LockOutlined, UserOutlined} from '@ant-design/icons';
-import {Button, message, Modal} from 'antd';
-import React, {useState} from 'react';
-import {LoginForm, ProFormCheckbox, ProFormText} from '@ant-design/pro-form';
-import {history, Link, SelectLang, useModel} from 'umi';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { Button, message, Modal } from 'antd';
+import React, { useState } from 'react';
+import { LoginForm, ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
+import { history, Link, SelectLang, useModel } from 'umi';
 import Footer from '@/components/Footer';
-import {chooseTenantSubmit, login} from '@/services/ant-design-pro/api';
-import {CheckCard} from '@ant-design/pro-components';
+import { chooseTenantSubmit, login } from '@/services/ant-design-pro/api';
+import { CheckCard } from '@ant-design/pro-components';
 import styles from './index.less';
-import {l} from '@/utils/intl';
+import { l } from '@/utils/intl';
 import cookies from 'js-cookie';
-import {setLocale} from '@@/plugin-locale/localeExports';
+import { setLocale } from '@@/plugin-locale/localeExports';
 
 /** 此方法会跳转到 redirect 参数所在的位置 */
 const goto = () => {
@@ -42,12 +42,11 @@ const goto = () => {
 
 const Login: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
-  const {initialState, setInitialState} = useModel('@@initialState');
+  const { initialState, setInitialState } = useModel('@@initialState');
   const [tenantVisible, handleTenantVisible] = useState<boolean>(false);
   const [checkDisabled, setCheckDisabled] = useState<boolean>(true);
   const [tenant, setTenant] = useState<API.Tenant[]>([]);
   const [tenantIdParams, setTenantIdParams] = useState<number>();
-
 
   const fetchUserInfo = async () => {
     const userInfo = await initialState?.fetchUserInfo?.();
@@ -59,42 +58,42 @@ const Login: React.FC = () => {
     }
   };
 
-
   const setTenantCookie = (tenantId: number) => {
     localStorage.setItem('dlink-tenantId', tenantId.toString()); // 放入本地存储中 request2请求时会放入header
-    cookies.set('tenantId', tenantId.toString(), {path: '/'}); // 放入cookie中
+    cookies.set('tenantId', tenantId.toString(), { path: '/' }); // 放入cookie中
   };
 
   const handleChooseTenant = async (chooseTenantResult: API.Result) => {
     if (chooseTenantResult.code === 0) {
-      message.success(l('pages.login.chooseTenantSuccess', '', {
-        msg: chooseTenantResult.msg,
-        tenantCode: chooseTenantResult.datas.tenantCode
-      }));
+      message.success(
+        l('pages.login.chooseTenantSuccess', '', {
+          msg: chooseTenantResult.msg,
+          tenantCode: chooseTenantResult.datas.tenantCode,
+        }),
+      );
 
       /**
        * After the selection is complete, refresh all user information
        */
       await fetchUserInfo();
 
-      goto()
-
+      goto();
     } else {
-      message.error(l('pages.login.chooseTenantFailed'))
+      message.error(l('pages.login.chooseTenantFailed'));
       return;
     }
-  }
+  };
 
   const handleSubmit = async (values: API.LoginParams) => {
     try {
       // login
-      const result = await login({...values});
+      const result = await login({ ...values });
       if (result.code === 0) {
-        message.success(l('pages.login.result', '', {msg: result.msg, time: result.time}));
+        message.success(l('pages.login.result', '', { msg: result.msg, time: result.time }));
         /**
          * After successful login, set the tenant list
          */
-        const tenantList: API.Tenant[] = result.datas.tenantList
+        const tenantList: API.Tenant[] = result.datas.tenantList;
         if (tenantList === null || tenantList.length === 0) {
           message.error('该用户未绑定租户');
           return;
@@ -111,23 +110,24 @@ const Login: React.FC = () => {
         if (tenantList && tenantList.length > 1) {
           handleTenantVisible(true);
         } else {
-          setTenantIdParams(tenantList[0].id as number)
+          setTenantIdParams(tenantList[0].id as number);
           setTenantCookie(tenantList[0].id as number);
-          const chooseTenantResult: API.Result = await chooseTenantSubmit({tenantId: tenantList[0].id as number});
-          await handleChooseTenant(chooseTenantResult)
+          const chooseTenantResult: API.Result = await chooseTenantSubmit({
+            tenantId: tenantList[0].id as number,
+          });
+          await handleChooseTenant(chooseTenantResult);
         }
         return;
       } else {
         /**
          * If it fails to set the user error message
          */
-        message.error(l('pages.login.result', '', {msg: result.msg, time: result.time}));
+        message.error(l('pages.login.result', '', { msg: result.msg, time: result.time }));
       }
     } catch (error) {
-      message.error(l('pages.login.error', '', {msg: error}));
+      message.error(l('pages.login.error', '', { msg: error }));
     }
   };
-
 
   const handleShowTenant = () => {
     return (
@@ -155,9 +155,9 @@ const Login: React.FC = () => {
               key="submit"
               loading={submitting}
               onClick={async () => {
-                setSubmitting(true)
-                const result = await chooseTenantSubmit({tenantId: tenantIdParams as number});
-                await handleChooseTenant(result)
+                setSubmitting(true);
+                const result = await chooseTenantSubmit({ tenantId: tenantIdParams as number });
+                await handleChooseTenant(result);
                 handleTenantVisible(false);
               }}
             >
@@ -171,7 +171,7 @@ const Login: React.FC = () => {
               if (value) {
                 setCheckDisabled(false); // 如果没选择租户 ·确认按钮· 则禁用
                 setTenantCookie(value as number);
-                setTenantIdParams(value as number)
+                setTenantIdParams(value as number);
               } else {
                 setCheckDisabled(true);
               }
@@ -205,7 +205,7 @@ const Login: React.FC = () => {
               if (language === undefined || language === '') {
                 language = localStorage.getItem('umi_locale');
               }
-              cookies.set('language', language, {path: '/'});
+              cookies.set('language', language, { path: '/' });
               setLocale(language);
             }}
           />
@@ -215,7 +215,7 @@ const Login: React.FC = () => {
         <div className={styles.top}>
           <div className={styles.header}>
             <Link to="/">
-              <img alt="logo" className={styles.logo} src="/dinky.svg"/>
+              <img alt="logo" className={styles.logo} src="/dinky.svg" />
               <span className={styles.title}>Dinky</span>
             </Link>
           </div>
@@ -240,7 +240,7 @@ const Login: React.FC = () => {
                 name="username"
                 fieldProps={{
                   size: 'large',
-                  prefix: <UserOutlined/>,
+                  prefix: <UserOutlined />,
                 }}
                 placeholder={l('pages.login.username.placeholder')}
                 rules={[
@@ -254,7 +254,7 @@ const Login: React.FC = () => {
                 name="password"
                 fieldProps={{
                   size: 'large',
-                  prefix: <LockOutlined/>,
+                  prefix: <LockOutlined />,
                 }}
                 placeholder={l('pages.login.password.placeholder')}
                 rules={[
@@ -277,7 +277,7 @@ const Login: React.FC = () => {
           </LoginForm>
         </div>
       </div>
-      <Footer/>
+      <Footer />
       {handleShowTenant()}
     </div>
   );

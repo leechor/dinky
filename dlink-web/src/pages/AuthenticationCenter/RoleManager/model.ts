@@ -17,19 +17,17 @@
  *
  */
 
-
-import {NameSpaceTableListItem, RoleTableListItem} from "@/pages/AuthenticationCenter/data.d";
-import {Reducer} from "@@/plugin-dva/connect";
+import { NameSpaceTableListItem, RoleTableListItem } from '@/pages/AuthenticationCenter/data.d';
+import { Reducer } from '@@/plugin-dva/connect';
 
 export type NameSpaceStateType = {
-  role:RoleTableListItem[],
-  nameSpaces: NameSpaceTableListItem[],
+  role: RoleTableListItem[];
+  nameSpaces: NameSpaceTableListItem[];
 };
 export type NameSpaceModelType = {
   namespace: string;
   state: NameSpaceStateType;
-  effects: {
-  };
+  effects: {};
   reducers: {
     saveRole: Reducer<NameSpaceStateType>;
     saveNameSpace: Reducer<NameSpaceStateType>;
@@ -39,22 +37,20 @@ export type NameSpaceModelType = {
 const NameSpaceModel: NameSpaceModelType = {
   namespace: 'NameSpace',
   state: {
-    role:[],
-    nameSpaces:[],
+    role: [],
+    nameSpaces: [],
   },
 
-  effects: {
-
-  },
+  effects: {},
 
   reducers: {
-    saveRole(state, {payload}) {
+    saveRole(state, { payload }) {
       return {
         ...state,
         role: payload,
       };
     },
-    saveNameSpace(state, {payload}) {
+    saveNameSpace(state, { payload }) {
       return {
         ...state,
         nameSpaces: payload,

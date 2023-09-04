@@ -1,7 +1,7 @@
 import { Stencil } from '@antv/x6-plugin-stencil';
 import { Graph, Node, Cell } from '@antv/x6';
 import { Parameter } from '@/components/Studio/StudioGraphEdit/GraphEditor/ts-define/parameter';
-import CustomShape from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
+import CustomShape from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons';
 
 /**
  * //注册stencil中的组件
@@ -16,13 +16,11 @@ export const stencilComponentsLoader = (
   stencil: Stencil,
   operatorParameters: Parameter[],
 ) => {
-
   const registeredStenCpn: { cpn: Node<Node.Properties>; cpnName: string }[] = [];
   const groupsName: { [key: string]: string[] } = {};
-  let node: Node
+  let node: Node;
   //根据算子参数注册stencil组件
   operatorParameters?.forEach((param: Parameter) => {
-
     node = graph.createNode({
       name: param.name,
       shape: param.code,
@@ -39,7 +37,7 @@ export const stencilComponentsLoader = (
         },
       },
     });
-    node.prop("isStencil", true)
+    node.prop('isStencil', true);
 
     registeredStenCpn.push({ cpn: node, cpnName: param.code });
     //保存组和节点关系
@@ -56,8 +54,6 @@ export const stencilComponentsLoader = (
   });
   stencil.load([textAreaNode], 'textArea');
 
-
-
   //算子节点
   Object.entries(groupsName).forEach(([group, groupNames]) => {
     // 每个分组需要加载的组件
@@ -67,5 +63,4 @@ export const stencilComponentsLoader = (
 
     stencil.load(groupRegisteredCpn, group);
   });
-
 };

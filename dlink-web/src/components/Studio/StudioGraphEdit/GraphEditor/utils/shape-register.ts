@@ -1,16 +1,14 @@
 import { Graph, Node } from '@antv/x6';
-import { register, } from '@antv/x6-react-shape';
+import { register } from '@antv/x6-react-shape';
 import TextNode from '@/components/Studio/StudioGraphEdit/GraphEditor/components/text-node';
 import OperatorNode from '@/components/Studio/StudioGraphEdit/GraphEditor/components/operator-node';
 import { Parameter } from '@/components/Studio/StudioGraphEdit/GraphEditor/ts-define/parameter';
 import { PortManager } from '@antv/x6/es/model/port';
 import React from 'react';
-import unRegisterShape from "./shape-unregister"
-import CustomShape from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons";
+import unRegisterShape from './shape-unregister';
+import CustomShape from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons';
 import GroupProcess from '@/components/Studio/StudioGraphEdit/GraphEditor/components/group-process';
 import { handleInitGroupPort } from './ports-register';
-
-
 
 function registerTextNode() {
   //注册文本节点
@@ -29,7 +27,7 @@ function registerTextNode() {
   });
 }
 
-function registerGroupProgress(ports: Partial<PortManager.Metadata> | PortManager.PortMetadata[],) {
+function registerGroupProgress(ports: Partial<PortManager.Metadata> | PortManager.PortMetadata[]) {
   register({
     width: 80,
     height: 50,
@@ -44,7 +42,8 @@ function registerGroupProgress(ports: Partial<PortManager.Metadata> | PortManage
     shape: CustomShape.GROUP_PROCESS,
     component: GroupProcess,
     ports: {
-      ...ports, items: [
+      ...ports,
+      items: [
         {
           group: 'inputs',
           zIndex: 999,
@@ -52,40 +51,40 @@ function registerGroupProgress(ports: Partial<PortManager.Metadata> | PortManage
             text: {
               text: `input_0`,
               style: {
-                visibility: "hidden",
+                visibility: 'hidden',
                 fontSize: 10,
-                fill: "#3B4351",
+                fill: '#3B4351',
               },
             },
             path: {
-              d: "m-6,2,a5,5.5 0 0 1 12,0"
-            }
+              d: 'm-6,2,a5,5.5 0 0 1 12,0',
+            },
           },
           label: {
-            position: "left",
+            position: 'left',
           },
-          id: "input_0"
+          id: 'input_0',
         },
         {
           group: 'outputs',
           zIndex: 999,
-          id: "output_0",
+          id: 'output_0',
           attrs: {
             text: {
               text: `output_0`,
               style: {
-                visibility: "hidden",
+                visibility: 'hidden',
                 fontSize: 10,
-                fill: "#3B4351",
+                fill: '#3B4351',
               },
             },
             path: {
-              d: "m-6,2,a5,5.5 0 0 1 12,0",
-            }
+              d: 'm-6,2,a5,5.5 0 0 1 12,0',
+            },
           },
           label: {
-            position: "right",
-          }
+            position: 'right',
+          },
         },
         {
           group: 'innerOutputs',
@@ -94,22 +93,22 @@ function registerGroupProgress(ports: Partial<PortManager.Metadata> | PortManage
             text: {
               text: `input_0_in`,
               style: {
-                visibility: "hidden",
+                visibility: 'hidden',
                 fontSize: 10,
-                fill: "#3B4351",
+                fill: '#3B4351',
               },
             },
             path: {
-              d: "m-6,2,a5,5.5 0 0 1 12,0"
-            }
+              d: 'm-6,2,a5,5.5 0 0 1 12,0',
+            },
           },
           args: {
             dx: 2,
           },
           label: {
-            position: "right",
+            position: 'right',
           },
-          id: "input_0_in"
+          id: 'input_0_in',
         },
         {
           group: 'innerInputs',
@@ -118,26 +117,26 @@ function registerGroupProgress(ports: Partial<PortManager.Metadata> | PortManage
             text: {
               text: `output_0_in`,
               style: {
-                visibility: "hidden",
+                visibility: 'hidden',
                 fontSize: 10,
-                fill: "#3B4351",
+                fill: '#3B4351',
               },
             },
             path: {
-              d: "m-6,2,a5,5.5 0 0 1 12,0"
-            }
+              d: 'm-6,2,a5,5.5 0 0 1 12,0',
+            },
           },
           args: {
             dx: -2,
           },
           label: {
-            position: "left",
+            position: 'left',
           },
-          id: "output_0_in"
-        }
-      ]
+          id: 'output_0_in',
+        },
+      ],
     },
-  })
+  });
 }
 
 function registerOperatorNode(
@@ -147,9 +146,9 @@ function registerOperatorNode(
     node: Node;
     graph: Graph;
   }>,
-  portItem: PortManager.PortMetadata[], 
+  portItem: PortManager.PortMetadata[],
 ) {
-  Graph.unregisterNode(code)
+  Graph.unregisterNode(code);
   register({
     width: 80,
     height: 50,
@@ -158,14 +157,14 @@ function registerOperatorNode(
         style: {
           'background-color': '#c6e5ff',
           border: '1px solid #949494',
-          "border-radius": "2px"
+          'border-radius': '2px',
         },
       },
     },
     shape: code,
     component: registerCpn,
     ports: { ...ports, items: portItem },
-    effect: ["isError", "errorMsg"]
+    effect: ['isError', 'errorMsg'],
   });
 }
 
@@ -175,9 +174,9 @@ export default (
   operatorParameters: Parameter[],
 ) => {
   console.log(operatorParameters);
-  
+
   //取消已注册，重新注册
-  unRegisterShape(operatorParameters)
+  unRegisterShape(operatorParameters);
   operatorParameters?.forEach((param) => {
     //生成ports Item
     const portItem: PortManager.PortMetadata[] = [];
@@ -191,15 +190,15 @@ export default (
           text: {
             text: `${item.id}`,
             style: {
-              visibility: "hidden",
+              visibility: 'hidden',
               fontSize: 10,
-              fill: "#3B4351",
+              fill: '#3B4351',
             },
           },
         },
         label: {
-          position: "bottom",
-        }
+          position: 'bottom',
+        },
       })),
     );
 
@@ -212,26 +211,27 @@ export default (
           text: {
             text: `${item.id}`,
             style: {
-              visibility: "hidden",
+              visibility: 'hidden',
               fontSize: 10,
-              fill: "#3B4351",
+              fill: '#3B4351',
             },
           },
         },
         label: {
-          position: "bottom",
-        }
+          position: 'bottom',
+        },
       })),
     );
 
     //保存组和节点关系
-    registerOperatorNode(param.code, ports, OperatorNode(param.feature?.icon, param.name), portItem);
-
+    registerOperatorNode(
+      param.code,
+      ports,
+      OperatorNode(param.feature?.icon, param.name),
+      portItem,
+    );
   });
   registerTextNode();
-  const groupPorts = handleInitGroupPort()
-  registerGroupProgress(groupPorts)
-
-
-
+  const groupPorts = handleInitGroupPort();
+  registerGroupProgress(groupPorts);
 };

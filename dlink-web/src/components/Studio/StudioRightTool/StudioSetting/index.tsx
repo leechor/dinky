@@ -17,32 +17,43 @@
  *
  */
 
-
-import {connect} from "umi";
-import {StateType} from "@/pages/DataStudio/model";
-import {Badge, Button, Col, Form, Input, InputNumber, Row, Select, Space, Switch, Tag, Tooltip, Typography} from "antd";
+import { connect } from 'umi';
+import { StateType } from '@/pages/DataStudio/model';
+import {
+  Badge,
+  Button,
+  Col,
+  Form,
+  Input,
+  InputNumber,
+  Row,
+  Select,
+  Space,
+  Switch,
+  Tag,
+  Tooltip,
+  Typography,
+} from 'antd';
 import {
   InfoCircleOutlined,
   MinusCircleOutlined,
   MinusSquareOutlined,
   PaperClipOutlined,
-  PlusOutlined
-} from "@ant-design/icons";
-import styles from "./index.less";
-import React, {useEffect} from "react";
-import {showTables} from "@/components/Studio/StudioEvent/DDL";
-import {JarStateType} from "@/pages/RegistrationCenter/Jar/model";
-import {Scrollbars} from "react-custom-scrollbars";
-import {RUN_MODE} from "@/components/Studio/conf";
-import {AlertStateType} from "@/pages/RegistrationCenter/AlertManage/AlertInstance/model";
-import {l} from "@/utils/intl";
+  PlusOutlined,
+} from '@ant-design/icons';
+import styles from './index.less';
+import React, { useEffect } from 'react';
+import { showTables } from '@/components/Studio/StudioEvent/DDL';
+import { JarStateType } from '@/pages/RegistrationCenter/Jar/model';
+import { Scrollbars } from 'react-custom-scrollbars';
+import { RUN_MODE } from '@/components/Studio/conf';
+import { AlertStateType } from '@/pages/RegistrationCenter/AlertManage/AlertInstance/model';
+import { l } from '@/utils/intl';
 
-const {Option} = Select;
-const {Text} = Typography;
+const { Option } = Select;
+const { Text } = Typography;
 
 const StudioSetting = (props: any) => {
-
-
   const {
     sessionCluster,
     clusterConfiguration,
@@ -53,17 +64,23 @@ const StudioSetting = (props: any) => {
     currentSession,
     env,
     group,
-    toolHeight
+    toolHeight,
   } = props;
 
   const getClusterOptions = () => {
     const itemList = [];
     for (const item of sessionCluster) {
-      const tag = (<><Tag
-        color={item.enabled ? "processing" : "error"}>{item.type}</Tag>{item.name}</>);
-      itemList.push(<Option key={item.id} value={item.id} label={tag}>
-        {tag}
-      </Option>)
+      const tag = (
+        <>
+          <Tag color={item.enabled ? 'processing' : 'error'}>{item.type}</Tag>
+          {item.name}
+        </>
+      );
+      itemList.push(
+        <Option key={item.id} value={item.id} label={tag}>
+          {tag}
+        </Option>,
+      );
     }
     return itemList;
   };
@@ -71,37 +88,56 @@ const StudioSetting = (props: any) => {
   const getClusterConfigurationOptions = () => {
     const itemList = [];
     for (const item of clusterConfiguration) {
-      const tag = (<><Tag
-        color={item.enabled ? "processing" : "error"}>{item.type}</Tag>{item.name}</>);
-      itemList.push(<Option key={item.id} value={item.id} label={tag}>
-        {tag}
-      </Option>)
+      const tag = (
+        <>
+          <Tag color={item.enabled ? 'processing' : 'error'}>{item.type}</Tag>
+          {item.name}
+        </>
+      );
+      itemList.push(
+        <Option key={item.id} value={item.id} label={tag}>
+          {tag}
+        </Option>,
+      );
     }
     return itemList;
   };
 
   const getEnvOptions = () => {
-    const itemList = [<Option key={0} value={0} label='无'>
-      无
-    </Option>];
+    const itemList = [
+      <Option key={0} value={0} label="无">
+        无
+      </Option>,
+    ];
     for (const item of env) {
-      const tag = (<>{item.enabled ? <Badge status="success"/> : <Badge status="error"/>}
-        {item.fragment ? <PaperClipOutlined/> : undefined}{item.name}</>);
-      itemList.push(<Option key={item.id} value={item.id} label={tag}>
-        {tag}
-      </Option>)
+      const tag = (
+        <>
+          {item.enabled ? <Badge status="success" /> : <Badge status="error" />}
+          {item.fragment ? <PaperClipOutlined /> : undefined}
+          {item.name}
+        </>
+      );
+      itemList.push(
+        <Option key={item.id} value={item.id} label={tag}>
+          {tag}
+        </Option>,
+      );
     }
     return itemList;
   };
 
   const getGroupOptions = () => {
-    const itemList = [<Option key={0} value={0} label={l('button.disable')}>
-      {l('button.disable')}
-    </Option>];
+    const itemList = [
+      <Option key={0} value={0} label={l('button.disable')}>
+        {l('button.disable')}
+      </Option>,
+    ];
     for (const item of group) {
-      itemList.push(<Option key={item.id} value={item.id} label={item.name}>
-        {item.name}
-      </Option>)
+      itemList.push(
+        <Option key={item.id} value={item.id} label={item.name}>
+          {item.name}
+        </Option>,
+      );
     }
     return itemList;
   };
@@ -109,7 +145,6 @@ const StudioSetting = (props: any) => {
   useEffect(() => {
     form.setFieldsValue(current.task);
   }, [current.task]);
-
 
   const onValuesChange = (change: any, all: any) => {
     const newTabs = tabs;
@@ -122,7 +157,7 @@ const StudioSetting = (props: any) => {
       }
     }
     dispatch({
-      type: "Studio/saveTabs",
+      type: 'Studio/saveTabs',
       payload: newTabs,
     });
   };
@@ -134,17 +169,14 @@ const StudioSetting = (props: any) => {
     <>
       <Row>
         <Col span={24}>
-          <div style={{float: "right"}}>
+          <div style={{ float: 'right' }}>
             <Tooltip title={l('component.minimize')}>
-              <Button
-                type="text"
-                icon={<MinusSquareOutlined/>}
-              />
+              <Button type="text" icon={<MinusSquareOutlined />} />
             </Tooltip>
           </div>
         </Col>
       </Row>
-      <Scrollbars style={{height: (toolHeight - 32)}}>
+      <Scrollbars style={{ height: toolHeight - 32 }}>
         <Form
           form={form}
           layout="vertical"
@@ -152,7 +184,9 @@ const StudioSetting = (props: any) => {
           onValuesChange={onValuesChange}
         >
           <Form.Item
-            label={l('global.table.execmode')} className={styles.form_item} name="type"
+            label={l('global.table.execmode')}
+            className={styles.form_item}
+            name="type"
             tooltip={l('pages.datastudio.label.jobConfig.execmode.tip')}
           >
             <Select defaultValue={RUN_MODE.LOCAL} value={RUN_MODE.LOCAL}>
@@ -163,48 +197,66 @@ const StudioSetting = (props: any) => {
               <Option value={RUN_MODE.YARN_APPLICATION}>Yarn Application</Option>
               <Option value={RUN_MODE.KUBERNETES_SESSION}>Kubernetes Session</Option>
               <Option value={RUN_MODE.KUBERNETES_APPLICATION}>Kubernetes Application</Option>
-              <Option value={RUN_MODE.KUBERNETES_APPLICATION_OPERATOR}>Kubernetes Operator Application</Option>
+              <Option value={RUN_MODE.KUBERNETES_APPLICATION_OPERATOR}>
+                Kubernetes Operator Application
+              </Option>
             </Select>
           </Form.Item>
-          {(current.task.type === RUN_MODE.YARN_SESSION || current.task.type === RUN_MODE.KUBERNETES_SESSION || current.task.type === RUN_MODE.STANDALONE) ? (
+          {current.task.type === RUN_MODE.YARN_SESSION ||
+          current.task.type === RUN_MODE.KUBERNETES_SESSION ||
+          current.task.type === RUN_MODE.STANDALONE ? (
             <Row>
               <Col span={24}>
-                <Form.Item label={l('pages.datastudio.label.jobConfig.cluster')}
-                           tooltip={l('pages.datastudio.label.jobConfig.clusterConfig.tip1', '', {
-                             type: current.task.type
-                           })}
-                           name="clusterId"
-                           className={styles.form_item}>
-                  {
-                    currentSession.session ?
-                      (currentSession.sessionConfig && currentSession.sessionConfig.clusterId ?
-                          (<><Badge status="success"/><Text
-                            type="success">{currentSession.sessionConfig.clusterName}</Text></>)
-                          : (<><Badge status="error"/><Text type="danger">{l('pages.devops.jobinfo.localenv')}</Text></>)
-                      ) : (<Select
-                        style={{width: '100%'}}
-                        placeholder={l('pages.datastudio.label.jobConfig.cluster.tip')}
-                        optionLabelProp="label"
-                        onChange={onChangeClusterSession}
-                      >
-                        {getClusterOptions()}
-                      </Select>)
-                  }
+                <Form.Item
+                  label={l('pages.datastudio.label.jobConfig.cluster')}
+                  tooltip={l('pages.datastudio.label.jobConfig.clusterConfig.tip1', '', {
+                    type: current.task.type,
+                  })}
+                  name="clusterId"
+                  className={styles.form_item}
+                >
+                  {currentSession.session ? (
+                    currentSession.sessionConfig && currentSession.sessionConfig.clusterId ? (
+                      <>
+                        <Badge status="success" />
+                        <Text type="success">{currentSession.sessionConfig.clusterName}</Text>
+                      </>
+                    ) : (
+                      <>
+                        <Badge status="error" />
+                        <Text type="danger">{l('pages.devops.jobinfo.localenv')}</Text>
+                      </>
+                    )
+                  ) : (
+                    <Select
+                      style={{ width: '100%' }}
+                      placeholder={l('pages.datastudio.label.jobConfig.cluster.tip')}
+                      optionLabelProp="label"
+                      onChange={onChangeClusterSession}
+                    >
+                      {getClusterOptions()}
+                    </Select>
+                  )}
                 </Form.Item>
               </Col>
-            </Row>) : undefined}
-          {(current.task.type === RUN_MODE.YARN_PER_JOB || current.task.type === RUN_MODE.YARN_APPLICATION
-          || current.task.type === RUN_MODE.KUBERNETES_APPLICATION|| current.task.type === RUN_MODE.KUBERNETES_APPLICATION_OPERATOR) ? (
+            </Row>
+          ) : undefined}
+          {current.task.type === RUN_MODE.YARN_PER_JOB ||
+          current.task.type === RUN_MODE.YARN_APPLICATION ||
+          current.task.type === RUN_MODE.KUBERNETES_APPLICATION ||
+          current.task.type === RUN_MODE.KUBERNETES_APPLICATION_OPERATOR ? (
             <Row>
               <Col span={24}>
-                <Form.Item label={l('pages.datastudio.label.jobConfig.clusterConfig')}
-                           tooltip={l('pages.datastudio.label.jobConfig.clusterConfig.tip1', '', {
-                             type: current.task.type
-                           })}
-                           name="clusterConfigurationId"
-                           className={styles.form_item}>
+                <Form.Item
+                  label={l('pages.datastudio.label.jobConfig.clusterConfig')}
+                  tooltip={l('pages.datastudio.label.jobConfig.clusterConfig.tip1', '', {
+                    type: current.task.type,
+                  })}
+                  name="clusterConfigurationId"
+                  className={styles.form_item}
+                >
                   <Select
-                    style={{width: '100%'}}
+                    style={{ width: '100%' }}
                     placeholder={l('pages.datastudio.label.jobConfig.clusterConfig.tip2')}
                     optionLabelProp="label"
                   >
@@ -212,17 +264,21 @@ const StudioSetting = (props: any) => {
                   </Select>
                 </Form.Item>
               </Col>
-            </Row>) : undefined}
-          <Form.Item label={l('pages.datastudio.label.jobConfig.flinksql.env')}
-                     tooltip={l('pages.datastudio.label.jobConfig.flinksql.env.tip1')}
-                     name="envId"
-                     className={styles.form_item}>
+            </Row>
+          ) : undefined}
+          <Form.Item
+            label={l('pages.datastudio.label.jobConfig.flinksql.env')}
+            tooltip={l('pages.datastudio.label.jobConfig.flinksql.env.tip1')}
+            name="envId"
+            className={styles.form_item}
+          >
             <Select
-              style={{width: '100%'}}
+              style={{ width: '100%' }}
               placeholder={l('pages.datastudio.label.jobConfig.flinksql.env.tip2')}
               allowClear
               optionLabelProp="label"
-              defaultValue={0} value={0}
+              defaultValue={0}
+              value={0}
             >
               {getEnvOptions()}
             </Select>
@@ -230,23 +286,28 @@ const StudioSetting = (props: any) => {
           <Row>
             <Col span={12}>
               <Form.Item
-                label={l('pages.datastudio.label.jobConfig.parallelism')} className={styles.form_item}
+                label={l('pages.datastudio.label.jobConfig.parallelism')}
+                className={styles.form_item}
                 name="parallelism"
                 tooltip={l('pages.datastudio.label.jobConfig.parallelism.tip')}
               >
-                <InputNumber min={1} max={9999} defaultValue={1}/>
+                <InputNumber min={1} max={9999} defaultValue={1} />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
-                label={l('pages.datastudio.label.jobConfig.insert')} className={styles.form_item} name="statementSet"
+                label={l('pages.datastudio.label.jobConfig.insert')}
+                className={styles.form_item}
+                name="statementSet"
                 valuePropName="checked"
                 tooltip={{
                   title: l('pages.datastudio.label.jobConfig.insert.tip'),
-                  icon: <InfoCircleOutlined/>
+                  icon: <InfoCircleOutlined />,
                 }}
               >
-                <Switch checkedChildren={l('button.enable')} unCheckedChildren={l('button.disable')}
+                <Switch
+                  checkedChildren={l('button.enable')}
+                  unCheckedChildren={l('button.disable')}
                 />
               </Form.Item>
             </Col>
@@ -254,30 +315,42 @@ const StudioSetting = (props: any) => {
           <Row>
             <Col span={12}>
               <Form.Item
-                label={l('pages.datastudio.label.jobConfig.fragment')} className={styles.form_item} name="fragment"
+                label={l('pages.datastudio.label.jobConfig.fragment')}
+                className={styles.form_item}
+                name="fragment"
                 valuePropName="checked"
                 tooltip={{
                   title: l('pages.datastudio.label.jobConfig.fragment.tip'),
-                  icon: <InfoCircleOutlined/>
+                  icon: <InfoCircleOutlined />,
                 }}
               >
-                <Switch checkedChildren={l('button.enable')} unCheckedChildren={l('button.disable')}
+                <Switch
+                  checkedChildren={l('button.enable')}
+                  unCheckedChildren={l('button.disable')}
                 />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
-                label={l('pages.datastudio.label.jobConfig.batchmode')} className={styles.form_item} name="batchModel"
+                label={l('pages.datastudio.label.jobConfig.batchmode')}
+                className={styles.form_item}
+                name="batchModel"
                 valuePropName="checked"
-                tooltip={{title: l('pages.datastudio.label.jobConfig.batchmode.tip'), icon: <InfoCircleOutlined/>}}
+                tooltip={{
+                  title: l('pages.datastudio.label.jobConfig.batchmode.tip'),
+                  icon: <InfoCircleOutlined />,
+                }}
               >
-                <Switch checkedChildren={l('button.enable')} unCheckedChildren={l('button.disable')}
+                <Switch
+                  checkedChildren={l('button.enable')}
+                  unCheckedChildren={l('button.disable')}
                 />
               </Form.Item>
             </Col>
           </Row>
           <Form.Item
-            label={l('pages.datastudio.label.jobConfig.savePointStrategy')} className={styles.form_item}
+            label={l('pages.datastudio.label.jobConfig.savePointStrategy')}
+            className={styles.form_item}
             name="savePointStrategy"
             tooltip={l('pages.datastudio.label.jobConfig.savePointStrategy.tip')}
           >
@@ -288,21 +361,27 @@ const StudioSetting = (props: any) => {
               <Option value={3}>{l('global.savepoint.strategy.custom')}</Option>
             </Select>
           </Form.Item>
-          {current.task.savePointStrategy === 3 ?
-            (<Form.Item
-              label={l('pages.datastudio.label.jobConfig.savePointpath')} className={styles.form_item}
+          {current.task.savePointStrategy === 3 ? (
+            <Form.Item
+              label={l('pages.datastudio.label.jobConfig.savePointpath')}
+              className={styles.form_item}
               name="savePointPath"
               tooltip={l('pages.datastudio.label.jobConfig.savePointpath.tip1')}
             >
-              <Input placeholder={l('pages.datastudio.label.jobConfig.savePointpath.tip2')}/>
-            </Form.Item>) : ''
-          }
+              <Input placeholder={l('pages.datastudio.label.jobConfig.savePointpath.tip2')} />
+            </Form.Item>
+          ) : (
+            ''
+          )}
           <Row>
             <Col span={24}>
-              <Form.Item label={l('pages.datastudio.label.jobConfig.alertGroup')} name="alertGroupId"
-                         className={styles.form_item}>
+              <Form.Item
+                label={l('pages.datastudio.label.jobConfig.alertGroup')}
+                name="alertGroupId"
+                className={styles.form_item}
+              >
                 <Select
-                  style={{width: '100%'}}
+                  style={{ width: '100%' }}
                   placeholder={l('pages.datastudio.label.jobConfig.alertGroup.tip')}
                   optionLabelProp="label"
                   defaultValue={0}
@@ -313,35 +392,41 @@ const StudioSetting = (props: any) => {
             </Col>
           </Row>
           <Form.Item
-            label={l('pages.datastudio.label.jobConfig.other')} className={styles.form_item}
-            tooltip={{title: l('pages.datastudio.label.jobConfig.other.tip'), icon: <InfoCircleOutlined/>}}
+            label={l('pages.datastudio.label.jobConfig.other')}
+            className={styles.form_item}
+            tooltip={{
+              title: l('pages.datastudio.label.jobConfig.other.tip'),
+              icon: <InfoCircleOutlined />,
+            }}
           >
-
-            <Form.List name="config"
-            >
-              {(fields, {add, remove}) => (
+            <Form.List name="config">
+              {(fields, { add, remove }) => (
                 <>
-                  {fields.map(({key, name, fieldKey, ...restField}) => (
-                    <Space key={key} style={{display: 'flex'}} align="baseline">
+                  {fields.map(({ key, name, fieldKey, ...restField }) => (
+                    <Space key={key} style={{ display: 'flex' }} align="baseline">
                       <Form.Item
                         {...restField}
                         name={[name, 'key']}
-                        style={{marginBottom: '5px'}}
+                        style={{ marginBottom: '5px' }}
                       >
-                        <Input placeholder={l('pages.datastudio.label.jobConfig.addConfig.params')}/>
+                        <Input
+                          placeholder={l('pages.datastudio.label.jobConfig.addConfig.params')}
+                        />
                       </Form.Item>
                       <Form.Item
                         {...restField}
                         name={[name, 'value']}
-                        style={{marginBottom: '5px'}}
+                        style={{ marginBottom: '5px' }}
                       >
-                        <Input placeholder={l('pages.datastudio.label.jobConfig.addConfig.value')}/>
+                        <Input
+                          placeholder={l('pages.datastudio.label.jobConfig.addConfig.value')}
+                        />
                       </Form.Item>
-                      <MinusCircleOutlined onClick={() => remove(name)}/>
+                      <MinusCircleOutlined onClick={() => remove(name)} />
                     </Space>
                   ))}
                   <Form.Item>
-                    <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined/>}>
+                    <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
                       {l('pages.datastudio.label.jobConfig.addConfig')}
                     </Button>
                   </Form.Item>
@@ -355,15 +440,17 @@ const StudioSetting = (props: any) => {
   );
 };
 
-export default connect(({Studio, Jar, Alert}: { Studio: StateType, Jar: JarStateType, Alert: AlertStateType }) => ({
-  sessionCluster: Studio.sessionCluster,
-  clusterConfiguration: Studio.clusterConfiguration,
-  current: Studio.current,
-  tabs: Studio.tabs,
-  session: Studio.session,
-  currentSession: Studio.currentSession,
-  toolHeight: Studio.toolHeight,
-  jars: Jar.jars,
-  env: Studio.env,
-  group: Alert.group,
-}))(StudioSetting);
+export default connect(
+  ({ Studio, Jar, Alert }: { Studio: StateType; Jar: JarStateType; Alert: AlertStateType }) => ({
+    sessionCluster: Studio.sessionCluster,
+    clusterConfiguration: Studio.clusterConfiguration,
+    current: Studio.current,
+    tabs: Studio.tabs,
+    session: Studio.session,
+    currentSession: Studio.currentSession,
+    toolHeight: Studio.toolHeight,
+    jars: Jar.jars,
+    env: Studio.env,
+    group: Alert.group,
+  }),
+)(StudioSetting);

@@ -17,31 +17,41 @@
  *
  */
 
+import { Tabs } from 'antd';
+import VersionList from '@/pages/DevOps/JobInfo/Version/VersionList';
+import VersionTimeLineList from '@/pages/DevOps/JobInfo/Version/VersionTimeLineList';
+import { l } from '@/utils/intl';
 
-import {Tabs} from "antd";
-import VersionList from "@/pages/DevOps/JobInfo/Version/VersionList";
-import VersionTimeLineList from "@/pages/DevOps/JobInfo/Version/VersionTimeLineList";
-import {l} from "@/utils/intl";
-
-const {TabPane} = Tabs;
+const { TabPane } = Tabs;
 const TaskVersionInfo = (props: any) => {
-  const {job} = props;
+  const { job } = props;
 
+  return (
+    <>
+      <Tabs
+        defaultActiveKey="overview"
+        size="small"
+        tabPosition="top"
+        style={{
+          border: '1px solid #f0f0f0',
+        }}
+      >
+        <TabPane
+          tab={<span>&nbsp; {l('pages.devops.jobinfo.version.list')} &nbsp;</span>}
+          key="versionlist"
+        >
+          <VersionList job={job} />
+        </TabPane>
 
-  return (<>
-    <Tabs defaultActiveKey="overview" size="small" tabPosition="top" style={{
-      border: "1px solid #f0f0f0",
-    }}>
-      <TabPane tab={<span>&nbsp; {l('pages.devops.jobinfo.version.list')} &nbsp;</span>} key="versionlist">
-        <VersionList job={job}/>
-      </TabPane>
-
-      <TabPane tab={<span>&nbsp; {l('pages.devops.jobinfo.version.timeline')} &nbsp;</span>} key="timeline">
-        <VersionTimeLineList job={job}/>
-      </TabPane>
-
-    </Tabs>
-  </>)
+        <TabPane
+          tab={<span>&nbsp; {l('pages.devops.jobinfo.version.timeline')} &nbsp;</span>}
+          key="timeline"
+        >
+          <VersionTimeLineList job={job} />
+        </TabPane>
+      </Tabs>
+    </>
+  );
 };
 
 export default TaskVersionInfo;

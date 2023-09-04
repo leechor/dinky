@@ -26,7 +26,8 @@ export default {
   'pages.login.result': '{msg}\t\t{time}',
   'pages.login.chooseTenant': 'Please Choose Tenant',
   'pages.login.chooseTenantFailed': 'Tenant selection failed, please check. . . ',
-  'pages.login.chooseTenantSuccess': '{msg}, we are about to use [{tenantCode}] to enter the system, please wait...',
+  'pages.login.chooseTenantSuccess':
+    '{msg}, we are about to use [{tenantCode}] to enter the system, please wait...',
   'pages.login.username.placeholder': 'Username: Admin Or User',
   'pages.login.username.required': 'Please Input Your UserName!',
   'pages.login.password.placeholder': 'Password: ant.design',
@@ -48,7 +49,8 @@ export default {
   'pages.welcome.advancedComponent': 'Advanced Component',
   'pages.welcome.link': 'Welcome',
   'pages.welcome.advancedLayout': 'Advanced Layout',
-  'pages.welcome.alertMessage': 'Faster And Stronger Heavy-duty Components Have Been Released {version}.',
+  'pages.welcome.alertMessage':
+    'Faster And Stronger Heavy-duty Components Have Been Released {version}.',
   'pages.admin.subPage.title': 'This Page Can Only Be Viewed By Admin',
   'pages.admin.subPage.alertMessage':
     'Umi UI Is Now Released, Welcome To Use Npm Run UI To Start The Experience.',
@@ -91,26 +93,30 @@ export default {
   'pages.searchTable.batchDeletion': 'Batch Deletion',
   'pages.searchTable.batchApproval': 'Batch Approval',
 
-  'pages.datastudio.editor.execute.warn': 'The execution mode of this task is [{type}], which does not support SQL query, please save it manually and use the button on the right - job submission',
+  'pages.datastudio.editor.execute.warn':
+    'The execution mode of this task is [{type}], which does not support SQL query, please save it manually and use the button on the right - job submission',
   'pages.datastudio.editor.submiting': 'The new task [{jobName}] is executing',
   'pages.datastudio.editor.exec.success': 'Execution succeeded',
   'pages.datastudio.editor.exec.error': 'Execution failed',
   'pages.datastudio.editor.async.submit': 'Submit jobs asynchronously',
   'pages.datastudio.editor.async.submiting': 'The task [{jobName}] is submitting asynchronously',
-  'pages.datastudio.editor.async.submitConfirm': 'Are you sure to asynchronously submit the job [{jobName}] to its configured cluster? Please make sure your work has been saved! ',
+  'pages.datastudio.editor.async.submitConfirm':
+    'Are you sure to asynchronously submit the job [{jobName}] to its configured cluster? Please make sure your work has been saved! ',
   'pages.datastudio.editor.async.success': 'Asynchronous submission succeeded',
   'pages.datastudio.editor.async.error': 'Asynchronous submission failed',
   'pages.datastudio.editor.query.explan.error': 'Failed to get job execution plan, reason:\n{msg}',
   'pages.datastudio.editor.query.ds.error': 'Failed to get dolphin data, reason:\n{msg}',
   'pages.datastudio.editor.release.job': 'Release job',
-  'pages.datastudio.editor.release.jobConfirm': 'Are you sure to release the job [{jobName}]? Please make sure your work has been saved! ',
+  'pages.datastudio.editor.release.jobConfirm':
+    'Are you sure to release the job [{jobName}]? Please make sure your work has been saved! ',
   'pages.datastudio.editor.release.job.success': 'Release job [{jobName}] succeeded',
   'pages.datastudio.editor.release.job.error': 'Publish job [{jobName}] failed',
   'pages.datastudio.editor.edit.job': 'Maintenance job',
   'pages.datastudio.editor.edit.jobConfirm': 'Confirm the maintenance job [{jobName}]? ',
   'pages.datastudio.editor.edit.job.success': 'Maintenance job [{jobName}] succeeded',
   'pages.datastudio.editor.online.job': 'Online job',
-  'pages.datastudio.editor.online.jobConfirm': 'Are you sure you want to go online with [{jobName}]? ',
+  'pages.datastudio.editor.online.jobConfirm':
+    'Are you sure you want to go online with [{jobName}]? ',
   'pages.datastudio.editor.online.job.success': 'Online job [{jobName}] succeeded',
   'pages.datastudio.editor.online.job.error': 'Online job [{jobName}] failed, reason:\n {msg}',
   'pages.datastudio.editor.stop.job': 'Stop job',
@@ -139,9 +145,11 @@ export default {
   'pages.datastudio.editor.explan': 'Get the current FlinkSql execution graph',
   'pages.datastudio.editor.explan.tip': 'JobPlan for FlinkSQL',
   'pages.datastudio.editor.exec': 'Execute the current SQL',
-  'pages.datastudio.editor.exec.tip': 'Submit the current job to the cluster, please save it manually before submitting',
+  'pages.datastudio.editor.exec.tip':
+    'Submit the current job to the cluster, please save it manually before submitting',
   'pages.datastudio.editor.push.ds': 'Push to dolphin scheduler',
-  'pages.datastudio.editor.push.ds.query.error': 'Failed to get dolphin task definition set, reason:\n{msg}',
+  'pages.datastudio.editor.push.ds.query.error':
+    'Failed to get dolphin task definition set, reason:\n{msg}',
   'pages.datastudio.editor.push.ds.timeout.strategy': 'Timeout strategy',
   'pages.datastudio.editor.push.ds.timeout.alarm': 'Timeout warning',
   'pages.datastudio.editor.push.ds.timeout.error': 'Timeout failed',
@@ -158,7 +166,8 @@ export default {
   'pages.datastudio.editor.stop': 'Stop',
   'pages.datastudio.editor.release': 'Release, will not be able to modify after release',
   'pages.datastudio.editor.edit': 'Maintenance, click to enter the editing state',
-  'pages.datastudio.editor.online': 'Online, automatic recovery, alarms, etc. will take effect after online',
+  'pages.datastudio.editor.online':
+    'Online, automatic recovery, alarms, etc. will take effect after online',
   'pages.datastudio.editor.offline': 'Offline, will enter the latest release status',
   'pages.datastudio.editor.delete': 'Logout, will enter the recycle bin',
   'pages.datastudio.editor.recovery': 'Recovery, will enter maintenance mode',
@@ -189,7 +198,8 @@ export default {
   'pages.settings.FlinkURLSplit': 'FlinkSQL Statement Separator',
   'pages.settings.FlinkJobID': 'Maximum Waiting Time For Getting A Job ID (seconds)',
   'pages.settings.FlinkNoSetting': 'Not Setting',
-  'pages.settings.FlinkNoUseSetting': 'After The Flink Task Is Enabled, Operations Such As Savepoint And Stop Are Performed Through The RestAPI Of JobManager',
+  'pages.settings.FlinkNoUseSetting':
+    'After The Flink Task Is Enabled, Operations Such As Savepoint And Stop Are Performed Through The RestAPI Of JobManager',
 
   'pages.user.UserManger': 'User Management',
   'pages.user.UserName': 'User Name',
@@ -221,7 +231,6 @@ export default {
   'pages.user.UserNewPasswordNotMatch': 'The new passwords do not match',
   'pages.user.disableTotalOf': 'Total Of {total} User Is Disabled',
 
-
   'pages.tenant.TenantManager': 'Tenant Management',
   'pages.tenant.TenantCode': 'Tenant Code',
   'pages.tenant.AssignUser': 'Assign Users',
@@ -236,7 +245,6 @@ export default {
   'pages.tenant.enableConfirm': 'Are you sure you want to enable this Tenant?',
   'pages.tenant.disable': 'Disable Tenant',
   'pages.tenant.disableConfirm': 'Are you sure you want to disable this Tenant?',
-
 
   'pages.nameSpace.NameSpaceManagement': 'NameSpace Management',
   'pages.nameSpace.NameSpaceCode': 'NameSpace Code',
@@ -272,11 +280,13 @@ export default {
   'pages.role.disable': 'Disable Role',
   'pages.role.disableConfirm': 'Are you sure you want to disable this Role?',
 
-  'pages.roleSelectPermissions.roleSelectPermissionsManagement': 'Role select permissions management',
+  'pages.roleSelectPermissions.roleSelectPermissionsManagement':
+    'Role select permissions management',
   'pages.roleSelectPermissions.tableName': 'Table name',
   'pages.roleSelectPermissions.expression': 'Expression',
   'pages.roleSelectPermissions.delete': 'Delete role data permissions',
-  'pages.roleSelectPermissions.deleteConfirm': 'Are you sure you want to delete this role select permissions?',
+  'pages.roleSelectPermissions.deleteConfirm':
+    'Are you sure you want to delete this role select permissions?',
 
   'pages.regist.openAPI': 'OpenAPI Document',
   'pages.regist.BusinessComponent': 'Business Component Document',
@@ -302,7 +312,6 @@ export default {
   'pages.datastudio.label.result': 'Result',
   'pages.datastudio.label.result.query.latest.data': 'Get the latest data',
 
-
   'pages.datastudio.explain.validate.msg': 'FlinkSql Syntax and logic check',
   'pages.datastudio.explain.validate': 'Validating...',
   'pages.datastudio.explain.validate.allright': 'All Right',
@@ -311,8 +320,6 @@ export default {
   'pages.datastudio.explain.validate.grammar.error': 'Grammar Error',
   'pages.datastudio.explain.validate.logic.right': 'Logical Right',
   'pages.datastudio.explain.validate.logic.error': 'Logical Error',
-
-
 
   'pages.datastudio.label.lineage': 'Lineage',
   'pages.datastudio.label.lineage.export': 'Export StreamGraphPlan',
@@ -331,7 +338,6 @@ export default {
   'pages.metadata.help.exec': 'exec sql',
   'pages.metadata.exec.result.msg': 'Execution Time: {time} s, Row count: {rowCount}',
   'pages.metadata.exec.result.msghelp': 'row count more than 500, only show top 500',
-
 
   'pages.datastudio.label.process': 'Process',
   'pages.datastudio.label.process.detail': 'Detail',
@@ -369,7 +375,6 @@ export default {
   'pages.datastudio.label.history.savePointStrategy': 'SavePoint Strategy',
   'pages.datastudio.label.history.savePointPath': 'SavePoint Path',
 
-
   'pages.datastudio.label.function': 'Function',
 
   'pages.datastudio.label.directory': 'Directory',
@@ -385,64 +390,80 @@ export default {
   'pages.datastudio.label.jobConfig.cluster': 'Flink cluster',
   'pages.datastudio.label.jobConfig.cluster.tip': 'Select Flink cluster',
   'pages.datastudio.label.jobConfig.clusterConfig': 'Flink cluster Config',
-  'pages.datastudio.label.jobConfig.clusterConfig.tip1': 'Select Flink cluster Config for remote submission tasks in [{type}] mode',
+  'pages.datastudio.label.jobConfig.clusterConfig.tip1':
+    'Select Flink cluster Config for remote submission tasks in [{type}] mode',
   'pages.datastudio.label.jobConfig.clusterConfig.tip2': 'Select Flink cluster Config',
   'pages.datastudio.label.jobConfig.jar': 'Executable Jar',
-  'pages.datastudio.label.jobConfig.jar.tip1': 'Select executable Jar for remote submission of Jar tasks in [{type}] mode. When the parameter item has a value, only the executable Jar will be submitted.',
+  'pages.datastudio.label.jobConfig.jar.tip1':
+    'Select executable Jar for remote submission of Jar tasks in [{type}] mode. When the parameter item has a value, only the executable Jar will be submitted.',
   'pages.datastudio.label.jobConfig.jar.tip2': 'Select executable Jar, not required',
-  'pages.datastudio.label.jobConfig.execmode.tip': 'Specify the execution mode of the Flink task, the default is Local',
-  'pages.datastudio.label.jobConfig.execmode.k8s.tip': 'Specify the execution mode of the Flink task, the default is KUBERNETES_APPLICATION',
+  'pages.datastudio.label.jobConfig.execmode.tip':
+    'Specify the execution mode of the Flink task, the default is Local',
+  'pages.datastudio.label.jobConfig.execmode.k8s.tip':
+    'Specify the execution mode of the Flink task, the default is KUBERNETES_APPLICATION',
   'pages.datastudio.label.jobConfig.flinksql.env': 'FlinkSQL environment',
-  'pages.datastudio.label.jobConfig.flinksql.env.tip1': 'Select the FlinkSQL execution environment of the current task, and the environment statement will be executed in advance. The default is none. ',
+  'pages.datastudio.label.jobConfig.flinksql.env.tip1':
+    'Select the FlinkSQL execution environment of the current task, and the environment statement will be executed in advance. The default is none. ',
   'pages.datastudio.label.jobConfig.flinksql.env.tip2': 'Select FlinkSQL environment, optional',
   'pages.datastudio.label.jobConfig.parallelism': 'Parallelism',
-  'pages.datastudio.label.jobConfig.parallelism.tip': 'Set the parallelism of Flink tasks, the minimum is 1',
+  'pages.datastudio.label.jobConfig.parallelism.tip':
+    'Set the parallelism of Flink tasks, the minimum is 1',
   'pages.datastudio.label.jobConfig.insert': 'Insert StatementSet',
-  'pages.datastudio.label.jobConfig.insert.tip': '[Enhanced Features] Enable the statement set mechanism, multiple Insert statements will be combined into one JobGraph before submission, and the Select statement is invalid',
+  'pages.datastudio.label.jobConfig.insert.tip':
+    '[Enhanced Features] Enable the statement set mechanism, multiple Insert statements will be combined into one JobGraph before submission, and the Select statement is invalid',
   'pages.datastudio.label.jobConfig.fragment': 'Global variables',
-  'pages.datastudio.label.jobConfig.fragment.tip': '[Enhanced Features] Enable FlinkSql global variables, use ":=" to define (end with ";"), to call',
+  'pages.datastudio.label.jobConfig.fragment.tip':
+    '[Enhanced Features] Enable FlinkSql global variables, use ":=" to define (end with ";"), to call',
   'pages.datastudio.label.jobConfig.batchmode': 'Batch Mode',
   'pages.datastudio.label.jobConfig.batchmode.tip': 'Use batch mode',
   'pages.datastudio.label.jobConfig.checkPoint': 'Checkpoint interval',
-  'pages.datastudio.label.jobConfig.checkPoint.tip': 'Set the checkpoint step size of the Flink task, 0 means not enabled',
+  'pages.datastudio.label.jobConfig.checkPoint.tip':
+    'Set the checkpoint step size of the Flink task, 0 means not enabled',
   'pages.datastudio.label.jobConfig.savePointStrategy': 'SavePointStrategy',
-  'pages.datastudio.label.jobConfig.savePointStrategy.tip': 'Specify the SavePoint strategy, the default is disabled',
+  'pages.datastudio.label.jobConfig.savePointStrategy.tip':
+    'Specify the SavePoint strategy, the default is disabled',
   'pages.datastudio.label.jobConfig.savePointpath': 'SavePointpath',
   'pages.datastudio.label.jobConfig.savePointpath.tip1': 'Restore Flink task from SavePointPath',
   'pages.datastudio.label.jobConfig.savePointpath.tip2': 'hdfs://...',
   'pages.datastudio.label.jobConfig.alertGroup': 'Alarm Group',
   'pages.datastudio.label.jobConfig.alertGroup.tip': 'Select alert group',
   'pages.datastudio.label.jobConfig.other': 'Other Config',
-  'pages.datastudio.label.jobConfig.other.tip': 'Other Config items will be applied to the execution environment, such as pipeline.name',
+  'pages.datastudio.label.jobConfig.other.tip':
+    'Other Config items will be applied to the execution environment, such as pipeline.name',
   'pages.datastudio.label.jobConfig.addConfig': 'Add Config item',
   'pages.datastudio.label.jobConfig.addConfig.params': 'parameters',
   'pages.datastudio.label.jobConfig.addConfig.value': 'value',
 
   'pages.datastudio.label.execConfig': 'Execution Config',
   'pages.datastudio.label.execConfig.selectDatabase': 'Select DataSource',
-  'pages.datastudio.label.execConfig.selectDatabase.tip': 'Select the data source for Sql statement execution',
+  'pages.datastudio.label.execConfig.selectDatabase.tip':
+    'Select the data source for Sql statement execution',
   'pages.datastudio.label.execConfig.preview.result': 'Preview Result',
-  'pages.datastudio.label.execConfig.preview.result.tip': 'Open the preview result, it will run synchronously and return the data result',
+  'pages.datastudio.label.execConfig.preview.result.tip':
+    'Open the preview result, it will run synchronously and return the data result',
   'pages.datastudio.label.execConfig.changelog': 'Print ChangeLog',
-  'pages.datastudio.label.execConfig.changelog.tip': 'Open the print stream, it will run synchronously and return the ChangeLog containing op information, it is not enabled by default and returns the final result Table',
+  'pages.datastudio.label.execConfig.changelog.tip':
+    'Open the print stream, it will run synchronously and return the ChangeLog containing op information, it is not enabled by default and returns the final result Table',
   'pages.datastudio.label.execConfig.maxrow': 'Maximum number of rows',
   'pages.datastudio.label.execConfig.maxrow.tip': 'The maximum number of rows of preview data',
   'pages.datastudio.label.execConfig.autostop': 'AutoStop',
-  'pages.datastudio.label.execConfig.autostop.tip': 'Enable autostop, it will automatically stop the task after capturing the maximum number of records',
+  'pages.datastudio.label.execConfig.autostop.tip':
+    'Enable autostop, it will automatically stop the task after capturing the maximum number of records',
 
   'pages.datastudio.label.savepoint': 'Savepoint',
-
 
   'pages.datastudio.label.version': 'Version History',
   'pages.datastudio.label.version.id': 'Version ID',
   'pages.datastudio.label.version.diff': 'Version Diff',
   'pages.datastudio.label.version.rollback': 'Rollback',
   'pages.datastudio.label.version.rollback.flinksql': 'Rollback Flink SQL Version',
-  'pages.datastudio.label.version.rollback.flinksqlConfirm': 'Are you sure to RollBack the Flink SQL version to [{versionId}]? ',
+  'pages.datastudio.label.version.rollback.flinksqlConfirm':
+    'Are you sure to RollBack the Flink SQL version to [{versionId}]? ',
   'pages.datastudio.label.version.diff.tip': 'Only compare with the content in the current editor',
-  'pages.datastudio.label.version.leftTitle': 'Version number: [{versionId}] Creation time: [{createTime}]',
-  'pages.datastudio.label.version.rightTitle': 'Version number: [current edited version] creation time: [{createTime}] last update time: [{updateTime}]',
-
+  'pages.datastudio.label.version.leftTitle':
+    'Version number: [{versionId}] Creation time: [{createTime}]',
+  'pages.datastudio.label.version.rightTitle':
+    'Version number: [current edited version] creation time: [{createTime}] last update time: [{updateTime}]',
 
   'pages.datastudio.label.jobInfo': 'Job Info',
   'pages.datastudio.label.jobInfo.id': 'Job ID',
@@ -470,7 +491,8 @@ export default {
   'pages.datastudio.label.quickguide': 'Quick Guide',
 
   'pages.datastudio.label.welcomeuse': 'Welcome to Use Dinky v{version}',
-  'pages.datastudio.label.dinkydescribe': 'Real Time is the Future,Dinky is the best partner of Flink, making Flink SQL easier to use, and is committed to the construction of stream batch integrated development platform',
+  'pages.datastudio.label.dinkydescribe':
+    'Real Time is the Future,Dinky is the best partner of Flink, making Flink SQL easier to use, and is committed to the construction of stream batch integrated development platform',
   'pages.datastudio.label.maxrows': 'Max Rows',
 
   'pages.devops.result.success': 'Successful',
@@ -507,16 +529,19 @@ export default {
   'pages.rc.cluster.delete': 'Delete Flink Instance',
   'pages.rc.cluster.deleteConfirm': 'Are you sure you want to delete this Flink instance? ',
   'pages.rc.cluster.recycle': 'Recycle Flink instance',
-  'pages.rc.cluster.recycleConfirm': 'Are you sure to recycle all automatically created and expired Flink instances? ',
-  'pages.rc.cluster.recycle.success' : 'Total Of {total} Flink instances were successfully recycled',
+  'pages.rc.cluster.recycleConfirm':
+    'Are you sure to recycle all automatically created and expired Flink instances? ',
+  'pages.rc.cluster.recycle.success': 'Total Of {total} Flink instances were successfully recycled',
   'pages.rc.cluster.enable': 'Enable Flink instance',
   'pages.rc.cluster.enableConfirm': 'Are you sure you want to enable this Flink instance? ',
   'pages.rc.cluster.disable': 'Disable Flink instance',
   'pages.rc.cluster.disableConfirm': 'Are you sure you want to disable this Flink instance? ',
   'pages.rc.cluster.disableTotalOf': 'Total Of {total} Flink instances Is Disabled',
   'pages.rc.cluster.jobManagerHaAddress.validate.slash': 'No rules! Cannot contain /',
-  'pages.rc.cluster.jobManagerHaAddress.validate.port': 'Does not meet the rules! Port number range [0-65535]',
-  'pages.rc.cluster.jobManagerHaAddressPlaceholderText': 'Add the RestApi address of the JobManager of the Flink cluster. In HA mode, the addresses are separated by commas, for example: 192.168.123.101:8081,192.168.123.102:8081,192.168.123.103:8081',
+  'pages.rc.cluster.jobManagerHaAddress.validate.port':
+    'Does not meet the rules! Port number range [0-65535]',
+  'pages.rc.cluster.jobManagerHaAddressPlaceholderText':
+    'Add the RestApi address of the JobManager of the Flink cluster. In HA mode, the addresses are separated by commas, for example: 192.168.123.101:8081,192.168.123.102:8081,192.168.123.103:8081',
   'pages.rc.cluster.jobManagerHaAddressPlaceholder': 'Please enter the JobManager HA address!',
   'pages.rc.cluster.typePlaceholder': 'Please select cluster type!',
   'pages.rc.cluster.namePlaceholder': 'Please enter name!',
@@ -540,28 +565,36 @@ export default {
   'pages.rc.clusterConfig.delete': 'Delete Cluster Config',
   'pages.rc.clusterConfig.deleteConfirm': 'Are you sure you want to delete this  Cluster Config? ',
   'pages.rc.clusterConfig.start': 'Start Session Cluster',
-  'pages.rc.clusterConfig.startConfirm': 'Are you sure you want to start session cluster by this cluster config? ',
+  'pages.rc.clusterConfig.startConfirm':
+    'Are you sure you want to start session cluster by this cluster config? ',
   'pages.rc.clusterConfig.enable': 'Enable Cluster Config',
   'pages.rc.clusterConfig.enableConfirm': 'Are you sure you want to enable this  Cluster Config? ',
   'pages.rc.clusterConfig.disable': 'Disable Cluster Config',
-  'pages.rc.clusterConfig.disableConfirm': 'Are you sure you want to disable this  Cluster Config? ',
+  'pages.rc.clusterConfig.disableConfirm':
+    'Are you sure you want to disable this  Cluster Config? ',
   'pages.rc.clusterConfig.disableTotalOf': 'There are {total} of disabled  Cluster Config',
   'pages.rc.clusterConfig.baseConfig': 'Basic Config',
   'pages.rc.clusterConfig.otherConfig': 'Other Config',
   'pages.rc.clusterConfig.addDefineConfig': 'Add a Custom Item',
   'pages.rc.clusterConfig.typePlaceholder': 'Please select cluster type!',
   'pages.rc.clusterConfig.namePlaceholder': 'Please enter Name!',
-  'pages.rc.clusterConfig.hadoopConfigPathPlaceholder': 'Please enter the hadoop Config file path, the value is /etc/hadoop/conf! ',
-  'pages.rc.clusterConfig.hadoopConfigPathHelp': 'Specify the Config file path (without / at the end), the following files need to be included: core-site.xml, hdfs-site.xml, yarn-site.xml! ',
+  'pages.rc.clusterConfig.hadoopConfigPathPlaceholder':
+    'Please enter the hadoop Config file path, the value is /etc/hadoop/conf! ',
+  'pages.rc.clusterConfig.hadoopConfigPathHelp':
+    'Specify the Config file path (without / at the end), the following files need to be included: core-site.xml, hdfs-site.xml, yarn-site.xml! ',
   'pages.rc.clusterConfig.defineConfig.highPriority': 'Custom Config (high priority)',
   'pages.rc.clusterConfig.flinkConfig': 'Flink Config',
   'pages.rc.clusterConfig.submitSqlConfig': 'Submit FlinkSQL Config (Required in Application mode)',
   'pages.rc.clusterConfig.hadoopConfig': 'Hadoop Config',
   'pages.rc.clusterConfig.k8sConfig': 'Kubernetes Config',
-  'pages.rc.clusterConfig.libPathPlaceholder': 'Please enter the hdfs path of lib! Values such as hdfs:///flink/lib',
-  'pages.rc.clusterConfig.libPathHelp': 'Specify the hdfs path of lib (without / at the end), which needs to include Flink runtime dependencies',
-  'pages.rc.clusterConfig.flinkConfigPathPlaceholder': 'Please enter the flink-conf.yaml path! Values like /opt/module/flink/conf ',
-  'pages.rc.clusterConfig.flinkConfigPathHelp': 'Please enter the flink-conf.yaml path! Values like /opt/module/flink/conf ',
+  'pages.rc.clusterConfig.libPathPlaceholder':
+    'Please enter the hdfs path of lib! Values such as hdfs:///flink/lib',
+  'pages.rc.clusterConfig.libPathHelp':
+    'Specify the hdfs path of lib (without / at the end), which needs to include Flink runtime dependencies',
+  'pages.rc.clusterConfig.flinkConfigPathPlaceholder':
+    'Please enter the flink-conf.yaml path! Values like /opt/module/flink/conf ',
+  'pages.rc.clusterConfig.flinkConfigPathHelp':
+    'Please enter the flink-conf.yaml path! Values like /opt/module/flink/conf ',
 
   // kubernets page
   'pages.rc.clusterConfig.appConfig': 'App Config',
@@ -576,14 +609,15 @@ export default {
   'pages.rc.clusterConfig.help.kubernets.image': 'Flink image',
   'pages.rc.clusterConfig.help.kubernets.jmcpu': 'jobmanager cpu config',
   'pages.rc.clusterConfig.help.kubernets.tmcpu': 'taskmanager cpu config',
-  'pages.rc.clusterConfig.help.kubernetes.configfile': 'The default ~/.kube/config, fill in the kube file path, which can be used as a remote connection',
+  'pages.rc.clusterConfig.help.kubernetes.configfile':
+    'The default ~/.kube/config, fill in the kube file path, which can be used as a remote connection',
   'pages.rc.clusterConfig.help.kubernets.account': 'kubernets account，default is default',
-  'pages.rc.clusterConfig.help.kubernets.defaultTemplate': 'Optional，default JobManager，TaskManager template conf!',
+  'pages.rc.clusterConfig.help.kubernets.defaultTemplate':
+    'Optional，default JobManager，TaskManager template conf!',
   'pages.rc.clusterConfig.help.kubernets.jobManagerTemplate': 'Optional，JobManager template ',
   'pages.rc.clusterConfig.help.kubernets.taskManagerTemplate': 'Optional，TaskManager template',
   'pages.rc.clusterConfig.help.kubernets.jobManagerMemory': 'Optional，JobManager memory',
   'pages.rc.clusterConfig.help.kubernets.taskManagerMemory': 'Optional，taskManagerMemory memory',
-
 
   'pages.rc.alert.instanceManagement': 'Alarm Instance Management',
   'pages.rc.alert.instance.name': 'Name',
@@ -596,7 +630,8 @@ export default {
   'pages.rc.alert.instance.enable': 'Enable Alarm Instance ',
   'pages.rc.alert.instance.enableConfirm': 'Are you sure you want to enable this Alarm Instance? ',
   'pages.rc.alert.instance.disable': 'Disable the Alarm Instance ',
-  'pages.rc.alert.instance.disableConfirm': 'Are you sure you want to disable this Alarm Instance? ',
+  'pages.rc.alert.instance.disableConfirm':
+    'Are you sure you want to disable this Alarm Instance? ',
   'pages.rc.alert.instance.disableTotalOf': 'Total Of {total} Alarm Instance Is Disabled',
 
   'pages.rc.alert.instance.dingTalk': 'DingDingTalk Config',
@@ -610,24 +645,30 @@ export default {
   'pages.rc.alert.instance.proxyPleaseHolder': 'please enter proxy',
   'pages.rc.alert.instance.portPleaseHolder': 'please enter port',
   'pages.rc.alert.instance.userPleaseHolder': 'please enter user',
-  'pages.rc.alert.instance.atUsersPleaseHolder': 'Please enter the user ID (user ID of Feishu background is required), separated by multiple commas!',
+  'pages.rc.alert.instance.atUsersPleaseHolder':
+    'Please enter the user ID (user ID of Feishu background is required), separated by multiple commas!',
   'pages.rc.alert.instance.passwordPleaseHolder': 'please enter password',
-  'pages.rc.alert.instance.atMobilesPleaseHolder': 'Please enter the members that need @, multiple use, separated by numbers',
+  'pages.rc.alert.instance.atMobilesPleaseHolder':
+    'Please enter the members that need @, multiple use, separated by numbers',
   'pages.rc.alert.instance.msgtypePleaseHolder': 'please choose message Send Type`',
   'pages.rc.alert.instance.corpIdPleaseHolder': 'Please enter CorpId',
-  'pages.rc.alert.instance.wechatAtUsersPleaseHolder': 'Please enter the @user ID (enterprise and micro user name spelled out), separated by multiple commas!',
-  'pages.rc.alert.instance.sendTypePleaseHolder' : 'Please choose Send Type',
+  'pages.rc.alert.instance.wechatAtUsersPleaseHolder':
+    'Please enter the @user ID (enterprise and micro user name spelled out), separated by multiple commas!',
+  'pages.rc.alert.instance.sendTypePleaseHolder': 'Please choose Send Type',
   'pages.rc.alert.instance.agentIdPleaseHolder': 'Please enter AgentId',
-  'pages.rc.alert.instance.receiversPleaseHolder': 'Please enter recipient email address! Separate multiple commas',
-  'pages.rc.alert.instance.receiverCcsPleaseHolder': 'Please enter the receiverCcs email address! Separate multiple commas!',
+  'pages.rc.alert.instance.receiversPleaseHolder':
+    'Please enter recipient email address! Separate multiple commas',
+  'pages.rc.alert.instance.receiverCcsPleaseHolder':
+    'Please enter the receiverCcs email address! Separate multiple commas!',
   'pages.rc.alert.instance.serverHostPleaseHolder': 'Mail server host',
   'pages.rc.alert.instance.serverPortPleaseHolder': 'Please enter the mail server port',
   'pages.rc.alert.instance.senderPleaseHolder': 'Please enter the mail server sender sender',
   'pages.rc.alert.instance.emailUserPleaseHolder': 'Please enter your email username',
-  'pages.rc.alert.instance.emailPasswordPleaseHolder': 'Please enter the email password! Note: the password is the authorization code',
+  'pages.rc.alert.instance.emailPasswordPleaseHolder':
+    'Please enter the email password! Note: the password is the authorization code',
   'pages.rc.alert.instance.smtpSslTrustPleaseHolder': 'Please enter a trusted domain',
-  'pages.rc.alert.instance.xls.file.pathPleaseHolder': 'Please enter the XLS storage directory! The default is /tmp/xls',
-
+  'pages.rc.alert.instance.xls.file.pathPleaseHolder':
+    'Please enter the XLS storage directory! The default is /tmp/xls',
 
   'pages.rc.alert.instance.webhook': 'WebHook Url',
   'pages.rc.alert.instance.keyword': 'KeyWord',
@@ -700,10 +741,12 @@ export default {
   'pages.rc.jar.disableTotalOf': 'Total Of {total} cluster Configs Is Disabled',
   'pages.rc.jar.config': 'Jar Config',
   'pages.rc.jar.filePathPleaseHolder': 'value such as: hdfs:///flink/app/demo.jar',
-  'pages.rc.jar.filePathHelp': 'Please enter the file path! You need to specify the file path on hdfs,',
+  'pages.rc.jar.filePathHelp':
+    'Please enter the file path! You need to specify the file path on hdfs,',
   'pages.rc.jar.mainClassPleaseHolder': 'com.dlink.app.MainApp',
   'pages.rc.jar.mainClassHelp': 'Specify the startup class of the executable Jar, (optional)',
-  'pages.rc.jar.execParamsHelp': 'Specify the startup class input parameter of the executable Jar, (optional)',
+  'pages.rc.jar.execParamsHelp':
+    'Specify the startup class input parameter of the executable Jar, (optional)',
   'pages.rc.jar.execParamsPleaseHolder': '--id 1,2',
   'pages.rc.jar.baseConfig': 'Base Config',
   'pages.rc.jar.namePlaceholder': 'Please enter name!',
@@ -767,7 +810,8 @@ export default {
   'pages.rc.doc.namePlaceholder': 'Please enter a name!',
   'pages.rc.doc.versionPlaceholder': 'Please select the version this Document belongs to!',
   'pages.rc.doc.enabledPlaceholder': 'Please choose whether to enable!',
-  'pages.rc.doc.fillValuePlaceholder': 'Please enter the fill value, use the name in the editor to trigger the prompt eg: If you want to input parameters in the function LTRIM(parms), the syntax is: LTRIM(${1:}) At this time The 1 represents the first cursor. If you need multiple numbers + 1, you can switch the cursor with the tab key; if you don`t need parameters, directly enter the desired fill value',
+  'pages.rc.doc.fillValuePlaceholder':
+    'Please enter the fill value, use the name in the editor to trigger the prompt eg: If you want to input parameters in the function LTRIM(parms), the syntax is: LTRIM(${1:}) At this time The 1 represents the first cursor. If you need multiple numbers + 1, you can switch the cursor with the tab key; if you don`t need parameters, directly enter the desired fill value',
   'pages.rc.doc.fillValueHelp': 'Please enter the fill value',
   'pages.rc.doc.descriptionPlaceholder': 'Please enter the Document description information!',
   'pages.rc.doc.typePlaceholder': 'Please select the function type this Document belongs to!',
@@ -791,34 +835,34 @@ export default {
   'pages.rc.fv.fragmentValuePlaceholder': 'Please enter the Global Variable value',
   'pages.rc.fv.enabledPlaceholder': 'Please choose whether to enable!',
 
-  'pages.task.api.job.async' : 'Asynchronous submit',
-  'pages.task.api.job.stop' : 'Stop job',
-  'pages.task.api.job.restart' : 'Restart job',
-  'pages.task.api.job.instance' : 'Job instance',
-  'pages.task.api.savepoint.trigger' : 'SavePoint trigger',
-  'pages.task.api.savepoint.stop' : 'SavePoint stop',
-  'pages.task.api.job.online' : 'Online job',
-  'pages.task.api.job.offline' : 'Offline job',
-  'pages.task.api.job.reonline' : 'Re-online job',
+  'pages.task.api.job.async': 'Asynchronous submit',
+  'pages.task.api.job.stop': 'Stop job',
+  'pages.task.api.job.restart': 'Restart job',
+  'pages.task.api.job.instance': 'Job instance',
+  'pages.task.api.savepoint.trigger': 'SavePoint trigger',
+  'pages.task.api.savepoint.stop': 'SavePoint stop',
+  'pages.task.api.job.online': 'Online job',
+  'pages.task.api.job.offline': 'Offline job',
+  'pages.task.api.job.reonline': 'Re-online job',
 
-  'pages.task.add.job' : 'Add Task',
-  'pages.task.management' : 'Task Management',
-  'pages.task.name' : 'Job Name',
-  'pages.task.namePlaceHolder' : 'Please Enter Task Name',
-  'pages.task.id' : 'Task ID',
-  'pages.task.type' : 'Type',
-  'pages.task.checkPoint' : 'CheckPoint',
-  'pages.task.savePointPath' : 'SavePoint Path',
-  'pages.task.parallelism' : 'Parallelism',
-  'pages.task.fragment' : 'Fragment',
-  'pages.task.clusterId' : 'Cluster Id',
-  'pages.task.clusterName' : 'Cluster Name',
-  'pages.task.delete' : 'Delete Task',
-  'pages.task.deleteConfirm' : 'Are you sure to delete this task? ',
-  'pages.task.exec' : 'Execute Task',
-  'pages.task.execConfirm' : 'Are you sure to execute this Task? ',
-  'pages.task.placeHolder' : 'Please Enter ...',
-  'pages.task.edit' : 'Edit Task',
+  'pages.task.add.job': 'Add Task',
+  'pages.task.management': 'Task Management',
+  'pages.task.name': 'Job Name',
+  'pages.task.namePlaceHolder': 'Please Enter Task Name',
+  'pages.task.id': 'Task ID',
+  'pages.task.type': 'Type',
+  'pages.task.checkPoint': 'CheckPoint',
+  'pages.task.savePointPath': 'SavePoint Path',
+  'pages.task.parallelism': 'Parallelism',
+  'pages.task.fragment': 'Fragment',
+  'pages.task.clusterId': 'Cluster Id',
+  'pages.task.clusterName': 'Cluster Name',
+  'pages.task.delete': 'Delete Task',
+  'pages.task.deleteConfirm': 'Are you sure to delete this task? ',
+  'pages.task.exec': 'Execute Task',
+  'pages.task.execConfirm': 'Are you sure to execute this Task? ',
+  'pages.task.placeHolder': 'Please Enter ...',
+  'pages.task.edit': 'Edit Task',
 
   'pages.flinkColumns.position': 'Position',
   'pages.flinkColumns.name': 'Column Name',
@@ -831,22 +875,22 @@ export default {
   'pages.flinkColumns.extras': 'Extras',
   'pages.flinkColumns.watermark': 'Watermark',
 
-  'pages.sys.udf.template.name' : 'Template Name',
-  'pages.sys.udf.template.namePlaceholder' : 'Please enter the template name! ',
-  'pages.sys.udf.template.codeType' : 'Code Type',
-  'pages.sys.udf.template.codeTypePlaceholder' : 'Please select code type! ',
-  'pages.sys.udf.template.functionType' : 'Function Type',
-  'pages.sys.udf.template.functionTypePlaceholder' : 'Please select function type! ',
-  'pages.sys.udf.template.templateCode' : 'Template Code',
-  'pages.sys.udf.template.templateCodePlaceholder' : 'Please edit the template code! ',
-  'pages.sys.udf.template.delete' : 'Delete Template! ',
-  'pages.sys.udf.template.deleteConfirm' : 'Are you sure you want to delete this template?',
+  'pages.sys.udf.template.name': 'Template Name',
+  'pages.sys.udf.template.namePlaceholder': 'Please enter the template name! ',
+  'pages.sys.udf.template.codeType': 'Code Type',
+  'pages.sys.udf.template.codeTypePlaceholder': 'Please select code type! ',
+  'pages.sys.udf.template.functionType': 'Function Type',
+  'pages.sys.udf.template.functionTypePlaceholder': 'Please select function type! ',
+  'pages.sys.udf.template.templateCode': 'Template Code',
+  'pages.sys.udf.template.templateCodePlaceholder': 'Please edit the template code! ',
+  'pages.sys.udf.template.delete': 'Delete Template! ',
+  'pages.sys.udf.template.deleteConfirm': 'Are you sure you want to delete this template?',
   'pages.sys.udf.template.create': 'Create UDF Template',
   'pages.sys.udf.template.modify': 'Modify UDF Template',
 
-  'pages.sys.process.id':'Process ID',
+  'pages.sys.process.id': 'Process ID',
   'pages.sys.process.name': 'Process Name',
-  'pages.sys.process.jobid':'Job ID',
+  'pages.sys.process.jobid': 'Job ID',
   'pages.sys.process.type': 'Type',
   'pages.sys.process.status': 'Status',
   'pages.sys.process.starttime': 'Start Time',
@@ -855,62 +899,62 @@ export default {
   'pages.sys.process.operator': 'Operator',
 
   'pages.devops.jobinfo.alert.title': 'Title',
-  'pages.devops.jobinfo.alert.content':'Body',
+  'pages.devops.jobinfo.alert.content': 'Body',
   'pages.devops.jobinfo.alert.status': 'Status',
   'pages.devops.jobinfo.alert.status.success': 'Success',
   'pages.devops.jobinfo.alert.status.failed': 'Failed',
   'pages.devops.jobinfo.alert.log': 'Log',
-  'pages.devops.jobinfo.alert.createTime':'Alarm Time',
+  'pages.devops.jobinfo.alert.createTime': 'Alarm Time',
 
-  'pages.devops.jobinfo.ck.id':'ID',
-  'pages.devops.jobinfo.ck.taskid':'Task ID',
+  'pages.devops.jobinfo.ck.id': 'ID',
+  'pages.devops.jobinfo.ck.taskid': 'Task ID',
   'pages.devops.jobinfo.ck.status': 'Status',
-  'pages.devops.jobinfo.ck.name':'Name',
+  'pages.devops.jobinfo.ck.name': 'Name',
   'pages.devops.jobinfo.ck.duration': 'Duration',
   'pages.devops.jobinfo.ck.checkpoint_type': 'Type',
-  'pages.devops.jobinfo.ck.external_path':'Storage Location',
+  'pages.devops.jobinfo.ck.external_path': 'Storage Location',
   'pages.devops.jobinfo.ck.latest_ack_timestamp': 'Last Response Time',
   'pages.devops.jobinfo.ck.state_size': 'State Size',
   'pages.devops.jobinfo.ck.trigger_timestamp': 'Trigger Time',
-  'pages.devops.jobinfo.ck.recovery' : 'Recovering from Checkpoint! ',
-  'pages.devops.jobinfo.ck.recoveryConfirm' : 'Are you sure to Recover from Checkpoint [{path}]?',
-  'pages.devops.jobinfo.ck.recovery.success' : 'Recovery job succeeded',
-  'pages.devops.jobinfo.ck.recovery.failed' : 'Recovery job failed',
+  'pages.devops.jobinfo.ck.recovery': 'Recovering from Checkpoint! ',
+  'pages.devops.jobinfo.ck.recoveryConfirm': 'Are you sure to Recover from Checkpoint [{path}]?',
+  'pages.devops.jobinfo.ck.recovery.success': 'Recovery job succeeded',
+  'pages.devops.jobinfo.ck.recovery.failed': 'Recovery job failed',
 
-  'pages.devops.jobinfo.lineage' :'Lineage Analysis',
+  'pages.devops.jobinfo.lineage': 'Lineage Analysis',
 
-  'pages.devops.jobinfo.version.id' : 'Job ID',
-  'pages.devops.jobinfo.version.name' : 'Job Name',
-  'pages.devops.jobinfo.version.alias' : 'Job aAlias',
-  'pages.devops.jobinfo.version.dialect' : 'Job Dialect',
-  'pages.devops.jobinfo.version.type' : 'Job Type',
-  'pages.devops.jobinfo.version.versionId' : 'Version Number',
-  'pages.devops.jobinfo.version.sql' : 'Job Content',
-  'pages.devops.jobinfo.version.sql.showdetail' : 'View Job Details',
-  'pages.devops.jobinfo.version.sql.title' : 'Job Execute SQL',
-  'pages.devops.jobinfo.version.diff' : 'Version Diff',
-  'pages.devops.jobinfo.version.list' :'Version List',
-  'pages.devops.jobinfo.version.timeline' :'Version TimeLine',
-  'pages.devops.jobinfo.version.timeline.left' : 'Left',
-  'pages.devops.jobinfo.version.timeline.right' : 'Right',
-  'pages.devops.jobinfo.version.timeline.alternate' : 'Alternate',
-  'pages.devops.jobinfo.version.timeline.developing' : ' Developing...',
-  'pages.devops.jobinfo.version.timeline.top' :'Top',
+  'pages.devops.jobinfo.version.id': 'Job ID',
+  'pages.devops.jobinfo.version.name': 'Job Name',
+  'pages.devops.jobinfo.version.alias': 'Job aAlias',
+  'pages.devops.jobinfo.version.dialect': 'Job Dialect',
+  'pages.devops.jobinfo.version.type': 'Job Type',
+  'pages.devops.jobinfo.version.versionId': 'Version Number',
+  'pages.devops.jobinfo.version.sql': 'Job Content',
+  'pages.devops.jobinfo.version.sql.showdetail': 'View Job Details',
+  'pages.devops.jobinfo.version.sql.title': 'Job Execute SQL',
+  'pages.devops.jobinfo.version.diff': 'Version Diff',
+  'pages.devops.jobinfo.version.list': 'Version List',
+  'pages.devops.jobinfo.version.timeline': 'Version TimeLine',
+  'pages.devops.jobinfo.version.timeline.left': 'Left',
+  'pages.devops.jobinfo.version.timeline.right': 'Right',
+  'pages.devops.jobinfo.version.timeline.alternate': 'Alternate',
+  'pages.devops.jobinfo.version.timeline.developing': ' Developing...',
+  'pages.devops.jobinfo.version.timeline.top': 'Top',
 
   'pages.devops.jobinfo.overview': 'Job Overview',
-  'pages.devops.jobinfo.cluster':'Cluster Info',
+  'pages.devops.jobinfo.cluster': 'Cluster Info',
   'pages.devops.jobinfo.snapshot': 'Job Snapshot',
   'pages.devops.jobinfo.exception': 'Exception Info',
-  'pages.devops.jobinfo.log':'Job Log',
-  'pages.devops.jobinfo.optimize':'Automatic Tuning',
-  'pages.devops.jobinfo.config':'Config Info',
-  'pages.devops.jobinfo.flinksql':'FlinkSQL',
+  'pages.devops.jobinfo.log': 'Job Log',
+  'pages.devops.jobinfo.optimize': 'Automatic Tuning',
+  'pages.devops.jobinfo.config': 'Config Info',
+  'pages.devops.jobinfo.flinksql': 'FlinkSQL',
   'pages.devops.jobinfo.datamap': 'Data Map',
   'pages.devops.jobinfo.olap': 'Adhoc Query',
   'pages.devops.jobinfo.version': 'History Version',
-  'pages.devops.jobinfo.alert':'Alarm Record',
-  'pages.devops.jobinfo.savepoint.trigger':'SavePoint Triggers',
-  'pages.devops.jobinfo.savepoint.stop':'SavePoint Pause',
+  'pages.devops.jobinfo.alert': 'Alarm Record',
+  'pages.devops.jobinfo.savepoint.trigger': 'SavePoint Triggers',
+  'pages.devops.jobinfo.savepoint.stop': 'SavePoint Pause',
   'pages.devops.jobinfo.savepoint.cancel': 'SavePoint Stop',
   'pages.devops.jobinfo.savepoint.canceljob': 'Normal Stop',
   'pages.devops.jobinfo.localenv': 'Local Environment',
@@ -923,12 +967,13 @@ export default {
   'pages.devops.jobinfo.reonline.failed': 'Failed to re-online',
   'pages.devops.jobinfo.restart': 'Restart',
   'pages.devops.jobinfo.stopJob': 'Stop job',
-  'pages.devops.jobinfo.stopJobConfirm': 'Are you sure to just stop this job without SavePoint operation? ',
+  'pages.devops.jobinfo.stopJobConfirm':
+    'Are you sure to just stop this job without SavePoint operation? ',
   'pages.devops.jobinfo.canceljob.success': 'Normal stop succeeded',
   'pages.devops.jobinfo.canceljob.failed': 'Normal stop failed',
-  'pages.devops.jobinfo.job.key':'{key} Job',
-  'pages.devops.jobinfo.job.key.success':'{key} Success',
-  'pages.devops.jobinfo.job.key.failed':'{key} Failed , reason: {msg}',
+  'pages.devops.jobinfo.job.key': '{key} Job',
+  'pages.devops.jobinfo.job.key.success': '{key} Success',
+  'pages.devops.jobinfo.job.key.failed': '{key} Failed , reason: {msg}',
   'pages.devops.jobinfo.job.keyConfirm': 'Are you sure {key} this job?',
 
   'pages.devops.baseinfo.taskid': 'Task Id',
@@ -955,6 +1000,4 @@ export default {
   'pages.devops.config.jarpath': 'Jar Path',
   'pages.devops.config.jarmainclass': 'Jar Main Class',
   'pages.devops.config.jarparams': 'Jar Parameters',
-
 };
-

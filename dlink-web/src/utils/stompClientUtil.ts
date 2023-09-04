@@ -1,11 +1,10 @@
-
-import Stomp from "stompjs";
+import Stomp from 'stompjs';
 
 class StompClientUtil {
   stompClient: Stomp.Client;
   connectStatus: boolean;
   constructor() {
-    const baseUrl = "ws://127.0.0.1:8888/stomp";
+    const baseUrl = 'ws://127.0.0.1:8888/stomp';
     const socket = new WebSocket(baseUrl);
     this.stompClient = Stomp.over(socket);
     this.connectStatus = false;
@@ -17,22 +16,22 @@ class StompClientUtil {
       {},
       () => {
         this.connectStatus = true;
-        console.log("connect success>>>>>>>>>>>>>>>>>>>");
+        console.log('connect success>>>>>>>>>>>>>>>>>>>');
       },
       (err: any) => {
-        console.log("error");
+        console.log('error');
         console.log(err);
-      }
+      },
     );
   }
 
   disconnect() {
     if (this.stompClient) {
       this.stompClient.disconnect(() => {
-        console.log("============connect release============");
+        console.log('============connect release============');
         this.connectStatus = false;
       });
     }
   }
 }
-export default new StompClientUtil()
+export default new StompClientUtil();

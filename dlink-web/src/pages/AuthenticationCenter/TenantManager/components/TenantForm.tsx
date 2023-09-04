@@ -17,11 +17,10 @@
  *
  */
 
-
-import React, {useState} from 'react';
-import {Button, Form, Input, Modal} from 'antd';
-import {TenantTableListItem} from "@/pages/AuthenticationCenter/data.d";
-import {l} from "@/utils/intl";
+import React, { useState } from 'react';
+import { Button, Form, Input, Modal } from 'antd';
+import { TenantTableListItem } from '@/pages/AuthenticationCenter/data.d';
+import { l } from '@/utils/intl';
 
 export type TenantFormProps = {
   onCancel: (flag?: boolean) => void;
@@ -31,13 +30,12 @@ export type TenantFormProps = {
 };
 
 const formLayout = {
-  labelCol: {span: 7},
-  wrapperCol: {span: 13},
+  labelCol: { span: 7 },
+  wrapperCol: { span: 13 },
 };
 const FormItem = Form.Item;
 
 const TenantForm: React.FC<TenantFormProps> = (props) => {
-
   const [form] = Form.useForm();
   const [formVals, setFormVals] = useState<Partial<TenantTableListItem>>({
     id: props.values.id,
@@ -48,17 +46,13 @@ const TenantForm: React.FC<TenantFormProps> = (props) => {
     updateTime: props.values.updateTime,
   });
 
-  const {
-    onSubmit: handleSubmit,
-    onCancel: handleModalVisible,
-    modalVisible,
-  } = props;
+  const { onSubmit: handleSubmit, onCancel: handleModalVisible, modalVisible } = props;
 
   const submitForm = async () => {
     const fieldsValue = await form.validateFields();
     fieldsValue.id = formVals.id;
-    setFormVals({...formVals, ...fieldsValue});
-    handleSubmit({...formVals, ...fieldsValue});
+    setFormVals({ ...formVals, ...fieldsValue });
+    handleSubmit({ ...formVals, ...fieldsValue });
   };
 
   const renderContent = (formVals: Partial<TenantTableListItem>) => {
@@ -67,16 +61,20 @@ const TenantForm: React.FC<TenantFormProps> = (props) => {
         <FormItem
           name="tenantCode"
           label={l('pages.tenant.TenantCode')}
-          rules={[{required: true, message: l('pages.tenant.EnterTenantCode')}]}>
-          <Input allowClear placeholder={l('pages.tenant.EnterTenantCode')}/>
+          rules={[{ required: true, message: l('pages.tenant.EnterTenantCode') }]}
+        >
+          <Input allowClear placeholder={l('pages.tenant.EnterTenantCode')} />
         </FormItem>
         <FormItem
           name="note"
           label={l('global.table.note')}
-          rules={[{required: true, message: l('pages.tenant.EnterTenantNote')}]}
+          rules={[{ required: true, message: l('pages.tenant.EnterTenantNote') }]}
         >
-          <Input.TextArea placeholder={l('pages.tenant.EnterTenantNote')} allowClear
-                          autoSize={{minRows: 3, maxRows: 10}}/>
+          <Input.TextArea
+            placeholder={l('pages.tenant.EnterTenantNote')}
+            allowClear
+            autoSize={{ minRows: 3, maxRows: 10 }}
+          />
         </FormItem>
       </>
     );
@@ -95,19 +93,15 @@ const TenantForm: React.FC<TenantFormProps> = (props) => {
 
   return (
     <Modal
-      width={"40%"}
-      bodyStyle={{padding: '32px 40px 48px'}}
+      width={'40%'}
+      bodyStyle={{ padding: '32px 40px 48px' }}
       destroyOnClose
       title={formVals.id ? l('pages.tenant.update') : l('pages.tenant.create')}
       visible={modalVisible}
       footer={renderFooter()}
       onCancel={() => handleModalVisible()}
     >
-      <Form
-        {...formLayout}
-        form={form}
-        initialValues={formVals}
-      >
+      <Form {...formLayout} form={form} initialValues={formVals}>
         {renderContent(formVals)}
       </Form>
     </Modal>

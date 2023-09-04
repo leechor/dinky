@@ -17,22 +17,21 @@
  *
  */
 
-
-import {DownOutlined, PlusOutlined} from '@ant-design/icons';
-import {Button, Drawer, Modal} from 'antd';
-import React, {useRef, useState} from 'react';
-import {PageContainer} from '@ant-design/pro-layout';
-import type {ActionType, ProColumns} from '@ant-design/pro-table';
+import { DownOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Drawer, Modal } from 'antd';
+import React, { useRef, useState } from 'react';
+import { PageContainer } from '@ant-design/pro-layout';
+import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import CreateForm from './components/CreateForm';
 import UpdateForm from './components/UpdateForm';
-import type {TaskTableListItem} from './data.d';
+import type { TaskTableListItem } from './data.d';
 
-import Dropdown from "antd/es/dropdown/dropdown";
-import Menu from "antd/es/menu";
-import {handleAddOrUpdate, handleRemove, handleSubmit, queryData} from "@/components/Common/crud";
-import {l} from "@/utils/intl";
+import Dropdown from 'antd/es/dropdown/dropdown';
+import Menu from 'antd/es/menu';
+import { handleAddOrUpdate, handleRemove, handleSubmit, queryData } from '@/components/Common/crud';
+import { l } from '@/utils/intl';
 
 const url = '/api/task';
 
@@ -57,7 +56,7 @@ const TaskTableList: React.FC<{}> = () => {
         onOk: async () => {
           await handleRemove(url, [currentItem]);
           actionRef.current?.reloadAndRest?.();
-        }
+        },
       });
     } else if (key === 'submit') {
       Modal.confirm({
@@ -68,18 +67,17 @@ const TaskTableList: React.FC<{}> = () => {
         onOk: async () => {
           await handleSubmit(url + '/submit', l('pages.task.exec'), [currentItem]);
           actionRef.current?.reloadAndRest?.();
-        }
+        },
       });
     }
   };
 
-
   const MoreBtn: React.FC<{
     item: TaskTableListItem;
-  }> = ({item}) => (
+  }> = ({ item }) => (
     <Dropdown
       overlay={
-        <Menu onClick={({key}) => editAndDelete(key, item)}>
+        <Menu onClick={({ key }) => editAndDelete(key, item)}>
           <Menu.Item key="submit">{l('button.submit')}</Menu.Item>
           <Menu.Item key="edit">{l('button.edit')}</Menu.Item>
           <Menu.Item key="delete">{l('button.delete')}</Menu.Item>
@@ -87,7 +85,7 @@ const TaskTableList: React.FC<{}> = () => {
       }
     >
       <a>
-        {l('button.more')} <DownOutlined/>
+        {l('button.more')} <DownOutlined />
       </a>
     </Dropdown>
   );
@@ -191,8 +189,8 @@ const TaskTableList: React.FC<{}> = () => {
       ],
       filterMultiple: false,
       valueEnum: {
-        true: {text: l('status.enabled'), status: 'Success'},
-        false: {text: l('status.disabled'), status: 'Error'},
+        true: { text: l('status.enabled'), status: 'Success' },
+        false: { text: l('status.disabled'), status: 'Error' },
       },
     },
     {
@@ -223,7 +221,7 @@ const TaskTableList: React.FC<{}> = () => {
         >
           {l('button.config')}
         </a>,
-        <MoreBtn key="more" item={record}/>,
+        <MoreBtn key="more" item={record} />,
       ],
     },
   ];
@@ -239,10 +237,10 @@ const TaskTableList: React.FC<{}> = () => {
         }}
         toolBarRender={() => [
           <Button type="primary" onClick={() => handleModalVisible(true)}>
-            <PlusOutlined/> {l('button.create')}
+            <PlusOutlined /> {l('button.create')}
           </Button>,
         ]}
-        request={(params, sorter, filter) => queryData(url, {...params, sorter, filter})}
+        request={(params, sorter, filter) => queryData(url, { ...params, sorter, filter })}
         columns={columns}
         rowSelection={{
           onChange: (_, selectedRows) => setSelectedRows(selectedRows),

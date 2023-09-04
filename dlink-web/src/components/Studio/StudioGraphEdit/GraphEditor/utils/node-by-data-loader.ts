@@ -1,16 +1,13 @@
-import { Graph } from "@antv/x6";
+import { Graph } from '@antv/x6';
 /**
  * //根据json数据绘节点及边
  * @param graph
  * @param data
  */
 
-
-
-
 export const handleInitNodes = (graph: Graph, data: any) => {
   //目前写死，后续优化
-  
+
   let timer;
   if (data) {
     timer = setTimeout(() => {
@@ -18,6 +15,5 @@ export const handleInitNodes = (graph: Graph, data: any) => {
     }, 500);
   }
 
-  return timer
+  return timer;
 };
-

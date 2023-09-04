@@ -16,16 +16,15 @@
  *  limitations under the License.
  *
  */
-import {Table, Transfer} from 'antd';
-import type {ColumnsType, TableRowSelection} from 'antd/es/table/interface';
-import type {TransferProps} from 'antd/es/transfer';
+import { Table, Transfer } from 'antd';
+import type { ColumnsType, TableRowSelection } from 'antd/es/table/interface';
+import type { TransferProps } from 'antd/es/transfer';
 import difference from 'lodash/difference';
-import React, {useEffect, useState} from 'react';
-import {getData} from "@/components/Common/crud";
-import {Scrollbars} from 'react-custom-scrollbars';
-import {TenantTableListItem, UserTableListItem} from "@/pages/AuthenticationCenter/data.d";
-import {l} from "@/utils/intl";
-
+import React, { useEffect, useState } from 'react';
+import { getData } from '@/components/Common/crud';
+import { Scrollbars } from 'react-custom-scrollbars';
+import { TenantTableListItem, UserTableListItem } from '@/pages/AuthenticationCenter/data.d';
+import { l } from '@/utils/intl';
 
 interface TableTransferProps extends TransferProps<UserTableListItem> {
   dataSource: UserTableListItem[];
@@ -33,42 +32,37 @@ interface TableTransferProps extends TransferProps<UserTableListItem> {
   rightColumns: ColumnsType<UserTableListItem>;
 }
 
-
 // Customize Table Transfer
-const GrantTenantTransfer = ({leftColumns, rightColumns, ...restProps}: TableTransferProps) => (
-  <Transfer
-    showSelectAll={false}
-    showSearch={true}
-    {...restProps}>
+const GrantTenantTransfer = ({ leftColumns, rightColumns, ...restProps }: TableTransferProps) => (
+  <Transfer showSelectAll={false} showSearch={true} {...restProps}>
     {({
-        direction,
-        filteredItems,
-        onItemSelectAll,
-        onItemSelect,
-        selectedKeys: listSelectedKeys,
-        disabled: enabled,
-      }) => {
+      direction,
+      filteredItems,
+      onItemSelectAll,
+      onItemSelect,
+      selectedKeys: listSelectedKeys,
+      disabled: enabled,
+    }) => {
       const columns = direction === 'left' ? leftColumns : rightColumns;
 
       const rowSelection: TableRowSelection<UserTableListItem> = {
-        getCheckboxProps: item => ({disabled: enabled || !item.enabled}),
+        getCheckboxProps: (item) => ({ disabled: enabled || !item.enabled }),
         onSelectAll: function (selected, selectedRows) {
-          const treeSelectedKeys = selectedRows
-            .filter(item => item.enabled)
-            .map(({id}) => id);
+          const treeSelectedKeys = selectedRows.filter((item) => item.enabled).map(({ id }) => id);
           const diffKeys = selected
             ? difference(treeSelectedKeys, listSelectedKeys)
             : difference(listSelectedKeys, treeSelectedKeys);
           onItemSelectAll(diffKeys as string[], selected);
         },
-        onSelect({id}, selected) {
+        onSelect({ id }, selected) {
           onItemSelect(id as unknown as string, selected);
         },
         selectedRowKeys: listSelectedKeys,
       };
 
-      return (<>
-          <Scrollbars style={{height: '520px', width: '100%'}}>
+      return (
+        <>
+          <Scrollbars style={{ height: '520px', width: '100%' }}>
             <Table
               rowSelection={rowSelection}
               columns={columns}
@@ -79,12 +73,12 @@ const GrantTenantTransfer = ({leftColumns, rightColumns, ...restProps}: TableTra
               }}
               dataSource={filteredItems}
               size="large"
-              rowKey='id'
+              rowKey="id"
               style={{
                 height: '350px',
-                pointerEvents: enabled ? 'none' : undefined
+                pointerEvents: enabled ? 'none' : undefined,
               }}
-              onRow={({id, enabled: itemDisabled}) => ({
+              onRow={({ id, enabled: itemDisabled }) => ({
                 onClick: (e) => {
                   if (itemDisabled || !enabled) {
                     onItemSelect(id, listSelectedKeys.includes(id));
@@ -107,23 +101,18 @@ export type TableTransferFromProps = {
 };
 
 const GrantTenantToUserTableTransferFrom = (props: TableTransferFromProps) => {
-
-
-  const {tenant, onChange: handleChange} = props;
+  const { tenant, onChange: handleChange } = props;
 
   const [targetKeys, setTargetKeys] = useState<string[]>([]);
   const [userTableList, setUserTableList] = useState<UserTableListItem[]>([]);
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
-  const onSelectChange = (
-    sourceSelectedKeys: string[],
-    targetSelectedKeys: string[],
-  ) => {
+  const onSelectChange = (sourceSelectedKeys: string[], targetSelectedKeys: string[]) => {
     const newSelectedKeys = [...sourceSelectedKeys, ...targetSelectedKeys];
     setSelectedKeys(newSelectedKeys);
   };
 
   useEffect(() => {
-    getData('/api/user/getUserListByTenantId', {id: tenant.id}).then(result => {
+    getData('/api/user/getUserListByTenantId', { id: tenant.id }).then((result) => {
       setUserTableList(result.datas.users);
       setTargetKeys(result.datas.userIds);
       handleChange(result.datas.userIds);
@@ -160,23 +149,24 @@ const GrantTenantToUserTableTransferFrom = (props: TableTransferFromProps) => {
     },
   ];
 
-
   const onChange = (nextTargetKeys: string[]) => {
     setTargetKeys(nextTargetKeys);
     handleChange(nextTargetKeys);
   };
 
-
-  return (<>
+  return (
+    <>
       <GrantTenantTransfer
         dataSource={userTableList}
         targetKeys={targetKeys}
         selectedKeys={selectedKeys}
-        rowKey={item => item.id}
+        rowKey={(item) => item.id}
         onChange={onChange}
         onSelectChange={onSelectChange}
         filterOption={(inputValue, item) =>
-          item.username!.indexOf(inputValue) !== -1 || item.nickname!.indexOf(inputValue) !== -1 || item.worknum!.indexOf(inputValue) !== -1
+          item.username!.indexOf(inputValue) !== -1 ||
+          item.nickname!.indexOf(inputValue) !== -1 ||
+          item.worknum!.indexOf(inputValue) !== -1
         }
         leftColumns={leftTableColumns}
         rightColumns={rightTableColumns}
@@ -185,4 +175,3 @@ const GrantTenantToUserTableTransferFrom = (props: TableTransferFromProps) => {
   );
 };
 export default GrantTenantToUserTableTransferFrom;
-

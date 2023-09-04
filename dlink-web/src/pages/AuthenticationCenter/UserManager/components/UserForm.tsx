@@ -17,11 +17,10 @@
  *
  */
 
-
-import React, {useState} from 'react';
-import {Button, Form, Input, Modal, Switch} from 'antd';
-import {UserTableListItem} from "@/pages/AuthenticationCenter/data.d";
-import {l} from "@/utils/intl";
+import React, { useState } from 'react';
+import { Button, Form, Input, Modal, Switch } from 'antd';
+import { UserTableListItem } from '@/pages/AuthenticationCenter/data.d';
+import { l } from '@/utils/intl';
 
 export type UserFormProps = {
   onCancel: (flag?: boolean) => void;
@@ -31,12 +30,11 @@ export type UserFormProps = {
 };
 
 const formLayout = {
-  labelCol: {span: 7},
-  wrapperCol: {span: 13},
+  labelCol: { span: 7 },
+  wrapperCol: { span: 13 },
 };
 
 const UserForm: React.FC<UserFormProps> = (props) => {
-
   const [form] = Form.useForm();
   const [formVals, setFormVals] = useState<Partial<UserTableListItem>>({
     id: props.values.id,
@@ -49,17 +47,12 @@ const UserForm: React.FC<UserFormProps> = (props) => {
     enabled: props.values.enabled,
   });
 
-  const {
-    onSubmit: handleSubmit,
-    onCancel: handleModalVisible,
-    modalVisible,
-  } = props;
-
+  const { onSubmit: handleSubmit, onCancel: handleModalVisible, modalVisible } = props;
 
   const submitForm = async () => {
     const fieldsValue = await form.validateFields();
-    setFormVals({...formVals, ...fieldsValue});
-    handleSubmit({...formVals, ...fieldsValue});
+    setFormVals({ ...formVals, ...fieldsValue });
+    handleSubmit({ ...formVals, ...fieldsValue });
   };
 
   const renderContent = (formVals: Partial<UserTableListItem>) => {
@@ -68,38 +61,30 @@ const UserForm: React.FC<UserFormProps> = (props) => {
         <Form.Item
           name="username"
           label={l('pages.user.UserName')}
-          rules={[{
-            required: true,
-            message: l('pages.user.UserEnterUserName')
-          }]}>
-          <Input placeholder={l('pages.user.UserEnterUniqueUserName')}/>
-        </Form.Item>
-        <Form.Item
-          name="nickname"
-          label={l('pages.user.UserNickName')}
+          rules={[
+            {
+              required: true,
+              message: l('pages.user.UserEnterUserName'),
+            },
+          ]}
         >
-          <Input placeholder={l('pages.user.UserEnterNickName')}/>
+          <Input placeholder={l('pages.user.UserEnterUniqueUserName')} />
         </Form.Item>
-        <Form.Item
-          name="worknum"
-          label={l('pages.user.UserJobNumber')}
-        >
-          <Input
-            placeholder={l('pages.user.UserEnterJobNumber')}/>
+        <Form.Item name="nickname" label={l('pages.user.UserNickName')}>
+          <Input placeholder={l('pages.user.UserEnterNickName')} />
         </Form.Item>
-        <Form.Item
-          name="mobile"
-          label={l('pages.user.UserPhoneNumber')}
-        >
-          <Input
-            placeholder={l('pages.user.UserEnterPhoneNumber')}/>
+        <Form.Item name="worknum" label={l('pages.user.UserJobNumber')}>
+          <Input placeholder={l('pages.user.UserEnterJobNumber')} />
         </Form.Item>
-        <Form.Item
-          name="enabled"
-          label={l('global.table.isEnable')}>
-          <Switch checkedChildren={l('button.enable')}
-                  unCheckedChildren={l('button.disable')}
-                  defaultChecked={formVals.enabled}/>
+        <Form.Item name="mobile" label={l('pages.user.UserPhoneNumber')}>
+          <Input placeholder={l('pages.user.UserEnterPhoneNumber')} />
+        </Form.Item>
+        <Form.Item name="enabled" label={l('global.table.isEnable')}>
+          <Switch
+            checkedChildren={l('button.enable')}
+            unCheckedChildren={l('button.disable')}
+            defaultChecked={formVals.enabled}
+          />
         </Form.Item>
       </>
     );
@@ -118,19 +103,15 @@ const UserForm: React.FC<UserFormProps> = (props) => {
 
   return (
     <Modal
-      width={"40%"}
-      bodyStyle={{padding: '32px 40px 48px'}}
+      width={'40%'}
+      bodyStyle={{ padding: '32px 40px 48px' }}
       destroyOnClose
       title={formVals.id ? l('pages.user.UserUpdateUser') : l('pages.user.UserCreateUser')}
       visible={modalVisible}
       footer={renderFooter()}
       onCancel={() => handleModalVisible()}
     >
-      <Form
-        {...formLayout}
-        form={form}
-        initialValues={formVals}
-      >
+      <Form {...formLayout} form={form} initialValues={formVals}>
         {renderContent(formVals)}
       </Form>
     </Modal>

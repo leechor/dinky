@@ -17,62 +17,63 @@
  *
  */
 
-
 import React from 'react';
-import { FormInstance } from "antd/es/form/hooks/useForm";
-import { Values } from "async-validator";
-import { Input, Form, Row, Col } from "antd"
+import { FormInstance } from 'antd/es/form/hooks/useForm';
+import { Values } from 'async-validator';
+import { Input, Form, Row, Col } from 'antd';
 import { Cell, Node } from '@antv/x6';
 type PortProFormProps = {
-    values: Node;
-    form: FormInstance<Values>;
+  values: Node;
+  form: FormInstance<Values>;
 };
 export const FORM_LAYOUT_PUBLIC = {
-    labelCol: { span: 5 },
-    wrapperCol: { span: 15 },
+  labelCol: { span: 5 },
+  wrapperCol: { span: 15 },
 };
 const GroupName: React.FC<PortProFormProps> = (props) => {
-
-    const { values, form, } = props;
-    const vallidateGroupName = (rule: any, val: string, callback: any) => {
-
-        if (val === "") {
-            callback("GroupName 不能为空")
-        } else {
-            // const found = values.getPorts().find(item => item.id === val)
-            // if (!found) { callback() } else {
-            //     callback("portName 不能重复")
-            // }
-            callback()
-
-        }
+  const { values, form } = props;
+  const vallidateGroupName = (rule: any, val: string, callback: any) => {
+    if (val === '') {
+      callback('GroupName 不能为空');
+    } else {
+      callback();
     }
+  };
 
-    /**
-     * construct role form
-     * @constructor
-     */
-    const renderRoleForm = () => {
-        return <>
-            <Form.Item name="groupName" label="groupName" rules={[{ required: true, message: "groupName不能为空" }, { validator: (rule, val, callback) => { vallidateGroupName(rule, val, callback) } }]}>
-                <Input placeholder='input groupName...' />
-            </Form.Item>
-        </>
-    };
-
-    /**
-     * render
-     */
-    return <>
-        <Form
-            {...FORM_LAYOUT_PUBLIC}
-            form={form}
-            layout={'horizontal'}
-            preserve={false}
+  /**
+   * construct role form
+   * @constructor
+   */
+  const renderRoleForm = () => {
+    return (
+      <>
+        <Form.Item
+          name="groupName"
+          label="groupName"
+          rules={[
+            { required: true, message: 'groupName不能为空' },
+            {
+              validator: (rule, val, callback) => {
+                vallidateGroupName(rule, val, callback);
+              },
+            },
+          ]}
         >
+          <Input placeholder="input groupName..." />
+        </Form.Item>
+      </>
+    );
+  };
 
-            {renderRoleForm()}
-        </Form>
+  /**
+   * render
+   */
+  return (
+    <>
+      <Form {...FORM_LAYOUT_PUBLIC} form={form} layout={'horizontal'} preserve={false}>
+        {renderRoleForm()}
+      </Form>
     </>
+  );
 };
 export default GroupName;

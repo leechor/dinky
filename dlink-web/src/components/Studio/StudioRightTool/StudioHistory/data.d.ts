@@ -17,17 +17,14 @@
  *
  */
 
-
 export type TaskHistoryTableListItem = {
-  id: number,
-  versionId: number,
-  statement: string,
-  createTime: Date,
+  id: number;
+  versionId: number;
+  statement: string;
+  createTime: Date;
 };
-
 
 export type TaskHistoryRollbackItem = {
-  id: number,
-  versionId: number,
+  id: number;
+  versionId: number;
 };
-

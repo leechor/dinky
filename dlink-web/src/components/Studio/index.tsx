@@ -17,17 +17,16 @@
  *
  */
 
-
-import React, { useCallback, useEffect, useState } from "react";
-import { connect } from "umi";
+import React, { useCallback, useEffect, useState } from 'react';
+import { connect } from 'umi';
 import styles from './index.less';
-import StudioMenu from "./StudioMenu";
-import { Card, Col, Form, Row } from "antd";
-import StudioTabs from "./StudioTabs";
-import { StateType } from "@/pages/DataStudio/model";
-import StudioConsole from "./StudioConsole";
-import StudioLeftTool from "./StudioLeftTool";
-import StudioRightTool from "./StudioRightTool";
+import StudioMenu from './StudioMenu';
+import { Card, Col, Form, Row } from 'antd';
+import StudioTabs from './StudioTabs';
+import { StateType } from '@/pages/DataStudio/model';
+import StudioConsole from './StudioConsole';
+import StudioLeftTool from './StudioLeftTool';
+import StudioRightTool from './StudioRightTool';
 import {
   getFillAllByVersion,
   listSession,
@@ -38,21 +37,21 @@ import {
   showDataBase,
   showEnv,
   showJars,
-  showSessionCluster
-} from "@/components/Studio/StudioEvent/DDL";
-import DraggleLayout from "@/components/DraggleLayout";
-import DraggleVerticalLayout from "@/components/DraggleLayout/DraggleVerticalLayout";
-import { loadSettings } from "@/pages/SettingCenter/FlinkSettings/function";
-import { l } from "@/utils/intl";
-import { useAppDispatch, useAppSelector, } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
+  showSessionCluster,
+} from '@/components/Studio/StudioEvent/DDL';
+import DraggleLayout from '@/components/DraggleLayout';
+import DraggleVerticalLayout from '@/components/DraggleLayout/DraggleVerticalLayout';
+import { loadSettings } from '@/pages/SettingCenter/FlinkSettings/function';
+import { l } from '@/utils/intl';
 import {
-  changePostionToGroup
-} from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
-
+  useAppDispatch,
+  useAppSelector,
+} from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
+import { changePostionToGroup } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 
 const Studio = (props: any) => {
-
-  const { isFullScreen, rightClickMenu, toolHeight, toolLeftWidth, toolRightWidth, dispatch } = props;
+  const { isFullScreen, rightClickMenu, toolHeight, toolLeftWidth, toolRightWidth, dispatch } =
+    props;
   const dispatchGraph = useAppDispatch();
   const VIEW = {
     leftToolWidth: 300,
@@ -63,7 +62,7 @@ const Studio = (props: any) => {
     leftMargin: 36,
     midMargin: 46,
   };
-  dispatchGraph(changePostionToGroup({ x: toolLeftWidth, y: VIEW.marginTop, isFullScreen }))
+  dispatchGraph(changePostionToGroup({ x: toolLeftWidth, y: VIEW.marginTop, isFullScreen }));
   const [form] = Form.useForm();
 
   const [size, setSize] = useState({
@@ -74,7 +73,7 @@ const Studio = (props: any) => {
     setSize({
       width: document.documentElement.clientWidth,
       height: document.documentElement.clientHeight,
-    })
+    });
   }, []);
 
   useEffect(() => {
@@ -102,22 +101,29 @@ const Studio = (props: any) => {
 
   const onClick = () => {
     if (rightClickMenu) {
-      dispatch && dispatch({
-        type: "Studio/showRightClickMenu",
-        payload: false,
-      });
+      dispatch &&
+        dispatch({
+          type: 'Studio/showRightClickMenu',
+          payload: false,
+        });
     }
   };
 
   return (
     <div onClick={onClick}>
       <StudioMenu form={form} width={size.width} height={size.height} />
-      <Card bordered={false} className={styles.card} size="small" id="studio_card" style={{ marginBottom: 0 }}>
+      <Card
+        bordered={false}
+        className={styles.card}
+        size="small"
+        id="studio_card"
+        style={{ marginBottom: 0 }}
+      >
         <DraggleVerticalLayout
           containerWidth={size.width}
-          containerHeight={(size.height - VIEW.marginTop)}
-          min={(VIEW.topHeight)}
-          max={(size.height - VIEW.bottomHeight)}
+          containerHeight={size.height - VIEW.marginTop}
+          min={VIEW.topHeight}
+          max={size.height - VIEW.bottomHeight}
           initTopHeight={VIEW.topHeight}
           handler={
             <div
@@ -164,18 +170,22 @@ const Studio = (props: any) => {
                   />
                 }
               >
-                <Col className={styles["vertical-tabs"]}>
-                  <StudioLeftTool style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }} />
+                <Col className={styles['vertical-tabs']}>
+                  <StudioLeftTool
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  />
                 </Col>
                 <Col>
-                  {!isFullScreen ? <StudioTabs width={size.width - toolRightWidth - toolLeftWidth} /> : undefined}
+                  {!isFullScreen ? (
+                    <StudioTabs width={size.width - toolRightWidth - toolLeftWidth} />
+                  ) : undefined}
                 </Col>
               </DraggleLayout>
-              <Col id='StudioRightTool' className={styles["vertical-tabs"]}>
+              <Col id="StudioRightTool" className={styles['vertical-tabs']}>
                 <StudioRightTool form={form} />
               </Col>
             </DraggleLayout>
@@ -188,7 +198,7 @@ const Studio = (props: any) => {
         </DraggleVerticalLayout>
       </Card>
     </div>
-  )
+  );
 };
 
 export default connect(({ Studio }: { Studio: StateType }) => ({

@@ -1,5 +1,5 @@
 export type Parameter = {
-  code: string,
+  code: string;
   type: string | null;
   name: string;
   group: string;

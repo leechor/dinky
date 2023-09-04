@@ -1,6 +1,6 @@
-import axios from "axios";
-import type { AxiosInstance } from "axios";
-import type { XKRequestInterceptors, XKRequestConfig } from "./type";
+import axios from 'axios';
+import type { AxiosInstance } from 'axios';
+import type { XKRequestInterceptors, XKRequestConfig } from './type';
 class XKRequest {
   instance: AxiosInstance;
   interceptors?: XKRequestInterceptors;
@@ -12,11 +12,11 @@ class XKRequest {
     this.instance.interceptors.request.use(
       // this.interceptors?.requestInterceptor,
       this.interceptors?.requestInterceptorCatch,
-      this.interceptors?.requestInterceptor
+      this.interceptors?.requestInterceptor,
     );
     this.instance.interceptors.response.use(
       this.interceptors?.responseInterceptor,
-      this.interceptors?.responseInterceptorCatch
+      this.interceptors?.responseInterceptorCatch,
     );
 
     //为所有实例统一添加默认拦截器
@@ -26,7 +26,7 @@ class XKRequest {
       },
       (error) => {
         return error;
-      }
+      },
     );
     this.instance.interceptors.response.use(
       (response) => {
@@ -34,7 +34,7 @@ class XKRequest {
       },
       (error) => {
         return error;
-      }
+      },
     );
   }
   request<T>(config: XKRequestConfig<T>): Promise<T> {
@@ -58,19 +58,19 @@ class XKRequest {
     });
   }
   get<T>(config: XKRequestConfig<T>): Promise<T> {
-    return this.request<T>({ ...config, method: "GET" });
+    return this.request<T>({ ...config, method: 'GET' });
   }
   post<T>(config: XKRequestConfig<T>): Promise<T> {
-    return this.request<T>({ ...config, method: "POST" });
+    return this.request<T>({ ...config, method: 'POST' });
   }
   delete<T>(config: XKRequestConfig<T>): Promise<T> {
-    return this.request<T>({ ...config, method: "DELETE" });
+    return this.request<T>({ ...config, method: 'DELETE' });
   }
   patch<T>(config: XKRequestConfig<T>): Promise<T> {
-    return this.request<T>({ ...config, method: "PATCH" });
+    return this.request<T>({ ...config, method: 'PATCH' });
   }
   put<T>(config: XKRequestConfig<T>): Promise<T> {
-    return this.request<T>({ ...config, method: "PUT" });
+    return this.request<T>({ ...config, method: 'PUT' });
   }
 }
 

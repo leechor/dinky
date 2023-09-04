@@ -17,21 +17,20 @@
  *
  */
 
+import { Button, Descriptions, Empty, Tabs } from 'antd';
+import CodeShow from '@/components/Common/CodeShow';
+import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
+import { parseByteStr } from '@/components/Common/function';
+import { TaskContainerConfigInfo, TaskManagerConfiguration } from '@/pages/DevOps/data';
+import { useEffect, useRef, useState } from 'react';
+import { HomeOutlined } from '@ant-design/icons';
+import { getTaskManagerInfo } from '@/pages/DevOps/service';
+import { l } from '@/utils/intl';
 
-import {Button, Descriptions, Empty, Tabs} from 'antd';
-import CodeShow from "@/components/Common/CodeShow";
-import ProTable, {ActionType, ProColumns} from "@ant-design/pro-table";
-import {parseByteStr} from "@/components/Common/function";
-import {TaskContainerConfigInfo, TaskManagerConfiguration} from "@/pages/DevOps/data";
-import {useEffect, useRef, useState} from "react";
-import {HomeOutlined} from "@ant-design/icons";
-import {getTaskManagerInfo} from "@/pages/DevOps/service";
-import {l} from "@/utils/intl";
-
-const {TabPane} = Tabs;
+const { TabPane } = Tabs;
 
 const TaskManagerInfo = (props: any) => {
-  const {job} = props;
+  const { job } = props;
 
   const actionRef = useRef<ActionType>();
 
@@ -43,7 +42,7 @@ const TaskManagerInfo = (props: any) => {
     res.then((result) => {
       setTaskManager(result.datas);
     });
-  }
+  };
 
   useEffect(() => {
     refreshTaskManagerInfo();
@@ -56,53 +55,63 @@ const TaskManagerInfo = (props: any) => {
   const getMetricsConfigForm = (metrics: any) => {
     let formList = [];
     for (let key in metrics) {
-      formList.push(
-        <Descriptions.Item label={key}>
-          {metrics[key]}
-        </Descriptions.Item>
-      )
+      formList.push(<Descriptions.Item label={key}>{metrics[key]}</Descriptions.Item>);
     }
-    return formList
-  }
+    return formList;
+  };
 
   const buildContainerConfigInfo = () => {
     return (
       <>
-        <div style={{marginBottom: 4}}>
-          <Button title={l('button.back')} onClick={handleBack}> ← {l('button.back')}<HomeOutlined/> </Button>
+        <div style={{ marginBottom: 4 }}>
+          <Button title={l('button.back')} onClick={handleBack}>
+            {' '}
+            ← {l('button.back')}
+            <HomeOutlined />{' '}
+          </Button>
         </div>
-        <Tabs defaultActiveKey="metrics" size="small"
-
-              tabPosition="top" style={{
-          border: "1px solid #f0f0f0",
-        }}>
+        <Tabs
+          defaultActiveKey="metrics"
+          size="small"
+          tabPosition="top"
+          style={{
+            border: '1px solid #f0f0f0',
+          }}
+        >
           <TabPane tab={<span>&nbsp; Metrics &nbsp;</span>} key="metrics">
             <Descriptions bordered size="small" column={1}>
               {getMetricsConfigForm(activeContainer?.metrics)}
             </Descriptions>
           </TabPane>
           <TabPane tab={<span>&nbsp; Logs &nbsp;</span>} key="logs">
-            {(activeContainer?.taskManagerLog) ?
-              <CodeShow code={activeContainer?.taskManagerLog} language='java' height='500px'/>
-              : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
-            }
+            {activeContainer?.taskManagerLog ? (
+              <CodeShow code={activeContainer?.taskManagerLog} language="java" height="500px" />
+            ) : (
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            )}
           </TabPane>
           <TabPane tab={<span>&nbsp; Stdout &nbsp;</span>} key="stdout">
-            {(activeContainer?.taskManagerStdout) ?
-              <CodeShow code={activeContainer?.taskManagerStdout} language='java' height='500px'/>
-              : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
-            }
+            {activeContainer?.taskManagerStdout ? (
+              <CodeShow code={activeContainer?.taskManagerStdout} language="java" height="500px" />
+            ) : (
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            )}
           </TabPane>
           <TabPane tab={<span>&nbsp; Thread Dump &nbsp;</span>} key="threaddump">
-            {(activeContainer?.taskManagerThreadDump) ?
-              <CodeShow code={activeContainer?.taskManagerThreadDump} language='java' height='500px'/>
-              : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
-            }
+            {activeContainer?.taskManagerThreadDump ? (
+              <CodeShow
+                code={activeContainer?.taskManagerThreadDump}
+                language="java"
+                height="500px"
+              />
+            ) : (
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            )}
           </TabPane>
         </Tabs>
       </>
-    )
-  }
+    );
+  };
 
   const columns: ProColumns<TaskManagerConfiguration>[] = [
     {
@@ -112,9 +121,13 @@ const TaskManagerInfo = (props: any) => {
       render: (dom, entity) => {
         return (
           <>
-            <a style={{width: 500}}
-               onClick={() => setActiveContainer(entity.taskContainerConfigInfo)}>{entity.containerId}</a>
-            <br/>
+            <a
+              style={{ width: 500 }}
+              onClick={() => setActiveContainer(entity.taskContainerConfigInfo)}
+            >
+              {entity.containerId}
+            </a>
+            <br />
             <span>{entity.containerPath}</span>
           </>
         );
@@ -155,7 +168,7 @@ const TaskManagerInfo = (props: any) => {
       align: 'center',
       sorter: true,
       render: (dom, entity) => {
-        return (JSON.parse(entity.totalResource))['cpuCores'];
+        return JSON.parse(entity.totalResource)['cpuCores'];
       },
     },
     {
@@ -163,7 +176,7 @@ const TaskManagerInfo = (props: any) => {
       align: 'center',
       sorter: true,
       render: (dom, entity) => {
-        return (JSON.parse(entity.freeResource))['cpuCores'];
+        return JSON.parse(entity.freeResource)['cpuCores'];
       },
     },
     {
@@ -171,7 +184,7 @@ const TaskManagerInfo = (props: any) => {
       align: 'center',
       sorter: true,
       render: (dom, entity) => {
-        return parseByteStr((JSON.parse(entity.hardware))['physicalMemory']);
+        return parseByteStr(JSON.parse(entity.hardware)['physicalMemory']);
       },
     },
     {
@@ -179,7 +192,7 @@ const TaskManagerInfo = (props: any) => {
       align: 'center',
       sorter: true,
       render: (dom, entity) => {
-        return parseByteStr((JSON.parse(entity.hardware))['freeMemory']);
+        return parseByteStr(JSON.parse(entity.hardware)['freeMemory']);
       },
     },
     {
@@ -187,7 +200,7 @@ const TaskManagerInfo = (props: any) => {
       align: 'center',
       sorter: true,
       render: (dom, entity) => {
-        return parseByteStr((JSON.parse(entity.hardware))['managedMemory']);
+        return parseByteStr(JSON.parse(entity.hardware)['managedMemory']);
       },
     },
     {
@@ -195,7 +208,7 @@ const TaskManagerInfo = (props: any) => {
       align: 'center',
       sorter: true,
       render: (dom, entity) => {
-        return parseByteStr((JSON.parse(entity.memoryConfiguration))['totalProcessMemory']);
+        return parseByteStr(JSON.parse(entity.memoryConfiguration)['totalProcessMemory']);
       },
     },
     {
@@ -203,7 +216,7 @@ const TaskManagerInfo = (props: any) => {
       align: 'center',
       sorter: true,
       render: (dom, entity) => {
-        return parseByteStr((JSON.parse(entity.memoryConfiguration))['totalFlinkMemory']);
+        return parseByteStr(JSON.parse(entity.memoryConfiguration)['totalFlinkMemory']);
       },
     },
     {
@@ -211,7 +224,7 @@ const TaskManagerInfo = (props: any) => {
       align: 'center',
       sorter: true,
       render: (dom, entity) => {
-        return parseByteStr((JSON.parse(entity.memoryConfiguration))['taskHeap']);
+        return parseByteStr(JSON.parse(entity.memoryConfiguration)['taskHeap']);
       },
     },
     {
@@ -219,7 +232,7 @@ const TaskManagerInfo = (props: any) => {
       align: 'center',
       sorter: true,
       render: (dom, entity) => {
-        return parseByteStr((JSON.parse(entity.hardware))['freeMemory']);
+        return parseByteStr(JSON.parse(entity.hardware)['freeMemory']);
       },
     },
     {
@@ -227,7 +240,7 @@ const TaskManagerInfo = (props: any) => {
       align: 'center',
       sorter: true,
       render: (dom, entity) => {
-        return parseByteStr((JSON.parse(entity.hardware))['managedMemory']);
+        return parseByteStr(JSON.parse(entity.hardware)['managedMemory']);
       },
     },
   ];
@@ -235,10 +248,10 @@ const TaskManagerInfo = (props: any) => {
   return (
     <>
       {activeContainer ? buildContainerConfigInfo() : undefined}
-      {(!activeContainer && taskManager?.length > 0) ?
-        (<ProTable<TaskManagerConfiguration>
+      {!activeContainer && taskManager?.length > 0 ? (
+        <ProTable<TaskManagerConfiguration>
           columns={columns}
-          style={{width: '100%'}}
+          style={{ width: '100%' }}
           dataSource={taskManager}
           actionRef={actionRef}
           rowKey="containerId"
@@ -249,11 +262,12 @@ const TaskManagerInfo = (props: any) => {
           dateFormatter="string"
           search={false}
           size="small"
-        />)
-        : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
-      }
+        />
+      ) : (
+        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+      )}
     </>
-  )
+  );
 };
 
 export default TaskManagerInfo;

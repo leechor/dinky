@@ -1,142 +1,188 @@
-
 import React from 'react';
-import { FormInstance } from "antd/es/form/hooks/useForm";
-import { Values } from "async-validator";
-import { Input, Form, Row, Col, Button } from "antd"
-import {  Node } from '@antv/x6';
+import { FormInstance } from 'antd/es/form/hooks/useForm';
+import { Values } from 'async-validator';
+import { Input, Form, Row, Col, Button } from 'antd';
+import { Node } from '@antv/x6';
 import CustomShape from '../../../utils/cons';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 type PortProFormProps = {
-    values: Node;
-    form: FormInstance<Values>;
+  values: Node;
+  form: FormInstance<Values>;
 };
 export const FORM_LAYOUT_PUBLIC = {
-    labelCol: { xs: { span: 24 }, sm: { span: 5 } },
-    wrapperCol: { xs: { span: 24 }, sm: { span: 20 } },
+  labelCol: { xs: { span: 24 }, sm: { span: 5 } },
+  wrapperCol: { xs: { span: 24 }, sm: { span: 20 } },
 };
 export const FORM_LAYOUT_PUBLIC_LABEL = {
-    wrapperCol: { xs: { span: 24, offset: 0 }, sm: { span: 20, offset: 5 } }
+  wrapperCol: { xs: { span: 24, offset: 0 }, sm: { span: 20, offset: 5 } },
 };
 const PortForm: React.FC<PortProFormProps> = (props) => {
-
-    const { values, form, } = props;
-    const vallidatePortName = (rule: any, val: string, callback: any) => {
-
-        if (val === "") {
-            callback("portName 不能为空")
-        } else {
-            const found = values.getPorts().find(item => item.id === val)
-            if (!found) { callback() } else {
-                callback("portName 不能重复")
-            }
-
-        }
+  const { values, form } = props;
+  const vallidatePortName = (rule: any, val: string, callback: any) => {
+    if (val === '') {
+      callback('portName 不能为空');
+    } else {
+      const found = values.getPorts().find((item) => item.id === val);
+      if (!found) {
+        callback();
+      } else {
+        callback('portName 不能重复');
+      }
     }
+  };
 
-    /**
-     * construct role form
-     * @constructor
-     */
-    const renderDuplicatePorts = () => {
-        return <>
-            <Form.Item name="portName" label="portName" rules={[{ required: true, message: "portName不能为空" }, { validator: (rule, val, callback) => { vallidatePortName(rule, val, callback) } }]}>
-                <Input placeholder='input portName...' />
-            </Form.Item>
-        </>
-    };
-    const renderCustomerPorts = () => {
-        return <>
-            <Row>
-                <Col span={12}><Form.List name="inputPort">
-                    {(fields, { add, remove }, { errors }) => (
-                        <>
-                            {fields.map((field, index) =>
-                                <Form.Item
-                                    {...(index === 0 ? FORM_LAYOUT_PUBLIC : FORM_LAYOUT_PUBLIC_LABEL)}
-                                    label={index === 0 ? "inputPort" : ""}
-                                    required={false}
-                                    key={field.key}>
-                                    <Form.Item
-                                        {...field}
-                                        noStyle
-                                        validateTrigger={["onChange", "onBlur"]}
-                                        rules={[
-                                            {
-                                                required: true,
-                                                whitespace: true,
-                                                message: "please input portName"
-                                            }, {
-                                                validator(rule, value, callback) {
-                                                    vallidatePortName(rule, value, callback)
-                                                },
-                                            }
-                                        ]}
-                                    >
-                                        <Input placeholder='input portName...' style={{ width: "50%" }}></Input>
-                                    </Form.Item>
-                                    {fields.length > 1 ? (<MinusCircleOutlined className='dynamic-delete-button' onClick={() => remove(field.name)} />) : null}
-                                </Form.Item>)}
-
-                            <Form.Item>
-                                <Button type='dashed' onClick={() => add()} style={{ width: "50%" }} icon={<PlusOutlined />}>Add inputPort</Button>
-                                <Form.ErrorList errors={errors} />
-                            </Form.Item>
-                        </>
-                    )}
-                </Form.List></Col>
-                <Col span={12}><Form.List name="outputPort">
-                    {(fields, { add, remove }, { errors }) => (
-                        <>
-                            {fields.map((field, index) =>
-                                <Form.Item
-                                    {...(index === 0 ? FORM_LAYOUT_PUBLIC : FORM_LAYOUT_PUBLIC_LABEL)}
-                                    label={index === 0 ? "outputPort:" : ""}
-                                    required={false}
-                                    key={field.key}>
-                                    <Form.Item
-                                        {...field}
-                                        noStyle
-                                        validateTrigger={["onChange", "onBlur"]}
-                                        rules={[
-                                            {
-                                                required: true,
-                                                whitespace: true,
-                                                message: "please input portName"
-                                            }, {
-                                                validator(rule, value, callback) {
-                                                    vallidatePortName(rule, value, callback)
-                                                },
-                                            }
-                                        ]}
-                                    >
-                                        <Input placeholder='input portName...' style={{ width: "50%" }}></Input>
-                                    </Form.Item>
-                                    {fields.length > 1 ? (<MinusCircleOutlined className='dynamic-delete-button' onClick={() => remove(field.name)} />) : null}
-                                </Form.Item>)}
-
-                            <Form.Item>
-                                <Button type='dashed' onClick={() => add()} style={{ width: "50%" }} icon={<PlusOutlined />}>Add outputPort</Button>
-                                <Form.ErrorList errors={errors} />
-                            </Form.Item>
-                        </>
-                    )}
-                </Form.List></Col>
-            </Row>
-
-        </>
-    };
-
-    /**
-     * render
-     */
-    return <>
-        <Form
-            form={form}
-            {...FORM_LAYOUT_PUBLIC_LABEL}
-            preserve={false}
+  /**
+   * construct role form
+   * @constructor
+   */
+  const renderDuplicatePorts = () => {
+    return (
+      <>
+        <Form.Item
+          name="portName"
+          label="portName"
+          rules={[
+            { required: true, message: 'portName不能为空' },
+            {
+              validator: (rule, val, callback) => {
+                vallidatePortName(rule, val, callback);
+              },
+            },
+          ]}
         >
-            {values.shape === CustomShape.DUPLICATE_OPERATOR ? renderDuplicatePorts() : renderCustomerPorts()}
-        </Form>
+          <Input placeholder="input portName..." />
+        </Form.Item>
+      </>
+    );
+  };
+  const renderCustomerPorts = () => {
+    return (
+      <>
+        <Row>
+          <Col span={12}>
+            <Form.List name="inputPort">
+              {(fields, { add, remove }, { errors }) => (
+                <>
+                  {fields.map((field, index) => (
+                    <Form.Item
+                      {...(index === 0 ? FORM_LAYOUT_PUBLIC : FORM_LAYOUT_PUBLIC_LABEL)}
+                      label={index === 0 ? 'inputPort' : ''}
+                      required={false}
+                      key={field.key}
+                    >
+                      <Form.Item
+                        {...field}
+                        noStyle
+                        validateTrigger={['onChange', 'onBlur']}
+                        rules={[
+                          {
+                            required: true,
+                            whitespace: true,
+                            message: 'please input portName',
+                          },
+                          {
+                            validator(rule, value, callback) {
+                              vallidatePortName(rule, value, callback);
+                            },
+                          },
+                        ]}
+                      >
+                        <Input placeholder="input portName..." style={{ width: '50%' }}></Input>
+                      </Form.Item>
+                      {fields.length > 1 ? (
+                        <MinusCircleOutlined
+                          className="dynamic-delete-button"
+                          onClick={() => remove(field.name)}
+                        />
+                      ) : null}
+                    </Form.Item>
+                  ))}
+
+                  <Form.Item>
+                    <Button
+                      type="dashed"
+                      onClick={() => add()}
+                      style={{ width: '50%' }}
+                      icon={<PlusOutlined />}
+                    >
+                      Add inputPort
+                    </Button>
+                    <Form.ErrorList errors={errors} />
+                  </Form.Item>
+                </>
+              )}
+            </Form.List>
+          </Col>
+          <Col span={12}>
+            <Form.List name="outputPort">
+              {(fields, { add, remove }, { errors }) => (
+                <>
+                  {fields.map((field, index) => (
+                    <Form.Item
+                      {...(index === 0 ? FORM_LAYOUT_PUBLIC : FORM_LAYOUT_PUBLIC_LABEL)}
+                      label={index === 0 ? 'outputPort:' : ''}
+                      required={false}
+                      key={field.key}
+                    >
+                      <Form.Item
+                        {...field}
+                        noStyle
+                        validateTrigger={['onChange', 'onBlur']}
+                        rules={[
+                          {
+                            required: true,
+                            whitespace: true,
+                            message: 'please input portName',
+                          },
+                          {
+                            validator(rule, value, callback) {
+                              vallidatePortName(rule, value, callback);
+                            },
+                          },
+                        ]}
+                      >
+                        <Input placeholder="input portName..." style={{ width: '50%' }}></Input>
+                      </Form.Item>
+                      {fields.length > 1 ? (
+                        <MinusCircleOutlined
+                          className="dynamic-delete-button"
+                          onClick={() => remove(field.name)}
+                        />
+                      ) : null}
+                    </Form.Item>
+                  ))}
+
+                  <Form.Item>
+                    <Button
+                      type="dashed"
+                      onClick={() => add()}
+                      style={{ width: '50%' }}
+                      icon={<PlusOutlined />}
+                    >
+                      Add outputPort
+                    </Button>
+                    <Form.ErrorList errors={errors} />
+                  </Form.Item>
+                </>
+              )}
+            </Form.List>
+          </Col>
+        </Row>
+      </>
+    );
+  };
+
+  /**
+   * render
+   */
+  return (
+    <>
+      <Form form={form} {...FORM_LAYOUT_PUBLIC_LABEL} preserve={false}>
+        {values.shape === CustomShape.DUPLICATE_OPERATOR
+          ? renderDuplicatePorts()
+          : renderCustomerPorts()}
+      </Form>
     </>
+  );
 };
 export default PortForm;

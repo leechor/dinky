@@ -17,19 +17,17 @@
  *
  */
 
-
-import {Reducer} from "umi";
-import {JarTableListItem} from "@/pages/RegistrationCenter/data";
+import { Reducer } from 'umi';
+import { JarTableListItem } from '@/pages/RegistrationCenter/data';
 
 export type JarStateType = {
-  jars:JarTableListItem[],
+  jars: JarTableListItem[];
 };
 
 export type ModelType = {
   namespace: string;
   state: JarStateType;
-  effects: {
-  };
+  effects: {};
   reducers: {
     saveJars: Reducer<JarStateType>;
   };
@@ -38,21 +36,18 @@ export type ModelType = {
 const JarModel: ModelType = {
   namespace: 'Jar',
   state: {
-    jars:[],
+    jars: [],
   },
 
-  effects: {
-
-  },
+  effects: {},
 
   reducers: {
-    saveJars(state, {payload}) {
+    saveJars(state, { payload }) {
       return {
         ...state,
         jars: payload,
       };
     },
-
   },
 };
 

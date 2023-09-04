@@ -17,11 +17,10 @@
  *
  */
 
-
 import React from 'react';
-import {Button, message, Modal, Upload} from "antd";
-import {UploadOutlined} from "@ant-design/icons";
-import {l} from "@/utils/intl";
+import { Button, message, Modal, Upload } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+import { l } from '@/utils/intl';
 
 interface UploadModalProps {
   visible: boolean;
@@ -32,9 +31,7 @@ interface UploadModalProps {
 }
 
 const UploadModal: React.FC<UploadModalProps> = (props: any) => {
-
-
-  const {visible, handleOk, onCancel, action, buttonTitle} = props;
+  const { visible, handleOk, onCancel, action, buttonTitle } = props;
   const handlers = {
     name: 'file',
     action: action,
@@ -52,20 +49,23 @@ const UploadModal: React.FC<UploadModalProps> = (props: any) => {
           message.success(`${info.file.name}` + l('app.request.upload.success'));
         }
       } else if (info.file.status === 'error') {
-        message.error(`${info.file.name} `+ l('app.request.upload.failed'));
+        message.error(`${info.file.name} ` + l('app.request.upload.failed'));
       }
     },
   };
   return (
     <div>
-      <Modal title="上传文件"
-             visible={visible}
-             onOk={handleOk}
-             onCancel={onCancel}
-             maskClosable={false}
+      <Modal
+        title="上传文件"
+        visible={visible}
+        onOk={handleOk}
+        onCancel={onCancel}
+        maskClosable={false}
       >
         <Upload {...handlers}>
-          <Button size="small" icon={<UploadOutlined/>}>{buttonTitle}</Button>
+          <Button size="small" icon={<UploadOutlined />}>
+            {buttonTitle}
+          </Button>
         </Upload>
       </Modal>
     </div>

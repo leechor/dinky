@@ -17,7 +17,6 @@
  *
  */
 
-
 export const RUN_MODE = {
   LOCAL: 'local',
   STANDALONE: 'standalone',
@@ -44,12 +43,11 @@ export const DIALECT = {
   STARROCKS: 'StarRocks',
   PRESTO: 'Presto',
   KUBERNETES_APPLICATION: 'KubernetesApplication',
-  GRAPH_SQL: "GraphSql",
+  GRAPH_SQL: 'GraphSql',
   JAVA: 'Java',
   SCALA: 'Scala',
   PYTHON: 'Python',
 };
-
 
 export const isSql = (dialect: string) => {
   switch (dialect) {
@@ -137,5 +135,4 @@ export const isOnline = (type: string) => {
     default:
       return false;
   }
-}
-
+};

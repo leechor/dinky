@@ -18,24 +18,24 @@
  */
 
 export type ProcessItem = {
-  pid: string,
-  name: string,
-  taskId: number,
-  type: string,
-  status: string,
-  startTime: Date,
-  endTime: Date,
-  time: number,
-  steps: ProcessStep[],
-  userId: number,
+  pid: string;
+  name: string;
+  taskId: number;
+  type: string;
+  status: string;
+  startTime: Date;
+  endTime: Date;
+  time: number;
+  steps: ProcessStep[];
+  userId: number;
 };
 
 export type ProcessStep = {
-  stepStatus: string,
-  startTime: Date,
-  endTime: Date,
-  time: number,
-  info: string,
-  error: string,
-  isError: boolean,
-}
+  stepStatus: string;
+  startTime: Date;
+  endTime: Date;
+  time: number;
+  info: string;
+  error: string;
+  isError: boolean;
+};

@@ -1,7 +1,7 @@
-import { Cell, Dom, Edge, Graph, Model, Node, Shape } from '@antv/x6';
+import { Cell, Edge, Graph, Model, Node, Shape } from '@antv/x6';
 import loadPlugin from './plugin';
 import { removeBtnEdgeRegister, removeBtnNodeRegister } from './remove-btn-register';
-import CustomShape, { PreNodeInfo } from './cons';
+import CustomShape, { GraphHistory, PreNodeInfo } from './cons';
 import store from '../store';
 import {
   addGraphTabs,
@@ -13,8 +13,9 @@ import React from 'react';
 import {
   getGraphViewSize,
   getPointsBox,
-  PreNodeRect, shrinkGroupNode
-} from "@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper";
+  PreNodeRect,
+  shrinkGroupNode,
+} from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper';
 import { getCustomGroupInfo } from '@/components/Common/crud';
 import { warningTip } from '../views/home/cpns/left-editor';
 import { getSourceTargetByEdge } from './graph-tools-func';
@@ -22,98 +23,163 @@ import { getSourceTargetByEdge } from './graph-tools-func';
 const setParentAndSelection = (graph: Graph, preGroupNodeId: string, node: Cell) => {
   if (preGroupNodeId) {
     const currentGroup = graph.getCellById(preGroupNodeId);
-    currentGroup.insertChild(node)
+    currentGroup.insertChild(node);
 
     //新加进来的节点可选择
     graph.setSelectionFilter((cell) => {
-      return currentGroup.getChildren()!.map(c => c.id).includes(cell.id)
-    })
+      return currentGroup
+        .getChildren()!
+        .map((c) => c.id)
+        .includes(cell.id);
+    });
   }
-}
+};
 const cloneSubCells = (cell: Cell, graph: Graph) => {
-  const tabs = store.getState().home.graphTabs
+  const tabs = store.getState().home.graphTabs;
   const currentGroupId = tabs[tabs.length - 1];
   let addedCell: Cell[] = [];
-  if (cell.shape !== CustomShape.GROUP_PROCESS && cell.shape.includes("custom-node")) {
-    getCustomGroupInfo(`/api/zdpx/customer/${cell.prop().name!}`).then(res => {
+  if (cell.shape !== CustomShape.GROUP_PROCESS && cell.shape.includes('custom-node')) {
+    getCustomGroupInfo(`/api/zdpx/customer/${cell.prop().name!}`).then((res) => {
       if (res.code === 0) {
-        graph.removeCell(cell)
+        graph.removeCell(cell);
         const { cells } = JSON.parse(res.datas);
         cells.map((c: Cell) => {
-          const node = graph.addNode(c as Node)
-          node.prop("name", cell.prop().name!)
+          const node = graph.addNode(c as Node);
+          node.prop('name', cell.prop().name!);
           const { x, y } = (cell as Node).position();
           node.setPosition(x, y, { relative: true, deep: true });
-          addedCell.push(node)
-        })
-        const clonedCells = graph.cloneCells(addedCell)
-        Object.values(clonedCells).forEach(cell => {
+          addedCell.push(node);
+        });
+        const clonedCells = graph.cloneCells(addedCell);
+        Object.values(clonedCells).forEach((cell) => {
           //考虑到组节点父子关系与位置关系，再次进行处理,同时新加进来的节点可选择
-          graph.addCell(cell)
-          setParentAndSelection(graph, currentGroupId.groupCellId, cell)
-        })
-        graph.removeCells(addedCell)
+          graph.addCell(cell);
+          setParentAndSelection(graph, currentGroupId.groupCellId, cell);
+        });
+        graph.removeCells(addedCell);
       }
-      warningTip(res.code, res.msg)
-    })
+      warningTip(res.code, res.msg);
+    });
   }
 
-
-
-
-  if (cell.shape == CustomShape.GROUP_PROCESS && cell.prop().name && cell.prop().isStencil !== undefined) {
+  if (
+    cell.shape == CustomShape.GROUP_PROCESS &&
+    cell.prop().name &&
+    cell.prop().isStencil !== undefined
+  ) {
     let addedCells: Cell[] = [];
     let addedGroup: Cell;
     //请求该节点对应参数
-    getCustomGroupInfo(`/api/zdpx/customer/${cell.prop().name!}`).then(res => {
+    getCustomGroupInfo(`/api/zdpx/customer/${cell.prop().name!}`).then((res) => {
       if (res.code === 0) {
-        graph.removeCell(cell)
+        graph.removeCell(cell);
         const { cells } = JSON.parse(res.datas);
         cells.map((c: Cell) => {
-          if (c.shape === "edge") {
-            const edge = graph.addEdge(c)
-            addedCells.push(edge)
+          if (c.shape === 'edge') {
+            const edge = graph.addEdge(c);
+            addedCells.push(edge);
           } else {
-            const node = graph.addNode(c as Node)
+            const node = graph.addNode(c as Node);
             if (node.shape === CustomShape.GROUP_PROCESS && !node.hasParent()) {
-              node.prop("name", cell.prop().name!)
+              node.prop('name', cell.prop().name!);
               const { x, y } = (cell as Node).position();
               node.setPosition(x, y, { relative: true, deep: true });
-              node.prop(PreNodeInfo.PREVIOUS_NODE_RECT, { ...node.position({ relative: true }), ...node.size() })
+              node.prop(PreNodeInfo.PREVIOUS_NODE_RECT, {
+                ...node.position({ relative: true }),
+                ...node.size(),
+              });
               //将新增组节点设置为当前组节点的子节点
 
               if (currentGroupId.groupCellId) {
                 const currentGroup = graph.getCellById(currentGroupId.groupCellId);
-                currentGroup.insertChild(node)
+                currentGroup.insertChild(node);
               }
               addedGroup = node;
-              addedCells.push(node)
+              addedCells.push(node);
             }
           }
-        })
+        });
         //克隆子图，删除原先子图
-        window.addedGroup = addedGroup
-        const clonedCells = graph.cloneSubGraph([addedGroup], { deep: true })
-        Object.values(clonedCells).forEach(cell => {
+        window.addedGroup = addedGroup;
+        const clonedCells = graph.cloneSubGraph([addedGroup], { deep: true });
+        Object.values(clonedCells).forEach((cell) => {
           //考虑到组节点父子关系与位置关系，再次进行处理
-          graph.addCell(cell)
+          graph.addCell(cell);
           if (cell.shape === CustomShape.GROUP_PROCESS && !cell.hasParent()) {
             //将新增组节点设置为当前组节点的子节点
-            setParentAndSelection(graph, currentGroupId.groupCellId, cell)
+            setParentAndSelection(graph, currentGroupId.groupCellId, cell);
           }
-
-        })
-        graph.removeCells(addedCells)
-
+        });
+        graph.removeCells(addedCells);
       }
-      warningTip(res.code, res.msg)
-    })
+      warningTip(res.code, res.msg);
+    });
   }
 
   if (cell.shape === CustomShape.TEXT_NODE) {
-    setParentAndSelection(graph, currentGroupId.groupCellId, cell)
+    setParentAndSelection(graph, currentGroupId.groupCellId, cell);
   }
-}
+};
+
+const setNodeAndEdgeAttrs = (node: Node, hasInsertsection: boolean, graph: Graph) => {
+  node.toFront();
+  node.attr('body', {
+    style: {
+      'box-shadow': hasInsertsection ? 'rgb(255 255 255) 0px -3px 10px 12px' : null,
+    },
+  });
+  const edges = graph.getConnectedEdges(node);
+  const lineAttrs = hasInsertsection
+    ? {
+      strokeDasharray: 5,
+      style: {
+        animation: 'ant-line 30s infinite linear',
+      },
+      stroke: {
+        type: 'linearGradient',
+        stops: [
+          { offset: '0%', color: '#949494' },
+          { offset: '50%', color: '#b2a2e9' },
+          { offset: '100%', color: '#949494' },
+        ],
+      },
+      strokeWidth: 3,
+    }
+    : {
+      strokeDasharray: null,
+      style: null,
+      stroke: '#b2a2e9',
+      strokeWidth: 2,
+      targetMarker: '',
+    };
+  for (const edge of edges) {
+    edge.toFront();
+    edge.setAttrByPath('line', lineAttrs);
+  }
+};
+
+const getOhterTextNode = (node: Node, graph: Graph) => {
+  return graph
+    .getNodes()
+    .filter((n) => n.id !== node.id)
+    .filter((n) => n.shape === CustomShape.TEXT_NODE);
+};
+
+const isNodeIntersect = (node: Node, otherTextNodes: Node[], graph: Graph) => {
+  const box1 = node.getBBox();
+  for (const otherNode of otherTextNodes) {
+    const box2 = otherNode.getBBox();
+    if (
+      box1.x < box2.x + box2?.width &&
+      box1.x + box1.width > box2.x &&
+      box1.y < box2.y + box2.height &&
+      box1.y + box1.height > box2.y
+    ) {
+      return true;
+    }
+  }
+  return false;
+};
 
 /**
  *
@@ -128,7 +194,7 @@ export const initGraph = (
   selectedNodes: Node<Node.Properties>[],
   setSelectedNodes: React.Dispatch<React.SetStateAction<Node<Node.Properties>[]>>,
   dispatch: any,
-  jsonEditor: any
+  jsonEditor: any,
 ) => {
   const graph = new Graph({
     container,
@@ -148,11 +214,11 @@ export const initGraph = (
         name: 'manhattan',
         args: {
           step: 5,
-        }
+        },
       },
       anchor: {
         name: 'orth',
-        args: {}
+        args: {},
       },
       connectionPoint: {
         name: 'anchor',
@@ -172,17 +238,17 @@ export const initGraph = (
         let edge = new Shape.Edge({
           attrs: {
             line: {
-              // stroke: '#b2a2e9',
-              stroke: {
-                type: "linearGradient",
-                stops: [
-                  { offset: "0%", color: "#b2a2e9" },
-                  { offset: "50%", color: "#8c7ccf" },
-                  { offset: "100%", color: "#b2a2e9" },
-                ]
-              },
+              stroke: '#b2a2e9',
+              // stroke: {
+              //   type: "linearGradient",
+              //   stops: [
+              //     { offset: "0%", color: "#b2a2e9" },
+              //     { offset: "50%", color: "#8c7ccf" },
+              //     { offset: "100%", color: "#b2a2e9" },
+              //   ]
+              // },
               strokeWidth: 2,
-              targetMarker: "",
+              targetMarker: '',
               // filter: {
               //   name: "dropShadow",
               //   args: {
@@ -195,6 +261,12 @@ export const initGraph = (
               //   }
               // }
             },
+            outline: {
+              stroke: '#effabc',
+              strokeWidth: 12,
+              connection: true,
+              strokeLinejoin: 'round',
+            },
           },
           // tools: {
           //   name: "vertices",
@@ -205,21 +277,20 @@ export const initGraph = (
           //   }
           // },
         });
-        edge.toFront()
-        return edge
+        edge.toFront();
+        return edge;
       },
 
       // 在移动边的时候判断连接是否有效，如果返回 false，当鼠标放开的时候，不会连接到当前元素，否则会连接到当前元素
       validateConnection({ sourceMagnet, targetMagnet }) {
-
         if (!targetMagnet || !sourceMagnet) return false;
 
         //输入桩限制 (目标桩是输入桩的话则不能连接)
         const inputsPort = targetMagnet.getAttribute('port-group') ?? '';
-        if (['inputs', "innerInputs"].includes(inputsPort)) {
+        if (['inputs', 'innerInputs'].includes(inputsPort)) {
           //输出桩限制 如果
           const outputsPort = sourceMagnet.getAttribute('port-group') ?? '';
-          return ['outputs', "innerOutputs"].includes(outputsPort);
+          return ['outputs', 'innerOutputs'].includes(outputsPort);
         }
         return false;
       },
@@ -237,10 +308,6 @@ export const initGraph = (
         },
       },
     },
-    //  将一个节点拖动到另一个节点中，使其成为另一节点的子节点
-    // embedding: {
-    //   enabled: true,
-    // },
     background: {
       //画布背景色
       color: '#fff',
@@ -248,8 +315,8 @@ export const initGraph = (
     grid: true,
   });
   //自定义删除按钮
-  removeBtnNodeRegister(graph)
-  removeBtnEdgeRegister(graph)
+  removeBtnNodeRegister(graph);
+  removeBtnEdgeRegister(graph);
 
   //加载相关插件
   loadPlugin(graph);
@@ -269,11 +336,11 @@ export const initGraph = (
 
   function showAllPorts(show: boolean) {
     //显示连接桩
-    const ports = container.querySelectorAll(".x6-port-body");
-    const labels = container.querySelectorAll(".x6-port-label")
+
+    const ports = container.querySelectorAll('.x6-port-body');
+    const labels = container.querySelectorAll('.x6-port-label');
     showPortsOrLabels(ports, show);
     showPortsOrLabels(labels, show);
-
   }
 
   graph.on('node:mouseenter', ({ cell }) => {
@@ -282,23 +349,26 @@ export const initGraph = (
     }
 
     //显示删除按钮
-    cell.addTools([
-      {
-        name: 'rm-btn',
-        args: {
-          x: 0,
-          y: 0,
-          offset: { x: 0, y: 0 },
+    cell.addTools(
+      [
+        {
+          name: 'rm-btn',
+          args: {
+            x: 0,
+            y: 0,
+            offset: { x: 0, y: 0 },
+          },
         },
-      },
-    ]);
+      ],
+      { ignored: true },
+    );
   });
 
   graph.on('node:mouseleave', ({ cell }) => {
     showAllPorts(false);
 
     //移除删除工具
-    cell.removeTools();
+    cell.removeTools({ ignored: true });
   });
 
   const LINE_STOKE_WIDTH = 'line/strokeWidth';
@@ -306,47 +376,51 @@ export const initGraph = (
   function showEdgePorts(edge: Edge<Edge.Properties>, show: boolean) {
     const visibility = show ? 'visible' : 'hidden';
     const VISIBILITY_PATH = 'attrs/circle/style/visibility';
-    edge.getSourceNode()?.setPortProp(edge.getSourcePortId()!, VISIBILITY_PATH, visibility);
-    edge.getTargetNode()?.setPortProp(edge.getTargetPortId()!, VISIBILITY_PATH, visibility);
+    edge
+      .getSourceNode()
+      ?.setPortProp(edge.getSourcePortId()!, VISIBILITY_PATH, visibility, { ignored: true });
+    edge
+      .getTargetNode()
+      ?.setPortProp(edge.getTargetPortId()!, VISIBILITY_PATH, visibility, { ignored: true });
   }
 
   graph.on('edge:mouseenter', ({ e, view, edge, cell }) => {
-
     // edge.attr(LINE_STOKE_WIDTH, 4);
     showEdgePorts(edge, true);
 
-    edge.addTools([
-      {
-        name: 'rm-edge-btn',
-        args: {
-          distance: view.path.length() / 2,
+    edge.addTools(
+      [
+        {
+          name: 'rm-edge-btn',
+          args: {
+            distance: view.path.length() / 2,
+          },
         },
-      },
-      // "vertices",
-    ]);
+        // "vertices",
+      ],
+      { ignored: true },
+    );
   });
-  graph.on("node:change", ({ node }: { node: Node }) => {
-
+  graph.on('node:change', ({ node }: { node: Node }) => {
     if (node.shape === CustomShape.TEXT_NODE) {
-
     }
-  })
+  });
   graph.on('edge:mouseleave', ({ e, view, edge, cell }) => {
     // edge.setAttrByPath(LINE_STOKE_WIDTH, 2);
     showEdgePorts(edge, false);
-    edge.removeTools();
+    edge.removeTools({ ignored: true });
   });
 
   graph.on('node:selected', ({ node }) => {
     //组节点放大后不允许选择
-    if (node.shape === CustomShape.GROUP_PROCESS
-      && (node.getSize().height >= graph.getGraphArea().height
-        || node.getSize().width >= graph.getGraphArea().height)) {
-      graph.unselect(node)
+    if (
+      node.shape === CustomShape.GROUP_PROCESS &&
+      (node.getSize().height >= graph.getGraphArea().height ||
+        node.getSize().width >= graph.getGraphArea().height)
+    ) {
+      graph.unselect(node);
     } else {
       if (node.shape == CustomShape.TEXT_NODE) {
-
-
       }
       dispatch(changeCurrentSelectNode(node));
       dispatch(changeCurrentSelectNodeName(node.shape));
@@ -360,15 +434,11 @@ export const initGraph = (
     node.toggleCollapse(node.isCollapsed());
   });
 
-
-
   graph.on('node:change:size', ({ node, options }) => {
     if (options.skipParentHandler) {
       return;
     }
   });
-
-
 
   graph.on('node:resizing', ({ node }) => {
     node.setAttrs({
@@ -383,8 +453,6 @@ export const initGraph = (
   graph.on('cell:unselected', (cell: Cell, options: Model.SetOptions) => {
     selectedNodes.length = 0;
     setSelectedNodes(selectedNodes);
-
-
   });
 
   //节点/边被选中时触发。
@@ -397,9 +465,7 @@ export const initGraph = (
       console.log(cell.id, 'groupid');
     }
 
-
     window.cell = cell;
-
   });
 
   graph.on('cell:added', ({ cell }) => {
@@ -407,141 +473,160 @@ export const initGraph = (
     if (cell.shape === 'package') {
       cell.setZIndex(-1);
     }
-    window.store = store
-    // setTimeout(() => {
-    //   console.log(store.getState().home.currentClickLayer, "store.getState().home.graphTabs");
-    // }, 2000);
-    cloneSubCells(cell, graph)
+    cloneSubCells(cell, graph);
   });
-
-  graph.on('cell:removed', ({ cell, index, options }) => {
-  });
-
-  graph.on("node:mousemove", ({ node, x, y }) => {
-  })
 
   function extendGroupNode(groupNode: Node<Node.Properties>) {
-
     if (groupNode.shape !== CustomShape.GROUP_PROCESS) {
       return;
     }
 
-    dispatch(addGraphTabs({ groupCellId: groupNode.id, layer: 1 }))
+    dispatch(addGraphTabs({ groupCellId: groupNode.id, layer: 1 }));
 
-    graph.getCells().forEach(cell => {
-      cell.hide()
-    })
+    graph.getCells().forEach((cell) => {
+      cell.hide();
+    });
 
     if (groupNode.hasParent()) {
       shrinkGroupNode(graph, groupNode.parent as Node);
     }
 
     //隐藏组节点, 先显示, 再隐藏, 否则会导致子节点无法显示
-    groupNode.show()
-    groupNode.setAttrs({ fo: { visibility: "hidden" } })
+    groupNode.show();
+    groupNode.setAttrs({ fo: { visibility: 'hidden' } });
 
     let children = groupNode.getChildren() ?? [];
     if (!children.length) {
-      return
+      return;
     }
 
-    const preChildrenBox = getPointsBox(children
-      .filter(item => item.isNode())
-      .map(item => item.prop(PreNodeInfo.PREVIOUS_NODE_RECT)))
+    const preChildrenBox = getPointsBox(
+      children
+        .filter((item) => item.isNode())
+        .map((item) => item.prop(PreNodeInfo.PREVIOUS_NODE_RECT)),
+    );
 
-    const innerOutputPorts = groupNode.getPortsByGroup("innerOutputs")
-    graph?.getOutgoingEdges(groupNode)?.filter(edge =>
-      innerOutputPorts.some(port => edge.getSourcePortId() == port.id))
-      .forEach(edge => {
-        children.push(edge)
-      })
+    const innerOutputPorts = groupNode.getPortsByGroup('innerOutputs');
+    graph
+      ?.getOutgoingEdges(groupNode)
+      ?.filter((edge) => innerOutputPorts.some((port) => edge.getSourcePortId() == port.id))
+      .forEach((edge) => {
+        children.push(edge);
+      });
 
-    const innerInputPorts = groupNode.getPortsByGroup("innerInputs")
-    graph?.getIncomingEdges(groupNode)?.filter(edge =>
-      innerInputPorts.some(port => edge.getTargetPortId() == port.id))
-      .forEach(edge => {
-        children.push(edge)
-      })
+    const innerInputPorts = groupNode.getPortsByGroup('innerInputs');
+    graph
+      ?.getIncomingEdges(groupNode)
+      ?.filter((edge) => innerInputPorts.some((port) => edge.getTargetPortId() == port.id))
+      .forEach((edge) => {
+        children.push(edge);
+      });
 
-    const graphViewBox = getGraphViewSize()
+    const graphViewBox = getGraphViewSize();
     if (!graphViewBox) {
-      return
+      return;
     }
 
     groupNode.setPosition(
       groupNode.position().x + graphViewBox.width,
       groupNode.position().y + graphViewBox.height,
-      { relative: true, deep: true });
+      { relative: true, deep: true },
+    );
 
     groupNode.resize(graphViewBox.width / 2, graphViewBox.height / 2, { direction: 'top-left' });
     groupNode.resize(graphViewBox.width, graphViewBox.height, { direction: 'bottom-right' });
 
-    graph.centerCell(groupNode)
+    graph.centerCell(groupNode);
     groupNode.toBack();
-
 
     //将隐藏的cell设置为不可选
     graph.setSelectionFilter((cell) => {
-      return !!children?.map(c => c.id).includes(cell.id)
-    })
+      return !!children?.map((c) => c.id).includes(cell.id);
+    });
 
     graph.cleanSelection();
 
-    children?.forEach(item => {
+    children?.forEach((item) => {
       if (item.isNode()) {
-        const preNodeRect = item.prop(PreNodeInfo.PREVIOUS_NODE_RECT) as PreNodeRect
-        const { x: localX, y: localY } = graph.clientToLocal(graphViewBox.x, graphViewBox.y)
-        const x = (graphViewBox.width - preChildrenBox.width) / 2 + (preNodeRect.x - preChildrenBox.x) + localX
-        const y = (graphViewBox.height - preChildrenBox.height) / 2 + (preNodeRect.y - preChildrenBox.y) + localY
-        item.setPosition(x, y)
+        const preNodeRect = item.prop(PreNodeInfo.PREVIOUS_NODE_RECT) as PreNodeRect;
+        const { x: localX, y: localY } = graph.clientToLocal(graphViewBox.x, graphViewBox.y);
+        const x =
+          (graphViewBox.width - preChildrenBox.width) / 2 +
+          (preNodeRect.x - preChildrenBox.x) +
+          localX;
+        const y =
+          (graphViewBox.height - preChildrenBox.height) / 2 +
+          (preNodeRect.y - preChildrenBox.y) +
+          localY;
+        item.setPosition(x, y);
 
         if (item.shape === CustomShape.GROUP_PROCESS) {
-          item.setAttrs({ fo: { visibility: "visible" } })
+          item.setAttrs({ fo: { visibility: 'visible' } });
         }
       }
 
-      item.toFront()
-      item.show()
-    })
-
+      item.toFront();
+      item.show();
+    });
   }
 
   graph.on('node:dblclick', ({ node, e, view }) => {
-    extendGroupNode(node);
+    graph.batchUpdate(
+      'dbclick',
+      () => {
+        extendGroupNode(node);
+      },
+      { name: 'xingke' },
+    );
   });
 
-  graph.on("edge:dblclick", ({ edge }) => {
-    console.log(edge.id, "edgeid");
-    getSourceTargetByEdge(graph, edge, dispatch)
-    window.edge = edge;
+  graph.on('edge:dblclick', ({ edge }) => {
+    console.log(edge.id, 'edgeid');
+    getSourceTargetByEdge(graph, edge, dispatch);
+  });
+  graph.on('history:undo', ({ cmds, options }: { cmds: any; options: any }) => {
+    const cmd = cmds[0];
+    switch (cmd.options.eventType) {
+      case GraphHistory.CREATE_PROCESS:
+        graph.fromJSON(cmd.options.graphJson);
+        graph.setSelectionFilter((cell) => {
+          return graph
+            .getCells()
+            .map((c) => c.id)
+            .includes(cell.id);
+        });
+        break;
+    }
+  });
 
-  })
-  // graph.on("history:undo", (cmds: any, options: any) => {
-  //   console.log(cmds, options);
+  graph.on('scale', ({ sx, sy, ox, oy }) => {
+    scaleCurrentGroup(sx, sy, ox, oy, graph);
+  });
+  graph.on('resize', ({ width, height }) => { });
+  graph.on('translate', ({ tx, ty }) => {
+    translateCurrentGroup(tx, ty, graph);
+  });
 
-  // })
-  // graph.on("history:redo", (cmds: any, options: any) => {
-  //   console.log(cmds, options);
-
-  // })
-  // graph.on("history:cancel", (cmds: any, options: any) => {
-  //   console.log(cmds, options);
-  // })
-  // graph.on("history:add", (cmds: any, options: any) => {
-  //   console.log(cmds, options);
-  // })
-  // graph.on("history:clean", (cmds: any, options: any) => {
-  //   console.log(cmds, options);
-  // })
-  // graph.on("history:change", (cmds: any, options: any) => {
-  //   console.log(cmds, options);
-  // })
-  // graph.on("history:batch", (cmds: any, options: any) => {
-  //   console.log(cmds, options);
-  // })
-
+  graph.on('node:moved', ({ e, x, y, node, view }) => {
+    const hasInsertsection = isNodeIntersect(node, getOhterTextNode(node, graph), graph);
+    setNodeAndEdgeAttrs(node, hasInsertsection, graph);
+  });
   dispatch(changeGraph(graph));
   return graph;
 };
 
 
+const translateCurrentGroup = (tx: number, ty: number, graph: Graph) => {
+  graph.getNodes().forEach((node) => {
+    const position = node.getPosition();
+    node.position(position.x - tx, position.y - ty);
+  });
+
+};
+const scaleCurrentGroup = (sx: number, sy: number, ox: number, oy: number, graph: Graph) => {
+  graph.getNodes().forEach((node) => {
+    const size = node.size();
+    console.log(size);
+    node.resize(Math.floor((70 * 1) / sx), Math.floor((50 * 1) / sy));
+  });
+};

@@ -17,13 +17,11 @@
  *
  */
 
-
-import {l} from "@/utils/intl";
-import {GithubOutlined} from '@ant-design/icons';
-import {DefaultFooter} from '@ant-design/pro-layout';
+import { l } from '@/utils/intl';
+import { GithubOutlined } from '@ant-design/icons';
+import { DefaultFooter } from '@ant-design/pro-layout';
 
 export default () => {
-
   return (
     <DefaultFooter
       copyright={l('app.copyright.produced', 'Produced by ZDPX')}

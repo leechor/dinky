@@ -17,22 +17,21 @@
  *
  */
 
-
-import {StateType} from "@/pages/DataStudio/model";
-import {connect} from "umi";
-import {Badge, Divider, Modal, Space, Tag, Typography} from 'antd';
-import {ClusterOutlined, FireOutlined, MessageOutlined, RocketOutlined} from "@ant-design/icons";
+import { StateType } from '@/pages/DataStudio/model';
+import { connect } from 'umi';
+import { Badge, Divider, Modal, Space, Tag, Typography } from 'antd';
+import { ClusterOutlined, FireOutlined, MessageOutlined, RocketOutlined } from '@ant-design/icons';
 import ProList from '@ant-design/pro-list';
-import {handleRemove, queryData} from "@/components/Common/crud";
+import { handleRemove, queryData } from '@/components/Common/crud';
 import ProDescriptions from '@ant-design/pro-descriptions';
-import React, {useState} from "react";
-import StudioPreview from "../StudioPreview";
-import {getJobData} from "@/pages/DataStudio/service";
-import {HistoryItem} from "@/components/Studio/StudioConsole/StudioHistory/data";
-import CodeShow from "@/components/Common/CodeShow";
-import {l} from "@/utils/intl";
+import React, { useState } from 'react';
+import StudioPreview from '../StudioPreview';
+import { getJobData } from '@/pages/DataStudio/service';
+import { HistoryItem } from '@/components/Studio/StudioConsole/StudioHistory/data';
+import CodeShow from '@/components/Common/CodeShow';
+import { l } from '@/utils/intl';
 
-const {Paragraph, Text, Link} = Typography;
+const { Paragraph, Text, Link } = Typography;
 
 type HistoryConfig = {
   useSession: boolean;
@@ -58,8 +57,7 @@ type HistoryConfig = {
 
 const url = '/api/history';
 const StudioHistory = (props: any) => {
-
-  const {current, refs, dispatch} = props;
+  const { current, refs, dispatch } = props;
   const [modalVisit, setModalVisit] = useState(false);
   const [row, setRow] = useState<HistoryItem>();
   const [config, setConfig] = useState<HistoryConfig>();
@@ -89,7 +87,7 @@ const StudioHistory = (props: any) => {
       onOk: async () => {
         await handleRemove(url, [row]);
         refs.history?.current?.reload();
-      }
+      },
     });
   };
 
@@ -111,7 +109,9 @@ const StudioHistory = (props: any) => {
         }}
         rowKey="id"
         headerTitle={l('pages.datastudio.label.history.exec')}
-        request={(params, sorter, filter) => queryData(url, {...params, sorter: {id: 'descend'}, filter})}
+        request={(params, sorter, filter) =>
+          queryData(url, { ...params, sorter: { id: 'descend' }, filter })
+        }
         pagination={{
           defaultPageSize: 5,
           showSizeChanger: true,
@@ -125,7 +125,7 @@ const StudioHistory = (props: any) => {
               return (
                 <Space size={0}>
                   <Tag color="blue" key={row.jobId}>
-                    <FireOutlined/> {row.jobId}
+                    <FireOutlined /> {row.jobId}
                   </Tag>
                 </Space>
               );
@@ -134,16 +134,20 @@ const StudioHistory = (props: any) => {
           description: {
             search: false,
             render: (_, row) => {
-              return (<Paragraph>
-                <blockquote>
-                  <Link href={`http://${row.jobManagerAddress}`} target="_blank">
-                    [{row.jobManagerAddress}]
-                  </Link>
-                  <Divider type="vertical"/>{l('global.table.startTime')}:{row.startTime}
-                  <Divider type="vertical"/>{l('global.table.finishTime')}:{row.endTime}
-                </blockquote>
-              </Paragraph>)
-            }
+              return (
+                <Paragraph>
+                  <blockquote>
+                    <Link href={`http://${row.jobManagerAddress}`} target="_blank">
+                      [{row.jobManagerAddress}]
+                    </Link>
+                    <Divider type="vertical" />
+                    {l('global.table.startTime')}:{row.startTime}
+                    <Divider type="vertical" />
+                    {l('global.table.finishTime')}:{row.endTime}
+                  </blockquote>
+                </Paragraph>
+              );
+            },
           },
           subTitle: {
             render: (_, row) => {
@@ -153,35 +157,63 @@ const StudioHistory = (props: any) => {
                     <Tag color="gray" key={row.jobName}>
                       {row.jobName}
                     </Tag>
-                  ) : ''}
+                  ) : (
+                    ''
+                  )}
                   {row.session ? (
                     <Tag color="orange" key={row.session}>
-                      <MessageOutlined/> {row.session}
+                      <MessageOutlined /> {row.session}
                     </Tag>
-                  ) : ''}
+                  ) : (
+                    ''
+                  )}
                   {row.clusterName ? (
                     <Tag color="green" key={row.clusterName}>
-                      <ClusterOutlined/> {row.clusterName}
+                      <ClusterOutlined /> {row.clusterName}
                     </Tag>
-                  ) : (<Tag color="green" key={row.clusterName}>
-                    <ClusterOutlined/> {l('pages.devops.jobinfo.localenv')}
-                  </Tag>)}
+                  ) : (
+                    <Tag color="green" key={row.clusterName}>
+                      <ClusterOutlined /> {l('pages.devops.jobinfo.localenv')}
+                    </Tag>
+                  )}
                   {row.type ? (
                     <Tag color="blue" key={row.type}>
-                      <RocketOutlined/> {row.type}
+                      <RocketOutlined /> {row.type}
                     </Tag>
-                  ) : ''}
-                  {(row.status == 2) ?
-                    (<><Badge status="success"/><Text type="success">{l('pages.devops.jobstatus.SUCCESS')}</Text></>) :
-                    (row.status == 1) ?
-                      <><Badge status="success"/><Text type="secondary">{l('pages.devops.jobstatus.RUNNING')}</Text></> :
-                      (row.status == 3) ?
-                        <><Badge status="error"/><Text type="danger">{l('pages.devops.jobstatus.FAILED')}</Text></> :
-                        (row.status == 4) ?
-                          <><Badge status="error"/><Text type="warning">{l('pages.devops.jobstatus.CANCELED')}</Text></> :
-                          (row.status == 0) ?
-                            <><Badge status="error"/><Text type="warning">{l('pages.devops.jobstatus.INITIALIZING')}</Text></> :
-                            <><Badge status="success"/><Text type="danger">{l('pages.devops.jobstatus.UNKNOWN')}</Text></>}
+                  ) : (
+                    ''
+                  )}
+                  {row.status == 2 ? (
+                    <>
+                      <Badge status="success" />
+                      <Text type="success">{l('pages.devops.jobstatus.SUCCESS')}</Text>
+                    </>
+                  ) : row.status == 1 ? (
+                    <>
+                      <Badge status="success" />
+                      <Text type="secondary">{l('pages.devops.jobstatus.RUNNING')}</Text>
+                    </>
+                  ) : row.status == 3 ? (
+                    <>
+                      <Badge status="error" />
+                      <Text type="danger">{l('pages.devops.jobstatus.FAILED')}</Text>
+                    </>
+                  ) : row.status == 4 ? (
+                    <>
+                      <Badge status="error" />
+                      <Text type="warning">{l('pages.devops.jobstatus.CANCELED')}</Text>
+                    </>
+                  ) : row.status == 0 ? (
+                    <>
+                      <Badge status="error" />
+                      <Text type="warning">{l('pages.devops.jobstatus.INITIALIZING')}</Text>
+                    </>
+                  ) : (
+                    <>
+                      <Badge status="success" />
+                      <Text type="danger">{l('pages.devops.jobstatus.UNKNOWN')}</Text>
+                    </>
+                  )}
                 </Space>
               );
             },
@@ -189,29 +221,44 @@ const StudioHistory = (props: any) => {
           },
           actions: {
             render: (text, row) => [
-              <a key="config" onClick={() => {
-                showDetail(row, 1)
-              }}>
+              <a
+                key="config"
+                onClick={() => {
+                  showDetail(row, 1);
+                }}
+              >
                 {l('pages.datastudio.label.history.execConfig')}
               </a>,
-              <a key="statement" onClick={() => {
-                showDetail(row, 2)
-              }}>
+              <a
+                key="statement"
+                onClick={() => {
+                  showDetail(row, 2);
+                }}
+              >
                 {l('pages.datastudio.label.history.statement')}
               </a>,
-              <a key="result" onClick={() => {
-                showDetail(row, 3)
-              }}>
+              <a
+                key="result"
+                onClick={() => {
+                  showDetail(row, 3);
+                }}
+              >
                 {l('pages.datastudio.label.history.result')}
               </a>,
-              <a key="error" onClick={() => {
-                showDetail(row, 4)
-              }}>
+              <a
+                key="error"
+                onClick={() => {
+                  showDetail(row, 4);
+                }}
+              >
                 {l('pages.datastudio.label.history.error')}
               </a>,
-              <a key="delete" onClick={() => {
-                removeHistory(row)
-              }}>
+              <a
+                key="delete"
+                onClick={() => {
+                  removeHistory(row);
+                }}
+              >
                 {l('button.delete')}
               </a>,
             ],
@@ -234,7 +281,7 @@ const StudioHistory = (props: any) => {
             title: l('global.table.status'),
             valueType: 'select',
             valueEnum: {
-              '': {text: l('pages.devops.jobstatus.ALL'), status: 'ALL'},
+              '': { text: l('pages.devops.jobstatus.ALL'), status: 'ALL' },
               0: {
                 text: l('pages.devops.jobstatus.INITIALIZING'),
                 status: 'INITIALIZE',
@@ -270,7 +317,7 @@ const StudioHistory = (props: any) => {
         }}
         options={{
           search: false,
-          setting: false
+          setting: false,
         }}
       />
       <Modal
@@ -282,13 +329,10 @@ const StudioHistory = (props: any) => {
         onCancel={handleCancel}
       >
         {type == 1 && (
-          <ProDescriptions
-            column={2}
-            title={l('pages.datastudio.label.history.execConfig')}
-          >
+          <ProDescriptions column={2} title={l('pages.datastudio.label.history.execConfig')}>
             <ProDescriptions.Item span={2} label="JobId">
               <Tag color="blue" key={row.jobId}>
-                <FireOutlined/> {row.jobId}
+                <FireOutlined /> {row.jobId}
               </Tag>
             </ProDescriptions.Item>
             <ProDescriptions.Item label={l('pages.datastudio.label.history.session')}>
@@ -298,7 +342,9 @@ const StudioHistory = (props: any) => {
               {config.session}
             </ProDescriptions.Item>
             <ProDescriptions.Item label={l('global.table.runmode')}>
-              {config.useRemote ? l('global.table.runmode.remote') : l('global.table.runmode.local')}
+              {config.useRemote
+                ? l('global.table.runmode.remote')
+                : l('global.table.runmode.local')}
             </ProDescriptions.Item>
             <ProDescriptions.Item label={l('pages.datastudio.label.history.taskType')}>
               {config.type}
@@ -351,47 +397,38 @@ const StudioHistory = (props: any) => {
           </ProDescriptions>
         )}
         {type == 2 && (
-          <ProDescriptions
-            column={1}
-            title={l('pages.datastudio.label.history.statement')}
-          >
+          <ProDescriptions column={1} title={l('pages.datastudio.label.history.statement')}>
             <ProDescriptions.Item label="JobId">
               <Tag color="blue" key={row.jobId}>
-                <FireOutlined/> {row.jobId}
+                <FireOutlined /> {row.jobId}
               </Tag>
             </ProDescriptions.Item>
             <ProDescriptions.Item>
-              <CodeShow height={"80vh"} language={"sql"} code={row.statement} theme={"vs-dark"}/>
+              <CodeShow height={'80vh'} language={'sql'} code={row.statement} theme={'vs-dark'} />
             </ProDescriptions.Item>
           </ProDescriptions>
         )}
         {type == 3 && (
-          <ProDescriptions
-            column={2}
-            title={l('pages.datastudio.label.history.result')}
-          >
+          <ProDescriptions column={2} title={l('pages.datastudio.label.history.result')}>
             <ProDescriptions.Item span={2} label="JobId">
               <Tag color="blue" key={row.jobId}>
-                <FireOutlined/> {row.jobId}
+                <FireOutlined /> {row.jobId}
               </Tag>
             </ProDescriptions.Item>
             <ProDescriptions.Item span={2}>
-              <StudioPreview result={result} style={{width: '100%'}}/>
+              <StudioPreview result={result} style={{ width: '100%' }} />
             </ProDescriptions.Item>
           </ProDescriptions>
         )}
         {type == 4 && (
-          <ProDescriptions
-            column={1}
-            title={l('pages.datastudio.label.history.error')}
-          >
+          <ProDescriptions column={1} title={l('pages.datastudio.label.history.error')}>
             <ProDescriptions.Item label="JobId">
               <Tag color="blue" key={row.jobId}>
-                <FireOutlined/> {row.jobId}
+                <FireOutlined /> {row.jobId}
               </Tag>
             </ProDescriptions.Item>
             <ProDescriptions.Item>
-              <CodeShow height={"80vh"} language={"java"} code={row.error} theme={"vs-dark"}/>
+              <CodeShow height={'80vh'} language={'java'} code={row.error} theme={'vs-dark'} />
             </ProDescriptions.Item>
           </ProDescriptions>
         )}
@@ -400,7 +437,7 @@ const StudioHistory = (props: any) => {
   );
 };
 
-export default connect(({Studio}: { Studio: StateType }) => ({
+export default connect(({ Studio }: { Studio: StateType }) => ({
   current: Studio.current,
   refs: Studio.refs,
 }))(StudioHistory);

@@ -17,7 +17,6 @@
  *
  */
 
-
 /* eslint-disable eslint-comments/disable-enable-pair */
 /* eslint-disable no-restricted-globals */
 /* eslint-disable no-underscore-dangle */

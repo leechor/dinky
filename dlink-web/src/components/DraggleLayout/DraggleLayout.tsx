@@ -17,12 +17,11 @@
  *
  */
 
-
 import React, { useRef, useState } from 'react';
 import useDraggable from '../../hooks/useDraggable';
 import styles from './DraggleLayout.less';
-import { connect } from "umi";
-import { StateType } from "@/pages/DataStudio/model";
+import { connect } from 'umi';
+import { StateType } from '@/pages/DataStudio/model';
 
 function DraggleLayout({
   children, // 两列布局
@@ -33,11 +32,11 @@ function DraggleLayout({
   initLeftWidth = 0, // 初始左侧容器宽度
   handler = null, // 拖拽器
   isLeft = true, // 拖拽器
-  onWidthChange = width => width, // 左侧容器高度变化
+  onWidthChange = (width) => width, // 左侧容器高度变化
   dispatch,
 }) {
   const ref = useRef(null);
-  
+
   const [position, setPosition] = useState({ x: initLeftWidth, y: 0 });
 
   const [props] = useDraggable(
@@ -50,15 +49,17 @@ function DraggleLayout({
         if (onWidthChange) onWidthChange(_x);
         setPosition({ x: _x, y });
         if (isLeft) {
-          dispatch && dispatch({
-            type: "Studio/saveToolLeftWidth",
-            payload: _x,
-          });
+          dispatch &&
+            dispatch({
+              type: 'Studio/saveToolLeftWidth',
+              payload: _x,
+            });
         } else {
-          dispatch && dispatch({
-            type: "Studio/saveToolRightWidth",
-            payload: (containerWidth - _x),
-          });
+          dispatch &&
+            dispatch({
+              type: 'Studio/saveToolRightWidth',
+              payload: containerWidth - _x,
+            });
         }
       },
     },
@@ -89,15 +90,11 @@ function DraggleLayout({
           {_handler}
         </div>
       </div>
-      <div
-        className={styles.right}
-        style={{ width: containerWidth - position.x }}
-      >
+      <div className={styles.right} style={{ width: containerWidth - position.x }}>
         {children[1]}
       </div>
     </div>
   );
 }
 
-export default connect(({ Studio }: { Studio: StateType }) => ({
-}))(DraggleLayout);
+export default connect(({ Studio }: { Studio: StateType }) => ({}))(DraggleLayout);

@@ -17,27 +17,26 @@
  *
  */
 
-
-import {AlertInstanceTableListItem} from "@/pages/RegistrationCenter/data";
+import { AlertInstanceTableListItem } from '@/pages/RegistrationCenter/data';
 
 export const getJSONData = (values: AlertInstanceTableListItem) => {
-  if(!values.params||values.params==''){
+  if (!values.params || values.params == '') {
     return values;
   }
   let data = JSON.parse(values.params);
-  return {...data,...values};
-}
+  return { ...data, ...values };
+};
 
-export const buildJSONData = (values: AlertInstanceTableListItem,params: any) => {
+export const buildJSONData = (values: AlertInstanceTableListItem, params: any) => {
   let newValue = values;
-  if(params.name){
+  if (params.name) {
     newValue.name = params.name;
     delete params.name;
   }
-  if(params.enabled){
+  if (params.enabled) {
     newValue.enabled = params.enabled;
     delete params.enabled;
   }
   let data: string = JSON.stringify(params);
-  return {...newValue,params:data};
-}
+  return { ...newValue, params: data };
+};

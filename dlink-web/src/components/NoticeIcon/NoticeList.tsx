@@ -17,7 +17,6 @@
  *
  */
 
-
 import { Avatar, List } from 'antd';
 
 import React from 'react';
@@ -54,10 +53,7 @@ const NoticeList: React.FC<NoticeIconTabProps> = ({
   if (!list || list.length === 0) {
     return (
       <div className={styles.notFound}>
-        <img
-          src="/icons/notice_not_found.svg"
-          alt="not found"
-        />
+        <img src="/icons/notice_not_found.svg" alt="not found" />
         <div>{emptyText}</div>
       </div>
     );

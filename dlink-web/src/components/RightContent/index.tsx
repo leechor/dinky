@@ -17,11 +17,10 @@
  *
  */
 
-
-import {GlobalOutlined} from '@ant-design/icons';
-import {Space} from 'antd';
+import { GlobalOutlined } from '@ant-design/icons';
+import { Space } from 'antd';
 import React from 'react';
-import {SelectLang, useModel} from 'umi';
+import { SelectLang, useModel } from 'umi';
 import Avatar from './AvatarDropdown';
 import styles from './index.less';
 
@@ -34,13 +33,13 @@ const ENVTagColor = {
 };
 
 const GlobalHeaderRight: React.FC = () => {
-  const {initialState} = useModel('@@initialState');
+  const { initialState } = useModel('@@initialState');
 
   if (!initialState || !initialState.settings) {
     return null;
   }
 
-  const {navTheme, layout} = initialState.settings;
+  const { navTheme, layout } = initialState.settings;
   let className = styles.right;
 
   if ((navTheme === 'dark' && layout === 'top') || layout === 'mix') {
@@ -48,13 +47,13 @@ const GlobalHeaderRight: React.FC = () => {
   }
   return (
     <Space className={className}>
-      <Avatar menu={true}/>
+      <Avatar menu={true} />
       {/*{REACT_APP_ENV && (*/}
       {/*  <span>*/}
       {/*    <Tag color={ENVTagColor[REACT_APP_ENV]}>{REACT_APP_ENV}</Tag>*/}
       {/*  </span>*/}
       {/*)}*/}
-      <SelectLang icon={<GlobalOutlined/>} className={styles.action}/>
+      <SelectLang icon={<GlobalOutlined />} className={styles.action} />
     </Space>
   );
 };

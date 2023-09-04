@@ -17,44 +17,47 @@
  *
  */
 
-import React, {useRef, useState} from "react";
-import ProTable, {ActionType, ProColumns} from "@ant-design/pro-table";
-import {PageContainer} from '@ant-design/pro-layout';
-import {UDFTemplateItem} from "@/pages/SettingCenter/UDFTemplate/data";
-import {addTemplate, deleteTemplate, getTemplate} from "@/pages/SettingCenter/UDFTemplate/service";
-import {Button, Col, Drawer, Form, Input, Modal, Row, Select, Space} from "antd";
-import {DeleteOutlined, FormOutlined, PlusOutlined} from "@ant-design/icons";
+import React, { useRef, useState } from 'react';
+import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
+import { PageContainer } from '@ant-design/pro-layout';
+import { UDFTemplateItem } from '@/pages/SettingCenter/UDFTemplate/data';
+import {
+  addTemplate,
+  deleteTemplate,
+  getTemplate,
+} from '@/pages/SettingCenter/UDFTemplate/service';
+import { Button, Col, Drawer, Form, Input, Modal, Row, Select, Space } from 'antd';
+import { DeleteOutlined, FormOutlined, PlusOutlined } from '@ant-design/icons';
 import 'antd/dist/antd.css';
 import './index.css';
-import CodeEdit from "@/components/Common/CodeEdit";
-import {l} from "@/utils/intl";
-import {DIALECT} from "@/components/Studio/conf";
+import CodeEdit from '@/components/Common/CodeEdit';
+import { l } from '@/utils/intl';
+import { DIALECT } from '@/components/Studio/conf';
 
-const {Option} = Select;
+const { Option } = Select;
 
 const UDFTemplate: React.FC<{}> = () => {
-
   const [open, setOpen] = useState(false);
 
   const initData: UDFTemplateItem = {
     id: null,
-    name: "",
-    codeType: "Java",
-    functionType: "UDF",
-    templateCode: ""
-  }
+    name: '',
+    codeType: 'Java',
+    functionType: 'UDF',
+    templateCode: '',
+  };
 
   const [tModel, setTModel] = useState<UDFTemplateItem>(initData);
   const actionRef = useRef<ActionType>();
 
   const addModel = () => {
     setTModel(initData);
-  }
+  };
 
   const changeModel = (record: UDFTemplateItem) => {
     setTModel(record);
     setOpen(true);
-  }
+  };
 
   const showDrawer = () => {
     addModel();
@@ -73,8 +76,8 @@ const UDFTemplate: React.FC<{}> = () => {
     const add = async () => {
       try {
         const values = await form.validateFields();
-        values["id"] = tModel.id;
-        values["templateCode"] = code;
+        values['id'] = tModel.id;
+        values['templateCode'] = code;
         await addTemplate(values);
         onClose();
       } catch (errorInfo) {
@@ -82,83 +85,93 @@ const UDFTemplate: React.FC<{}> = () => {
       }
     };
 
-    return <Drawer
-      visible={open}
-      title={(tModel.id ? l('pages.sys.udf.template.modify') : l('pages.sys.udf.template.create'))}
-      width={720}
-      onClose={onClose}
-      extra={
-        <Space>
-          <Button onClick={onClose}>{l('button.cancel')}</Button>
-          <Button onClick={add} type="primary">
-            {l('button.submit')}
-          </Button>
-        </Space>
-      }
-    >
-      <Form layout="vertical" form={form} initialValues={tModel}>
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item
-              name="name"
-              label={l('pages.sys.udf.template.name')}
-              rules={[{required: true, message: l('pages.sys.udf.template.namePlaceholder')}]}
-            >
-              <Input placeholder={l('pages.sys.udf.template.namePlaceholder')}/>
-            </Form.Item>
-          </Col>
-        </Row>
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item
-              name="codeType"
-              label={l('pages.sys.udf.template.codeType')}
-              rules={[{required: true, message: l('pages.sys.udf.template.codeTypePlaceholder')}]}
-            >
-              <Select placeholder={l('pages.sys.udf.template.codeTypePlaceholder')}>
-                <Option value={DIALECT.JAVA}>{DIALECT.JAVA}</Option>
-                <Option value={DIALECT.SCALA}>{DIALECT.SCALA}</Option>
-                <Option value={DIALECT.PYTHON}>{DIALECT.PYTHON}</Option>
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item
-              name="functionType"
-              label={l('pages.sys.udf.template.functionType')}
-              rules={[{required: true, message: l('pages.sys.udf.template.functionTypePlaceholder')}]}
-            >
-              <Select placeholder={l('pages.sys.udf.template.functionTypePlaceholder')}>
-                <Option value="UDF">UDF</Option>
-                <Option value="UDAF">UDAF</Option>
-                <Option value="UDTF">UDTF</Option>
-              </Select>
-            </Form.Item>
-          </Col>
-        </Row>
-        <Row>
-          <Col span={24}>
-            <Form.Item
-              name="templateCode"
-              label={l('pages.sys.udf.template.templateCode')}
-              rules={[
-                {
-                  required: true,
-                  message: l('pages.sys.udf.template.templateCodePlaceholder'),
-                },
-              ]}
-            >
-              <CodeEdit code={code} language='java'
-                        height='400px' onChange={async (val) => {
-                // setTModel({...tModel,templateCode:val});
-                setCode(val);
-              }}/>
-            </Form.Item>
-          </Col>
-        </Row>
-      </Form>
-    </Drawer>
-  }
+    return (
+      <Drawer
+        visible={open}
+        title={tModel.id ? l('pages.sys.udf.template.modify') : l('pages.sys.udf.template.create')}
+        width={720}
+        onClose={onClose}
+        extra={
+          <Space>
+            <Button onClick={onClose}>{l('button.cancel')}</Button>
+            <Button onClick={add} type="primary">
+              {l('button.submit')}
+            </Button>
+          </Space>
+        }
+      >
+        <Form layout="vertical" form={form} initialValues={tModel}>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="name"
+                label={l('pages.sys.udf.template.name')}
+                rules={[{ required: true, message: l('pages.sys.udf.template.namePlaceholder') }]}
+              >
+                <Input placeholder={l('pages.sys.udf.template.namePlaceholder')} />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="codeType"
+                label={l('pages.sys.udf.template.codeType')}
+                rules={[
+                  { required: true, message: l('pages.sys.udf.template.codeTypePlaceholder') },
+                ]}
+              >
+                <Select placeholder={l('pages.sys.udf.template.codeTypePlaceholder')}>
+                  <Option value={DIALECT.JAVA}>{DIALECT.JAVA}</Option>
+                  <Option value={DIALECT.SCALA}>{DIALECT.SCALA}</Option>
+                  <Option value={DIALECT.PYTHON}>{DIALECT.PYTHON}</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="functionType"
+                label={l('pages.sys.udf.template.functionType')}
+                rules={[
+                  { required: true, message: l('pages.sys.udf.template.functionTypePlaceholder') },
+                ]}
+              >
+                <Select placeholder={l('pages.sys.udf.template.functionTypePlaceholder')}>
+                  <Option value="UDF">UDF</Option>
+                  <Option value="UDAF">UDAF</Option>
+                  <Option value="UDTF">UDTF</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={24}>
+              <Form.Item
+                name="templateCode"
+                label={l('pages.sys.udf.template.templateCode')}
+                rules={[
+                  {
+                    required: true,
+                    message: l('pages.sys.udf.template.templateCodePlaceholder'),
+                  },
+                ]}
+              >
+                <CodeEdit
+                  code={code}
+                  language="java"
+                  height="400px"
+                  onChange={async (val) => {
+                    // setTModel({...tModel,templateCode:val});
+                    setCode(val);
+                  }}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </Drawer>
+    );
+  };
 
   const deleteUDFTemplate = (id: number) => {
     Modal.confirm({
@@ -167,11 +180,11 @@ const UDFTemplate: React.FC<{}> = () => {
       okText: l('button.confirm'),
       cancelText: l('button.cancel'),
       onOk: async () => {
-        await deleteTemplate(id)
+        await deleteTemplate(id);
         actionRef.current?.reloadAndRest?.();
-      }
+      },
     });
-  }
+  };
 
   const columns: ProColumns<UDFTemplateItem>[] = [
     {
@@ -187,21 +200,24 @@ const UDFTemplate: React.FC<{}> = () => {
         {
           text: DIALECT.JAVA,
           value: DIALECT.JAVA,
-        }, {
+        },
+        {
           text: DIALECT.SCALA,
           value: DIALECT.SCALA,
-        }, {
+        },
+        {
           text: DIALECT.PYTHON,
           value: DIALECT.PYTHON,
         },
       ],
       valueEnum: {
-        'Java': {text: DIALECT.JAVA},
-        'Scala': {text: DIALECT.SCALA},
-        'Python': {text: DIALECT.PYTHON},
+        Java: { text: DIALECT.JAVA },
+        Scala: { text: DIALECT.SCALA },
+        Python: { text: DIALECT.PYTHON },
       },
-      onFilter: true
-    }, {
+      onFilter: true,
+    },
+    {
       title: l('pages.sys.udf.template.functionType'),
       sorter: true,
       dataIndex: 'functionType',
@@ -209,49 +225,59 @@ const UDFTemplate: React.FC<{}> = () => {
         {
           text: 'UDF',
           value: 'UDF',
-        }, {
+        },
+        {
           text: 'UDTF',
           value: 'UDTF',
-        }, {
+        },
+        {
           text: 'UDAF',
           value: 'UDAF',
         },
       ],
       valueEnum: {
-        'UDF': {text: 'UDF'},
-        'UDTF': {text: 'UDTF'},
-        'UDAF': {text: 'UDAF'},
+        UDF: { text: 'UDF' },
+        UDTF: { text: 'UDTF' },
+        UDAF: { text: 'UDAF' },
       },
-      onFilter: true
-    }, {
+      onFilter: true,
+    },
+    {
       title: l('global.table.operate'),
       key: 'action',
       render: (text, record) => (
         <Space size="middle">
-          <Button type="primary" icon={<FormOutlined/>} onClick={() => changeModel(record)}></Button>
-          <Button type="primary" icon={<DeleteOutlined/>} onClick={() => {
-            deleteUDFTemplate(record.id)
-          }}></Button>
+          <Button
+            type="primary"
+            icon={<FormOutlined />}
+            onClick={() => changeModel(record)}
+          ></Button>
+          <Button
+            type="primary"
+            icon={<DeleteOutlined />}
+            onClick={() => {
+              deleteUDFTemplate(record.id);
+            }}
+          ></Button>
         </Space>
       ),
-    }
+    },
   ];
 
   return (
     <PageContainer title={false}>
-      {<Box/>}
+      {<Box />}
       <ProTable
         request={() => getTemplate()}
         columns={columns}
         search={false}
         toolBarRender={() => [
-          <Button type="primary" onClick={showDrawer} icon={<PlusOutlined/>}>
+          <Button type="primary" onClick={showDrawer} icon={<PlusOutlined />}>
             {l('button.create')}
-          </Button>
+          </Button>,
         ]}
         actionRef={actionRef}
       />
-
     </PageContainer>
   );
 };

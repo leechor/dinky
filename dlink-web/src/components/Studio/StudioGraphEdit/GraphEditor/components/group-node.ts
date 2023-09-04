@@ -120,7 +120,7 @@ GroupNode.config({
       ry: 4,
     },
     image: {
-      href:"/graphUseSvg/file.svg",
+      href: '/graphUseSvg/file.svg',
       width: 16,
       height: 16,
       x: 8,

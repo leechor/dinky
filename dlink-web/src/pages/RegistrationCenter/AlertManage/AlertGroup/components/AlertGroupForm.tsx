@@ -17,14 +17,19 @@
  *
  */
 
-
-import React, {useState} from 'react';
-import {Button, Form, Input, Modal, Select, Switch, Tag} from 'antd';
-import {AlertGroupTableListItem, AlertInstanceTableListItem} from "@/pages/RegistrationCenter/data";
-import {connect} from "umi";
-import {AlertStateType} from "@/pages/RegistrationCenter/AlertManage/AlertInstance/model";
-import {buildFormData, getFormData} from "@/pages/RegistrationCenter/AlertManage/AlertGroup/function";
-import {l} from "@/utils/intl";
+import React, { useState } from 'react';
+import { Button, Form, Input, Modal, Select, Switch, Tag } from 'antd';
+import {
+  AlertGroupTableListItem,
+  AlertInstanceTableListItem,
+} from '@/pages/RegistrationCenter/data';
+import { connect } from 'umi';
+import { AlertStateType } from '@/pages/RegistrationCenter/AlertManage/AlertInstance/model';
+import {
+  buildFormData,
+  getFormData,
+} from '@/pages/RegistrationCenter/AlertManage/AlertGroup/function';
+import { l } from '@/utils/intl';
 
 export type AlertGroupFormProps = {
   onCancel: (flag?: boolean) => void;
@@ -36,8 +41,8 @@ export type AlertGroupFormProps = {
 const Option = Select.Option;
 
 const formLayout = {
-  labelCol: {span: 7},
-  wrapperCol: {span: 13},
+  labelCol: { span: 7 },
+  wrapperCol: { span: 13 },
 };
 
 const AlertGroupForm: React.FC<AlertGroupFormProps> = (props) => {
@@ -50,20 +55,22 @@ const AlertGroupForm: React.FC<AlertGroupFormProps> = (props) => {
     enabled: props.values.enabled ? props.values.enabled : true,
   });
 
-  const {
-    onSubmit: handleSubmit,
-    onCancel: handleModalVisible,
-    modalVisible,
-    instance,
-  } = props;
+  const { onSubmit: handleSubmit, onCancel: handleModalVisible, modalVisible, instance } = props;
 
   const getAlertInstanceOptions = () => {
     const itemList = [];
     for (const item of instance) {
-      const tag = (<><Tag color="processing">{item.type}</Tag>{item.name}</>);
-      itemList.push(<Option key={item.id} value={item.id.toString()} label={tag}>
-        {tag}
-      </Option>)
+      const tag = (
+        <>
+          <Tag color="processing">{item.type}</Tag>
+          {item.name}
+        </>
+      );
+      itemList.push(
+        <Option key={item.id} value={item.id.toString()} label={tag}>
+          {tag}
+        </Option>,
+      );
     }
     return itemList;
   };
@@ -80,35 +87,37 @@ const AlertGroupForm: React.FC<AlertGroupFormProps> = (props) => {
         <Form.Item
           name="name"
           label={l('pages.rc.alert.group.name')}
-          rules={[{required: true, message: l('pages.rc.alert.group.inputName')}]}>
-          <Input placeholder={l('pages.rc.alert.group.inputName')}/>
+          rules={[{ required: true, message: l('pages.rc.alert.group.inputName') }]}
+        >
+          <Input placeholder={l('pages.rc.alert.group.inputName')} />
         </Form.Item>
         <Form.Item
           name="alertInstanceIds"
           label={l('pages.rc.alert.group.alertInstanceIds')}
-          rules={[{required: true, message: l('pages.rc.alert.group.chooseAlertInstanceIds')}]}
+          rules={[{ required: true, message: l('pages.rc.alert.group.chooseAlertInstanceIds') }]}
         >
           <Select
             mode="multiple"
-            style={{width: '100%'}}
+            style={{ width: '100%' }}
             placeholder={l('pages.rc.alert.group.chooseAlertInstanceIds')}
             optionLabelProp="label"
           >
             {getAlertInstanceOptions()}
           </Select>
         </Form.Item>
-        <Form.Item
-          name="note"
-          label={l('global.table.note')}
-        >
-          <Input.TextArea placeholder={l('global.table.notePlaceholder')} allowClear
-                          autoSize={{minRows: 3, maxRows: 10}}/>
+        <Form.Item name="note" label={l('global.table.note')}>
+          <Input.TextArea
+            placeholder={l('global.table.notePlaceholder')}
+            allowClear
+            autoSize={{ minRows: 3, maxRows: 10 }}
+          />
         </Form.Item>
-        <Form.Item
-          name="enabled"
-          label={l('global.table.isEnable')}>
-          <Switch checkedChildren={l("button.enable")} unCheckedChildren={l('button.disable')}
-                  defaultChecked={formVals.enabled}/>
+        <Form.Item name="enabled" label={l('global.table.isEnable')}>
+          <Switch
+            checkedChildren={l('button.enable')}
+            unCheckedChildren={l('button.disable')}
+            defaultChecked={formVals.enabled}
+          />
         </Form.Item>
       </>
     );
@@ -128,24 +137,20 @@ const AlertGroupForm: React.FC<AlertGroupFormProps> = (props) => {
   return (
     <Modal
       width={1200}
-      bodyStyle={{padding: '32px 40px 48px'}}
+      bodyStyle={{ padding: '32px 40px 48px' }}
       destroyOnClose
       title={formVals.id ? l('pages.rc.alert.group.modify') : l('pages.rc.alert.group.create')}
       visible={modalVisible}
       footer={renderFooter()}
       onCancel={() => handleModalVisible()}
     >
-      <Form
-        {...formLayout}
-        form={form}
-        initialValues={getFormData(formVals)}
-      >
+      <Form {...formLayout} form={form} initialValues={getFormData(formVals)}>
         {renderContent(getFormData(formVals))}
       </Form>
     </Modal>
   );
 };
 
-export default connect(({Alert}: { Alert: AlertStateType }) => ({
+export default connect(({ Alert }: { Alert: AlertStateType }) => ({
   instance: Alert.instance,
 }))(AlertGroupForm);

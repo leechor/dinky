@@ -17,7 +17,6 @@
  *
  */
 
-
 export type HistoryItem = {
   id: number;
   clusterId: number;

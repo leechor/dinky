@@ -17,56 +17,55 @@
  *
  */
 
-
 import React from 'react';
-import { FormInstance } from "antd/es/form/hooks/useForm";
-import { Values } from "async-validator";
-import { Checkbox, Form, Row } from "antd"
-import { ParametersConfigType } from "../../../views/home/cpns/left-editor"
+import { FormInstance } from 'antd/es/form/hooks/useForm';
+import { Values } from 'async-validator';
+import { Checkbox, Form, Row } from 'antd';
+import { ParametersConfigType } from '../../../views/home/cpns/left-editor';
 type NodeProFormProps = {
   values: ParametersConfigType[];
   form: FormInstance<Values>;
-  initValue: string[]
+  initValue: string[];
 };
 export const FORM_LAYOUT_PUBLIC = {
   labelCol: { span: 5 },
   wrapperCol: { span: 15 },
 };
 const NodeForm: React.FC<NodeProFormProps> = (props) => {
-
   const { values, form, initValue } = props;
-  console.log(initValue, "initValue");
+  console.log(initValue, 'initValue');
 
   /**
    * construct role form
    * @constructor
    */
   const renderRoleForm = () => {
-    return (<>
-      <Form.Item name="parameters" initialValue={initValue}>
-        <Checkbox.Group>
-
-          {values?.map(value =>
-            <Row><Checkbox key={value.name} value={value.name} style={{ lineHeight: "32px" }}>{value.name}</Checkbox></Row>
-          )}
-
-        </Checkbox.Group>
-      </Form.Item>
-    </>)
+    return (
+      <>
+        <Form.Item name="parameters" initialValue={initValue}>
+          <Checkbox.Group>
+            {values?.map((value) => (
+              <Row>
+                <Checkbox key={value.name} value={value.name} style={{ lineHeight: '32px' }}>
+                  {value.name}
+                </Checkbox>
+              </Row>
+            ))}
+          </Checkbox.Group>
+        </Form.Item>
+      </>
+    );
   };
 
   /**
    * render
    */
-  return <>
-    <Form
-      {...FORM_LAYOUT_PUBLIC}
-      form={form}
-      layout={'horizontal'}
-      preserve={false}
-    >
-      {renderRoleForm()}
-    </Form>
-  </>
+  return (
+    <>
+      <Form {...FORM_LAYOUT_PUBLIC} form={form} layout={'horizontal'} preserve={false}>
+        {renderRoleForm()}
+      </Form>
+    </>
+  );
 };
 export default NodeForm;

@@ -26,7 +26,6 @@ export default {
   'menu.account.checkTenantConfirm': 'Are you sure to switch  tenant [ {tenantCode} ] ?',
   'menu.account.logout': 'Logout',
 
-
   'menu.dataStudio': 'Data Studio',
 
   'menu.devops': 'Devops',

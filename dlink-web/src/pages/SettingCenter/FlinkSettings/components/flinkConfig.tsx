@@ -17,12 +17,12 @@
  *
  */
 
-import React, {useEffect, useState} from 'react';
-import {Form, Input, List, Switch} from 'antd';
-import {connect} from "umi";
-import {SettingsStateType} from "@/pages/SettingCenter/FlinkSettings/model";
-import {saveSettings} from "@/pages/SettingCenter/FlinkSettings/function";
-import {l} from "@/utils/intl";
+import React, { useEffect, useState } from 'react';
+import { Form, Input, List, Switch } from 'antd';
+import { connect } from 'umi';
+import { SettingsStateType } from '@/pages/SettingCenter/FlinkSettings/model';
+import { saveSettings } from '@/pages/SettingCenter/FlinkSettings/function';
+import { l } from '@/utils/intl';
 
 type FlinkConfigProps = {
   useRestAPI: SettingsStateType['useRestAPI'];
@@ -32,13 +32,7 @@ type FlinkConfigProps = {
 };
 
 const FlinkConfigView: React.FC<FlinkConfigProps> = (props) => {
-
-  const {
-    useRestAPI,
-    sqlSeparator,
-    jobIdWait,
-    dispatch
-  } = props;
+  const { useRestAPI, sqlSeparator, jobIdWait, dispatch } = props;
   const [editName, setEditName] = useState<string>('');
   const [formValues, setFormValues] = useState(props);
   const [form] = Form.useForm();
@@ -48,52 +42,70 @@ const FlinkConfigView: React.FC<FlinkConfigProps> = (props) => {
   }, [props]);
 
   const getData = () => [
-     {
+    {
       title: l('pages.settings.FlinkRestAPI'),
       description: l('pages.settings.FlinkNoUseSetting'),
       actions: [
-        <Form.Item
-          name="useRestAPI" valuePropName="checked"
-        >
-          <Switch checkedChildren={l('button.enable')}
-                  unCheckedChildren={l('button.disable')}
-                  checked={useRestAPI}
-          /></Form.Item>],
-    }, {
+        <Form.Item name="useRestAPI" valuePropName="checked">
+          <Switch
+            checkedChildren={l('button.enable')}
+            unCheckedChildren={l('button.disable')}
+            checked={useRestAPI}
+          />
+        </Form.Item>,
+      ],
+    },
+    {
       title: l('pages.settings.FlinkURLSplit'),
-      description: (
-        editName != 'sqlSeparator' ?
-          (sqlSeparator ? sqlSeparator : l('pages.settings.FlinkNoSetting')) : (<Input
-            id='sqlSeparator'
+      description:
+        editName != 'sqlSeparator' ? (
+          sqlSeparator ? (
+            sqlSeparator
+          ) : (
+            l('pages.settings.FlinkNoSetting')
+          )
+        ) : (
+          <Input
+            id="sqlSeparator"
             defaultValue={sqlSeparator}
             onChange={onChange}
-            placeholder=";"/>)),
-      actions: editName != 'sqlSeparator' ? [<a
-          onClick={({}) => handleEditClick('sqlSeparator')}>{l('button.edit')}</a>] :
-        [<a onClick={({}) => handleSaveClick('sqlSeparator')}>{l('button.save')}</a>,
-          <a onClick={({}) => handleCancelClick()}>{l('button.cancel')}</a>],
+            placeholder=";"
+          />
+        ),
+      actions:
+        editName != 'sqlSeparator'
+          ? [<a onClick={({}) => handleEditClick('sqlSeparator')}>{l('button.edit')}</a>]
+          : [
+              <a onClick={({}) => handleSaveClick('sqlSeparator')}>{l('button.save')}</a>,
+              <a onClick={({}) => handleCancelClick()}>{l('button.cancel')}</a>,
+            ],
     },
     {
       title: l('pages.settings.FlinkJobID'),
-      description: (
-        editName != 'jobIdWait' ?
-          (jobIdWait ? jobIdWait : '30') : (
-            <Input
-              id='jobIdWait'
-              defaultValue={jobIdWait}
-              onChange={onChange}
-              placeholder="30"/>)),
-      actions: editName != 'jobIdWait' ? [<a
-          onClick={({}) => handleEditClick('jobIdWait')}>{l('button.edit')}</a>] :
-        [<a onClick={({}) => handleSaveClick('jobIdWait')}>{l('button.save')}</a>,
-          <a onClick={({}) => handleCancelClick()}>{l('button.cancel')}</a>],
+      description:
+        editName != 'jobIdWait' ? (
+          jobIdWait ? (
+            jobIdWait
+          ) : (
+            '30'
+          )
+        ) : (
+          <Input id="jobIdWait" defaultValue={jobIdWait} onChange={onChange} placeholder="30" />
+        ),
+      actions:
+        editName != 'jobIdWait'
+          ? [<a onClick={({}) => handleEditClick('jobIdWait')}>{l('button.edit')}</a>]
+          : [
+              <a onClick={({}) => handleSaveClick('jobIdWait')}>{l('button.save')}</a>,
+              <a onClick={({}) => handleCancelClick()}>{l('button.cancel')}</a>,
+            ],
     },
   ];
 
-  const onChange = e => {
+  const onChange = (e) => {
     let values = {};
     values[e.target.id] = e.target.value;
-    setFormValues({...formValues, ...values});
+    setFormValues({ ...formValues, ...values });
   };
 
   const onValuesChange = (change: any, all: any) => {
@@ -125,17 +137,13 @@ const FlinkConfigView: React.FC<FlinkConfigProps> = (props) => {
   const data = getData();
   return (
     <>
-      <Form
-        form={form}
-        layout="vertical"
-        onValuesChange={onValuesChange}
-      >
+      <Form form={form} layout="vertical" onValuesChange={onValuesChange}>
         <List
           itemLayout="horizontal"
           dataSource={data}
           renderItem={(item) => (
             <List.Item actions={item.actions}>
-              <List.Item.Meta title={item.title} description={item.description}/>
+              <List.Item.Meta title={item.title} description={item.description} />
             </List.Item>
           )}
         />
@@ -143,7 +151,7 @@ const FlinkConfigView: React.FC<FlinkConfigProps> = (props) => {
     </>
   );
 };
-export default connect(({Settings}: { Settings: SettingsStateType }) => ({
+export default connect(({ Settings }: { Settings: SettingsStateType }) => ({
   useRestAPI: Settings.useRestAPI,
   sqlSeparator: Settings.sqlSeparator,
   jobIdWait: Settings.jobIdWait,

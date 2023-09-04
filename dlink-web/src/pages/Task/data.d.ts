@@ -17,24 +17,23 @@
  *
  */
 
-
 export type TaskTableListItem = {
-  id: number,
-  name: string,
-  dialect: string,
-  type: string,
-  checkPoint: number,
-  savePointPath: string,
-  parallelism: number,
-  fragment: boolean,
-  clusterId: number,
-  clusterName: string,
-  clusterConfigurationId: number,
-  clusterConfigurationName: string,
-  databaseId: number,
-  databaseName: string,
-  note: string,
-  enabled: boolean,
-  createTime: Date,
-  updateTime: Date,
+  id: number;
+  name: string;
+  dialect: string;
+  type: string;
+  checkPoint: number;
+  savePointPath: string;
+  parallelism: number;
+  fragment: boolean;
+  clusterId: number;
+  clusterName: string;
+  clusterConfigurationId: number;
+  clusterConfigurationName: string;
+  databaseId: number;
+  databaseName: string;
+  note: string;
+  enabled: boolean;
+  createTime: Date;
+  updateTime: Date;
 };

@@ -20,12 +20,13 @@
 export default () => {
   return (
     <>
-      <div className={"grafana"}>
-        <iframe src={"http://192.168.1.88:3000/d/PDv5u_KVk/cep?orgId=1&refresh=5s&kiosk"} width={"100%"} height = {"1000px" }>
-
-        </iframe>
+      <div className={'grafana'}>
+        <iframe
+          src={'http://192.168.1.88:3000/d/PDv5u_KVk/cep?orgId=1&refresh=5s&kiosk'}
+          width={'100%'}
+          height={'1000px'}
+        ></iframe>
       </div>
     </>
-  )
-}
-
+  );
+};

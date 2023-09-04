@@ -17,37 +17,39 @@
  *
  */
 
-import type {FormInstance} from 'antd/es/form';
-import {Button, Checkbox, Col, Form, InputNumber, message, Row, Select, Switch} from "antd";
-import {StateType} from "@/pages/DataStudio/model";
-import {connect} from "umi";
-import React, {useEffect, useState} from "react";
-import {createTaskDefinition, getTaskMainInfos, updateTaskDefinition} from "@/pages/DataStudio/service";
-import {CODE} from "@/components/Common/crud";
-import TextArea from "antd/es/input/TextArea";
-import {l} from "@/utils/intl";
+import type { FormInstance } from 'antd/es/form';
+import { Button, Checkbox, Col, Form, InputNumber, message, Row, Select, Switch } from 'antd';
+import { StateType } from '@/pages/DataStudio/model';
+import { connect } from 'umi';
+import React, { useEffect, useState } from 'react';
+import {
+  createTaskDefinition,
+  getTaskMainInfos,
+  updateTaskDefinition,
+} from '@/pages/DataStudio/service';
+import { CODE } from '@/components/Common/crud';
+import TextArea from 'antd/es/input/TextArea';
+import { l } from '@/utils/intl';
 
 const DolphinPush = (props: any) => {
-
-
-  const {data, taskCur, handleDolphinModalVisible} = props;
+  const { data, taskCur, handleDolphinModalVisible } = props;
 
   const [options, setOptions] = useState([]);
   const formRef = React.createRef<FormInstance>();
 
-  const [processCode, setProcessCode] = useState("");
+  const [processCode, setProcessCode] = useState('');
 
   const CheckboxGroup = Checkbox.Group;
 
   const layout = {
-    labelCol: {span: 6},
-    wrapperCol: {span: 18},
+    labelCol: { span: 6 },
+    wrapperCol: { span: 18 },
   };
   useEffect(() => {
     options.length = 0;
     taskMainInfos();
     setFormValue();
-  }, [taskCur])
+  }, [taskCur]);
 
   //前置任务数据集合
   const taskMainInfos = () => {
@@ -55,15 +57,16 @@ const DolphinPush = (props: any) => {
       const res = getTaskMainInfos(taskCur.task.id);
       res.then((result) => {
         if (result.code == CODE.SUCCESS) {
-          setOptions(result.datas.map((item: { taskName: any; taskCode: any; }) => ({
+          setOptions(
+            result.datas.map((item: { taskName: any; taskCode: any }) => ({
               label: item.taskName,
-              value: item.taskCode
-            })
-          ))
+              value: item.taskCode,
+            })),
+          );
         } else {
-          message.error(l('pages.datastudio.editor.push.ds.query.error','',{msg: result.msg}));
+          message.error(l('pages.datastudio.editor.push.ds.query.error', '', { msg: result.msg }));
         }
-      })
+      });
     }
   };
 
@@ -71,23 +74,23 @@ const DolphinPush = (props: any) => {
   const setFormValue = () => {
     //是否已有数据
     if (data) {
-      // 
-      setProcessCode(data.processDefinitionCode)
+      //
+      setProcessCode(data.processDefinitionCode);
 
       setTimeoutFlagHidden(data.timeoutFlag === 'OPEN');
 
-      let tns = []
-      if (data.timeoutNotifyStrategy === "WARNFAILED") {
-        tns = ['WARN', 'FAILED']
+      let tns = [];
+      if (data.timeoutNotifyStrategy === 'WARNFAILED') {
+        tns = ['WARN', 'FAILED'];
       } else {
-        // 
-        tns = data.timeoutNotifyStrategy ? data.timeoutNotifyStrategy.split(',') : []
+        //
+        tns = data.timeoutNotifyStrategy ? data.timeoutNotifyStrategy.split(',') : [];
       }
-      // 
+      //
       //前置任务勾选
       let upstreamCodesTem = [];
       for (let key in data.upstreamTaskMap) {
-        upstreamCodesTem.push(parseInt(key))
+        upstreamCodesTem.push(parseInt(key));
       }
 
       formRef.current.setFieldsValue({
@@ -100,9 +103,8 @@ const DolphinPush = (props: any) => {
         timeout: data.timeout,
         flag: data.flag === 'YES',
         timeoutFlag: data.timeoutFlag === 'OPEN',
-        timeoutNotifyStrategy: tns
+        timeoutNotifyStrategy: tns,
       });
-
     } else {
       formRef.current.setFieldsValue({
         flag: true,
@@ -115,24 +117,24 @@ const DolphinPush = (props: any) => {
   //表单提交，添加/更新海豚任务
   const onFinish = (values: any) => {
     // console.log(values);
-    values.flag === true ? values.flag = 'YES' : values.flag = 'NO';
-    values.upstreamCodes ? values.upstreamCodes = values.upstreamCodes.toString() : "";
+    values.flag === true ? (values.flag = 'YES') : (values.flag = 'NO');
+    values.upstreamCodes ? (values.upstreamCodes = values.upstreamCodes.toString()) : '';
     values.processCode = processCode;
 
     if (values.timeoutFlag === false) {
-      values.timeoutFlag = 'CLOSE'
+      values.timeoutFlag = 'CLOSE';
       values.timeoutNotifyStrategy = null;
       values.timeout = 0;
     } else {
-      values.timeoutFlag = 'OPEN'
+      values.timeoutFlag = 'OPEN';
       values.timeout = 1;
       if (values.timeoutNotifyStrategy && values.timeoutNotifyStrategy.length > 1) {
-        values.timeoutNotifyStrategy = "WARNFAILED";
+        values.timeoutNotifyStrategy = 'WARNFAILED';
       } else if (values.timeoutNotifyStrategy && values.timeoutNotifyStrategy.length === 1) {
-        values.timeoutNotifyStrategy = values.timeoutNotifyStrategy[0]
+        values.timeoutNotifyStrategy = values.timeoutNotifyStrategy[0];
       } else {
         message.error(l('pages.datastudio.editor.push.ds.timeout.strategy'));
-        return
+        return;
       }
     }
 
@@ -142,18 +144,28 @@ const DolphinPush = (props: any) => {
         if (result.code == CODE.SUCCESS) {
           handleDolphinModalVisible(false);
         } else {
-          message.error(l('pages.datastudio.editor.push.ds.add.job.error','',{msg:result.msg}));
+          message.error(
+            l('pages.datastudio.editor.push.ds.add.job.error', '', { msg: result.msg }),
+          );
         }
-      })
+      });
     } else {
-      const res = updateTaskDefinition(data.processDefinitionCode, data.projectCode, data.code, values.upstreamCodes, values);
+      const res = updateTaskDefinition(
+        data.processDefinitionCode,
+        data.projectCode,
+        data.code,
+        values.upstreamCodes,
+        values,
+      );
       res.then((result) => {
         if (result.code == CODE.SUCCESS) {
           handleDolphinModalVisible(false);
         } else {
-          message.error(l('pages.datastudio.editor.push.ds.add.job.error','',{msg:result.msg}));
+          message.error(
+            l('pages.datastudio.editor.push.ds.add.job.error', '', { msg: result.msg }),
+          );
         }
-      })
+      });
     }
   };
 
@@ -162,19 +174,32 @@ const DolphinPush = (props: any) => {
   function onSwitchChange(checked: boolean) {
     setTimeoutFlagHidden(checked);
     formRef.current.setFieldsValue({
-      timeout: 1
+      timeout: 1,
     });
   }
 
   return (
     <Form {...layout} ref={formRef} name="control-hooks" onFinish={onFinish}>
-      <Form.Item name={['upstreamCodes']} style={{marginBottom: 10}} label={l('pages.datastudio.editor.push.ds.prejob')}>
-        <Select mode='multiple' style={{width: '100%'}} options={options} placeholder={l('pages.datastudio.editor.push.ds.prejob.tip')}
-                maxTagCount='responsive'/>
+      <Form.Item
+        name={['upstreamCodes']}
+        style={{ marginBottom: 10 }}
+        label={l('pages.datastudio.editor.push.ds.prejob')}
+      >
+        <Select
+          mode="multiple"
+          style={{ width: '100%' }}
+          options={options}
+          placeholder={l('pages.datastudio.editor.push.ds.prejob.tip')}
+          maxTagCount="responsive"
+        />
       </Form.Item>
 
-      <Form.Item name={['taskPriority']} style={{marginBottom: 10}} label={l('pages.datastudio.editor.push.ds.job.priority')}>
-        <Select style={{width: 180}}>
+      <Form.Item
+        name={['taskPriority']}
+        style={{ marginBottom: 10 }}
+        label={l('pages.datastudio.editor.push.ds.job.priority')}
+      >
+        <Select style={{ width: 180 }}>
           <Option value="HIGH">HIGH</Option>
           <Option value="HIGHEST">HIGHEST</Option>
           <Option value="LOW">LOW</Option>
@@ -183,52 +208,83 @@ const DolphinPush = (props: any) => {
         </Select>
       </Form.Item>
 
-      <Form.Item name={['failRetryTimes']} style={{marginBottom: 10}} label={l('pages.datastudio.editor.push.ds.errortry.count')}>
-        <InputNumber min={0} max={99} style={{width: 180}}/>
+      <Form.Item
+        name={['failRetryTimes']}
+        style={{ marginBottom: 10 }}
+        label={l('pages.datastudio.editor.push.ds.errortry.count')}
+      >
+        <InputNumber min={0} max={99} style={{ width: 180 }} />
       </Form.Item>
-      <Form.Item name={['failRetryInterval']} style={{marginBottom: 10}} label={l('pages.datastudio.editor.push.ds.errortry.min')}>
-        <InputNumber min={0} style={{width: 180}}/>
+      <Form.Item
+        name={['failRetryInterval']}
+        style={{ marginBottom: 10 }}
+        label={l('pages.datastudio.editor.push.ds.errortry.min')}
+      >
+        <InputNumber min={0} style={{ width: 180 }} />
       </Form.Item>
-      <Form.Item name={['delayTime']} style={{marginBottom: 10}} label={l('pages.datastudio.editor.push.ds.delayed.time')}>
-        <InputNumber min={0} style={{width: 180}}/>
+      <Form.Item
+        name={['delayTime']}
+        style={{ marginBottom: 10 }}
+        label={l('pages.datastudio.editor.push.ds.delayed.time')}
+      >
+        <InputNumber min={0} style={{ width: 180 }} />
       </Form.Item>
-      <Form.Item name={['timeoutFlag']} style={{marginBottom: 10}} label={l('pages.datastudio.editor.push.ds.timeout.alarm')} valuePropName="checked">
-        <Switch checkedChildren="OPEN" unCheckedChildren="CLOSE" onChange={onSwitchChange}/>
+      <Form.Item
+        name={['timeoutFlag']}
+        style={{ marginBottom: 10 }}
+        label={l('pages.datastudio.editor.push.ds.timeout.alarm')}
+        valuePropName="checked"
+      >
+        <Switch checkedChildren="OPEN" unCheckedChildren="CLOSE" onChange={onSwitchChange} />
       </Form.Item>
-      <Form.Item name={['timeoutNotifyStrategy']} style={{marginBottom: 10}} hidden={!timeoutFlagHidden}
-                 label={l('pages.datastudio.editor.push.ds.timeout.strategy')}>
+      <Form.Item
+        name={['timeoutNotifyStrategy']}
+        style={{ marginBottom: 10 }}
+        hidden={!timeoutFlagHidden}
+        label={l('pages.datastudio.editor.push.ds.timeout.strategy')}
+      >
         <CheckboxGroup>
           <Row>
             <Col span={12}>
               <Checkbox value="WARN">{l('pages.datastudio.editor.push.ds.timeout.alarm')}</Checkbox>
             </Col>
             <Col span={12}>
-              <Checkbox value="FAILED">{l('pages.datastudio.editor.push.ds.timeout.error')}</Checkbox>
+              <Checkbox value="FAILED">
+                {l('pages.datastudio.editor.push.ds.timeout.error')}
+              </Checkbox>
             </Col>
           </Row>
         </CheckboxGroup>
       </Form.Item>
-      <Form.Item name={['timeout']} style={{marginBottom: 10}} hidden={!timeoutFlagHidden} label={l('pages.datastudio.editor.push.ds.timeout.min')}>
-        <InputNumber min={1} value={30} style={{width: 180}}/>
+      <Form.Item
+        name={['timeout']}
+        style={{ marginBottom: 10 }}
+        hidden={!timeoutFlagHidden}
+        label={l('pages.datastudio.editor.push.ds.timeout.min')}
+      >
+        <InputNumber min={1} value={30} style={{ width: 180 }} />
       </Form.Item>
-      <Form.Item name={['flag']} style={{marginBottom: 10}} label={l('pages.datastudio.editor.push.ds.running.tag')} valuePropName="checked">
-        <Switch checkedChildren="YES" unCheckedChildren="NO"/>
+      <Form.Item
+        name={['flag']}
+        style={{ marginBottom: 10 }}
+        label={l('pages.datastudio.editor.push.ds.running.tag')}
+        valuePropName="checked"
+      >
+        <Switch checkedChildren="YES" unCheckedChildren="NO" />
       </Form.Item>
-      <Form.Item name={['description']} style={{marginBottom: 10}} label={l('global.table.note')}>
-        <TextArea rows={3} placeholder={l('global.table.note')} maxLength={250}/>
+      <Form.Item name={['description']} style={{ marginBottom: 10 }} label={l('global.table.note')}>
+        <TextArea rows={3} placeholder={l('global.table.note')} maxLength={250} />
       </Form.Item>
-      <Form.Item wrapperCol={{offset: 8, span: 16}}>
+      <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
         <Button type="primary" htmlType="submit">
           {l('button.save')}
         </Button>
       </Form.Item>
     </Form>
   );
-}
+};
 
-
-export default connect(({Studio}: { Studio: StateType }) => ({
+export default connect(({ Studio }: { Studio: StateType }) => ({
   current: Studio.current,
   currentSession: Studio.currentSession,
 }))(DolphinPush);
-

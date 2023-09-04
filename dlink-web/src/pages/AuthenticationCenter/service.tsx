@@ -17,29 +17,30 @@
  *
  */
 
-
-import {queryData} from "@/components/Common/crud";
+import { queryData } from '@/components/Common/crud';
 
 /*--- 刷新 NameSpace ---*/
 export function getNameSpaceList(dispatch: any) {
   const res = queryData('/api/namespace');
   res.then((result) => {
-    result.data && dispatch && dispatch({
-      type: "NameSpace/saveNameSpace",
-      payload: result.data,
-    });
+    result.data &&
+      dispatch &&
+      dispatch({
+        type: 'NameSpace/saveNameSpace',
+        payload: result.data,
+      });
   });
 }
-
 
 /*--- 获取角色 ---*/
 export function getRoleList(dispatch: any) {
   const res = queryData('/api/role');
   res.then((result) => {
-    result.data && dispatch && dispatch({
-      type: "NameSpace/saveRole",
-      payload: result.data,
-    });
+    result.data &&
+      dispatch &&
+      dispatch({
+        type: 'NameSpace/saveRole',
+        payload: result.data,
+      });
   });
 }
-

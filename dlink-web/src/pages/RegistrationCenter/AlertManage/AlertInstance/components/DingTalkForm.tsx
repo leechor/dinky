@@ -17,13 +17,15 @@
  *
  */
 
-
-import React, {useState} from 'react';
-import {Button, Divider, Form, Input, Modal, Radio, Switch} from 'antd';
-import {AlertInstanceTableListItem} from "@/pages/RegistrationCenter/data";
-import {buildJSONData, getJSONData} from "@/pages/RegistrationCenter/AlertManage/AlertInstance/function";
-import {ALERT_TYPE} from "@/pages/RegistrationCenter/AlertManage/AlertInstance/conf";
-import {l} from "@/utils/intl";
+import React, { useState } from 'react';
+import { Button, Divider, Form, Input, Modal, Radio, Switch } from 'antd';
+import { AlertInstanceTableListItem } from '@/pages/RegistrationCenter/data';
+import {
+  buildJSONData,
+  getJSONData,
+} from '@/pages/RegistrationCenter/AlertManage/AlertInstance/function';
+import { ALERT_TYPE } from '@/pages/RegistrationCenter/AlertManage/AlertInstance/conf';
+import { l } from '@/utils/intl';
 
 export type AlertInstanceFormProps = {
   onCancel: (flag?: boolean) => void;
@@ -34,8 +36,8 @@ export type AlertInstanceFormProps = {
 };
 
 const formLayout = {
-  labelCol: {span: 7},
-  wrapperCol: {span: 13},
+  labelCol: { span: 7 },
+  wrapperCol: { span: 13 },
 };
 
 const DingTalkForm: React.FC<AlertInstanceFormProps> = (props) => {
@@ -56,7 +58,7 @@ const DingTalkForm: React.FC<AlertInstanceFormProps> = (props) => {
   } = props;
 
   const onValuesChange = (change: any, all: any) => {
-    setFormVals({...formVals, ...change});
+    setFormVals({ ...formVals, ...change });
   };
 
   const sendTestForm = async () => {
@@ -78,95 +80,90 @@ const DingTalkForm: React.FC<AlertInstanceFormProps> = (props) => {
         <Form.Item
           name="name"
           label={l('pages.rc.alert.instance.name')}
-          rules={[{required: true, message: l('pages.rc.alert.instance.namePleaseHolder')}]}
+          rules={[{ required: true, message: l('pages.rc.alert.instance.namePleaseHolder') }]}
         >
-          <Input placeholder={l('pages.rc.alert.instance.namePleaseHolder')}/>
+          <Input placeholder={l('pages.rc.alert.instance.namePleaseHolder')} />
         </Form.Item>
         <Form.Item
           name="webhook"
           label={l('pages.rc.alert.instance.webhook')}
-          rules={[{required: true, message: l('pages.rc.alert.instance.webhookPleaseHolder')}]}
+          rules={[{ required: true, message: l('pages.rc.alert.instance.webhookPleaseHolder') }]}
         >
-          <Input.TextArea placeholder={l('pages.rc.alert.instance.webhookPleaseHolder')} allowClear
-                          autoSize={{minRows: 1, maxRows: 5}}/>
+          <Input.TextArea
+            placeholder={l('pages.rc.alert.instance.webhookPleaseHolder')}
+            allowClear
+            autoSize={{ minRows: 1, maxRows: 5 }}
+          />
         </Form.Item>
-        <Form.Item
-          name="keyword"
-          label={l('pages.rc.alert.instance.keyword')}
-        >
-          <Input placeholder={l('pages.rc.alert.instance.keywordPleaseHolder')}/>
+        <Form.Item name="keyword" label={l('pages.rc.alert.instance.keyword')}>
+          <Input placeholder={l('pages.rc.alert.instance.keywordPleaseHolder')} />
         </Form.Item>
-        <Form.Item
-          name="secret"
-          label={l('pages.rc.alert.instance.secret')}
-        >
-          <Input placeholder={l('pages.rc.alert.instance.secretPleaseHolder')}/>
+        <Form.Item name="secret" label={l('pages.rc.alert.instance.secret')}>
+          <Input placeholder={l('pages.rc.alert.instance.secretPleaseHolder')} />
         </Form.Item>
-        <Form.Item
-          name="isEnableProxy"
-          label={l('pages.rc.alert.instance.isEnableProxy')}>
-          <Switch checkedChildren={l('button.enable')} unCheckedChildren={l('button.disable')}
-                  defaultChecked={vals.isEnableProxy}/>
+        <Form.Item name="isEnableProxy" label={l('pages.rc.alert.instance.isEnableProxy')}>
+          <Switch
+            checkedChildren={l('button.enable')}
+            unCheckedChildren={l('button.disable')}
+            defaultChecked={vals.isEnableProxy}
+          />
         </Form.Item>
-        {vals.isEnableProxy ? <>
-          <Form.Item
-            name="proxy"
-            label={l('pages.rc.alert.instance.proxy')}
-          >
-            <Input placeholder={l('pages.rc.alert.instance.proxyPleaseHolder')}/>
-          </Form.Item>
-          <Form.Item
-            name="port"
-            label={l('pages.rc.alert.instance.port')}
-          >
-            <Input placeholder={l('pages.rc.alert.instance.portPleaseHolder')}/>
-          </Form.Item>
-          <Form.Item
-            name="user"
-            label={l('pages.rc.alert.instance.user')}
-          >
-            <Input placeholder={l('pages.rc.alert.instance.userPleaseHolder')}/>
-          </Form.Item>
-          <Form.Item
-            name="password"
-            label={l('pages.rc.alert.instance.password')}
-          >
-            <Input.Password placeholder={l('pages.rc.alert.instance.passwordPleaseHolder')}/>
-          </Form.Item></> : undefined
-        }
-        <Form.Item
-          name="isAtAll"
-          label={l('pages.rc.alert.instance.isAtAll')}>
-          <Switch checkedChildren={l('button.enable')} unCheckedChildren={l('button.disable')}
-                  defaultChecked={vals.isAtAll}/>
+        {vals.isEnableProxy ? (
+          <>
+            <Form.Item name="proxy" label={l('pages.rc.alert.instance.proxy')}>
+              <Input placeholder={l('pages.rc.alert.instance.proxyPleaseHolder')} />
+            </Form.Item>
+            <Form.Item name="port" label={l('pages.rc.alert.instance.port')}>
+              <Input placeholder={l('pages.rc.alert.instance.portPleaseHolder')} />
+            </Form.Item>
+            <Form.Item name="user" label={l('pages.rc.alert.instance.user')}>
+              <Input placeholder={l('pages.rc.alert.instance.userPleaseHolder')} />
+            </Form.Item>
+            <Form.Item name="password" label={l('pages.rc.alert.instance.password')}>
+              <Input.Password placeholder={l('pages.rc.alert.instance.passwordPleaseHolder')} />
+            </Form.Item>
+          </>
+        ) : undefined}
+        <Form.Item name="isAtAll" label={l('pages.rc.alert.instance.isAtAll')}>
+          <Switch
+            checkedChildren={l('button.enable')}
+            unCheckedChildren={l('button.disable')}
+            defaultChecked={vals.isAtAll}
+          />
         </Form.Item>
-        {vals.isAtAll ? undefined :
+        {vals.isAtAll ? undefined : (
           <>
             <Form.Item
               name="atMobiles"
               label={l('pages.rc.alert.instance.atMobiles')}
-              rules={[{required: true, message: l('pages.rc.alert.instance.atMobilesPleaseHolder') }]}
+              rules={[
+                { required: true, message: l('pages.rc.alert.instance.atMobilesPleaseHolder') },
+              ]}
             >
-              <Input.TextArea placeholder={l('pages.rc.alert.instance.atMobilesPleaseHolder')} allowClear
-                              autoSize={{minRows: 1, maxRows: 5}}/>
+              <Input.TextArea
+                placeholder={l('pages.rc.alert.instance.atMobilesPleaseHolder')}
+                allowClear
+                autoSize={{ minRows: 1, maxRows: 5 }}
+              />
             </Form.Item>
           </>
-        }
+        )}
 
-        <Form.Item
-          name="enabled"
-          label={l('global.table.isEnable')}>
-          <Switch checkedChildren={l('button.enable')} unCheckedChildren={l('button.disable')}
-                  defaultChecked={vals.enabled}/>
+        <Form.Item name="enabled" label={l('global.table.isEnable')}>
+          <Switch
+            checkedChildren={l('button.enable')}
+            unCheckedChildren={l('button.disable')}
+            defaultChecked={vals.enabled}
+          />
         </Form.Item>
         <Form.Item
           name="msgtype"
           label={l('pages.rc.alert.instance.msgtype')}
-          rules={[{required: true, message: l('pages.rc.alert.instance.msgtypePleaseHolder')}]}
+          rules={[{ required: true, message: l('pages.rc.alert.instance.msgtypePleaseHolder') }]}
         >
           <Radio.Group>
-            <Radio value='markdown'>{l('pages.rc.alert.instance.markdown')}</Radio>
-            <Radio value='text'>{l('pages.rc.alert.instance.text')}</Radio>
+            <Radio value="markdown">{l('pages.rc.alert.instance.markdown')}</Radio>
+            <Radio value="text">{l('pages.rc.alert.instance.text')}</Radio>
           </Radio.Group>
         </Form.Item>
       </>
@@ -177,19 +174,24 @@ const DingTalkForm: React.FC<AlertInstanceFormProps> = (props) => {
     return (
       <>
         <Button onClick={() => handleModalVisible(false)}>{l('button.cancel')}</Button>
-        <Button type="primary" onClick={() => sendTestForm()}>{l('button.test')}</Button>
-        <Button type="primary" onClick={() => submitForm()}>{l('button.finish')}</Button>
+        <Button type="primary" onClick={() => sendTestForm()}>
+          {l('button.test')}
+        </Button>
+        <Button type="primary" onClick={() => submitForm()}>
+          {l('button.finish')}
+        </Button>
       </>
     );
   };
 
-
   return (
     <Modal
-      width={"40%"}
-      bodyStyle={{padding: '32px 40px 48px',height: '600px', overflowY: 'auto'}}
+      width={'40%'}
+      bodyStyle={{ padding: '32px 40px 48px', height: '600px', overflowY: 'auto' }}
       destroyOnClose
-      title={formVals.id ? l('pages.rc.alert.instance.modify') : l('pages.rc.alert.instance.create')}
+      title={
+        formVals.id ? l('pages.rc.alert.instance.modify') : l('pages.rc.alert.instance.create')
+      }
       visible={modalVisible}
       footer={renderFooter()}
       onCancel={() => handleModalVisible()}

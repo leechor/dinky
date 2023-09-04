@@ -17,11 +17,11 @@
  *
  */
 
-import React, {useState} from 'react';
-import {Button, Form, Input, Modal, Switch} from 'antd';
-import TextArea from "antd/es/input/TextArea";
-import {FragmentVariableTableListItem} from "@/pages/RegistrationCenter/data";
-import {l} from "@/utils/intl";
+import React, { useState } from 'react';
+import { Button, Form, Input, Modal, Switch } from 'antd';
+import TextArea from 'antd/es/input/TextArea';
+import { FragmentVariableTableListItem } from '@/pages/RegistrationCenter/data';
+import { l } from '@/utils/intl';
 
 export type FragmentFormProps = {
   onCancel: (flag?: boolean) => void;
@@ -33,15 +33,12 @@ export type FragmentFormProps = {
 
 const FormItem = Form.Item;
 
-
 const formLayout = {
-  labelCol: {span: 7},
-  wrapperCol: {span: 13},
+  labelCol: { span: 7 },
+  wrapperCol: { span: 13 },
 };
 
 const FragmentForm: React.FC<FragmentFormProps> = (props: any) => {
-
-
   const [form] = Form.useForm();
   const [formVals, setFormVals] = useState<Partial<FragmentVariableTableListItem>>({
     id: props.values.id,
@@ -53,18 +50,13 @@ const FragmentForm: React.FC<FragmentFormProps> = (props: any) => {
     updateTime: props.values.updateTime,
   });
 
-  const {
-    onSubmit: handleSubmit,
-    onCancel: handleModalVisible,
-    modalVisible,
-  } = props;
-
+  const { onSubmit: handleSubmit, onCancel: handleModalVisible, modalVisible } = props;
 
   const submitForm = async () => {
     const fieldsValue = await form.validateFields();
     fieldsValue.id = formVals.id;
-    setFormVals({...formVals, ...fieldsValue});
-    handleSubmit({...formVals, ...fieldsValue});
+    setFormVals({ ...formVals, ...fieldsValue });
+    handleSubmit({ ...formVals, ...fieldsValue });
   };
 
   const renderContent = (formVals: FragmentVariableTableListItem) => {
@@ -73,30 +65,38 @@ const FragmentForm: React.FC<FragmentFormProps> = (props: any) => {
         <FormItem
           name="name"
           label={l('pages.rc.fv.name')}
-          rules={[{required: true, message: l('pages.rc.fv.namePlaceholder')}]}>
-          <Input placeholder={l('pages.rc.fv.namePlaceholder')}/>
-        </FormItem>
-        <FormItem
-          name="note"
-          label={l('global.table.note')}
+          rules={[{ required: true, message: l('pages.rc.fv.namePlaceholder') }]}
         >
-          <TextArea placeholder={l('global.table.notePlaceholder')} allowClear autoSize={{minRows: 3, maxRows: 10}}/>
+          <Input placeholder={l('pages.rc.fv.namePlaceholder')} />
+        </FormItem>
+        <FormItem name="note" label={l('global.table.note')}>
+          <TextArea
+            placeholder={l('global.table.notePlaceholder')}
+            allowClear
+            autoSize={{ minRows: 3, maxRows: 10 }}
+          />
         </FormItem>
         <FormItem
           name="fragmentValue"
           label={l('pages.rc.fv.fragmentValue')}
-          rules={[{required: true, message: l('pages.rc.fv.fragmentValuePlaceholder')}]}
+          rules={[{ required: true, message: l('pages.rc.fv.fragmentValuePlaceholder') }]}
         >
-          <TextArea placeholder={l('pages.rc.fv.fragmentValuePlaceholder')}
-                    allowClear
-                    autoSize={{minRows: 3, maxRows: 10}}/>
+          <TextArea
+            placeholder={l('pages.rc.fv.fragmentValuePlaceholder')}
+            allowClear
+            autoSize={{ minRows: 3, maxRows: 10 }}
+          />
         </FormItem>
         <FormItem
           name="enabled"
           label={l('global.table.isEnable')}
-          rules={[{required: true, message: l('pages.rc.fv.enabledPlaceholder')}]}>
-          <Switch  checkedChildren={l('button.enable')} unCheckedChildren={l('button.disable')}
-                  defaultChecked={formVals.enabled}/>
+          rules={[{ required: true, message: l('pages.rc.fv.enabledPlaceholder') }]}
+        >
+          <Switch
+            checkedChildren={l('button.enable')}
+            unCheckedChildren={l('button.disable')}
+            defaultChecked={formVals.enabled}
+          />
         </FormItem>
       </>
     );
@@ -106,26 +106,24 @@ const FragmentForm: React.FC<FragmentFormProps> = (props: any) => {
     return (
       <>
         <Button onClick={() => handleModalVisible(false)}>{l('button.cancel')}</Button>
-        <Button type="primary" onClick={() => submitForm()}>{l('button.finish')}</Button>
+        <Button type="primary" onClick={() => submitForm()}>
+          {l('button.finish')}
+        </Button>
       </>
     );
   };
 
   return (
     <Modal
-      width={"40%"}
-      bodyStyle={{padding: '32px 40px 48px'}}
+      width={'40%'}
+      bodyStyle={{ padding: '32px 40px 48px' }}
       destroyOnClose
       title={formVals.id ? l('pages.rc.fv.modify') : l('pages.rc.fv.create')}
       open={modalVisible}
       footer={renderFooter()}
       onCancel={() => handleModalVisible()}
     >
-      <Form
-        {...formLayout}
-        form={form}
-        initialValues={formVals as FragmentVariableTableListItem}
-      >
+      <Form {...formLayout} form={form} initialValues={formVals as FragmentVariableTableListItem}>
         {renderContent(formVals as FragmentVariableTableListItem)}
       </Form>
     </Modal>

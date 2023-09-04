@@ -17,21 +17,21 @@
  *
  */
 
-
-import React from "react";
-import {CheckSquareOutlined, KeyOutlined} from '@ant-design/icons';
-import DTable from "@/components/Common/DTable";
-import {DIALECT} from "@/components/Studio/conf";
-import {l} from "@/utils/intl";
+import React from 'react';
+import { CheckSquareOutlined, KeyOutlined } from '@ant-design/icons';
+import DTable from '@/components/Common/DTable';
+import { DIALECT } from '@/components/Studio/conf';
+import { l } from '@/utils/intl';
 
 const FlinkColumns = (props: any) => {
-  const {envId, catalog, database, table} = props;
+  const { envId, catalog, database, table } = props;
 
-  const cols = [{
-    title:  l('pages.flinkColumns.position'),
-    dataIndex: 'position',
-    isString: false,
-  },
+  const cols = [
+    {
+      title: l('pages.flinkColumns.position'),
+      dataIndex: 'position',
+      isString: false,
+    },
     {
       title: l('pages.flinkColumns.name'),
       dataIndex: 'name',
@@ -45,9 +45,7 @@ const FlinkColumns = (props: any) => {
       title: l('pages.flinkColumns.key.true'),
       dataIndex: 'key',
       render: (_, record) => (
-        <>
-          {record.key ? <KeyOutlined style={{color: '#FAA100'}}/> : undefined}
-        </>
+        <>{record.key ? <KeyOutlined style={{ color: '#FAA100' }} /> : undefined}</>
       ),
       filters: [
         {
@@ -60,13 +58,12 @@ const FlinkColumns = (props: any) => {
         },
       ],
       openSearch: 'dict',
-    }, {
+    },
+    {
       title: l('pages.flinkColumns.isnull'),
       dataIndex: 'nullable',
       render: (_, record) => (
-        <>
-          {record.nullable ? <CheckSquareOutlined style={{color: '#1296db'}}/> : undefined}
-        </>
+        <>{record.nullable ? <CheckSquareOutlined style={{ color: '#1296db' }} /> : undefined}</>
       ),
       filters: [
         {
@@ -79,26 +76,32 @@ const FlinkColumns = (props: any) => {
         },
       ],
       openSearch: 'dict',
-    }, {
+    },
+    {
       title: l('pages.flinkColumns.extras'),
       dataIndex: 'extras',
-    }, {
+    },
+    {
       title: l('pages.flinkColumns.watermark'),
       dataIndex: 'watermark',
-    },];
+    },
+  ];
 
   return (
-    <DTable columns={cols}
-            dataSource={{
-              url: 'api/studio/getMSFlinkColumns', params: {
-                envId,
-                dialect: DIALECT.FLINKSQL,
-                catalog,
-                database,
-                table
-              }
-            }}/>
-  )
+    <DTable
+      columns={cols}
+      dataSource={{
+        url: 'api/studio/getMSFlinkColumns',
+        params: {
+          envId,
+          dialect: DIALECT.FLINKSQL,
+          catalog,
+          database,
+          table,
+        },
+      }}
+    />
+  );
 };
 
 export default FlinkColumns;

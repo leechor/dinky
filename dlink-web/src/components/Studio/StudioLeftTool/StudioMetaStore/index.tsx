@@ -17,11 +17,10 @@
  *
  */
 
-
-import {Button, Col, Empty, message, Modal, Row, Select, Tabs, Tooltip, Tree} from "antd";
-import {MetaStoreTableType, StateType} from "@/pages/DataStudio/model";
-import {connect} from "umi";
-import React, {useState} from "react";
+import { Button, Col, Empty, message, Modal, Row, Select, Tabs, Tooltip, Tree } from 'antd';
+import { MetaStoreTableType, StateType } from '@/pages/DataStudio/model';
+import { connect } from 'umi';
+import React, { useState } from 'react';
 import {
   AppstoreOutlined,
   BlockOutlined,
@@ -32,24 +31,23 @@ import {
   ReloadOutlined,
   TableOutlined,
 } from '@ant-design/icons';
-import {Scrollbars} from 'react-custom-scrollbars';
-import Columns from "@/pages/RegistrationCenter/DataBase/Columns";
-import Tables from "@/pages/RegistrationCenter/DataBase/Tables";
-import {TreeDataNode} from "@/components/Studio/StudioTree/Function";
-import Generation from "@/pages/RegistrationCenter/DataBase/Generation";
-import {getMSSchemaInfo} from "@/pages/DataStudio/service";
-import {Dispatch} from "@@/plugin-dva/connect";
-import {DIALECT} from "@/components/Studio/conf";
-import FlinkColumns from "@/pages/Flink/FlinkColumns";
-import {l} from "@/utils/intl";
+import { Scrollbars } from 'react-custom-scrollbars';
+import Columns from '@/pages/RegistrationCenter/DataBase/Columns';
+import Tables from '@/pages/RegistrationCenter/DataBase/Tables';
+import { TreeDataNode } from '@/components/Studio/StudioTree/Function';
+import Generation from '@/pages/RegistrationCenter/DataBase/Generation';
+import { getMSSchemaInfo } from '@/pages/DataStudio/service';
+import { Dispatch } from '@@/plugin-dva/connect';
+import { DIALECT } from '@/components/Studio/conf';
+import FlinkColumns from '@/pages/Flink/FlinkColumns';
+import { l } from '@/utils/intl';
 
-const {DirectoryTree} = Tree;
-const {Option, OptGroup} = Select;
-const {TabPane} = Tabs;
+const { DirectoryTree } = Tree;
+const { Option, OptGroup } = Select;
+const { TabPane } = Tabs;
 
 const StudioMetaStore = (props: any) => {
-
-  const {current, toolHeight} = props;
+  const { current, toolHeight } = props;
   const [catalog, setCatalog] = useState<string>();
   const [database, setDatabase] = useState<string>();
   const [treeData, setTreeData] = useState<[]>([]);
@@ -80,7 +78,7 @@ const StudioMetaStore = (props: any) => {
       database: databaseTmp,
     };
     const result = getMSSchemaInfo(param);
-    result.then(res => {
+    result.then((res) => {
       const tables: MetaStoreTableType[] = [];
       if (res.datas.tables) {
         for (let i = 0; i < res.datas.tables.length; i++) {
@@ -97,12 +95,12 @@ const StudioMetaStore = (props: any) => {
           name: tables[i].name,
           title: tables[i].name,
           key: tables[i].name,
-          icon: <TableOutlined/>,
+          icon: <TableOutlined />,
           isLeaf: true,
           catalog: catalogTmp,
           database: databaseTmp,
-          isTable: true
-        })
+          isTable: true,
+        });
       }
       treeDataTmp.push({
         name: 'tables',
@@ -120,7 +118,7 @@ const StudioMetaStore = (props: any) => {
             name: res.datas.views[i],
             title: res.datas.views[i],
             key: res.datas.views[i],
-            icon: <BlockOutlined/>,
+            icon: <BlockOutlined />,
             isLeaf: true,
             catalog: catalogTmp,
             database: databaseTmp,
@@ -143,7 +141,7 @@ const StudioMetaStore = (props: any) => {
             name: res.datas.functions[i],
             title: res.datas.functions[i],
             key: res.datas.functions[i],
-            icon: <FunctionOutlined/>,
+            icon: <FunctionOutlined />,
             isLeaf: true,
             catalog: catalogTmp,
             database: databaseTmp,
@@ -166,7 +164,7 @@ const StudioMetaStore = (props: any) => {
             name: res.datas.userFunctions[i],
             title: res.datas.userFunctions[i],
             key: res.datas.userFunctions[i],
-            icon: <FunctionOutlined/>,
+            icon: <FunctionOutlined />,
             isLeaf: true,
             catalog: catalogTmp,
             database: databaseTmp,
@@ -189,7 +187,7 @@ const StudioMetaStore = (props: any) => {
             name: res.datas.modules[i],
             title: res.datas.modules[i],
             key: res.datas.modules[i],
-            icon: <AppstoreOutlined/>,
+            icon: <AppstoreOutlined />,
             isLeaf: true,
             catalog: catalogTmp,
             database: databaseTmp,
@@ -208,7 +206,7 @@ const StudioMetaStore = (props: any) => {
       setTreeData(treeDataTmp);
       props.saveMetaStoreTable(current.key, catalogTmp, databaseTmp, tables);
       message.success(l('pages.metadata.catalogRefreshSuccess'));
-    })
+    });
   };
 
   const refreshMetaStoreTables = () => {
@@ -223,11 +221,15 @@ const StudioMetaStore = (props: any) => {
     const itemList = [];
     if (current?.metaStore) {
       for (const item of current?.metaStore) {
-        itemList.push(<OptGroup label={item.name}>
-          {item.databases.map(({name}) => (
-            <Option value={item.name + '.' + name} label={item.name + '.' + name}>{name}</Option>
-          ))}
-        </OptGroup>)
+        itemList.push(
+          <OptGroup label={item.name}>
+            {item.databases.map(({ name }) => (
+              <Option value={item.name + '.' + name} label={item.name + '.' + name}>
+                {name}
+              </Option>
+            ))}
+          </OptGroup>,
+        );
       }
     }
     return itemList;
@@ -250,32 +252,31 @@ const StudioMetaStore = (props: any) => {
       <Row>
         <Col span={24}>
           <Tooltip title={l('pages.metadata.catalogRefresh')}>
-            <Button
-              type="text"
-              icon={<ReloadOutlined/>}
-              onClick={refreshMetaStoreTables}
-            />
+            <Button type="text" icon={<ReloadOutlined />} onClick={refreshMetaStoreTables} />
           </Tooltip>
         </Col>
       </Row>
       <Select
-        style={{width: '95%'}}
+        style={{ width: '95%' }}
         placeholder={l('pages.metadata.catalogSelect')}
         optionLabelProp="label"
         onChange={onChangeMetaStoreCatalogs}
       >
         {getMetaStoreCatalogsOptions()}
       </Select>
-      <Scrollbars style={{height: (toolHeight - 32)}}>
+      <Scrollbars style={{ height: toolHeight - 32 }}>
         {treeData.length > 0 ? (
           <DirectoryTree
             showIcon
-            switcherIcon={<DownOutlined/>}
+            switcherIcon={<DownOutlined />}
             treeData={treeData}
-            onRightClick={({event, node}: any) => {
-              openColumnInfo(event, node)
+            onRightClick={({ event, node }: any) => {
+              openColumnInfo(event, node);
             }}
-          />) : (<Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>)}
+          />
+        ) : (
+          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+        )}
       </Scrollbars>
       <Modal
         title={row?.key}
@@ -285,9 +286,12 @@ const StudioMetaStore = (props: any) => {
           cancelHandle();
         }}
         footer={[
-          <Button key="back" onClick={() => {
-            cancelHandle();
-          }}>
+          <Button
+            key="back"
+            onClick={() => {
+              cancelHandle();
+            }}
+          >
             {l('button.close')}
           </Button>,
         ]}
@@ -296,44 +300,54 @@ const StudioMetaStore = (props: any) => {
           <TabPane
             tab={
               <span>
-          <TableOutlined/>
+                <TableOutlined />
                 {l('pages.metadata.TableInfo')}
-        </span>
+              </span>
             }
             key="tableInfo"
           >
-            {row ? <Tables table={row}/> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>}
+            {row ? <Tables table={row} /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
           </TabPane>
           <TabPane
             tab={
               <span>
-          <CodepenOutlined/>
+                <CodepenOutlined />
                 {l('pages.metadata.FieldInformation')}
-        </span>
+              </span>
             }
             key="columnInfo"
           >
-            {row ?
-              (current.task.dialect === DIALECT.FLINKSQL ?
-                  <FlinkColumns envId={current.task.envId} catalog={row.catalog} database={row.database}
-                                table={row.name}/>
-                  : <Columns dbId={current.task.databaseId} schema={row.database} table={row.name}/>
-              ) : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>}
+            {row ? (
+              current.task.dialect === DIALECT.FLINKSQL ? (
+                <FlinkColumns
+                  envId={current.task.envId}
+                  catalog={row.catalog}
+                  database={row.database}
+                  table={row.name}
+                />
+              ) : (
+                <Columns dbId={current.task.databaseId} schema={row.database} table={row.name} />
+              )
+            ) : (
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            )}
           </TabPane>
           <TabPane
             tab={
               <span>
-          <OrderedListOutlined/>
+                <OrderedListOutlined />
                 {l('pages.metadata.GenerateSQL')}
-        </span>
+              </span>
             }
             key="sqlGeneration"
           >
-            {row ?
-              (current.task.dialect === DIALECT.FLINKSQL ?
-                  undefined
-                  : <Generation dbId={current.task.databaseId} schema={row.database} table={row.name}/>
-              ) : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>}
+            {row ? (
+              current.task.dialect === DIALECT.FLINKSQL ? undefined : (
+                <Generation dbId={current.task.databaseId} schema={row.database} table={row.name} />
+              )
+            ) : (
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            )}
           </TabPane>
         </Tabs>
       </Modal>
@@ -342,18 +356,27 @@ const StudioMetaStore = (props: any) => {
 };
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  saveMetaStoreTable: (activeKey: number, catalog: string, database: string, tables: MetaStoreTableType[]) => dispatch({
-    type: "Studio/saveMetaStoreTable",
-    payload: {
-      activeKey,
-      catalog,
-      database,
-      tables,
-    },
-  }),
+  saveMetaStoreTable: (
+    activeKey: number,
+    catalog: string,
+    database: string,
+    tables: MetaStoreTableType[],
+  ) =>
+    dispatch({
+      type: 'Studio/saveMetaStoreTable',
+      payload: {
+        activeKey,
+        catalog,
+        database,
+        tables,
+      },
+    }),
 });
 
-export default connect(({Studio}: { Studio: StateType }) => ({
-  current: Studio.current,
-  toolHeight: Studio.toolHeight,
-}), mapDispatchToProps)(StudioMetaStore);
+export default connect(
+  ({ Studio }: { Studio: StateType }) => ({
+    current: Studio.current,
+    toolHeight: Studio.toolHeight,
+  }),
+  mapDispatchToProps,
+)(StudioMetaStore);

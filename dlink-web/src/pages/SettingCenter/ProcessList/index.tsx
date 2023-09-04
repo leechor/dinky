@@ -17,18 +17,18 @@
  *
  */
 
-import React, {useRef, useState} from "react";
-import ProTable, {ActionType, ProColumns} from "@ant-design/pro-table";
-import {Drawer} from 'antd';
-import {PageContainer} from '@ant-design/pro-layout';
+import React, { useRef, useState } from 'react';
+import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
+import { Drawer } from 'antd';
+import { PageContainer } from '@ant-design/pro-layout';
 import ProDescriptions from '@ant-design/pro-descriptions';
-import {getData} from "@/components/Common/crud";
-import {ProcessItem} from "@/pages/SettingCenter/ProcessList/data";
-import {l} from "@/utils/intl";
+import { getData } from '@/components/Common/crud';
+import { ProcessItem } from '@/pages/SettingCenter/ProcessList/data';
+import { l } from '@/utils/intl';
 
 const url = '/api/process/listAllProcess';
 const ProcessList: React.FC<{}> = (props: any) => {
-  const {dispatch} = props;
+  const { dispatch } = props;
   const [row, setRow] = useState<ProcessItem>();
   const actionRef = useRef<ActionType>();
 
@@ -59,29 +59,34 @@ const ProcessList: React.FC<{}> = (props: any) => {
         {
           text: 'FlinkExplain',
           value: 'FlinkExplain',
-        }, {
+        },
+        {
           text: 'FlinkSubmit',
           value: 'FlinkSubmit',
-        }, {
+        },
+        {
           text: 'SQLExplain',
           value: 'SQLExplain',
-        }, {
+        },
+        {
           text: 'SQLSubmit',
           value: 'SQLSubmit',
-        }, {
+        },
+        {
           text: 'Unknown',
           value: 'Unknown',
         },
       ],
       filterMultiple: false,
       valueEnum: {
-        'FlinkExplain': {text: 'FlinkExplain'},
-        'FlinkSubmit': {text: 'FlinkSubmit'},
-        'SQLExplain': {text: 'SQLExplain'},
-        'SQLSubmit': {text: 'SQLSubmit'},
-        'Unknown': {text: 'Unknown'},
+        FlinkExplain: { text: 'FlinkExplain' },
+        FlinkSubmit: { text: 'FlinkSubmit' },
+        SQLExplain: { text: 'SQLExplain' },
+        SQLSubmit: { text: 'SQLSubmit' },
+        Unknown: { text: 'Unknown' },
       },
-    }, {
+    },
+    {
       title: l('pages.sys.process.status'),
       sorter: true,
       dataIndex: 'status',
@@ -89,31 +94,36 @@ const ProcessList: React.FC<{}> = (props: any) => {
         {
           text: 'INITIALIZING',
           value: 'INITIALIZING',
-        }, {
+        },
+        {
           text: 'RUNNING',
           value: 'RUNNING',
-        }, {
+        },
+        {
           text: 'FAILED',
           value: 'FAILED',
-        }, {
+        },
+        {
           text: 'CANCELED',
           value: 'CANCELED',
-        }, {
+        },
+        {
           text: 'FINISHED',
           value: 'FINISHED',
-        }, {
+        },
+        {
           text: 'UNKNOWN',
           value: 'UNKNOWN',
         },
       ],
       filterMultiple: false,
       valueEnum: {
-        'INITIALIZING': {text: 'INITIALIZING'},
-        'RUNNING': {text: 'RUNNING'},
-        'FAILED': {text: 'FAILED'},
-        'CANCELED': {text: 'CANCELED'},
-        'FINISHED': {text: 'FINISHED'},
-        'UNKNOWN': {text: 'UNKNOWN'},
+        INITIALIZING: { text: 'INITIALIZING' },
+        RUNNING: { text: 'RUNNING' },
+        FAILED: { text: 'FAILED' },
+        CANCELED: { text: 'CANCELED' },
+        FINISHED: { text: 'FINISHED' },
+        UNKNOWN: { text: 'UNKNOWN' },
       },
     },
     {
@@ -127,15 +137,17 @@ const ProcessList: React.FC<{}> = (props: any) => {
       dataIndex: 'endTime',
       sorter: true,
       valueType: 'dateTime',
-    }, {
+    },
+    {
       title: l('pages.sys.process.duration'),
       sorter: true,
       dataIndex: 'time',
-    }, {
+    },
+    {
       title: l('pages.sys.process.operator'),
       sorter: true,
       dataIndex: 'userId',
-    }
+    },
   ];
 
   return (
@@ -143,7 +155,7 @@ const ProcessList: React.FC<{}> = (props: any) => {
       <ProTable
         actionRef={actionRef}
         rowKey="pid"
-        request={(params, sorter, filter) => getData(url, {active: false})}
+        request={(params, sorter, filter) => getData(url, { active: false })}
         columns={columns}
         search={false}
       />

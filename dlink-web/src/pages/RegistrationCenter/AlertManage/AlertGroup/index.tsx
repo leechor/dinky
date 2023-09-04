@@ -17,23 +17,27 @@
  *
  */
 
-
-import React, {useEffect, useRef, useState} from "react";
-import {DownOutlined, PlusOutlined} from '@ant-design/icons';
-import ProTable, {ActionType, ProColumns} from "@ant-design/pro-table";
-import {Button, Drawer, Dropdown, Menu, Modal} from 'antd';
-import {FooterToolbar, PageContainer} from '@ant-design/pro-layout';
+import React, { useEffect, useRef, useState } from 'react';
+import { DownOutlined, PlusOutlined } from '@ant-design/icons';
+import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
+import { Button, Drawer, Dropdown, Menu, Modal } from 'antd';
+import { FooterToolbar, PageContainer } from '@ant-design/pro-layout';
 import ProDescriptions from '@ant-design/pro-descriptions';
-import {AlertGroupTableListItem} from "@/pages/RegistrationCenter/data";
-import {handleAddOrUpdate, handleRemove, queryData, updateEnabled} from "@/components/Common/crud";
-import AlertGroupForm from "@/pages/RegistrationCenter/AlertManage/AlertGroup/components/AlertGroupForm";
-import {showAlertInstance} from "@/components/Studio/StudioEvent/DDL";
-import {connect} from "umi";
-import {l} from "@/utils/intl";
+import { AlertGroupTableListItem } from '@/pages/RegistrationCenter/data';
+import {
+  handleAddOrUpdate,
+  handleRemove,
+  queryData,
+  updateEnabled,
+} from '@/components/Common/crud';
+import AlertGroupForm from '@/pages/RegistrationCenter/AlertManage/AlertGroup/components/AlertGroupForm';
+import { showAlertInstance } from '@/components/Studio/StudioEvent/DDL';
+import { connect } from 'umi';
+import { l } from '@/utils/intl';
 
 const url = '/api/alertGroup';
 const AlertGroupTableList: React.FC<{}> = (props: any) => {
-  const {dispatch} = props;
+  const { dispatch } = props;
 
   const [row, setRow] = useState<AlertGroupTableListItem>();
   const [modalVisible, handleModalVisible] = useState<boolean>(false);
@@ -59,24 +63,24 @@ const AlertGroupTableList: React.FC<{}> = (props: any) => {
         onOk: async () => {
           await handleRemove(url, [currentItem]);
           actionRef.current?.reloadAndRest?.();
-        }
+        },
       });
     }
   };
 
   const MoreBtn: React.FC<{
     item: AlertGroupTableListItem;
-  }> = ({item}) => (
+  }> = ({ item }) => (
     <Dropdown
       overlay={
-        <Menu onClick={({key}) => editAndDelete(key, item)}>
+        <Menu onClick={({ key }) => editAndDelete(key, item)}>
           <Menu.Item key="edit">{l('button.edit')}</Menu.Item>
           <Menu.Item key="delete">{l('button.delete')}</Menu.Item>
         </Menu>
       }
     >
       <a>
-        {l('button.more')} <DownOutlined/>
+        {l('button.more')} <DownOutlined />
       </a>
     </Dropdown>
   );
@@ -132,8 +136,8 @@ const AlertGroupTableList: React.FC<{}> = (props: any) => {
       ],
       filterMultiple: false,
       valueEnum: {
-        true: {text: l('status.enabled'), status: 'Success'},
-        false: {text: l('status.disabled'), status: 'Error'},
+        true: { text: l('status.enabled'), status: 'Success' },
+        false: { text: l('status.disabled'), status: 'Error' },
       },
     },
     {
@@ -141,7 +145,7 @@ const AlertGroupTableList: React.FC<{}> = (props: any) => {
       dataIndex: 'createTime',
       sorter: true,
       valueType: 'dateTime',
-      hideInTable: true
+      hideInTable: true,
     },
     {
       title: l('global.table.lastUpdateTime'),
@@ -162,7 +166,7 @@ const AlertGroupTableList: React.FC<{}> = (props: any) => {
         >
           {l('button.config')}
         </a>,
-        <MoreBtn key="more" item={record}/>,
+        <MoreBtn key="more" item={record} />,
       ],
     },
   ];
@@ -178,10 +182,10 @@ const AlertGroupTableList: React.FC<{}> = (props: any) => {
         }}
         toolBarRender={() => [
           <Button type="primary" onClick={() => handleModalVisible(true)}>
-            <PlusOutlined/> {l('button.create')}
+            <PlusOutlined /> {l('button.create')}
           </Button>,
         ]}
-        request={(params, sorter, filter) => queryData(url, {...params, sorter, filter})}
+        request={(params, sorter, filter) => queryData(url, { ...params, sorter, filter })}
         columns={columns}
         rowSelection={{
           onChange: (_, selectedRows) => setSelectedRows(selectedRows),
@@ -195,66 +199,75 @@ const AlertGroupTableList: React.FC<{}> = (props: any) => {
         <FooterToolbar
           extra={
             <div>
-              {l('tips.selected', '',
-                {
-                  total: <a
-                    style={{fontWeight: 600}}>{selectedRowsState.length}</a>
-                })}  &nbsp;&nbsp;              <span>
-              {l('pages.rc.alert.group.disableTotalOf', '', {
-                total:
-                  selectedRowsState.length - selectedRowsState.reduce((pre, item) => pre + (item.enabled ? 1 : 0), 0)
-              })}
+              {l('tips.selected', '', {
+                total: <a style={{ fontWeight: 600 }}>{selectedRowsState.length}</a>,
+              })}{' '}
+              &nbsp;&nbsp;{' '}
+              <span>
+                {l('pages.rc.alert.group.disableTotalOf', '', {
+                  total:
+                    selectedRowsState.length -
+                    selectedRowsState.reduce((pre, item) => pre + (item.enabled ? 1 : 0), 0),
+                })}
               </span>
             </div>
           }
         >
-          <Button type="primary" danger
-                  onClick={() => {
-                    Modal.confirm({
-                      title: l('pages.rc.alert.group.delete'),
-                      content: l('pages.rc.alert.group.deleteConfirm'),
-                      okText: l('button.confirm'),
-                      cancelText: l('button.cancel'),
-                      onOk: async () => {
-                        await handleRemove(url, selectedRowsState);
-                        setSelectedRows([]);
-                        actionRef.current?.reloadAndRest?.();
-                      }
-                    });
-                  }}
+          <Button
+            type="primary"
+            danger
+            onClick={() => {
+              Modal.confirm({
+                title: l('pages.rc.alert.group.delete'),
+                content: l('pages.rc.alert.group.deleteConfirm'),
+                okText: l('button.confirm'),
+                cancelText: l('button.cancel'),
+                onOk: async () => {
+                  await handleRemove(url, selectedRowsState);
+                  setSelectedRows([]);
+                  actionRef.current?.reloadAndRest?.();
+                },
+              });
+            }}
           >
             {l('button.batchDelete')}
           </Button>
-          <Button type="primary"
-                  onClick={() => {
-                    Modal.confirm({
-                      title: l('pages.rc.alert.group.enable'),
-                      content: l('pages.rc.alert.group.enableConfirm'),
-                      okText: l('button.confirm'),
-                      cancelText: l('button.cancel'),
-                      onOk: async () => {
-                        await updateEnabled(url, selectedRowsState, true);
-                        setSelectedRows([]);
-                        actionRef.current?.reloadAndRest?.();
-                      }
-                    });
-                  }}
-          >{l('button.batchEnable')}</Button>
-          <Button danger
-                  onClick={() => {
-                    Modal.confirm({
-                      title: l('pages.rc.alert.group.disable'),
-                      content: l('pages.rc.alert.group.disableConfirm'),
-                      okText: l('button.confirm'),
-                      cancelText: l('button.cancel'),
-                      onOk: async () => {
-                        await updateEnabled(url, selectedRowsState, false);
-                        setSelectedRows([]);
-                        actionRef.current?.reloadAndRest?.();
-                      }
-                    });
-                  }}
-          >{l('button.batchDisable')}</Button>
+          <Button
+            type="primary"
+            onClick={() => {
+              Modal.confirm({
+                title: l('pages.rc.alert.group.enable'),
+                content: l('pages.rc.alert.group.enableConfirm'),
+                okText: l('button.confirm'),
+                cancelText: l('button.cancel'),
+                onOk: async () => {
+                  await updateEnabled(url, selectedRowsState, true);
+                  setSelectedRows([]);
+                  actionRef.current?.reloadAndRest?.();
+                },
+              });
+            }}
+          >
+            {l('button.batchEnable')}
+          </Button>
+          <Button
+            danger
+            onClick={() => {
+              Modal.confirm({
+                title: l('pages.rc.alert.group.disable'),
+                content: l('pages.rc.alert.group.disableConfirm'),
+                okText: l('button.confirm'),
+                cancelText: l('button.cancel'),
+                onOk: async () => {
+                  await updateEnabled(url, selectedRowsState, false);
+                  setSelectedRows([]);
+                  actionRef.current?.reloadAndRest?.();
+                },
+              });
+            }}
+          >
+            {l('button.batchDisable')}
+          </Button>
         </FooterToolbar>
       )}
       <AlertGroupForm

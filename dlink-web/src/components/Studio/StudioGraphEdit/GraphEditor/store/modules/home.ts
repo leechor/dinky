@@ -1,4 +1,3 @@
-
 import { JSONEditor } from '@json-editor/json-editor';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { Parameter } from '@/components/Studio/StudioGraphEdit/GraphEditor/ts-define/parameter';
@@ -16,84 +15,90 @@ export const initFlowDataAction = createAsyncThunk('fetchData', (payload, store)
     }
   });
 });
-export type GraphTabs = GraphTabsItem[]
+export type GraphTabs = GraphTabsItem[];
 export type Position = {
-  x: number,
-  y: number
-}
+  x: number;
+  y: number;
+};
 export type GraphTabsItem = {
-  id: string,
-  key: number,
-}
+  id: string;
+  key: number;
+};
 export type UnselectedCell = {
-  groupId: string,
-  childrenId: string[]
-}
+  groupId: string;
+  childrenId: string[];
+};
 
 export type GroupTabItem = {
-  groupCellId: string,
-}
-
+  groupCellId: string;
+};
 
 interface GraphEditorData {
-  flowData: {},
-  taskName: string,
-  parameters: {},
+  flowData: {};
+  taskName: string;
+  parameters: {};
   //初始化算子参数，注册算子组件
-  operatorParameters: Parameter[],
-  currentSelectNode: {} | Node,
+  operatorParameters: Parameter[];
+  currentSelectNode: {} | Node;
   //当前选中的算子节点名称
-  currentSelectNodeName: '',
+  currentSelectNodeName: '';
   //当前选中的节点参数数据
-  currentSelectNodeParamsData: any,
+  currentSelectNodeParamsData: any;
   //保存graph在其他组件中调用
-  graph: Graph,
-  editor: {} | InstanceType<typeof JSONEditor>,
-  graphTabs: GroupTabItem[],
-  unSelectedCellIds: UnselectedCell[]
-  position: Position,
-  verifyOperDatas: [],
+  graph: Graph;
+  editor: {} | InstanceType<typeof JSONEditor>;
+  graphTabs: GroupTabItem[];
+  unSelectedCellIds: UnselectedCell[];
+  position: Position;
+  verifyOperDatas: [];
   previewInfo: {
-    values: string,
-    node: Node | null,
-    isShow: boolean
-  },
+    values: string;
+    node: Node | null;
+    isShow: boolean;
+  };
   addPortInfo: {
-    isShow: boolean,
-    node: Node | null,
-    values: string,
-  }
+    isShow: boolean;
+    node: Node | null;
+    values: string;
+  };
   dataSourceInfo: {
-    isShowModal: false,
-    datas: any,
-    node: Node | null,
-    type: string,
-  },
+    isShowModal: false;
+    datas: any;
+    node: Node | null;
+    type: string;
+  };
   groupNameInfo: {
-    isShowGroupNameModal: boolean,
-    node: Node | null,
-    type: 'ADD' | 'CHANGE' | 'CREAT_GROUP_NAME'
-  },
+    isShowGroupNameModal: boolean;
+    node: Node | null;
+    type: 'ADD' | 'CHANGE' | 'CREAT_GROUP_NAME';
+  };
   stencilMenuInfo: {
-    x: number, y: number, showStencilMenu: boolean, node: null | Node
-  },
+    x: number;
+    y: number;
+    showStencilMenu: boolean;
+    node: null | Node;
+  };
   postionToGroup: {
-    x: number,
-    y: number,
-    isFullScreen: boolean,
-  },
+    x: number;
+    y: number;
+    isFullScreen: boolean;
+  };
   edgeClickInfo: {
-    isShowedgeClickModal: boolean,
-    edgeInfo: { edge: Edge, sourceNode: Node, targetNode: Node, sourcePortId: string, targetPortId: string } | null,
-    data?: any,
-  },
-  currentClickLayer: number
-
-
+    isShowedgeClickModal: boolean;
+    edgeInfo: {
+      edge: Edge;
+      sourceNode: Node;
+      targetNode: Node;
+      sourcePortId: string;
+      targetPortId: string;
+    } | null;
+    data?: any;
+  };
+  currentClickLayer: number;
 }
 const initialState: GraphEditorData = {
   flowData: {},
-  taskName: "",
+  taskName: '',
   parameters: {},
   //初始化算子参数，注册算子组件
   operatorParameters: [] as Parameter[],
@@ -101,32 +106,37 @@ const initialState: GraphEditorData = {
   //当前选中的算子节点名称
   currentSelectNodeName: '',
   //当前选中的节点参数数据
-  currentSelectNodeParamsData: "",
+  currentSelectNodeParamsData: '',
   //保存graph在其他组件中调用
   graph: {} as Graph,
   //保存jsoneditor 示例用作保存校验
   editor: {},
-  graphTabs: [{
-    groupCellId: ""
-  }],
+  graphTabs: [
+    {
+      groupCellId: '',
+    },
+  ],
   unSelectedCellIds: [],
   position: { x: 0, y: 0 },
   verifyOperDatas: [],
-  previewInfo: { values: "", node: null, isShow: false },
-  addPortInfo: { values: "", node: null, isShow: false },
+  previewInfo: { values: '', node: null, isShow: false },
+  addPortInfo: { values: '', node: null, isShow: false },
   dataSourceInfo: {
     isShowModal: false,
     datas: null,
     node: null,
-    type: "",
+    type: '',
   },
   groupNameInfo: {
     isShowGroupNameModal: false,
     node: null,
-    type: "ADD"
+    type: 'ADD',
   },
   stencilMenuInfo: {
-    x: 0, y: 0, showStencilMenu: false, node: null
+    x: 0,
+    y: 0,
+    showStencilMenu: false,
+    node: null,
   },
   postionToGroup: {
     x: 0,
@@ -139,8 +149,7 @@ const initialState: GraphEditorData = {
     data: null,
   },
   currentClickLayer: 0,
-
-}
+};
 const homeSlice = createSlice({
   name: 'home',
   initialState,
@@ -148,14 +157,15 @@ const homeSlice = createSlice({
     initFlowDataInfo(state, { payload }) {
       state.flowData = payload;
     },
-    initTaskName(state, { payload }) { state.taskName = payload },
+    initTaskName(state, { payload }) {
+      state.taskName = payload;
+    },
     changeParameters(state, { payload }) {
       let parameters = payload?.store?.data?.data?.parameters;
       state.parameters = parameters.length > 0 ? parameters[0] : {};
     },
     //初始化算子参数stencil
     initOperatorParameters(state, { payload }) {
-
       state.operatorParameters = payload;
     },
     //保存当前选中的节点信息
@@ -174,52 +184,53 @@ const homeSlice = createSlice({
       state.graph = payload;
     },
     changeJsonEditor(state, { payload }) {
-      state.editor = payload
+      state.editor = payload;
     },
 
     addGraphTabs(state, { payload }) {
-      state.graphTabs.push({ groupCellId: payload.groupCellId, })
-      state.currentClickLayer += payload.layer
+      state.graphTabs.push({ groupCellId: payload.groupCellId });
+      state.currentClickLayer += payload.layer;
     },
 
     removeGraphTabs(state, { payload }) {
-      state.graphTabs = state.graphTabs.slice(0, payload + 1)
-      state.currentClickLayer -= payload
+      state.graphTabs = state.graphTabs.slice(0, payload + 1);
+      state.currentClickLayer -= payload;
     },
 
     changePositon(state, { payload }) {
-      state.position = payload
+      state.position = payload;
     },
     changeVerifyOperDatas(state, { payload }) {
-      state.verifyOperDatas = payload
+      state.verifyOperDatas = payload;
     },
     changePreviewInfo(state, { payload }) {
-      state.previewInfo = payload
+      state.previewInfo = payload;
     },
     changeAddPortInfo(state, { payload }) {
-      state.addPortInfo = payload
+      state.addPortInfo = payload;
     },
     changeDataSourceInfo(state, { payload }) {
-      state.dataSourceInfo = payload
+      state.dataSourceInfo = payload;
     },
     changeGroupNameInfo(state, { payload }) {
-      state.groupNameInfo = payload
+      state.groupNameInfo = payload;
     },
     changeStencilMenuInfo(state, { payload }) {
-
-      state.stencilMenuInfo = payload
+      state.stencilMenuInfo = payload;
     },
     changePostionToGroup(state, { payload }) {
-      state.postionToGroup = payload
+      state.postionToGroup = payload;
     },
     changeEdgeClickInfo(state, { payload }) {
-      state.edgeClickInfo = payload
+      state.edgeClickInfo = payload;
     },
     initGraphAndEditorInfo(state) {
-      state.graphTabs = [{
-        groupCellId: ""
-      }]
-    }
+      state.graphTabs = [
+        {
+          groupCellId: '',
+        },
+      ];
+    },
   },
   extraReducers: {},
 });

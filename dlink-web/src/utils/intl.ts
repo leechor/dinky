@@ -17,8 +17,8 @@
  *
  */
 
-import {getIntl, getLocale} from "umi";
+import { getIntl, getLocale } from 'umi';
 
 const intl = getIntl(getLocale());
-export const l = (id: string, defaultMessage?: string, value?: {}) => intl.formatMessage({id, defaultMessage}, value);
-
+export const l = (id: string, defaultMessage?: string, value?: {}) =>
+  intl.formatMessage({ id, defaultMessage }, value);

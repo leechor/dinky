@@ -30,18 +30,19 @@ import StudioKubernetes from '@/components/Studio/StudioKubernetes';
 import { l } from '@/utils/intl';
 import StudioGraphEdit from '@/components/Studio/StudioGraphEdit';
 import { initGraphAndEditor } from '../StudioGraphEdit/GraphEditor/utils/graph-tools-func';
-import { useAppSelector, useAppDispatch } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
-
+import {
+  useAppSelector,
+  useAppDispatch,
+} from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
 
 const { TabPane } = Tabs;
 
 const EditorTabs = (props: any) => {
-
   const { tabs, current, toolHeight, width, height } = props;
   const graphDispatch = useAppDispatch();
   const { graph, editor } = useAppSelector((state) => ({
     graph: state.home.graph,
-    editor: state.home.editor
+    editor: state.home.editor,
   }));
 
   const onChange = (activeKey: any) => {
@@ -68,7 +69,7 @@ const EditorTabs = (props: any) => {
     tabs.panes.forEach((pane, i) => {
       if (pane.isGraph) {
         //初始化画布相关数据
-        initGraphAndEditor(graphDispatch, graph, editor)
+        initGraphAndEditor(graphDispatch, graph, editor);
       }
       if (pane.key.toString() === targetKey) {
         lastIndex = i - 1;
@@ -91,7 +92,6 @@ const EditorTabs = (props: any) => {
   };
 
   const menu = (pane) => (
-
     <Menu onClick={(e) => handleClickMenu(e, pane)}>
       <Menu.Item key="CLOSE_ALL">
         <span>{l('right.menu.closeAll')}</span>
@@ -122,7 +122,6 @@ const EditorTabs = (props: any) => {
 
   // as different dialet return different Panle
   const getTabPane = (pane, i) => {
-
     if (pane.task.dialect == DIALECT.KUBERNETES_APPLICATION) {
       return (
         <TabPane tab={Tab(pane)} key={pane.key} closable={pane.closable}>

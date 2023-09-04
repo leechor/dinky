@@ -17,20 +17,19 @@
  *
  */
 
+import { Empty } from 'antd';
+import { FlowAnalysisGraph } from '@ant-design/charts';
+import { StateType } from '@/pages/DataStudio/model';
+import { connect } from 'umi';
+import styles from './index.less';
+import React, { useState } from 'react';
 
-import { Empty } from "antd";
-import {FlowAnalysisGraph} from '@ant-design/charts';
-import {StateType} from "@/pages/DataStudio/model";
-import {connect} from "umi";
-import styles from "./index.less";
-import React, {useState} from "react";
-
-const StudioGraph = (props:any) => {
-  const {data,current,currentSession} = props;
+const StudioGraph = (props: any) => {
+  const { data, current, currentSession } = props;
 
   const config = {
     data,
-    height:350,
+    height: 350,
     nodeCfg: {
       size: [160, 65],
       items: {
@@ -38,7 +37,7 @@ const StudioGraph = (props:any) => {
         padding: [10],
         containerStyle: {
           fill: '#fff',
-          width:'100px',
+          width: '100px',
         },
         style: (cfg, group, type) => {
           const styles = {
@@ -47,7 +46,7 @@ const StudioGraph = (props:any) => {
             },
             text: {
               fill: '#222',
-              width:'100px',
+              width: '100px',
             },
           };
           return styles[type];
@@ -99,8 +98,7 @@ const StudioGraph = (props:any) => {
   };
 
   return (
-    <>{data? <FlowAnalysisGraph {...config} /> :<Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
-    </>
+    <>{data ? <FlowAnalysisGraph {...config} /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}</>
   );
 };
 

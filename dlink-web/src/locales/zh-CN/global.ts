@@ -73,7 +73,6 @@ export default {
   'right.menu.closeAll': '关闭所有',
   'right.menu.closeOther': '关闭其他',
 
-
   'tips.selected': '已选择 {total} 项',
   'tips.notSelected': '未选',
   'tips.enter': '请输入',
@@ -126,10 +125,8 @@ export default {
   'global.table.runmode.local': '本地',
   'global.table.runmode.remote': '远程',
 
-  'global.savepoint.strategy.disabled':'禁用',
-  'global.savepoint.strategy.latest':'最近一次',
-  'global.savepoint.strategy.earliest':'最早一次',
-  'global.savepoint.strategy.custom':'指定一次',
-
-
+  'global.savepoint.strategy.disabled': '禁用',
+  'global.savepoint.strategy.latest': '最近一次',
+  'global.savepoint.strategy.earliest': '最早一次',
+  'global.savepoint.strategy.custom': '指定一次',
 };

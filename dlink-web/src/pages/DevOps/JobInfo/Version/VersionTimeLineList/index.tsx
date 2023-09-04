@@ -17,21 +17,19 @@
  *
  */
 
-
-import React, {useEffect, useState,} from "react";
-import {BackTop, Button, Card, Radio, RadioChangeEvent, Timeline} from "antd";
-import {queryData} from "@/components/Common/crud";
-import moment from "moment";
-import {TaskVersion} from "@/pages/DevOps/data";
-import {CheckCircleOutlined, SyncOutlined} from "@ant-design/icons";
-import {l} from "@/utils/intl";
+import React, { useEffect, useState } from 'react';
+import { BackTop, Button, Card, Radio, RadioChangeEvent, Timeline } from 'antd';
+import { queryData } from '@/components/Common/crud';
+import moment from 'moment';
+import { TaskVersion } from '@/pages/DevOps/data';
+import { CheckCircleOutlined, SyncOutlined } from '@ant-design/icons';
+import { l } from '@/utils/intl';
 // import {Scrollbars} from "react-custom-scrollbars";
 
 const url = '/api/task/version';
 
 const VersionTimeLineList = (props: any) => {
-  const {job} = props;
-
+  const { job } = props;
 
   const [mode, setMode] = useState<'left' | 'alternate' | 'right'>('alternate');
   const [reverse, setReverse] = useState(false);
@@ -44,7 +42,7 @@ const VersionTimeLineList = (props: any) => {
   let taskId = job.instance.taskId;
   const getVersionData = () => {
     setTaskVersionData(undefined);
-    const res = queryData(url, {taskId, sorter: {versionId: 'descend'}});
+    const res = queryData(url, { taskId, sorter: { versionId: 'descend' } });
     res.then((result) => {
       setTaskVersionData(result.data);
     });
@@ -53,7 +51,6 @@ const VersionTimeLineList = (props: any) => {
   useEffect(() => {
     getVersionData();
   }, []);
-
 
   const handleClick = () => {
     setReverse(!reverse);
@@ -72,49 +69,59 @@ const VersionTimeLineList = (props: any) => {
 
   const getTimelineForm = () => {
     let formList = [];
-    let tempData = taskVersionData
+    let tempData = taskVersionData;
     for (let key in tempData) {
       formList.push(
-        <Timeline.Item dot={(<CheckCircleOutlined/>)}
-                       label={moment(tempData[key].createTime).format("YYYY-MM-DD HH:mm:ss")} color="green">
-          <p>{tempData[key].name}: Create Version 【{tempData[key].versionId}】
+        <Timeline.Item
+          dot={<CheckCircleOutlined />}
+          label={moment(tempData[key].createTime).format('YYYY-MM-DD HH:mm:ss')}
+          color="green"
+        >
+          <p>
+            {tempData[key].name}: Create Version 【{tempData[key].versionId}】
             {/*site 【{ moment(tempData[key].createTime).format("YYYY-MM-DD HH:mm:ss")}】*/}
           </p>
           <p>Execute Mode: 【{tempData[key].type}】</p>
-        </Timeline.Item>
-      )
+        </Timeline.Item>,
+      );
     }
-    return formList
-  }
-
+    return formList;
+  };
 
   function refresh() {
-    getVersionData()
+    getVersionData();
   }
 
   return (
-    <div style={{
-      marginTop: "20px",
-    }}>
-      <Button type="primary" style={{margin: "5px"}} onClick={handleClick}>
+    <div
+      style={{
+        marginTop: '20px',
+      }}
+    >
+      <Button type="primary" style={{ margin: '5px' }} onClick={handleClick}>
         {reverse ? l('button.desc') : l('button.asc')}
       </Button>
-      <Button type="primary" style={{margin: "5px"}} onClick={refresh}>
+      <Button type="primary" style={{ margin: '5px' }} onClick={refresh}>
         {l('button.refresh')}
       </Button>
-      <Radio.Group
-        onChange={onChange}
-        value={mode}
-      >
+      <Radio.Group onChange={onChange} value={mode}>
         <Radio value="left">{l('pages.devops.jobinfo.version.timeline.left')}</Radio>
         <Radio value="right">{l('pages.devops.jobinfo.version.timeline.right')}</Radio>
         <Radio value="alternate">{l('pages.devops.jobinfo.version.timeline.alternate')}</Radio>
       </Radio.Group>
-      <Card size="small" style={{width: "auto"}}>
+      <Card size="small" style={{ width: 'auto' }}>
         {/*<Scrollbars  style={{height: "450px"}} >*/}
-        <br/><br/>
-        <Timeline mode={mode} pending={moment().format("YYYY-MM-DD HH:mm:ss") + l('pages.devops.jobinfo.version.timeline.developing')} reverse={reverse}
-                  pendingDot={<SyncOutlined spin/>}>
+        <br />
+        <br />
+        <Timeline
+          mode={mode}
+          pending={
+            moment().format('YYYY-MM-DD HH:mm:ss') +
+            l('pages.devops.jobinfo.version.timeline.developing')
+          }
+          reverse={reverse}
+          pendingDot={<SyncOutlined spin />}
+        >
           {getTimelineForm()}
         </Timeline>
         <BackTop>
@@ -122,10 +129,8 @@ const VersionTimeLineList = (props: any) => {
         </BackTop>
         {/*</Scrollbars>*/}
       </Card>
-
-
     </div>
-  )
+  );
 };
 
 export default VersionTimeLineList;

@@ -17,37 +17,39 @@
  *
  */
 
-
-import {useEffect, useState} from 'react';
-import {history, useLocation} from 'umi';
-import {ClusterOutlined, EllipsisOutlined, FireOutlined, RedoOutlined, RocketOutlined} from '@ant-design/icons';
-import {Button, Dropdown, Empty, Menu, message, Modal, Space, Tag, Typography} from 'antd';
-import {PageContainer} from '@ant-design/pro-layout';
+import { useEffect, useState } from 'react';
+import { history, useLocation } from 'umi';
+import {
+  ClusterOutlined,
+  EllipsisOutlined,
+  FireOutlined,
+  RedoOutlined,
+  RocketOutlined,
+} from '@ant-design/icons';
+import { Button, Dropdown, Empty, Menu, message, Modal, Space, Tag, Typography } from 'antd';
+import { PageContainer } from '@ant-design/pro-layout';
 import ProCard from '@ant-design/pro-card';
-import {JobInfoDetail} from "@/pages/DevOps/data";
-import {getJobInfoDetail, refreshJobInfoDetail} from "@/pages/DevOps/service";
-import moment from "moment";
-import BaseInfo from "@/pages/DevOps/JobInfo/BaseInfo";
-import Config from "@/pages/DevOps/JobInfo/Config";
-import JobStatus, {isStatusDone} from "@/components/Common/JobStatus";
-import {cancelJob, offLineTask, restartJob} from "@/components/Studio/StudioEvent/DDL";
-import {CODE} from "@/components/Common/crud";
-import JobLifeCycle, {JOB_LIFE_CYCLE} from "@/components/Common/JobLifeCycle";
-import Exception from "@/pages/DevOps/JobInfo/Exception";
-import FlinkSQL from "@/pages/DevOps/JobInfo/FlinkSQL";
-import Alert from "@/pages/DevOps/JobInfo/Alert";
-import DataMap from "@/pages/DevOps/JobInfo/DataMap";
-import CheckPoints from "@/pages/DevOps/JobInfo/CheckPoints";
-import FlinkClusterInfo from "@/pages/DevOps/JobInfo/FlinkClusterInfo";
-import TaskVersionInfo from "@/pages/DevOps/JobInfo/Version";
-import {l} from "@/utils/intl";
+import { JobInfoDetail } from '@/pages/DevOps/data';
+import { getJobInfoDetail, refreshJobInfoDetail } from '@/pages/DevOps/service';
+import moment from 'moment';
+import BaseInfo from '@/pages/DevOps/JobInfo/BaseInfo';
+import Config from '@/pages/DevOps/JobInfo/Config';
+import JobStatus, { isStatusDone } from '@/components/Common/JobStatus';
+import { cancelJob, offLineTask, restartJob } from '@/components/Studio/StudioEvent/DDL';
+import { CODE } from '@/components/Common/crud';
+import JobLifeCycle, { JOB_LIFE_CYCLE } from '@/components/Common/JobLifeCycle';
+import Exception from '@/pages/DevOps/JobInfo/Exception';
+import FlinkSQL from '@/pages/DevOps/JobInfo/FlinkSQL';
+import Alert from '@/pages/DevOps/JobInfo/Alert';
+import DataMap from '@/pages/DevOps/JobInfo/DataMap';
+import CheckPoints from '@/pages/DevOps/JobInfo/CheckPoints';
+import FlinkClusterInfo from '@/pages/DevOps/JobInfo/FlinkClusterInfo';
+import TaskVersionInfo from '@/pages/DevOps/JobInfo/Version';
+import { l } from '@/utils/intl';
 
-
-const {Link} = Typography;
+const { Link } = Typography;
 
 const JobInfo = (props: any) => {
-
-
   const params = useLocation();
   const {} = props;
   const id = params.query.id;
@@ -101,13 +103,13 @@ const JobInfo = (props: any) => {
               message.error(l('pages.devops.jobinfo.canceljob.failed'));
             }
           });
-        }
+        },
       });
       return;
     }
     Modal.confirm({
-      title: l('pages.devops.jobinfo.job.key','',{key:key}),
-      content: l('pages.devops.jobinfo.job.keyConfirm','',{key:key}),
+      title: l('pages.devops.jobinfo.job.key', '', { key: key }),
+      content: l('pages.devops.jobinfo.job.keyConfirm', '', { key: key }),
       okText: l('button.confirm'),
       cancelText: l('button.cancel'),
       onOk: async () => {
@@ -115,13 +117,15 @@ const JobInfo = (props: any) => {
         const res = offLineTask(job?.instance?.taskId, key);
         res.then((result) => {
           if (result.code == CODE.SUCCESS) {
-            message.success(l('pages.devops.jobinfo.job.key.success','',{key: key}));
+            message.success(l('pages.devops.jobinfo.job.key.success', '', { key: key }));
             handleGetJobInfoDetail();
           } else {
-            message.error(l('pages.devops.jobinfo.job.key.failed','',{key: key,msg:result.msg}));
+            message.error(
+              l('pages.devops.jobinfo.job.key.failed', '', { key: key, msg: result.msg }),
+            );
           }
         });
-      }
+      },
     });
   };
 
@@ -141,75 +145,112 @@ const JobInfo = (props: any) => {
             message.error(l('pages.devops.jobinfo.reonline.failed'));
           }
         });
-      }
+      },
     });
   };
 
   const getButtons = () => {
     let buttons = [
-      <Button key="back" type="dashed" onClick={handleBack}>{l('button.back')}</Button>,
+      <Button key="back" type="dashed" onClick={handleBack}>
+        {l('button.back')}
+      </Button>,
     ];
-    buttons.push(<Button key="refresh" icon={<RedoOutlined/>} onClick={handleRefreshJobInfoDetail}/>);
-    buttons.push(<Button key="flinkwebui">
-      <Link href={`http://${job?.history?.jobManagerAddress}/#/job/${job?.instance?.jid}/overview`} target="_blank">
-        FlinkWebUI
-      </Link></Button>);
-    buttons.push(<Button key="autorestart" type="primary"
-                         onClick={handleRestart}>{job?.instance?.step == 5 ? l('pages.devops.jobinfo.reonline') : l('pages.devops.jobinfo.restart')}</Button>);
+    buttons.push(
+      <Button key="refresh" icon={<RedoOutlined />} onClick={handleRefreshJobInfoDetail} />,
+    );
+    buttons.push(
+      <Button key="flinkwebui">
+        <Link
+          href={`http://${job?.history?.jobManagerAddress}/#/job/${job?.instance?.jid}/overview`}
+          target="_blank"
+        >
+          FlinkWebUI
+        </Link>
+      </Button>,
+    );
+    buttons.push(
+      <Button key="autorestart" type="primary" onClick={handleRestart}>
+        {job?.instance?.step == 5
+          ? l('pages.devops.jobinfo.reonline')
+          : l('pages.devops.jobinfo.restart')}
+      </Button>,
+    );
     if (!isStatusDone(job?.instance?.status as string)) {
-      buttons.push(<Button key="autostop" type="primary" danger onClick={() => {
-        handleSavepoint('cancel')
-      }}>{job?.instance?.step == 5 ? l('pages.devops.jobinfo.offline') : l('pages.devops.jobinfo.smart_stop')}</Button>);
-      buttons.push(<Dropdown
-        key="dropdown"
-        trigger={['click']}
-        overlay={
-          <Menu onClick={({key}) => handleSavepoint(key)}>
-            <Menu.Item key="trigger">{l('pages.devops.jobinfo.savepoint.trigger')}</Menu.Item>
-            <Menu.Item key="stop">{l('pages.devops.jobinfo.savepoint.stop')}</Menu.Item>
-            <Menu.Item key="cancel">{l('pages.devops.jobinfo.savepoint.cancel')}</Menu.Item>
-            <Menu.Item key="canceljob">{l('pages.devops.jobinfo.savepoint.canceljob')}</Menu.Item>
-          </Menu>
-        }
-      >
-        <Button key="4" style={{padding: '0 8px'}}>
-          <EllipsisOutlined/>
-        </Button>
-      </Dropdown>);
+      buttons.push(
+        <Button
+          key="autostop"
+          type="primary"
+          danger
+          onClick={() => {
+            handleSavepoint('cancel');
+          }}
+        >
+          {job?.instance?.step == 5
+            ? l('pages.devops.jobinfo.offline')
+            : l('pages.devops.jobinfo.smart_stop')}
+        </Button>,
+      );
+      buttons.push(
+        <Dropdown
+          key="dropdown"
+          trigger={['click']}
+          overlay={
+            <Menu onClick={({ key }) => handleSavepoint(key)}>
+              <Menu.Item key="trigger">{l('pages.devops.jobinfo.savepoint.trigger')}</Menu.Item>
+              <Menu.Item key="stop">{l('pages.devops.jobinfo.savepoint.stop')}</Menu.Item>
+              <Menu.Item key="cancel">{l('pages.devops.jobinfo.savepoint.cancel')}</Menu.Item>
+              <Menu.Item key="canceljob">{l('pages.devops.jobinfo.savepoint.canceljob')}</Menu.Item>
+            </Menu>
+          }
+        >
+          <Button key="4" style={{ padding: '0 8px' }}>
+            <EllipsisOutlined />
+          </Button>
+        </Dropdown>,
+      );
     }
     return buttons;
-  }
+  };
 
   return (
     <PageContainer
       header={{
-        title: (<><JobLifeCycle step={job?.instance?.step}/>{job?.instance?.name}</>),
+        title: (
+          <>
+            <JobLifeCycle step={job?.instance?.step} />
+            {job?.instance?.name}
+          </>
+        ),
         ghost: true,
         extra: getButtons(),
       }}
-      content={<>
-        <Space size={0}>
-          {job?.instance?.jid ? (
-            <Tag color="blue" key={job?.instance?.jid}>
-              <FireOutlined/> {job?.instance?.jid}
-            </Tag>
-          ) : undefined}
-          <JobStatus status={job?.instance?.status}/>
-          {job?.history?.type ? (
-            <Tag color="blue" key={job?.history?.type}>
-              <RocketOutlined/> {job?.history?.type}
-            </Tag>
-          ) : undefined}
-          {job?.cluster?.alias ? (
-            <Tag color="green" key={job?.cluster?.alias}>
-              <ClusterOutlined/> {job?.cluster?.alias}
-            </Tag>
-          ) : (<Tag color="green" key='local'>
-            <ClusterOutlined/> {l('pages.devops.jobinfo.localenv')}
-          </Tag>)}
-        </Space>
-      </>}
-      tabBarExtraContent={l('pages.devops.LastUpdateTime') +`：${moment(time).format('HH:mm:ss')}`}
+      content={
+        <>
+          <Space size={0}>
+            {job?.instance?.jid ? (
+              <Tag color="blue" key={job?.instance?.jid}>
+                <FireOutlined /> {job?.instance?.jid}
+              </Tag>
+            ) : undefined}
+            <JobStatus status={job?.instance?.status} />
+            {job?.history?.type ? (
+              <Tag color="blue" key={job?.history?.type}>
+                <RocketOutlined /> {job?.history?.type}
+              </Tag>
+            ) : undefined}
+            {job?.cluster?.alias ? (
+              <Tag color="green" key={job?.cluster?.alias}>
+                <ClusterOutlined /> {job?.cluster?.alias}
+              </Tag>
+            ) : (
+              <Tag color="green" key="local">
+                <ClusterOutlined /> {l('pages.devops.jobinfo.localenv')}
+              </Tag>
+            )}
+          </Space>
+        </>
+      }
+      tabBarExtraContent={l('pages.devops.LastUpdateTime') + `：${moment(time).format('HH:mm:ss')}`}
       tabList={[
         {
           tab: l('pages.devops.jobinfo.overview'),
@@ -271,25 +312,30 @@ const JobInfo = (props: any) => {
           key: 'alert',
           closable: false,
         },
-
       ]}
       onTabChange={(key) => {
         setTabKey(key);
       }}
     >
       <ProCard>
-        {tabKey === 'base' ? <BaseInfo job={job}/> : undefined}
-        {tabKey === 'config' ? <Config job={job}/> : undefined}
-        {tabKey === 'cluster' ? <FlinkClusterInfo job={job}/> : undefined}
-        {tabKey === 'snapshot' ? <CheckPoints job={job}/> : undefined}
-        {tabKey === 'exception' ? <Exception job={job}/> : undefined}
-        {tabKey === 'log' ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={l('global.stay.tuned')}/> : undefined}
-        {tabKey === 'optimize' ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={l('global.stay.tuned')}/> : undefined}
-        {tabKey === 'flinksql' ? <FlinkSQL job={job}/> : undefined}
-        {tabKey === 'datamap' ? <DataMap job={job}/> : undefined}
-        {tabKey === 'olap' ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={l('global.stay.tuned')}/> : undefined}
-        {tabKey === 'version' ? <TaskVersionInfo job={job}/> : undefined}
-        {tabKey === 'alert' ? <Alert job={job}/> : undefined}
+        {tabKey === 'base' ? <BaseInfo job={job} /> : undefined}
+        {tabKey === 'config' ? <Config job={job} /> : undefined}
+        {tabKey === 'cluster' ? <FlinkClusterInfo job={job} /> : undefined}
+        {tabKey === 'snapshot' ? <CheckPoints job={job} /> : undefined}
+        {tabKey === 'exception' ? <Exception job={job} /> : undefined}
+        {tabKey === 'log' ? (
+          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={l('global.stay.tuned')} />
+        ) : undefined}
+        {tabKey === 'optimize' ? (
+          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={l('global.stay.tuned')} />
+        ) : undefined}
+        {tabKey === 'flinksql' ? <FlinkSQL job={job} /> : undefined}
+        {tabKey === 'datamap' ? <DataMap job={job} /> : undefined}
+        {tabKey === 'olap' ? (
+          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={l('global.stay.tuned')} />
+        ) : undefined}
+        {tabKey === 'version' ? <TaskVersionInfo job={job} /> : undefined}
+        {tabKey === 'alert' ? <Alert job={job} /> : undefined}
       </ProCard>
     </PageContainer>
   );

@@ -17,11 +17,10 @@
  *
  */
 
-
-import React, {useState} from 'react';
-import {Button, Divider, Form, Input, Modal, Select, Switch} from 'antd';
-import {JarTableListItem} from "@/pages/RegistrationCenter/data";
-import {l} from "@/utils/intl";
+import React, { useState } from 'react';
+import { Button, Divider, Form, Input, Modal, Select, Switch } from 'antd';
+import { JarTableListItem } from '@/pages/RegistrationCenter/data';
+import { l } from '@/utils/intl';
 
 export type JarFormProps = {
   onCancel: (flag?: boolean) => void;
@@ -32,13 +31,11 @@ export type JarFormProps = {
 const Option = Select.Option;
 
 const formLayout = {
-  labelCol: {span: 7},
-  wrapperCol: {span: 13},
+  labelCol: { span: 7 },
+  wrapperCol: { span: 13 },
 };
 
 const JarForm: React.FC<JarFormProps> = (props) => {
-
-
   const [form] = Form.useForm();
   const [formVals, setFormVals] = useState<Partial<JarTableListItem>>({
     id: props.values.id,
@@ -51,25 +48,18 @@ const JarForm: React.FC<JarFormProps> = (props) => {
     enabled: props.values.enabled ? props.values.enabled : true,
   });
 
-  const {
-    onSubmit: handleSubmit,
-    onCancel: handleModalVisible,
-    modalVisible,
-  } = props;
+  const { onSubmit: handleSubmit, onCancel: handleModalVisible, modalVisible } = props;
 
   const submitForm = async () => {
     const fieldsValue = await form.validateFields();
-    setFormVals({...formVals, ...fieldsValue});
-    handleSubmit({...formVals, ...fieldsValue});
+    setFormVals({ ...formVals, ...fieldsValue });
+    handleSubmit({ ...formVals, ...fieldsValue });
   };
 
   const renderContent = (formVals) => {
     return (
       <>
-        <Form.Item
-          name="type"
-          label={l('pages.rc.jar.type')}
-        >
+        <Form.Item name="type" label={l('pages.rc.jar.type')}>
           <Select defaultValue="UserApp" value="UserApp">
             <Option value="UserApp">User App</Option>
           </Select>
@@ -79,43 +69,45 @@ const JarForm: React.FC<JarFormProps> = (props) => {
           name="path"
           label={l('pages.rc.jar.filePath')}
           help={l('pages.rc.jar.filePathHelp')}
-          rules={[{required: true, message: l('pages.rc.jar.filePathHelp')}]}
+          rules={[{ required: true, message: l('pages.rc.jar.filePathHelp') }]}
         >
-          <Input placeholder={l('pages.rc.jar.filePathPleaseHolder')}/>
+          <Input placeholder={l('pages.rc.jar.filePathPleaseHolder')} />
         </Form.Item>
         <Form.Item
           name="mainClass"
           label={l('pages.rc.jar.mainClass')}
           help={l('pages.rc.jar.mainClassHelp')}
         >
-          <Input placeholder={l('pages.rc.jar.mainClassPleaseHolder')}/>
+          <Input placeholder={l('pages.rc.jar.mainClassPleaseHolder')} />
         </Form.Item>
         <Form.Item
           name="paras"
           label={l('pages.rc.jar.execParams')}
           help={l('pages.rc.jar.execParamsHelp')}
         >
-          <Input placeholder={l('pages.rc.jar.execParamsPleaseHolder')}/>
+          <Input placeholder={l('pages.rc.jar.execParamsPleaseHolder')} />
         </Form.Item>
         <Divider>{l('pages.rc.jar.baseConfig')}</Divider>
         <Form.Item
           name="name"
           label={l('pages.rc.jar.name')}
-          rules={[{required: true, message: l('pages.rc.jar.namePlaceholder')}]}>
-          <Input placeholder={l('pages.rc.jar.namePlaceholder')}/>
-        </Form.Item>
-        <Form.Item
-          name="note"
-          label={l('global.table.note')}
+          rules={[{ required: true, message: l('pages.rc.jar.namePlaceholder') }]}
         >
-          <Input.TextArea placeholder={l('global.table.notePlaceholder')} allowClear
-                          autoSize={{minRows: 3, maxRows: 10}}/>
+          <Input placeholder={l('pages.rc.jar.namePlaceholder')} />
         </Form.Item>
-        <Form.Item
-          name="enabled"
-          label={l('global.table.isEnable')}>
-          <Switch  checkedChildren={l('button.enable')} unCheckedChildren={l('button.disable')}
-                  defaultChecked={formVals.enabled}/>
+        <Form.Item name="note" label={l('global.table.note')}>
+          <Input.TextArea
+            placeholder={l('global.table.notePlaceholder')}
+            allowClear
+            autoSize={{ minRows: 3, maxRows: 10 }}
+          />
+        </Form.Item>
+        <Form.Item name="enabled" label={l('global.table.isEnable')}>
+          <Switch
+            checkedChildren={l('button.enable')}
+            unCheckedChildren={l('button.disable')}
+            defaultChecked={formVals.enabled}
+          />
         </Form.Item>
       </>
     );
@@ -125,26 +117,24 @@ const JarForm: React.FC<JarFormProps> = (props) => {
     return (
       <>
         <Button onClick={() => handleModalVisible(false)}>{l('button.cancel')}</Button>
-        <Button type="primary" onClick={() => submitForm()}>{l('button.finish')}</Button>
+        <Button type="primary" onClick={() => submitForm()}>
+          {l('button.finish')}
+        </Button>
       </>
     );
   };
 
   return (
     <Modal
-      width={"40%"}
-      bodyStyle={{padding: '32px 40px 48px'}}
+      width={'40%'}
+      bodyStyle={{ padding: '32px 40px 48px' }}
       destroyOnClose
       title={formVals.id ? l('pages.rc.jar.modify') : l('pages.rc.jar.create')}
       visible={modalVisible}
       footer={renderFooter()}
       onCancel={() => handleModalVisible()}
     >
-      <Form
-        {...formLayout}
-        form={form}
-        initialValues={formVals}
-      >
+      <Form {...formLayout} form={form} initialValues={formVals}>
         {renderContent(formVals)}
       </Form>
     </Modal>

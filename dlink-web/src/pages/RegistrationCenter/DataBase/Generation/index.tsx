@@ -17,73 +17,71 @@
  *
  */
 
+import { Tabs, Typography } from 'antd';
+import { useEffect, useState } from 'react';
+import { getData } from '@/components/Common/crud';
+import CodeShow from '@/components/Common/CodeShow';
 
-import {Tabs, Typography} from 'antd';
-import {useEffect, useState} from "react";
-import {getData} from "@/components/Common/crud";
-import CodeShow from "@/components/Common/CodeShow";
-
-const {Paragraph} = Typography;
+const { Paragraph } = Typography;
 const { TabPane } = Tabs;
 
 type SqlGeneration = {
   flinkSqlCreate?: string;
   sqlSelect?: string;
   sqlCreate?: string;
-}
+};
 const Generation = (props: any) => {
-
-  const {dbId,table,schema} = props;
+  const { dbId, table, schema } = props;
   const [sqlGeneration, setSqlGeneration] = useState<SqlGeneration>({});
 
   const getSqlGeneration = async () => {
-    const msg = await getData('api/database/getSqlGeneration', {id:dbId,schemaName:schema,tableName:table});
+    const msg = await getData('api/database/getSqlGeneration', {
+      id: dbId,
+      schemaName: schema,
+      tableName: table,
+    });
     setSqlGeneration(msg.datas);
   };
 
   useEffect(() => {
     getSqlGeneration();
-  }, [dbId,table,schema]);
+  }, [dbId, table, schema]);
 
-  return (<>
-    <Paragraph>
-      <Tabs defaultActiveKey="FlinkDDL" size="small"  tabPosition="left" >
-        <TabPane
-          tab={
-            <span>
-          FlinkDDL
-        </span>
-          }
-          key="FlinkDDL"
-        >
-          <Paragraph copyable={{text: sqlGeneration.flinkSqlCreate}}></Paragraph>
-          <CodeShow height={"400px"} code={sqlGeneration.flinkSqlCreate || ''} language={"sql"} theme={"vs-dark"} />
-        </TabPane>
-        <TabPane
-          tab={
-            <span>
-          SELECT
-        </span>
-          }
-          key="SQLSelect"
-        >
-          <Paragraph copyable={{text: sqlGeneration.sqlSelect}}></Paragraph>
-          <CodeShow height={"400px"} code={sqlGeneration.sqlSelect || ''} language={"sql"} theme={"vs-dark"} />
-        </TabPane>
-        <TabPane
-          tab={
-            <span>
-          SQLDDL
-        </span>
-          }
-          key="SQLDDL"
-        >
-          <Paragraph copyable={{text: sqlGeneration.sqlCreate}}></Paragraph>
-          <CodeShow height={"400px"} code={sqlGeneration.sqlCreate || '' } language={"sql"} theme={"vs-dark"} />
-        </TabPane>
-      </Tabs>
-
-    </Paragraph></>)
+  return (
+    <>
+      <Paragraph>
+        <Tabs defaultActiveKey="FlinkDDL" size="small" tabPosition="left">
+          <TabPane tab={<span>FlinkDDL</span>} key="FlinkDDL">
+            <Paragraph copyable={{ text: sqlGeneration.flinkSqlCreate }}></Paragraph>
+            <CodeShow
+              height={'400px'}
+              code={sqlGeneration.flinkSqlCreate || ''}
+              language={'sql'}
+              theme={'vs-dark'}
+            />
+          </TabPane>
+          <TabPane tab={<span>SELECT</span>} key="SQLSelect">
+            <Paragraph copyable={{ text: sqlGeneration.sqlSelect }}></Paragraph>
+            <CodeShow
+              height={'400px'}
+              code={sqlGeneration.sqlSelect || ''}
+              language={'sql'}
+              theme={'vs-dark'}
+            />
+          </TabPane>
+          <TabPane tab={<span>SQLDDL</span>} key="SQLDDL">
+            <Paragraph copyable={{ text: sqlGeneration.sqlCreate }}></Paragraph>
+            <CodeShow
+              height={'400px'}
+              code={sqlGeneration.sqlCreate || ''}
+              language={'sql'}
+              theme={'vs-dark'}
+            />
+          </TabPane>
+        </Tabs>
+      </Paragraph>
+    </>
+  );
 };
 
 export default Generation;

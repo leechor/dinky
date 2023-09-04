@@ -17,12 +17,11 @@
  *
  */
 
-
-import React, {useState} from 'react';
-import {Button, Form, Input, Modal, Switch} from 'antd';
-import {NameSpaceTableListItem} from "@/pages/AuthenticationCenter/data.d";
-import {getStorageTenantId} from "@/components/Common/crud";
-import {l} from "@/utils/intl";
+import React, { useState } from 'react';
+import { Button, Form, Input, Modal, Switch } from 'antd';
+import { NameSpaceTableListItem } from '@/pages/AuthenticationCenter/data.d';
+import { getStorageTenantId } from '@/components/Common/crud';
+import { l } from '@/utils/intl';
 
 export type TenantFormProps = {
   onCancel: (flag?: boolean) => void;
@@ -32,8 +31,8 @@ export type TenantFormProps = {
 };
 
 const formLayout = {
-  labelCol: {span: 7},
-  wrapperCol: {span: 13},
+  labelCol: { span: 7 },
+  wrapperCol: { span: 13 },
 };
 
 const NameSpaceForm: React.FC<TenantFormProps> = (props) => {
@@ -48,17 +47,13 @@ const NameSpaceForm: React.FC<TenantFormProps> = (props) => {
     updateTime: props.values?.updateTime,
   });
 
-  const {
-    onSubmit: handleSubmit,
-    onCancel: handleModalVisible,
-    modalVisible,
-  } = props;
+  const { onSubmit: handleSubmit, onCancel: handleModalVisible, modalVisible } = props;
 
   const submitForm = async () => {
     const fieldsValue = await form.validateFields();
     fieldsValue.id = formVals.id;
-    setFormVals({...formVals, ...fieldsValue});
-    handleSubmit({...formVals, ...fieldsValue});
+    setFormVals({ ...formVals, ...fieldsValue });
+    handleSubmit({ ...formVals, ...fieldsValue });
   };
 
   const renderContent = (formValsPara: Partial<NameSpaceTableListItem>) => {
@@ -67,28 +62,26 @@ const NameSpaceForm: React.FC<TenantFormProps> = (props) => {
         <Form.Item
           name="namespaceCode"
           label={l('pages.nameSpace.NameSpaceCode')}
-          rules={[{required: true, message: l('pages.nameSpace.EnterNameSpaceCode')}]}>
-          <Input placeholder={l('pages.nameSpace.EnterNameSpaceCode')}/>
-        </Form.Item>
-        <Form.Item
-          hidden={true}
-          name="tenantId"
-          label={l('pages.nameSpace.belongTenant')}
+          rules={[{ required: true, message: l('pages.nameSpace.EnterNameSpaceCode') }]}
         >
-          <Input disabled defaultValue={getStorageTenantId()}/>
+          <Input placeholder={l('pages.nameSpace.EnterNameSpaceCode')} />
         </Form.Item>
-        <Form.Item
-          name="note"
-          label={l('global.table.note')}
-        >
-          <Input.TextArea placeholder={l('pages.nameSpace.EnterNameSpaceNote')} allowClear
-                          autoSize={{minRows: 3, maxRows: 10}}/>
+        <Form.Item hidden={true} name="tenantId" label={l('pages.nameSpace.belongTenant')}>
+          <Input disabled defaultValue={getStorageTenantId()} />
         </Form.Item>
-        <Form.Item
-          name="enabled"
-          label={l('global.table.isEnable')}>
-          <Switch checkedChildren={l('button.enable')} unCheckedChildren={l('button.disable')}
-                  defaultChecked={formValsPara.enabled}/>
+        <Form.Item name="note" label={l('global.table.note')}>
+          <Input.TextArea
+            placeholder={l('pages.nameSpace.EnterNameSpaceNote')}
+            allowClear
+            autoSize={{ minRows: 3, maxRows: 10 }}
+          />
+        </Form.Item>
+        <Form.Item name="enabled" label={l('global.table.isEnable')}>
+          <Switch
+            checkedChildren={l('button.enable')}
+            unCheckedChildren={l('button.disable')}
+            defaultChecked={formValsPara.enabled}
+          />
         </Form.Item>
       </>
     );
@@ -107,19 +100,15 @@ const NameSpaceForm: React.FC<TenantFormProps> = (props) => {
 
   return (
     <Modal
-      width={"40%"}
-      bodyStyle={{padding: '32px 40px 48px'}}
+      width={'40%'}
+      bodyStyle={{ padding: '32px 40px 48px' }}
       destroyOnClose
       title={formVals.id ? l('pages.nameSpace.update') : l('pages.nameSpace.create')}
       visible={modalVisible}
       footer={renderFooter()}
       onCancel={() => handleModalVisible()}
     >
-      <Form
-        {...formLayout}
-        form={form}
-        initialValues={formVals}
-      >
+      <Form {...formLayout} form={form} initialValues={formVals}>
         {renderContent(formVals)}
       </Form>
     </Modal>

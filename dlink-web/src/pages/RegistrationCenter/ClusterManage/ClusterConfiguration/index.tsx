@@ -17,24 +17,27 @@
  *
  */
 
-
-import React, {useRef, useState} from "react";
-import {DownOutlined, PlusOutlined} from '@ant-design/icons';
-import ProTable, {ActionType, ProColumns} from "@ant-design/pro-table";
-import {Button, Drawer, Dropdown, Menu, Modal} from 'antd';
-import {FooterToolbar, PageContainer} from '@ant-design/pro-layout';
+import React, { useRef, useState } from 'react';
+import { DownOutlined, PlusOutlined } from '@ant-design/icons';
+import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
+import { Button, Drawer, Dropdown, Menu, Modal } from 'antd';
+import { FooterToolbar, PageContainer } from '@ant-design/pro-layout';
 import ProDescriptions from '@ant-design/pro-descriptions';
-import {ClusterConfigurationTableListItem} from "@/pages/RegistrationCenter/data";
-import {handleAddOrUpdate, handleData, handleRemove, queryData, updateEnabled} from "@/components/Common/crud";
-import {showClusterConfiguration} from "@/components/Studio/StudioEvent/DDL";
-import ClusterConfigurationForm
-  from "@/pages/RegistrationCenter/ClusterManage/ClusterConfiguration/components/ClusterConfigurationForm";
-import {l} from "@/utils/intl";
+import { ClusterConfigurationTableListItem } from '@/pages/RegistrationCenter/data';
+import {
+  handleAddOrUpdate,
+  handleData,
+  handleRemove,
+  queryData,
+  updateEnabled,
+} from '@/components/Common/crud';
+import { showClusterConfiguration } from '@/components/Studio/StudioEvent/DDL';
+import ClusterConfigurationForm from '@/pages/RegistrationCenter/ClusterManage/ClusterConfiguration/components/ClusterConfigurationForm';
+import { l } from '@/utils/intl';
 
 const url = '/api/clusterConfiguration';
 const ClusterConfigurationTableList: React.FC<{}> = (props: any) => {
-
-  const {dispatch} = props;
+  const { dispatch } = props;
   const [row, setRow] = useState<ClusterConfigurationTableListItem>();
   const [modalVisible, handleModalVisible] = useState<boolean>(false);
   const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
@@ -55,7 +58,7 @@ const ClusterConfigurationTableList: React.FC<{}> = (props: any) => {
         onOk: async () => {
           await handleRemove(url, [currentItem]);
           actionRef.current?.reloadAndRest?.();
-        }
+        },
       });
     } else if (key === 'start') {
       Modal.confirm({
@@ -64,18 +67,18 @@ const ClusterConfigurationTableList: React.FC<{}> = (props: any) => {
         okText: l('button.confirm'),
         cancelText: l('button.cancel'),
         onOk: async () => {
-          await handleData('/api/cluster/deploySessionCluster', {id: currentItem.id});
-        }
+          await handleData('/api/cluster/deploySessionCluster', { id: currentItem.id });
+        },
       });
     }
   };
 
   const MoreBtn: React.FC<{
     item: ClusterConfigurationTableListItem;
-  }> = ({item}) => (
+  }> = ({ item }) => (
     <Dropdown
       overlay={
-        <Menu onClick={({key}) => editAndDelete(key, item)}>
+        <Menu onClick={({ key }) => editAndDelete(key, item)}>
           <Menu.Item key="start">{l('button.start')}</Menu.Item>
           <Menu.Item key="edit">{l('button.edit')}</Menu.Item>
           <Menu.Item key="delete">{l('button.delete')}</Menu.Item>
@@ -83,7 +86,7 @@ const ClusterConfigurationTableList: React.FC<{}> = (props: any) => {
       }
     >
       <a>
-        {l('button.more')} <DownOutlined/>
+        {l('button.more')} <DownOutlined />
       </a>
     </Dropdown>
   );
@@ -127,9 +130,9 @@ const ClusterConfigurationTableList: React.FC<{}> = (props: any) => {
       ],
       filterMultiple: false,
       valueEnum: {
-        'Yarn': {text: 'Yarn'},
-        'Standalone': {text: 'Standalone'},
-        'Others': {text: 'Others'},
+        Yarn: { text: 'Yarn' },
+        Standalone: { text: 'Standalone' },
+        Others: { text: 'Others' },
       },
     },
     {
@@ -144,14 +147,14 @@ const ClusterConfigurationTableList: React.FC<{}> = (props: any) => {
           value: 1,
         },
         {
-          text:  l('pages.rc.clusterConfig.notAvailable'),
+          text: l('pages.rc.clusterConfig.notAvailable'),
           value: 0,
         },
       ],
       filterMultiple: false,
       valueEnum: {
-        true: {text: l('pages.rc.clusterConfig.available'), status: 'Success'},
-        false: {text: l('pages.rc.clusterConfig.notAvailable'), status: 'Error'},
+        true: { text: l('pages.rc.clusterConfig.available'), status: 'Success' },
+        false: { text: l('pages.rc.clusterConfig.notAvailable'), status: 'Error' },
       },
     },
     {
@@ -181,8 +184,8 @@ const ClusterConfigurationTableList: React.FC<{}> = (props: any) => {
       ],
       filterMultiple: false,
       valueEnum: {
-        true: {text: l('status.enabled'), status: 'Success'},
-        false: {text: l('status.disabled'), status: 'Error'},
+        true: { text: l('status.enabled'), status: 'Success' },
+        false: { text: l('status.disabled'), status: 'Error' },
       },
     },
     {
@@ -211,7 +214,7 @@ const ClusterConfigurationTableList: React.FC<{}> = (props: any) => {
         >
           {l('button.config')}
         </a>,
-        <MoreBtn key="more" item={record}/>,
+        <MoreBtn key="more" item={record} />,
       ],
     },
   ];
@@ -227,10 +230,10 @@ const ClusterConfigurationTableList: React.FC<{}> = (props: any) => {
         }}
         toolBarRender={() => [
           <Button type="primary" onClick={() => handleModalVisible(true)}>
-            <PlusOutlined/> {l('button.create')}
+            <PlusOutlined /> {l('button.create')}
           </Button>,
         ]}
-        request={(params, sorter, filter) => queryData(url, {...params, sorter, filter})}
+        request={(params, sorter, filter) => queryData(url, { ...params, sorter, filter })}
         columns={columns}
         rowSelection={{
           onChange: (_, selectedRows) => setSelectedRows(selectedRows),
@@ -244,72 +247,80 @@ const ClusterConfigurationTableList: React.FC<{}> = (props: any) => {
         <FooterToolbar
           extra={
             <div>
-              {l('tips.selected', '',
-                {
-                  total: <a
-                    style={{fontWeight: 600}}>{selectedRowsState.length}</a>
-                })}  &nbsp;&nbsp;
+              {l('tips.selected', '', {
+                total: <a style={{ fontWeight: 600 }}>{selectedRowsState.length}</a>,
+              })}{' '}
+              &nbsp;&nbsp;
               <span>
-                {l('pages.rc.clusterConfig.disableTotalOf', '',
-                  {
-                    total: (selectedRowsState.length - selectedRowsState.reduce((pre, item) => pre + (item.enabled ? 1 : 0), 0))
-                  })}
+                {l('pages.rc.clusterConfig.disableTotalOf', '', {
+                  total:
+                    selectedRowsState.length -
+                    selectedRowsState.reduce((pre, item) => pre + (item.enabled ? 1 : 0), 0),
+                })}
               </span>
             </div>
           }
         >
-          <Button type="primary" danger
-                  onClick={() => {
-                    Modal.confirm({
-                      title: l('pages.rc.clusterConfig.delete'),
-                      content: l('pages.rc.clusterConfig.deleteConfirm'),
-                      okText: l('button.confirm'),
-                      cancelText: l('button.cancel'),
-                      onOk: async () => {
-                        await handleRemove(url, selectedRowsState);
-                        setSelectedRows([]);
-                        actionRef.current?.reloadAndRest?.();
-                      }
-                    });
-                  }}
+          <Button
+            type="primary"
+            danger
+            onClick={() => {
+              Modal.confirm({
+                title: l('pages.rc.clusterConfig.delete'),
+                content: l('pages.rc.clusterConfig.deleteConfirm'),
+                okText: l('button.confirm'),
+                cancelText: l('button.cancel'),
+                onOk: async () => {
+                  await handleRemove(url, selectedRowsState);
+                  setSelectedRows([]);
+                  actionRef.current?.reloadAndRest?.();
+                },
+              });
+            }}
           >
             {l('button.batchDelete')}
           </Button>
-          <Button type="primary"
-                  onClick={() => {
-                    Modal.confirm({
-                      title: l('pages.rc.clusterConfig.enable'),
-                      content: l('pages.rc.clusterConfig.enableConfirm'),
-                      okText: l('button.confirm'),
-                      cancelText: l('button.cancel'),
-                      onOk: async () => {
-                        await updateEnabled(url, selectedRowsState, true);
-                        setSelectedRows([]);
-                        actionRef.current?.reloadAndRest?.();
-                      }
-                    });
-                  }}
-          >{l('button.batchEnable')}</Button>
-          <Button danger
-                  onClick={() => {
-                    Modal.confirm({
-                      title: l('pages.rc.clusterConfig.disable'),
-                      content: l('pages.rc.clusterConfig.disableConfirm'),
-                      okText: l('button.confirm'),
-                      cancelText: l('button.cancel'),
-                      onOk: async () => {
-                        await updateEnabled(url, selectedRowsState, false);
-                        setSelectedRows([]);
-                        actionRef.current?.reloadAndRest?.();
-                      }
-                    });
-                  }}
-          >{l('button.batchDisable')}</Button>
+          <Button
+            type="primary"
+            onClick={() => {
+              Modal.confirm({
+                title: l('pages.rc.clusterConfig.enable'),
+                content: l('pages.rc.clusterConfig.enableConfirm'),
+                okText: l('button.confirm'),
+                cancelText: l('button.cancel'),
+                onOk: async () => {
+                  await updateEnabled(url, selectedRowsState, true);
+                  setSelectedRows([]);
+                  actionRef.current?.reloadAndRest?.();
+                },
+              });
+            }}
+          >
+            {l('button.batchEnable')}
+          </Button>
+          <Button
+            danger
+            onClick={() => {
+              Modal.confirm({
+                title: l('pages.rc.clusterConfig.disable'),
+                content: l('pages.rc.clusterConfig.disableConfirm'),
+                okText: l('button.confirm'),
+                cancelText: l('button.cancel'),
+                onOk: async () => {
+                  await updateEnabled(url, selectedRowsState, false);
+                  setSelectedRows([]);
+                  actionRef.current?.reloadAndRest?.();
+                },
+              });
+            }}
+          >
+            {l('button.batchDisable')}
+          </Button>
         </FooterToolbar>
       )}
       <ClusterConfigurationForm
         onSubmit={async (value) => {
-          const success = await handleAddOrUpdate("api/clusterConfiguration", value);
+          const success = await handleAddOrUpdate('api/clusterConfiguration', value);
           if (success) {
             handleModalVisible(false);
             setFormValues({});
@@ -328,7 +339,7 @@ const ClusterConfigurationTableList: React.FC<{}> = (props: any) => {
       {formValues && Object.keys(formValues).length ? (
         <ClusterConfigurationForm
           onSubmit={async (value) => {
-            const success = await handleAddOrUpdate("api/clusterConfiguration", value);
+            const success = await handleAddOrUpdate('api/clusterConfiguration', value);
             if (success) {
               handleUpdateModalVisible(false);
               setFormValues({});

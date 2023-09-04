@@ -17,30 +17,29 @@
  *
  */
 
-
-import {DataNode} from "antd/lib/tree";
+import { DataNode } from 'antd/lib/tree';
 
 export type DataType = {
-  id:number;
-  parentId:number;
-  isLeaf:boolean;
-  children:DataType[];
+  id: number;
+  parentId: number;
+  isLeaf: boolean;
+  children: DataType[];
 };
 export interface TreeDataNode extends DataNode {
-  name:string;
-  type?:string;
-  id:number;
-  taskId:number;
-  parentId:number;
-  path:string[];
-  schema:string;
-  table:string;
+  name: string;
+  type?: string;
+  id: number;
+  taskId: number;
+  parentId: number;
+  path: string[];
+  schema: string;
+  table: string;
 }
 
-export function convertToTreeData(data:TreeDataNode[], pid:number,path?:string[]) {
-  !path&&(path=[]);
-  const result:TreeDataNode[] = [];
-  let temp:TreeDataNode[] = [];
+export function convertToTreeData(data: TreeDataNode[], pid: number, path?: string[]) {
+  !path && (path = []);
+  const result: TreeDataNode[] = [];
+  let temp: TreeDataNode[] = [];
   for (let i = 0; i < data?.length; i++) {
     if (data[i].parentId === pid) {
       let obj = data[i];
@@ -48,24 +47,24 @@ export function convertToTreeData(data:TreeDataNode[], pid:number,path?:string[]
       obj.key = obj.id;
       obj.path = path.slice();
       obj.path.push(obj.name);
-      obj.type= obj.type
-      temp = convertToTreeData(data, data[i].id,obj.path);
+      obj.type = obj.type;
+      temp = convertToTreeData(data, data[i].id, obj.path);
       if (temp.length > 0) {
-        obj.children = temp
+        obj.children = temp;
       }
-      result.push(obj)
+      result.push(obj);
     }
   }
-  return result
+  return result;
 }
 
-export function getTreeNodeByKey(node:any[], key:number) {
-  for(let i=0;i<node.length;i++) {
+export function getTreeNodeByKey(node: any[], key: number) {
+  for (let i = 0; i < node.length; i++) {
     if (node[i].key == key) {
       return node[i];
     } else if (node[i].children) {
       let result = getTreeNodeByKey(node[i].children, key);
-      if(result){
+      if (result) {
         return result;
       }
     }

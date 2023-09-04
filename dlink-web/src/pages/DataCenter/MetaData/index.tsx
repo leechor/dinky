@@ -17,7 +17,6 @@
  *
  */
 
-
 import { PageContainer } from '@ant-design/pro-layout'; //
 import styles from './index.less';
 import { Button, Card, Col, Empty, Image, Row, Segmented, Spin, Tabs, Tag, Tree } from 'antd';
@@ -42,41 +41,50 @@ import Columns from '@/pages/RegistrationCenter/DataBase/Columns';
 import Divider from 'antd/es/divider';
 import Generation from '@/pages/RegistrationCenter/DataBase/Generation';
 import TableData from '@/pages/DataCenter/MetaData/TableData';
-import { FALLBACK, getDBImage } from "@/pages/RegistrationCenter/DataBase/DB";
-import Meta from "antd/lib/card/Meta";
-import { l } from "@/utils/intl";
+import { FALLBACK, getDBImage } from '@/pages/RegistrationCenter/DataBase/DB';
+import Meta from 'antd/lib/card/Meta';
+import { l } from '@/utils/intl';
 import Console from './Console';
 import type { DataSourceProps } from '@/components/Studio/StudioGraphEdit/GraphEditor/components/data-source-modal/data-source';
 const { DirectoryTree } = Tree;
 const { TabPane } = Tabs;
 
 const MetaDataContainer: React.FC<DataSourceProps> = (props: any) => {
-  const { values, modalVisible, getDBConfigInfo } = props
+  const { values, modalVisible, getDBConfigInfo } = props;
 
-  let [database, setDatabase] = useState<[{
-    id: number,
-    name: string,
-    type: string,
-    enabled: string,
-    groupName: string,
-    status: string,
-    time: string
-  }]>([{
-    id: -1,
-    name: '',
-    type: '',
-    enabled: '',
-    groupName: '',
-    status: '',
-    time: ''
-  }]);
+  let [database, setDatabase] = useState<
+    [
+      {
+        id: number;
+        name: string;
+        type: string;
+        enabled: string;
+        groupName: string;
+        status: string;
+        time: string;
+      },
+    ]
+  >([
+    {
+      id: -1,
+      name: '',
+      type: '',
+      enabled: '',
+      groupName: '',
+      status: '',
+      time: '',
+    },
+  ]);
   const [databaseId, setDatabaseId] = useState<number>();
-  const [treeData, setTreeData] = useState<{ tables: [], updateTime: string }>({ tables: [], updateTime: "none" });
+  const [treeData, setTreeData] = useState<{ tables: []; updateTime: string }>({
+    tables: [],
+    updateTime: 'none',
+  });
   const [schemeList, setSchemeList] = useState<{}>({});
   const [row, setRow] = useState<TreeDataNode>();
   const [loadingDatabase, setloadingDatabase] = useState(false);
   const [tableChecked, setTableChecked] = useState(true);
-  const idRef = useRef<number>()
+  const idRef = useRef<number>();
   const fetchDatabaseList = async () => {
     const res = getData('api/database/listEnabledAll');
     await res.then((result) => {
@@ -87,7 +95,7 @@ const MetaDataContainer: React.FC<DataSourceProps> = (props: any) => {
   };
   const fetchDataBaseByNode = () => {
     setDatabase(values);
-  }
+  };
 
   const fetchDatabase = async (databaseId: number) => {
     setloadingDatabase(true);
@@ -95,7 +103,7 @@ const MetaDataContainer: React.FC<DataSourceProps> = (props: any) => {
     const res = showMetaDataTable(databaseId);
     await res.then((result) => {
       let tables = result.datas;
-      setSchemeList(tables)
+      setSchemeList(tables);
       if (tables) {
         for (let i = 0; i < tables.length; i++) {
           tables[i].title = tables[i].name;
@@ -115,7 +123,7 @@ const MetaDataContainer: React.FC<DataSourceProps> = (props: any) => {
 
         setTreeData({ tables: tables, updateTime: result.time });
       } else {
-        setTreeData({ tables: [], updateTime: "none" });
+        setTreeData({ tables: [], updateTime: 'none' });
       }
     });
     setloadingDatabase(false);
@@ -128,14 +136,14 @@ const MetaDataContainer: React.FC<DataSourceProps> = (props: any) => {
   const onChangeDataBase = (value: string | number) => {
     onRefreshTreeData(Number(value));
     setRow(undefined);
-    idRef.current = Number(value)
+    idRef.current = Number(value);
   };
 
   const refeshDataBase = (value: string | number) => {
     setloadingDatabase(true);
-    clearMetaDataTable(Number(databaseId)).then(result => {
+    clearMetaDataTable(Number(databaseId)).then((result) => {
       onChangeDataBase(Number(value));
-    })
+    });
   };
 
   const showTableInfo = (selected: boolean, node: TreeDataNode) => {
@@ -149,16 +157,15 @@ const MetaDataContainer: React.FC<DataSourceProps> = (props: any) => {
     fetchDatabase(databaseId);
   };
 
-
   const buildDatabaseBar = () => {
     return database.map((item) => {
       return {
         label: (
-          <Card className={styles.headerCard}
-            hoverable={false} bordered={false}>
+          <Card className={styles.headerCard} hoverable={false} bordered={false}>
             <Row>
               <Col span={11}>
-                <Image style={{ float: "left", paddingRight: "10px" }}
+                <Image
+                  style={{ float: 'left', paddingRight: '10px' }}
                   height={50}
                   preview={false}
                   src={getDBImage(item.type)}
@@ -171,22 +178,23 @@ const MetaDataContainer: React.FC<DataSourceProps> = (props: any) => {
                   <Tag color="blue" key={item.groupName}>
                     {item.groupName}
                   </Tag>
-                  {(item.status) ?
-                    (<Tag icon={<CheckCircleOutlined />} color="success">
+                  {item.status ? (
+                    <Tag icon={<CheckCircleOutlined />} color="success">
                       {l('global.table.status.normal')}
-                    </Tag>) :
+                    </Tag>
+                  ) : (
                     <Tag icon={<ExclamationCircleOutlined />} color="warning">
                       {l('global.table.status.abnormal')}
-                    </Tag>}
+                    </Tag>
+                  )}
                 </div>
               </Col>
             </Row>
           </Card>
         ),
         value: item.id,
-      }
-    }
-    )
+      };
+    });
   };
 
   const buildListTitle = () => {
@@ -194,33 +202,37 @@ const MetaDataContainer: React.FC<DataSourceProps> = (props: any) => {
       if (item.id == databaseId) {
         return (
           <div>
-            <div style={{ position: "absolute", right: "10px" }}>
-              <Button type="link" size="small"
+            <div style={{ position: 'absolute', right: '10px' }}>
+              <Button
+                type="link"
+                size="small"
                 loading={loadingDatabase}
                 onClick={() => {
-                  refeshDataBase(databaseId)
-                  setTableChecked(true)
+                  refeshDataBase(databaseId);
+                  setTableChecked(true);
                 }}
-              >{l('button.refresh')}</Button>
+              >
+                {l('button.refresh')}
+              </Button>
             </div>
             <div>{item.name}</div>
           </div>
-        )
+        );
       }
     }
-    return (<div>{l('pages.metadata.NoDatabaseSelected')}</div>)
-  }
+    return <div>{l('pages.metadata.NoDatabaseSelected')}</div>;
+  };
 
   const getDBInfo = (value: any) => {
-    getDBConfigInfo && getDBConfigInfo({ tableName: value.tableName, value: value.datas, id: idRef.current })
-
-  }
-
+    getDBConfigInfo &&
+      getDBConfigInfo({ tableName: value.tableName, value: value.datas, id: idRef.current });
+  };
 
   return (
     <PageContainer title={false}>
       <div className={styles.headerBarContent}>
-        <Segmented className={styles.headerBar}
+        <Segmented
+          className={styles.headerBar}
           options={buildDatabaseBar()}
           onChange={onChangeDataBase}
         />
@@ -229,13 +241,11 @@ const MetaDataContainer: React.FC<DataSourceProps> = (props: any) => {
         <Row gutter={24}>
           <Col span={4}>
             <Spin spinning={loadingDatabase} delay={500}>
-              <Card
-                type="inner"
-                bodyStyle={{ padding: 0 }}
-              >
-                <Meta title={buildListTitle()}
+              <Card type="inner" bodyStyle={{ padding: 0 }}>
+                <Meta
+                  title={buildListTitle()}
                   className={styles.tableListHead}
-                  description={"Last Update：" + treeData.updateTime}
+                  description={'Last Update：' + treeData.updateTime}
                 />
                 {treeData.tables.length > 0 ? (
                   <Scrollbars style={{ height: 800 }}>
@@ -245,10 +255,10 @@ const MetaDataContainer: React.FC<DataSourceProps> = (props: any) => {
                       treeData={treeData.tables}
                       onSelect={(
                         selectedKeys: Key[],
-                        { event, selected, node, selectedNodes, nativeEvent }
+                        { event, selected, node, selectedNodes, nativeEvent },
                       ) => {
                         showTableInfo(selected, node);
-                        setTableChecked(false)
+                        setTableChecked(false);
                       }}
                     />
                   </Scrollbars>
@@ -263,7 +273,8 @@ const MetaDataContainer: React.FC<DataSourceProps> = (props: any) => {
             <div>
               <div>
                 <Tabs defaultActiveKey="describe">
-                  <TabPane disabled={tableChecked}
+                  <TabPane
+                    disabled={tableChecked}
                     tab={
                       <span>
                         <ReadOutlined />
@@ -275,69 +286,76 @@ const MetaDataContainer: React.FC<DataSourceProps> = (props: any) => {
                     <Divider orientation="left" plain>
                       {l('pages.metadata.TableInfo')}
                     </Divider>
-                    {row ? (
-                      <Tables table={row} />
-                    ) : (
-                      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                    )}
+                    {row ? <Tables table={row} /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
                     <Divider orientation="left" plain>
                       {l('pages.metadata.FieldInformation')}
                     </Divider>
                     {row ? (
-                      <Columns dbId={databaseId} schema={row.schema} table={row.table} getDBInfo={getDBInfo} />
+                      <Columns
+                        dbId={databaseId}
+                        schema={row.schema}
+                        table={row.table}
+                        getDBInfo={getDBInfo}
+                      />
                     ) : (
                       <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                     )}
                   </TabPane>
 
-                  {!modalVisible && <><TabPane disabled={tableChecked}
-                    tab={
-                      <span>
-                        <BarsOutlined />
-                        {l('pages.metadata.DataSearch')}
-                      </span>
-                    }
-                    key="exampleData"
-                  >
-                    {row ? (
-                      <TableData dbId={databaseId} schema={row.schema} table={row.table} />
-                    ) : (
-                      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                    )}
-                  </TabPane>
+                  {!modalVisible && (
+                    <>
+                      <TabPane
+                        disabled={tableChecked}
+                        tab={
+                          <span>
+                            <BarsOutlined />
+                            {l('pages.metadata.DataSearch')}
+                          </span>
+                        }
+                        key="exampleData"
+                      >
+                        {row ? (
+                          <TableData dbId={databaseId} schema={row.schema} table={row.table} />
+                        ) : (
+                          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                        )}
+                      </TabPane>
 
-                    <TabPane disabled={tableChecked}
-                      tab={
-                        <span>
-                          <ConsoleSqlOutlined />
-                          {l('pages.metadata.GenerateSQL')}
-                        </span>
-                      }
-                      key="sqlGeneration"
-                    >
-                      {row ? (
-                        <Generation dbId={databaseId} schema={row.schema} table={row.table} />
-                      ) : (
-                        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                      )}
-                    </TabPane>
+                      <TabPane
+                        disabled={tableChecked}
+                        tab={
+                          <span>
+                            <ConsoleSqlOutlined />
+                            {l('pages.metadata.GenerateSQL')}
+                          </span>
+                        }
+                        key="sqlGeneration"
+                      >
+                        {row ? (
+                          <Generation dbId={databaseId} schema={row.schema} table={row.table} />
+                        ) : (
+                          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                        )}
+                      </TabPane>
 
-                    <TabPane disabled={tableChecked}
-                      tab={
-                        <span>
-                          <LaptopOutlined />
-                          {l('pages.metadata.Console')}
-                        </span>
-                      }
-                      key="Console"
-                    >
-                      {schemeList ? (
-                        <Console dbId={databaseId} schemeList={schemeList} database={database} />
-                      ) : (
-                        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                      )}
-                    </TabPane></>}
-
+                      <TabPane
+                        disabled={tableChecked}
+                        tab={
+                          <span>
+                            <LaptopOutlined />
+                            {l('pages.metadata.Console')}
+                          </span>
+                        }
+                        key="Console"
+                      >
+                        {schemeList ? (
+                          <Console dbId={databaseId} schemeList={schemeList} database={database} />
+                        ) : (
+                          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                        )}
+                      </TabPane>
+                    </>
+                  )}
                 </Tabs>
               </div>
             </div>

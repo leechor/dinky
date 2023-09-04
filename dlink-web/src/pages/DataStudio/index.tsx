@@ -17,10 +17,8 @@
  *
  */
 
-
-import Studio from "@/components/Studio";
+import Studio from '@/components/Studio';
 
 export default () => {
-  return <Studio></Studio>
-}
-
+  return <Studio></Studio>;
+};

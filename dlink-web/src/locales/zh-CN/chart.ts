@@ -33,5 +33,4 @@ export default {
   'chart.openStepType': '阶梯线',
   'chart.angle': '弧轴',
   'chart.color': '颜色',
-
-}
+};

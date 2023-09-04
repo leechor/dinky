@@ -17,29 +17,27 @@
  *
  */
 
-
-import React, {useEffect, useRef, useState} from "react";
-import {DownOutlined, PlusOutlined} from '@ant-design/icons';
-import ProTable, {ActionType, ProColumns} from "@ant-design/pro-table";
-import {Button, Dropdown, Menu, Modal} from 'antd';
-import {FooterToolbar, PageContainer} from '@ant-design/pro-layout';
-import {handleAddOrUpdate, handleRemove, queryData} from "@/components/Common/crud";
-import {RoleSelectPermissionsTableListItem} from "@/pages/AuthenticationCenter/data.d";
-import RoleSelectPermissionsForm from "@/pages/AuthenticationCenter/RoleSelectPermissions/components/RoleSelectPermissionsForm";
-import {getRoleList} from "@/pages/AuthenticationCenter/service";
-import {connect} from "umi";
-import {l} from "@/utils/intl";
+import React, { useEffect, useRef, useState } from 'react';
+import { DownOutlined, PlusOutlined } from '@ant-design/icons';
+import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
+import { Button, Dropdown, Menu, Modal } from 'antd';
+import { FooterToolbar, PageContainer } from '@ant-design/pro-layout';
+import { handleAddOrUpdate, handleRemove, queryData } from '@/components/Common/crud';
+import { RoleSelectPermissionsTableListItem } from '@/pages/AuthenticationCenter/data.d';
+import RoleSelectPermissionsForm from '@/pages/AuthenticationCenter/RoleSelectPermissions/components/RoleSelectPermissionsForm';
+import { getRoleList } from '@/pages/AuthenticationCenter/service';
+import { connect } from 'umi';
+import { l } from '@/utils/intl';
 
 const url = '/api/rowPermissions';
 
 const RoleSelectPermissionsFormList: React.FC<{}> = (props: any) => {
-  const {dispatch} = props;
+  const { dispatch } = props;
   const [formValues, setFormValues] = useState<RoleSelectPermissionsTableListItem>();
   const [modalVisible, handleModalVisible] = useState<boolean>(false);
   const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
   const [selectedRowsState, setSelectedRows] = useState<RoleSelectPermissionsTableListItem[]>([]);
-
 
   useEffect(() => {
     getRoleList(dispatch);
@@ -58,24 +56,24 @@ const RoleSelectPermissionsFormList: React.FC<{}> = (props: any) => {
         onOk: async () => {
           await handleRemove(url, [currentItem]);
           actionRef.current?.reloadAndRest?.();
-        }
+        },
       });
     }
   };
 
   const MoreBtn: React.FC<{
     item: RoleSelectPermissionsTableListItem;
-  }> = ({item}) => (
+  }> = ({ item }) => (
     <Dropdown
       overlay={
-        <Menu onClick={({key}) => editAndDelete(key, item)}>
+        <Menu onClick={({ key }) => editAndDelete(key, item)}>
           <Menu.Item key="edit">{l('button.edit')}</Menu.Item>
           <Menu.Item key="delete">{l('button.delete')}</Menu.Item>
         </Menu>
       }
     >
       <a>
-        {l('button.more')} <DownOutlined/>
+        {l('button.more')} <DownOutlined />
       </a>
     </Dropdown>
   );
@@ -132,15 +130,16 @@ const RoleSelectPermissionsFormList: React.FC<{}> = (props: any) => {
       dataIndex: 'option',
       valueType: 'option',
       render: (_, record) => [
-        <Button type={"link"}
-                onClick={() => {
-                  handleUpdateModalVisible(true);
-                  setFormValues(record);
-                }}
+        <Button
+          type={'link'}
+          onClick={() => {
+            handleUpdateModalVisible(true);
+            setFormValues(record);
+          }}
         >
           {l('button.config')}
         </Button>,
-        <MoreBtn key="more" item={record}/>,
+        <MoreBtn key="more" item={record} />,
       ],
     },
   ];
@@ -156,10 +155,10 @@ const RoleSelectPermissionsFormList: React.FC<{}> = (props: any) => {
         }}
         toolBarRender={() => [
           <Button type="primary" onClick={() => handleModalVisible(true)}>
-            <PlusOutlined/> {l('button.create')}
+            <PlusOutlined /> {l('button.create')}
           </Button>,
         ]}
-        request={(params, sorter, filter) => queryData(url, {...params, sorter, filter})}
+        request={(params, sorter, filter) => queryData(url, { ...params, sorter, filter })}
         columns={columns}
         rowSelection={{
           onChange: (_, selectedRows) => setSelectedRows(selectedRows),
@@ -173,27 +172,29 @@ const RoleSelectPermissionsFormList: React.FC<{}> = (props: any) => {
         <FooterToolbar
           extra={
             <div>
-              {l('tips.selected', '',
-                {
-                  total: <a
-                    style={{fontWeight: 600}}>{selectedRowsState.length}</a>
-                })}  &nbsp;&nbsp;            </div>
+              {l('tips.selected', '', {
+                total: <a style={{ fontWeight: 600 }}>{selectedRowsState.length}</a>,
+              })}{' '}
+              &nbsp;&nbsp;{' '}
+            </div>
           }
         >
-          <Button type="primary" danger
-                  onClick={() => {
-                    Modal.confirm({
-                      title: l('pages.roleSelectPermissions.delete'),
-                      content: l('pages.roleSelectPermissions.deleteConfirm'),
-                      okText: l('button.confirm'),
-                      cancelText: l('button.cancel'),
-                      onOk: async () => {
-                        await handleRemove(url, selectedRowsState);
-                        setSelectedRows([]);
-                        actionRef.current?.reloadAndRest?.();
-                      }
-                    });
-                  }}
+          <Button
+            type="primary"
+            danger
+            onClick={() => {
+              Modal.confirm({
+                title: l('pages.roleSelectPermissions.delete'),
+                content: l('pages.roleSelectPermissions.deleteConfirm'),
+                okText: l('button.confirm'),
+                cancelText: l('button.cancel'),
+                onOk: async () => {
+                  await handleRemove(url, selectedRowsState);
+                  setSelectedRows([]);
+                  actionRef.current?.reloadAndRest?.();
+                },
+              });
+            }}
           >
             {l('button.batchDelete')}
           </Button>
@@ -216,28 +217,26 @@ const RoleSelectPermissionsFormList: React.FC<{}> = (props: any) => {
         modalVisible={modalVisible}
         values={{}}
       />
-      {
-        formValues && Object.keys(formValues).length ? (
-          <RoleSelectPermissionsForm
-            onSubmit={async (value) => {
-              const success = await handleAddOrUpdate(url, value);
-              if (success) {
-                handleUpdateModalVisible(false);
-                setFormValues({});
-                if (actionRef.current) {
-                  actionRef.current.reload();
-                }
-              }
-            }}
-            onCancel={() => {
+      {formValues && Object.keys(formValues).length ? (
+        <RoleSelectPermissionsForm
+          onSubmit={async (value) => {
+            const success = await handleAddOrUpdate(url, value);
+            if (success) {
               handleUpdateModalVisible(false);
               setFormValues({});
-            }}
-            modalVisible={updateModalVisible}
-            values={formValues}
-          />
-        ) : undefined
-      }
+              if (actionRef.current) {
+                actionRef.current.reload();
+              }
+            }
+          }}
+          onCancel={() => {
+            handleUpdateModalVisible(false);
+            setFormValues({});
+          }}
+          modalVisible={updateModalVisible}
+          values={formValues}
+        />
+      ) : undefined}
     </PageContainer>
   );
 };

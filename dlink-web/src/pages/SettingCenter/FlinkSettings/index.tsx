@@ -17,32 +17,28 @@
  *
  */
 
-
 import React from 'react';
 import FlinkConfigView from './components/flinkConfig';
-import {connect} from "umi";
-import {PageContainer} from "@ant-design/pro-layout";
-import {SettingsStateType} from "@/pages/SettingCenter/FlinkSettings/model";
-import {loadSettings} from "@/pages/SettingCenter/FlinkSettings/function";
-
+import { connect } from 'umi';
+import { PageContainer } from '@ant-design/pro-layout';
+import { SettingsStateType } from '@/pages/SettingCenter/FlinkSettings/model';
+import { loadSettings } from '@/pages/SettingCenter/FlinkSettings/function';
 
 type SettingsProps = {
   dispatch: any;
 };
 
 const Settings: React.FC<SettingsProps> = (props) => {
-
-  const {dispatch} = props;
+  const { dispatch } = props;
   loadSettings(dispatch);
-
 
   return (
     <PageContainer title={false}>
-      <FlinkConfigView/>
+      <FlinkConfigView />
     </PageContainer>
   );
 };
-export default connect(({Settings}: { Settings: SettingsStateType }) => ({
+export default connect(({ Settings }: { Settings: SettingsStateType }) => ({
   sqlSubmitJarPath: Settings.sqlSubmitJarPath,
   sqlSubmitJarParas: Settings.sqlSubmitJarParas,
   sqlSubmitJarMainAppClass: Settings.sqlSubmitJarMainAppClass,

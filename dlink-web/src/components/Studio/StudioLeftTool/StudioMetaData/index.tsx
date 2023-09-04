@@ -17,34 +17,32 @@
  *
  */
 
-
-import {Button, Col, Empty, Modal, Row, Select, Spin, Tabs, Tag, Tooltip, Tree} from "antd";
-import {StateType} from "@/pages/DataStudio/model";
-import {connect} from "umi";
-import React, {useState} from "react";
+import { Button, Col, Empty, Modal, Row, Select, Spin, Tabs, Tag, Tooltip, Tree } from 'antd';
+import { StateType } from '@/pages/DataStudio/model';
+import { connect } from 'umi';
+import React, { useState } from 'react';
 import {
   CodepenOutlined,
   DatabaseOutlined,
   DownOutlined,
   OrderedListOutlined,
   ReloadOutlined,
-  TableOutlined
+  TableOutlined,
 } from '@ant-design/icons';
-import {clearMetaDataTable, showMetaDataTable} from "@/components/Studio/StudioEvent/DDL";
-import {Scrollbars} from 'react-custom-scrollbars';
-import Columns from "@/pages/RegistrationCenter/DataBase/Columns";
-import Tables from "@/pages/RegistrationCenter/DataBase/Tables";
-import {TreeDataNode} from "@/components/Studio/StudioTree/Function";
-import Generation from "@/pages/RegistrationCenter/DataBase/Generation";
-import {l} from "@/utils/intl";
+import { clearMetaDataTable, showMetaDataTable } from '@/components/Studio/StudioEvent/DDL';
+import { Scrollbars } from 'react-custom-scrollbars';
+import Columns from '@/pages/RegistrationCenter/DataBase/Columns';
+import Tables from '@/pages/RegistrationCenter/DataBase/Tables';
+import { TreeDataNode } from '@/components/Studio/StudioTree/Function';
+import Generation from '@/pages/RegistrationCenter/DataBase/Generation';
+import { l } from '@/utils/intl';
 
-const {DirectoryTree} = Tree;
-const {Option} = Select;
-const {TabPane} = Tabs;
+const { DirectoryTree } = Tree;
+const { Option } = Select;
+const { TabPane } = Tabs;
 
 const StudioMetaData = (props: any) => {
-
-  const {database, toolHeight, dispatch} = props;
+  const { database, toolHeight, dispatch } = props;
   const [databaseId, setDatabaseId] = useState<number>();
   const [treeData, setTreeData] = useState<[]>([]);
   const [modalVisit, setModalVisit] = useState(false);
@@ -67,12 +65,12 @@ const StudioMetaData = (props: any) => {
         for (let i = 0; i < tables.length; i++) {
           tables[i].title = tables[i].name;
           tables[i].key = tables[i].name;
-          tables[i].icon = <DatabaseOutlined/>;
+          tables[i].icon = <DatabaseOutlined />;
           tables[i].children = tables[i].tables;
           for (let j = 0; j < tables[i].children.length; j++) {
             tables[i].children[j].title = tables[i].children[j].name;
             tables[i].children[j].key = tables[i].name + '.' + tables[i].children[j].name;
-            tables[i].children[j].icon = <TableOutlined/>;
+            tables[i].children[j].icon = <TableOutlined />;
             tables[i].children[j].isLeaf = true;
             tables[i].children[j].schema = tables[i].name;
             tables[i].children[j].table = tables[i].children[j].name;
@@ -90,12 +88,24 @@ const StudioMetaData = (props: any) => {
   };
 
   const getDataBaseOptions = () => {
-    return <>{database.map(({id, name, type, enabled}) => (
-      <Option value={id}
-              label={<><Tag color={enabled ? "processing" : "error"}>{type}</Tag>{name}</>}>
-        <Tag color={enabled ? "processing" : "error"}>{type}</Tag>{name}
-      </Option>
-    ))}</>
+    return (
+      <>
+        {database.map(({ id, name, type, enabled }) => (
+          <Option
+            value={id}
+            label={
+              <>
+                <Tag color={enabled ? 'processing' : 'error'}>{type}</Tag>
+                {name}
+              </>
+            }
+          >
+            <Tag color={enabled ? 'processing' : 'error'}>{type}</Tag>
+            {name}
+          </Option>
+        ))}
+      </>
+    );
   };
 
   const openColumnInfo = (e: React.MouseEvent, node: TreeDataNode) => {
@@ -103,31 +113,31 @@ const StudioMetaData = (props: any) => {
       setRow(node);
       setModalVisit(true);
     }
-  }
+  };
 
   const cancelHandle = () => {
     setRow(undefined);
     setModalVisit(false);
-  }
+  };
   const refeshDataBase = (value: number) => {
     if (!databaseId) return;
     setloadingDatabase(true);
-    clearMetaDataTable(databaseId).then(result => {
+    clearMetaDataTable(databaseId).then((result) => {
       onChangeDataBase(databaseId);
-    })
+    });
   };
 
   return (
-
     <Spin spinning={loadingDatabase} delay={500}>
       <Row>
         <Col span={24}>
           <Tooltip title={l('button.refresh')}>
-            <Button type="text"
-                    icon={<ReloadOutlined/>}
-                    onClick={() => {
-                      refeshDataBase(databaseId)
-                    }}
+            <Button
+              type="text"
+              icon={<ReloadOutlined />}
+              onClick={() => {
+                refeshDataBase(databaseId);
+              }}
             />
           </Tooltip>
         </Col>
@@ -135,7 +145,7 @@ const StudioMetaData = (props: any) => {
       <Row>
         <Col span={18}>
           <Select
-            style={{width: '90%'}}
+            style={{ width: '90%' }}
             placeholder={l('pages.metadata.selectDatabase')}
             optionLabelProp="label"
             onChange={onChangeDataBase}
@@ -145,16 +155,19 @@ const StudioMetaData = (props: any) => {
         </Col>
       </Row>
 
-      <Scrollbars style={{height: (toolHeight - 32)}}>
+      <Scrollbars style={{ height: toolHeight - 32 }}>
         {treeData.length > 0 ? (
           <DirectoryTree
             showIcon
-            switcherIcon={<DownOutlined/>}
+            switcherIcon={<DownOutlined />}
             treeData={treeData}
-            onRightClick={({event, node}: any) => {
-              openColumnInfo(event, node)
+            onRightClick={({ event, node }: any) => {
+              openColumnInfo(event, node);
             }}
-          />) : (<Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>)}
+          />
+        ) : (
+          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+        )}
       </Scrollbars>
       <Modal
         title={row?.key}
@@ -164,9 +177,12 @@ const StudioMetaData = (props: any) => {
           cancelHandle();
         }}
         footer={[
-          <Button key="back" onClick={() => {
-            cancelHandle();
-          }}>
+          <Button
+            key="back"
+            onClick={() => {
+              cancelHandle();
+            }}
+          >
             {l('button.close')}
           </Button>,
         ]}
@@ -175,37 +191,48 @@ const StudioMetaData = (props: any) => {
           <TabPane
             tab={
               <span>
-          <TableOutlined/>
+                <TableOutlined />
                 {l('pages.metadata.TableInfo')}
-        </span>
+              </span>
             }
             key="tableInfo"
           >
-            {row ? <Tables table={row}/> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>}
+            {row ? <Tables table={row} /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
           </TabPane>
           <TabPane
             tab={
               <span>
-          <CodepenOutlined/>
+                <CodepenOutlined />
                 {l('pages.metadata.FieldInformation')}
-        </span>
+              </span>
             }
             key="columnInfo"
           >
-            {row ? <Columns dbId={databaseId} schema={row.schema} table={row.table} scroll={{x: 1000}}/> :
-              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>}
+            {row ? (
+              <Columns
+                dbId={databaseId}
+                schema={row.schema}
+                table={row.table}
+                scroll={{ x: 1000 }}
+              />
+            ) : (
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            )}
           </TabPane>
           <TabPane
             tab={
               <span>
-          <OrderedListOutlined/>
+                <OrderedListOutlined />
                 {l('pages.metadata.GenerateSQL')}
-        </span>
+              </span>
             }
             key="sqlGeneration"
           >
-            {row ? <Generation dbId={databaseId} schema={row.schema} table={row.table}/> :
-              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>}
+            {row ? (
+              <Generation dbId={databaseId} schema={row.schema} table={row.table} />
+            ) : (
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            )}
           </TabPane>
         </Tabs>
       </Modal>
@@ -213,7 +240,7 @@ const StudioMetaData = (props: any) => {
   );
 };
 
-export default connect(({Studio}: { Studio: StateType }) => ({
+export default connect(({ Studio }: { Studio: StateType }) => ({
   database: Studio.database,
   toolHeight: Studio.toolHeight,
 }))(StudioMetaData);

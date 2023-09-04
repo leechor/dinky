@@ -17,13 +17,12 @@
  *
  */
 
+import React, { useState } from 'react';
+import { Button, Form, Input, Modal } from 'antd';
 
-import React, {useState} from 'react';
-import {Button, Form, Input, Modal} from 'antd';
-
-import {TaskTableListItem} from "@/pages/Task/data";
-import Switch from "antd/es/switch";
-import {l} from "@/utils/intl";
+import { TaskTableListItem } from '@/pages/Task/data';
+import Switch from 'antd/es/switch';
+import { l } from '@/utils/intl';
 
 export type UpdateFormProps = {
   onCancel: (flag?: boolean, formVals?: Partial<TaskTableListItem>) => void;
@@ -34,13 +33,11 @@ export type UpdateFormProps = {
 const FormItem = Form.Item;
 
 const formLayout = {
-  labelCol: {span: 7},
-  wrapperCol: {span: 13},
+  labelCol: { span: 7 },
+  wrapperCol: { span: 13 },
 };
 
 const UpdateForm: React.FC<UpdateFormProps> = (props) => {
-
-
   const [formVals, setFormVals] = useState<Partial<TaskTableListItem>>({
     id: props.values.id,
     name: props.values.name,
@@ -65,8 +62,8 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
 
   const submitForm = async () => {
     const fieldsValue = await form.validateFields();
-    setFormVals({...formVals, ...fieldsValue});
-    handleUpdate({...formVals, ...fieldsValue});
+    setFormVals({ ...formVals, ...fieldsValue });
+    handleUpdate({ ...formVals, ...fieldsValue });
   };
 
   const renderContent = (formVals: any) => {
@@ -75,50 +72,34 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
         <FormItem
           name="name"
           label={l('pages.task.name')}
-          rules={[{required: true, message: l('pages.task.namePlaceHolder')}]}>
-          <Input placeholder={l('pages.task.placeHolder')}/>
-        </FormItem>
-        <FormItem
-          name="type"
-          label={l('pages.task.type')}
+          rules={[{ required: true, message: l('pages.task.namePlaceHolder') }]}
         >
-          <Input placeholder={l('pages.task.placeHolder')}/>
+          <Input placeholder={l('pages.task.placeHolder')} />
         </FormItem>
-        <FormItem
-          name="checkPoint"
-          label={l('pages.task.checkPoint')}
-        >
-          <Input placeholder={l('pages.task.placeHolder')}/>
+        <FormItem name="type" label={l('pages.task.type')}>
+          <Input placeholder={l('pages.task.placeHolder')} />
         </FormItem>
-        <FormItem
-          name="savePointPath"
-          label={l('pages.task.savePointPath')}
-        >
-          <Input placeholder={l('pages.task.placeHolder')}/>
+        <FormItem name="checkPoint" label={l('pages.task.checkPoint')}>
+          <Input placeholder={l('pages.task.placeHolder')} />
         </FormItem>
-        <FormItem
-          name="parallelism"
-          label={l('pages.task.parallelism')}
-        >
-          <Input placeholder={l('pages.task.placeHolder')}/>
+        <FormItem name="savePointPath" label={l('pages.task.savePointPath')}>
+          <Input placeholder={l('pages.task.placeHolder')} />
         </FormItem>
-        <FormItem
-          name="fragment"
-          label={l('pages.task.fragment')}
-        >
-          <Input placeholder={l('pages.task.placeHolder')}/>
+        <FormItem name="parallelism" label={l('pages.task.parallelism')}>
+          <Input placeholder={l('pages.task.placeHolder')} />
         </FormItem>
-        <FormItem
-          name="note"
-          label={l('global.table.note')}
-        >
-          <Input.TextArea placeholder={l('pages.task.placeHolder')}/>
+        <FormItem name="fragment" label={l('pages.task.fragment')}>
+          <Input placeholder={l('pages.task.placeHolder')} />
         </FormItem>
-        <FormItem
-          name="enabled"
-          label={l('global.table.isEnable')} >
-          <Switch  checkedChildren={l('button.enable')} unCheckedChildren={l('button.disable')}
-                  defaultChecked={formVals.enabled}/>
+        <FormItem name="note" label={l('global.table.note')}>
+          <Input.TextArea placeholder={l('pages.task.placeHolder')} />
+        </FormItem>
+        <FormItem name="enabled" label={l('global.table.isEnable')}>
+          <Switch
+            checkedChildren={l('button.enable')}
+            unCheckedChildren={l('button.disable')}
+            defaultChecked={formVals.enabled}
+          />
         </FormItem>
       </>
     );
@@ -127,7 +108,10 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
   const renderFooter = () => {
     return (
       <>
-        <Button onClick={() => handleUpdateModalVisible(false, values)}> {l('button.cancel')}</Button>
+        <Button onClick={() => handleUpdateModalVisible(false, values)}>
+          {' '}
+          {l('button.cancel')}
+        </Button>
         <Button type="primary" onClick={() => submitForm()}>
           {l('button.finish')}
         </Button>
@@ -138,7 +122,7 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
   return (
     <Modal
       width={640}
-      bodyStyle={{padding: '32px 40px 48px'}}
+      bodyStyle={{ padding: '32px 40px 48px' }}
       destroyOnClose
       title={l('pages.task.edit')}
       visible={updateModalVisible}

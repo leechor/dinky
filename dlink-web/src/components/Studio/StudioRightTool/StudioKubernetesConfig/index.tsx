@@ -17,20 +17,19 @@
  *
  */
 
+import { connect } from 'umi';
+import { StateType } from '@/pages/DataStudio/model';
+import { Button, Col, Form, Input, InputNumber, Row, Select, Tag, Tooltip } from 'antd';
+import { MinusSquareOutlined } from '@ant-design/icons';
+import styles from './index.less';
+import React, { useEffect } from 'react';
+import { JarStateType } from '@/pages/RegistrationCenter/Jar/model';
+import { Scrollbars } from 'react-custom-scrollbars';
+import { RUN_MODE } from '@/components/Studio/conf';
+import { AlertStateType } from '@/pages/RegistrationCenter/AlertManage/AlertInstance/model';
+import { l } from '@/utils/intl';
 
-import {connect} from "umi";
-import {StateType} from "@/pages/DataStudio/model";
-import {Button, Col, Form, Input, InputNumber, Row, Select, Tag, Tooltip} from "antd";
-import {MinusSquareOutlined} from "@ant-design/icons";
-import styles from "./index.less";
-import React, {useEffect} from "react";
-import {JarStateType} from "@/pages/RegistrationCenter/Jar/model";
-import {Scrollbars} from "react-custom-scrollbars";
-import {RUN_MODE} from "@/components/Studio/conf";
-import {AlertStateType} from "@/pages/RegistrationCenter/AlertManage/AlertInstance/model";
-import {l} from "@/utils/intl";
-
-const {Option} = Select;
+const { Option } = Select;
 
 const StudioKubernetesConfig = (props: any) => {
   const {
@@ -43,35 +42,56 @@ const StudioKubernetesConfig = (props: any) => {
     currentSession,
     env,
     group,
-    toolHeight
+    toolHeight,
   } = props;
 
   const getClusterConfigurationOptions = () => {
     const itemList = [];
 
     for (const item of clusterConfiguration) {
-
-      const tag = (<><Tag color={item.enabled ? "processing" : "error"}>{item.type}</Tag>{item.name}</>);
+      const tag = (
+        <>
+          <Tag color={item.enabled ? 'processing' : 'error'}>{item.type}</Tag>
+          {item.name}
+        </>
+      );
       //opeartor mode can not have normal application config
-      if (current.task.type == 'kubernetes-application-operator' && item.type == 'KubernetesOperator'){
-        itemList.push(<Option key={item.id} value={item.id} label={tag}>{tag}</Option>)
-      }else if (current.task.type != 'kubernetes-application-operator'  && item.type != 'KubernetesOperator'){
+      if (
+        current.task.type == 'kubernetes-application-operator' &&
+        item.type == 'KubernetesOperator'
+      ) {
+        itemList.push(
+          <Option key={item.id} value={item.id} label={tag}>
+            {tag}
+          </Option>,
+        );
+      } else if (
+        current.task.type != 'kubernetes-application-operator' &&
+        item.type != 'KubernetesOperator'
+      ) {
         //if not operator mode , add it normal
-        itemList.push(<Option key={item.id} value={item.id} label={tag}>{tag}</Option>)
+        itemList.push(
+          <Option key={item.id} value={item.id} label={tag}>
+            {tag}
+          </Option>,
+        );
       }
     }
     return itemList;
   };
 
-
   const getGroupOptions = () => {
-    const itemList = [<Option key={0} value={0} label={l('button.disable')}>
-      {l('button.disable')}
-    </Option>];
+    const itemList = [
+      <Option key={0} value={0} label={l('button.disable')}>
+        {l('button.disable')}
+      </Option>,
+    ];
     for (const item of group) {
-      itemList.push(<Option key={item.id} value={item.id} label={item.name}>
-        {item.name}
-      </Option>)
+      itemList.push(
+        <Option key={item.id} value={item.id} label={item.name}>
+          {item.name}
+        </Option>,
+      );
     }
     return itemList;
   };
@@ -79,7 +99,6 @@ const StudioKubernetesConfig = (props: any) => {
   useEffect(() => {
     form.setFieldsValue(current.task);
   }, [current.task]);
-
 
   const onValuesChange = (change: any, all: any) => {
     const newTabs = tabs;
@@ -92,7 +111,7 @@ const StudioKubernetesConfig = (props: any) => {
       }
     }
     dispatch({
-      type: "Studio/saveTabs",
+      type: 'Studio/saveTabs',
       payload: newTabs,
     });
   };
@@ -101,17 +120,14 @@ const StudioKubernetesConfig = (props: any) => {
     <>
       <Row>
         <Col span={24}>
-          <div style={{float: "right"}}>
+          <div style={{ float: 'right' }}>
             <Tooltip title={l('component.minimize')}>
-              <Button
-                type="text"
-                icon={<MinusSquareOutlined/>}
-              />
+              <Button type="text" icon={<MinusSquareOutlined />} />
             </Tooltip>
           </div>
         </Col>
       </Row>
-      <Scrollbars style={{height: (toolHeight - 32)}}>
+      <Scrollbars style={{ height: toolHeight - 32 }}>
         <Form
           form={form}
           layout="vertical"
@@ -119,25 +135,34 @@ const StudioKubernetesConfig = (props: any) => {
           onValuesChange={onValuesChange}
         >
           <Form.Item
-            label= {l('global.table.execmode')} className={styles.form_item} name="type"
+            label={l('global.table.execmode')}
+            className={styles.form_item}
+            name="type"
             tooltip={l('pages.datastudio.label.jobConfig.execmode.k8s.tip')}
           >
-            <Select defaultValue={RUN_MODE.KUBERNETES_APPLICATION} value={RUN_MODE.KUBERNETES_APPLICATION}>
+            <Select
+              defaultValue={RUN_MODE.KUBERNETES_APPLICATION}
+              value={RUN_MODE.KUBERNETES_APPLICATION}
+            >
               <Option value={RUN_MODE.KUBERNETES_APPLICATION}>Kubernetes Application Native</Option>
-              <Option value={RUN_MODE.KUBERNETES_APPLICATION_OPERATOR}>Kubernetes Application Operator</Option>
+              <Option value={RUN_MODE.KUBERNETES_APPLICATION_OPERATOR}>
+                Kubernetes Application Operator
+              </Option>
             </Select>
           </Form.Item>
 
           <Row>
             <Col span={24}>
-              <Form.Item label={l('pages.datastudio.label.jobConfig.clusterConfig')}
-                         tooltip={l('pages.datastudio.label.jobConfig.clusterConfig.tip1', '', {
-                           type: current.task.type
-                         })}
-                         name="clusterConfigurationId"
-                         className={styles.form_item}>
+              <Form.Item
+                label={l('pages.datastudio.label.jobConfig.clusterConfig')}
+                tooltip={l('pages.datastudio.label.jobConfig.clusterConfig.tip1', '', {
+                  type: current.task.type,
+                })}
+                name="clusterConfigurationId"
+                className={styles.form_item}
+              >
                 <Select
-                  style={{width: '100%'}}
+                  style={{ width: '100%' }}
                   placeholder={l('pages.datastudio.label.jobConfig.clusterConfig.tip2')}
                   optionLabelProp="label"
                 >
@@ -150,16 +175,18 @@ const StudioKubernetesConfig = (props: any) => {
           <Row>
             <Col span={12}>
               <Form.Item
-                label={l('pages.datastudio.label.jobConfig.parallelism')} className={styles.form_item}
+                label={l('pages.datastudio.label.jobConfig.parallelism')}
+                className={styles.form_item}
                 name="parallelism"
                 tooltip={l('pages.datastudio.label.jobConfig.parallelism.tip')}
               >
-                <InputNumber min={1} max={9999} defaultValue={1}/>
+                <InputNumber min={1} max={9999} defaultValue={1} />
               </Form.Item>
             </Col>
           </Row>
           <Form.Item
-            label={l('pages.datastudio.label.jobConfig.savePointStrategy')} className={styles.form_item}
+            label={l('pages.datastudio.label.jobConfig.savePointStrategy')}
+            className={styles.form_item}
             name="savePointStrategy"
             tooltip={l('pages.datastudio.label.jobConfig.savePointStrategy.tip')}
           >
@@ -170,21 +197,27 @@ const StudioKubernetesConfig = (props: any) => {
               <Option value={3}>{l('global.savepoint.strategy.custom')}</Option>
             </Select>
           </Form.Item>
-          {current.task.savePointStrategy === 3 ?
-            (<Form.Item
-              label={l('pages.datastudio.label.jobConfig.savePointpath')} className={styles.form_item}
+          {current.task.savePointStrategy === 3 ? (
+            <Form.Item
+              label={l('pages.datastudio.label.jobConfig.savePointpath')}
+              className={styles.form_item}
               name="savePointPath"
               tooltip={l('pages.datastudio.label.jobConfig.savePointpath.tip1')}
             >
-              <Input placeholder={l('pages.datastudio.label.jobConfig.savePointpath.tip2')}/>
-            </Form.Item>) : ''
-          }
+              <Input placeholder={l('pages.datastudio.label.jobConfig.savePointpath.tip2')} />
+            </Form.Item>
+          ) : (
+            ''
+          )}
           <Row>
             <Col span={24}>
-              <Form.Item label={l('pages.datastudio.label.jobConfig.alertGroup')}  name="alertGroupId"
-                         className={styles.form_item}>
+              <Form.Item
+                label={l('pages.datastudio.label.jobConfig.alertGroup')}
+                name="alertGroupId"
+                className={styles.form_item}
+              >
                 <Select
-                  style={{width: '100%'}}
+                  style={{ width: '100%' }}
                   placeholder={l('pages.datastudio.label.jobConfig.alertGroup.tip')}
                   optionLabelProp="label"
                   defaultValue={0}
@@ -200,15 +233,17 @@ const StudioKubernetesConfig = (props: any) => {
   );
 };
 
-export default connect(({Studio, Jar, Alert}: { Studio: StateType, Jar: JarStateType, Alert: AlertStateType }) => ({
-  sessionCluster: Studio.sessionCluster,
-  clusterConfiguration: Studio.clusterConfiguration,
-  current: Studio.current,
-  tabs: Studio.tabs,
-  session: Studio.session,
-  currentSession: Studio.currentSession,
-  toolHeight: Studio.toolHeight,
-  jars: Jar.jars,
-  env: Studio.env,
-  group: Alert.group,
-}))(StudioKubernetesConfig);
+export default connect(
+  ({ Studio, Jar, Alert }: { Studio: StateType; Jar: JarStateType; Alert: AlertStateType }) => ({
+    sessionCluster: Studio.sessionCluster,
+    clusterConfiguration: Studio.clusterConfiguration,
+    current: Studio.current,
+    tabs: Studio.tabs,
+    session: Studio.session,
+    currentSession: Studio.currentSession,
+    toolHeight: Studio.toolHeight,
+    jars: Jar.jars,
+    env: Studio.env,
+    group: Alert.group,
+  }),
+)(StudioKubernetesConfig);

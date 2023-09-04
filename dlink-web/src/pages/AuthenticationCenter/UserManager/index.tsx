@@ -17,23 +17,28 @@
  *
  */
 
-
-import React, {useRef, useState} from "react";
-import {DownOutlined, PlusOutlined} from '@ant-design/icons';
-import ProTable, {ActionType, ProColumns} from "@ant-design/pro-table";
-import {Button, Drawer, Dropdown, Menu, Modal} from 'antd';
-import {FooterToolbar, PageContainer} from '@ant-design/pro-layout';
+import React, { useRef, useState } from 'react';
+import { DownOutlined, PlusOutlined } from '@ant-design/icons';
+import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
+import { Button, Drawer, Dropdown, Menu, Modal } from 'antd';
+import { FooterToolbar, PageContainer } from '@ant-design/pro-layout';
 import ProDescriptions from '@ant-design/pro-descriptions';
-import {handleAddOrUpdate, handleOption, handleRemove, queryData, updateEnabled} from "@/components/Common/crud";
-import {UserTableListItem} from "@/pages/AuthenticationCenter/data.d";
-import UserForm from "@/pages/AuthenticationCenter/UserManager/components/UserForm";
-import PasswordForm from "@/pages/AuthenticationCenter/UserManager/components/PasswordForm";
-import TableTransferFrom from "@/pages/AuthenticationCenter/UserManager/components/TableTransfer";
-import {l} from "@/utils/intl";
+import {
+  handleAddOrUpdate,
+  handleOption,
+  handleRemove,
+  queryData,
+  updateEnabled,
+} from '@/components/Common/crud';
+import { UserTableListItem } from '@/pages/AuthenticationCenter/data.d';
+import UserForm from '@/pages/AuthenticationCenter/UserManager/components/UserForm';
+import PasswordForm from '@/pages/AuthenticationCenter/UserManager/components/PasswordForm';
+import TableTransferFrom from '@/pages/AuthenticationCenter/UserManager/components/TableTransfer';
+import { l } from '@/utils/intl';
 
 const url = '/api/user';
 const UserTableList: React.FC<{}> = (props: any) => {
-  const {dispatch} = props;
+  const { dispatch } = props;
   const [row, setRow] = useState<UserTableListItem>();
   const [modalVisible, handleModalVisible] = useState<boolean>(false);
   const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
@@ -43,7 +48,6 @@ const UserTableList: React.FC<{}> = (props: any) => {
   const [roleRelFormValues, setRoleRelFormValues] = useState({});
   const actionRef = useRef<ActionType>();
   const [selectedRowsState, setSelectedRows] = useState<UserTableListItem[]>([]);
-
 
   const editAndDelete = (key: string | number, currentItem: UserTableListItem) => {
     if (key === 'edit') {
@@ -61,66 +65,78 @@ const UserTableList: React.FC<{}> = (props: any) => {
         onOk: async () => {
           await handleRemove(url, [currentItem]);
           actionRef.current?.reloadAndRest?.();
-        }
+        },
       });
     }
   };
 
   const MoreBtn: React.FC<{
     item: UserTableListItem;
-  }> = ({item}) => (
+  }> = ({ item }) => (
     <Dropdown
       overlay={
-        <Menu onClick={({key}) => editAndDelete(key, item)}>
+        <Menu onClick={({ key }) => editAndDelete(key, item)}>
           <Menu.Item key="edit">{l('button.edit')}</Menu.Item>
           <Menu.Item key="password">{l('button.changePassword')}</Menu.Item>
-          {item.username == 'admin' ? '' : (<Menu.Item key="delete">{l('button.delete')}</Menu.Item>)}
+          {item.username == 'admin' ? '' : <Menu.Item key="delete">{l('button.delete')}</Menu.Item>}
         </Menu>
       }
     >
       <a>
-        {l('button.more')} <DownOutlined/>
+        {l('button.more')} <DownOutlined />
       </a>
     </Dropdown>
   );
 
-
   const handleGrantRoleForm = () => {
     return (
-      <Modal title={l('pages.user.AssignRole')} visible={handleGrantRole} destroyOnClose={true} width={"90%"}
-             onCancel={() => {
-               setHandleGrantRole(false);
-             }}
-             footer={[
-               <Button key="back" onClick={() => {
-                 setHandleGrantRole(false);
-               }}>
-                 {l('button.close')}
-               </Button>,
-               <Button type="primary" onClick={async () => {
-                 // to save
-                 const success = await handleAddOrUpdate("api/user/grantRole", {
-                   userId: formValues.id,
-                   roles: roleRelFormValues
-                 });
-                 if (success) {
-                   setHandleGrantRole(false);
-                   setFormValues({});
-                   if (actionRef.current) {
-                     actionRef.current.reload();
-                   }
-                 }
-               }}
-               >
-                 {l('button.confirm')}
-               </Button>,
-             ]}>
-        <TableTransferFrom user={formValues} onChange={(value) => {
-          setRoleRelFormValues(value);
-        }}/>
+      <Modal
+        title={l('pages.user.AssignRole')}
+        visible={handleGrantRole}
+        destroyOnClose={true}
+        width={'90%'}
+        onCancel={() => {
+          setHandleGrantRole(false);
+        }}
+        footer={[
+          <Button
+            key="back"
+            onClick={() => {
+              setHandleGrantRole(false);
+            }}
+          >
+            {l('button.close')}
+          </Button>,
+          <Button
+            type="primary"
+            onClick={async () => {
+              // to save
+              const success = await handleAddOrUpdate('api/user/grantRole', {
+                userId: formValues.id,
+                roles: roleRelFormValues,
+              });
+              if (success) {
+                setHandleGrantRole(false);
+                setFormValues({});
+                if (actionRef.current) {
+                  actionRef.current.reload();
+                }
+              }
+            }}
+          >
+            {l('button.confirm')}
+          </Button>,
+        ]}
+      >
+        <TableTransferFrom
+          user={formValues}
+          onChange={(value) => {
+            setRoleRelFormValues(value);
+          }}
+        />
       </Modal>
-    )
-  }
+    );
+  };
 
   const columns: ProColumns<UserTableListItem>[] = [
     {
@@ -174,8 +190,8 @@ const UserTableList: React.FC<{}> = (props: any) => {
       ],
       filterMultiple: false,
       valueEnum: {
-        true: {text: l('status.enabled'), status: 'Success'},
-        false: {text: l('status.disabled'), status: 'Error'},
+        true: { text: l('status.enabled'), status: 'Success' },
+        false: { text: l('status.disabled'), status: 'Error' },
       },
     },
     {
@@ -212,7 +228,7 @@ const UserTableList: React.FC<{}> = (props: any) => {
         >
           {l('pages.user.AssignRole')}
         </a>,
-        <MoreBtn key="more" item={record}/>,
+        <MoreBtn key="more" item={record} />,
       ],
     },
   ];
@@ -229,10 +245,10 @@ const UserTableList: React.FC<{}> = (props: any) => {
           }}
           toolBarRender={() => [
             <Button type="primary" onClick={() => handleModalVisible(true)}>
-              <PlusOutlined/> {l('button.create')}
+              <PlusOutlined /> {l('button.create')}
             </Button>,
           ]}
-          request={(params, sorter, filter) => queryData(url, {...params, sorter, filter})}
+          request={(params, sorter, filter) => queryData(url, { ...params, sorter, filter })}
           columns={columns}
           rowSelection={{
             onChange: (_, selectedRows) => setSelectedRows(selectedRows),
@@ -246,69 +262,80 @@ const UserTableList: React.FC<{}> = (props: any) => {
           <FooterToolbar
             extra={
               <div>
-                {l('tips.selected', '',
-                  {
-                    total: <a
-                      style={{fontWeight: 600}}>{selectedRowsState.length}</a>
-                  })}  &nbsp;&nbsp;
+                {l('tips.selected', '', {
+                  total: <a style={{ fontWeight: 600 }}>{selectedRowsState.length}</a>,
+                })}{' '}
+                &nbsp;&nbsp;
                 <span>
-                    {l('pages.user.disableTotalOf', '', {total: selectedRowsState.length - selectedRowsState.reduce((pre, item) => pre + (item.enabled ? 1 : 0), 0)})}
-              </span>
+                  {l('pages.user.disableTotalOf', '', {
+                    total:
+                      selectedRowsState.length -
+                      selectedRowsState.reduce((pre, item) => pre + (item.enabled ? 1 : 0), 0),
+                  })}
+                </span>
               </div>
             }
           >
-            <Button type="primary" danger
-                    onClick={() => {
-                      Modal.confirm({
-                        title: l('pages.user.delete'),
-                        content: l('pages.user.deleteConfirm'),
-                        okText: l('button.confirm'),
-                        cancelText: l('button.cancel'),
-                        onOk: async () => {
-                          await handleRemove(url, selectedRowsState);
-                          setSelectedRows([]);
-                          actionRef.current?.reloadAndRest?.();
-                        }
-                      });
-                    }}
+            <Button
+              type="primary"
+              danger
+              onClick={() => {
+                Modal.confirm({
+                  title: l('pages.user.delete'),
+                  content: l('pages.user.deleteConfirm'),
+                  okText: l('button.confirm'),
+                  cancelText: l('button.cancel'),
+                  onOk: async () => {
+                    await handleRemove(url, selectedRowsState);
+                    setSelectedRows([]);
+                    actionRef.current?.reloadAndRest?.();
+                  },
+                });
+              }}
             >
               {l('button.batchDelete')}
             </Button>
-            <Button type="primary"
-                    onClick={() => {
-                      Modal.confirm({
-                        title: l('pages.user.enable'),
-                        content: l('pages.user.enableConfirm'),
-                        okText: l('button.confirm'),
-                        cancelText: l('button.cancel'),
-                        onOk: async () => {
-                          await updateEnabled(url, selectedRowsState, true);
-                          setSelectedRows([]);
-                          actionRef.current?.reloadAndRest?.();
-                        }
-                      });
-                    }}
-            >{l('button.batchEnable')}</Button>
-            <Button danger
-                    onClick={() => {
-                      Modal.confirm({
-                        title: l('pages.user.disable'),
-                        content: l('pages.user.disableConfirm'),
-                        okText: l('button.confirm'),
-                        cancelText: l('button.cancel'),
-                        onOk: async () => {
-                          await updateEnabled(url, selectedRowsState, false);
-                          setSelectedRows([]);
-                          actionRef.current?.reloadAndRest?.();
-                        }
-                      });
-                    }}
-            >{l('button.batchDisable')}</Button>
+            <Button
+              type="primary"
+              onClick={() => {
+                Modal.confirm({
+                  title: l('pages.user.enable'),
+                  content: l('pages.user.enableConfirm'),
+                  okText: l('button.confirm'),
+                  cancelText: l('button.cancel'),
+                  onOk: async () => {
+                    await updateEnabled(url, selectedRowsState, true);
+                    setSelectedRows([]);
+                    actionRef.current?.reloadAndRest?.();
+                  },
+                });
+              }}
+            >
+              {l('button.batchEnable')}
+            </Button>
+            <Button
+              danger
+              onClick={() => {
+                Modal.confirm({
+                  title: l('pages.user.disable'),
+                  content: l('pages.user.disableConfirm'),
+                  okText: l('button.confirm'),
+                  cancelText: l('button.cancel'),
+                  onOk: async () => {
+                    await updateEnabled(url, selectedRowsState, false);
+                    setSelectedRows([]);
+                    actionRef.current?.reloadAndRest?.();
+                  },
+                });
+              }}
+            >
+              {l('button.batchDisable')}
+            </Button>
           </FooterToolbar>
         )}
         <UserForm
           onSubmit={async (value) => {
-            const success = await handleAddOrUpdate("api/user", value);
+            const success = await handleAddOrUpdate('api/user', value);
             if (success) {
               handleModalVisible(false);
               setFormValues({});
@@ -327,7 +354,11 @@ const UserTableList: React.FC<{}> = (props: any) => {
           <>
             <PasswordForm
               onSubmit={async (value) => {
-                const success = await handleOption(url + "/modifyPassword", l('button.changePassword'), value);
+                const success = await handleOption(
+                  url + '/modifyPassword',
+                  l('button.changePassword'),
+                  value,
+                );
                 if (success) {
                   handlePasswordModalVisible(false);
                   setFormValues({});
@@ -341,7 +372,7 @@ const UserTableList: React.FC<{}> = (props: any) => {
             />
             <UserForm
               onSubmit={async (value) => {
-                const success = await handleAddOrUpdate("api/user", value);
+                const success = await handleAddOrUpdate('api/user', value);
                 if (success) {
                   handleUpdateModalVisible(false);
                   setFormValues({});
@@ -356,7 +387,8 @@ const UserTableList: React.FC<{}> = (props: any) => {
               }}
               modalVisible={updateModalVisible}
               values={formValues}
-            /></>
+            />
+          </>
         ) : null}
         <Drawer
           width={600}

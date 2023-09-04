@@ -17,21 +17,20 @@
  *
  */
 
+import { Col, Form, Row, Select } from 'antd';
+import { StateType } from '@/pages/DataStudio/model';
+import { connect } from 'umi';
+import styles from './index.less';
+import React, { useEffect } from 'react';
+import { l } from '@/utils/intl';
 
-import {Col, Form, Row, Select} from "antd";
-import {StateType} from "@/pages/DataStudio/model";
-import {connect} from "umi";
-import styles from "./index.less";
-import React, {useEffect} from "react";
-import {l} from "@/utils/intl";
-
-const {Option} = Select;
+const { Option } = Select;
 
 export type PieChartConfig = {
-  angleField: string,
-  colorField: string,
-  label: {},
-  interactions: [],
+  angleField: string;
+  colorField: string;
+  label: {};
+  interactions: [];
 };
 
 export type PieChartProps = {
@@ -41,14 +40,12 @@ export type PieChartProps = {
 };
 
 const PieChartSetting: React.FC<PieChartProps> = (props) => {
-
-  const {current, column, onChange: handleChange, dispatch} = props;
+  const { current, column, onChange: handleChange, dispatch } = props;
   const [form] = Form.useForm();
 
   useEffect(() => {
     form.setFieldsValue(current.console.chart);
   }, [current.console.chart]);
-
 
   const onValuesChange = (change: any, all: any) => {
     let config: PieChartConfig = {
@@ -57,7 +54,7 @@ const PieChartSetting: React.FC<PieChartProps> = (props) => {
       label: {
         type: 'inner',
         offset: '-30%',
-        content: ({percent}) => `${(percent * 100).toFixed(0)}%`,
+        content: ({ percent }) => `${(percent * 100).toFixed(0)}%`,
         style: {
           fontSize: 14,
           textAlign: 'center',
@@ -75,45 +72,43 @@ const PieChartSetting: React.FC<PieChartProps> = (props) => {
   const getColumnOptions = () => {
     const itemList = [];
     for (const item of column) {
-      itemList.push(<Option key={item} value={item} label={item}>
-        {item}
-      </Option>)
+      itemList.push(
+        <Option key={item} value={item} label={item}>
+          {item}
+        </Option>,
+      );
     }
     return itemList;
   };
 
   return (
     <>
-      <Form
-        form={form}
-        className={styles.form_setting}
-        onValuesChange={onValuesChange}
-      >
+      <Form form={form} className={styles.form_setting} onValuesChange={onValuesChange}>
         <Row>
           <Col span={12}>
-            <Form.Item
-              label={l('chart.angle')} className={styles.form_item} name="angleField"
-            >
+            <Form.Item label={l('chart.angle')} className={styles.form_item} name="angleField">
               {column && column.length > 0 ? (
-                <Select allowClear showSearch
-                        defaultValue={column[0]} value={column[0]}>
+                <Select allowClear showSearch defaultValue={column[0]} value={column[0]}>
                   {getColumnOptions()}
-                </Select>) : (<Select allowClear showSearch>
-                {column && getColumnOptions()}
-              </Select>)}
+                </Select>
+              ) : (
+                <Select allowClear showSearch>
+                  {column && getColumnOptions()}
+                </Select>
+              )}
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item
-              label={l('chart.color')} className={styles.form_item} name="colorField"
-            >
+            <Form.Item label={l('chart.color')} className={styles.form_item} name="colorField">
               {column && column.length > 1 ? (
-                <Select allowClear showSearch
-                        defaultValue={column[1]} value={column[1]}>
+                <Select allowClear showSearch defaultValue={column[1]} value={column[1]}>
                   {getColumnOptions()}
-                </Select>) : (<Select allowClear showSearch>
-                {column && getColumnOptions()}
-              </Select>)}
+                </Select>
+              ) : (
+                <Select allowClear showSearch>
+                  {column && getColumnOptions()}
+                </Select>
+              )}
             </Form.Item>
           </Col>
         </Row>
@@ -122,7 +117,7 @@ const PieChartSetting: React.FC<PieChartProps> = (props) => {
   );
 };
 
-export default connect(({Studio}: { Studio: StateType }) => ({
+export default connect(({ Studio }: { Studio: StateType }) => ({
   current: Studio.current,
   result: Studio.result,
 }))(PieChartSetting);

@@ -17,22 +17,21 @@
  *
  */
 
-
-import {RoleTableListItem} from "@/pages/AuthenticationCenter/data.d";
+import { RoleTableListItem } from '@/pages/AuthenticationCenter/data.d';
 
 export const getFormData = (values: RoleTableListItem) => {
-  let namespaceIds:string [] = [];
-  if(values&&values.namespaceIds && values.namespaceIds!=''){
+  let namespaceIds: string[] = [];
+  if (values && values.namespaceIds && values.namespaceIds != '') {
     namespaceIds = values.namespaceIds.split(',');
   }
-  return {...values,namespaceIds:namespaceIds};
-}
+  return { ...values, namespaceIds: namespaceIds };
+};
 
-export const buildFormData = (values: RoleTableListItem,params: any) => {
+export const buildFormData = (values: RoleTableListItem, params: any) => {
   let newValue = values;
-  if(params.namespaceIds){
+  if (params.namespaceIds) {
     newValue.namespaceIds = params.namespaceIds.join(',');
     delete params.namespaceIds;
   }
-  return {...newValue,...params};
-}
+  return { ...newValue, ...params };
+};

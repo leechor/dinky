@@ -17,22 +17,21 @@
  *
  */
 
-
-import {AlertGroupTableListItem} from "@/pages/RegistrationCenter/data";
+import { AlertGroupTableListItem } from '@/pages/RegistrationCenter/data';
 
 export const getFormData = (values: AlertGroupTableListItem) => {
-  let alertInstanceIds:string [] = [];
-  if(values&&values.alertInstanceIds&&values.alertInstanceIds!=''){
+  let alertInstanceIds: string[] = [];
+  if (values && values.alertInstanceIds && values.alertInstanceIds != '') {
     alertInstanceIds = values.alertInstanceIds.split(',');
   }
-  return {...values,alertInstanceIds:alertInstanceIds};
-}
+  return { ...values, alertInstanceIds: alertInstanceIds };
+};
 
-export const buildFormData = (values: AlertGroupTableListItem,params: any) => {
+export const buildFormData = (values: AlertGroupTableListItem, params: any) => {
   let newValue = values;
-  if(params.alertInstanceIds){
+  if (params.alertInstanceIds) {
     newValue.alertInstanceIds = params.alertInstanceIds.join(',');
     delete params.alertInstanceIds;
   }
-  return {...newValue,...params};
-}
+  return { ...newValue, ...params };
+};

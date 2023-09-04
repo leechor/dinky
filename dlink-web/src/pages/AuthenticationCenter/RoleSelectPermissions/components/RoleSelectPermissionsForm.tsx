@@ -17,18 +17,16 @@
  *
  */
 
-
-import React, {useState} from 'react';
-import {Button, Form, Input, Modal, Select, Tag} from 'antd';
+import React, { useState } from 'react';
+import { Button, Form, Input, Modal, Select, Tag } from 'antd';
 import {
   RoleSelectPermissionsTableListItem,
-  RoleTableListItem
-} from "@/pages/AuthenticationCenter/data.d";
-import {connect} from "umi";
-import {NameSpaceStateType} from "@/pages/AuthenticationCenter/RoleManager/model";
-import {buildFormData, getFormData} from "@/pages/AuthenticationCenter/function";
-import {l} from "@/utils/intl";
-
+  RoleTableListItem,
+} from '@/pages/AuthenticationCenter/data.d';
+import { connect } from 'umi';
+import { NameSpaceStateType } from '@/pages/AuthenticationCenter/RoleManager/model';
+import { buildFormData, getFormData } from '@/pages/AuthenticationCenter/function';
+import { l } from '@/utils/intl';
 
 export type RoleSelectPermissionsFormProps = {
   onCancel: (flag?: boolean) => void;
@@ -39,16 +37,13 @@ export type RoleSelectPermissionsFormProps = {
 };
 
 const formLayout = {
-  labelCol: {span: 7},
-  wrapperCol: {span: 13},
+  labelCol: { span: 7 },
+  wrapperCol: { span: 13 },
 };
 
 const Option = Select.Option;
 
-
 const RoleSelectPermissionsForm: React.FC<RoleSelectPermissionsFormProps> = (props) => {
-
-
   const [form] = Form.useForm();
   const [formVals, setFormVals] = useState<Partial<RoleSelectPermissionsTableListItem>>({
     id: props.values?.id,
@@ -60,34 +55,30 @@ const RoleSelectPermissionsForm: React.FC<RoleSelectPermissionsFormProps> = (pro
     updateTime: props.values?.updateTime,
   });
 
-  const {
-    onSubmit: handleSubmit,
-    onCancel: handleModalVisible,
-    modalVisible,
-    role,
-  } = props;
+  const { onSubmit: handleSubmit, onCancel: handleModalVisible, modalVisible, role } = props;
 
   const getRoleOptions = () => {
     const itemList: JSX.Element[] = [];
     for (const item of role) {
       const tag = (
         <>
-          <Tag color="processing">
-            {item.roleName}
-          </Tag>
-        </>);
-      itemList.push(<Option key={item.id} value={item.id} label={tag}>
-        {tag}
-      </Option>)
+          <Tag color="processing">{item.roleName}</Tag>
+        </>
+      );
+      itemList.push(
+        <Option key={item.id} value={item.id} label={tag}>
+          {tag}
+        </Option>,
+      );
     }
     return itemList;
   };
 
   const submitForm = async () => {
     const fieldsValue = await form.validateFields();
-    if(fieldsValue.roleId.length > 0){
+    if (fieldsValue.roleId.length > 0) {
       fieldsValue.roleId = fieldsValue.roleId[0];
-    }else{
+    } else {
       fieldsValue.roleId = null;
     }
     setFormVals(buildFormData(formVals, fieldsValue));
@@ -100,11 +91,11 @@ const RoleSelectPermissionsForm: React.FC<RoleSelectPermissionsFormProps> = (pro
         <Form.Item
           name="roleId"
           label={l('pages.role.roleName')}
-          rules={[{required: true, message: l('pages.role.selectRole')}]}
+          rules={[{ required: true, message: l('pages.role.selectRole') }]}
         >
           <Select
             mode="multiple"
-            style={{width: '100%'}}
+            style={{ width: '100%' }}
             placeholder={l('pages.role.selectRole')}
             optionLabelProp="label"
           >
@@ -114,15 +105,16 @@ const RoleSelectPermissionsForm: React.FC<RoleSelectPermissionsFormProps> = (pro
         <Form.Item
           name="tableName"
           label={l('pages.roleSelectPermissions.tableName')}
-          rules={[{required: true, message: l('pages.roleSelectPermissions.EnterTableName')}]}>
-          <Input placeholder={l('pages.roleSelectPermissions.EnterTableName')}/>
-        </Form.Item>
-        <Form.Item
-          name="expression"
-          label={l('pages.roleSelectPermissions.expression')}
+          rules={[{ required: true, message: l('pages.roleSelectPermissions.EnterTableName') }]}
         >
-          <Input.TextArea placeholder={l('pages.roleSelectPermissions.EnterExpression')} allowClear
-                          autoSize={{minRows: 3, maxRows: 10}}/>
+          <Input placeholder={l('pages.roleSelectPermissions.EnterTableName')} />
+        </Form.Item>
+        <Form.Item name="expression" label={l('pages.roleSelectPermissions.expression')}>
+          <Input.TextArea
+            placeholder={l('pages.roleSelectPermissions.EnterExpression')}
+            allowClear
+            autoSize={{ minRows: 3, maxRows: 10 }}
+          />
         </Form.Item>
       </>
     );
@@ -141,24 +133,20 @@ const RoleSelectPermissionsForm: React.FC<RoleSelectPermissionsFormProps> = (pro
 
   return (
     <Modal
-      width={"40%"}
-      bodyStyle={{padding: '32px 40px 48px'}}
+      width={'40%'}
+      bodyStyle={{ padding: '32px 40px 48px' }}
       destroyOnClose
       title={formVals.id ? l('pages.role.update') : l('pages.role.create')}
       visible={modalVisible}
       footer={renderFooter()}
       onCancel={() => handleModalVisible()}
     >
-      <Form
-        {...formLayout}
-        form={form}
-        initialValues={getFormData(formVals)}
-      >
+      <Form {...formLayout} form={form} initialValues={getFormData(formVals)}>
         {renderContent(getFormData(formVals))}
       </Form>
     </Modal>
   );
 };
-export default connect(({NameSpace}: { NameSpace: NameSpaceStateType }) => ({
+export default connect(({ NameSpace }: { NameSpace: NameSpaceStateType }) => ({
   role: NameSpace.role,
 }))(RoleSelectPermissionsForm);

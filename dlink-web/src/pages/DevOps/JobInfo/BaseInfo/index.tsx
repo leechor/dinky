@@ -17,27 +17,34 @@
  *
  */
 
+import { Descriptions, Typography } from 'antd';
+import StatusCounts from '@/components/Common/StatusCounts';
+import ProTable, { ProColumns } from '@ant-design/pro-table';
+import { VerticesTableListItem } from '@/pages/DevOps/data';
+import JobStatus from '@/components/Common/JobStatus';
+import {
+  parseByteStr,
+  parseMilliSecondStr,
+  parseNumStr,
+  parseSecondStr,
+} from '@/components/Common/function';
+import { l } from '@/utils/intl';
 
-import {Descriptions, Typography} from 'antd';
-import StatusCounts from "@/components/Common/StatusCounts";
-import ProTable, {ProColumns} from '@ant-design/pro-table';
-import {VerticesTableListItem} from "@/pages/DevOps/data";
-import JobStatus from "@/components/Common/JobStatus";
-import {parseByteStr, parseMilliSecondStr, parseNumStr, parseSecondStr} from "@/components/Common/function";
-import {l} from "@/utils/intl";
-
-const {Text} = Typography;
+const { Text } = Typography;
 
 const BaseInfo = (props: any) => {
-
-  const {job} = props;
+  const { job } = props;
 
   const columns: ProColumns<VerticesTableListItem>[] = [
     {
       title: l('pages.devops.baseinfo.name'),
       dataIndex: 'name',
       render: (dom, entity) => {
-        return <Text style={{width: 500}} ellipsis={{tooltip: entity.name}}>{entity.name}</Text>;
+        return (
+          <Text style={{ width: 500 }} ellipsis={{ tooltip: entity.name }}>
+            {entity.name}
+          </Text>
+        );
       },
     },
     {
@@ -45,7 +52,7 @@ const BaseInfo = (props: any) => {
       dataIndex: 'status',
       sorter: true,
       render: (dom, entity) => {
-        return <JobStatus status={entity.status}/>;
+        return <JobStatus status={entity.status} />;
       },
     },
     {
@@ -89,45 +96,59 @@ const BaseInfo = (props: any) => {
       },
     },
     {
-      title:  l('global.table.endTime'),
+      title: l('global.table.endTime'),
       dataIndex: 'end-time',
       valueType: 'dateTime',
     },
     {
       title: l('pages.devops.baseinfo.tasks'),
       render: (dom, entity) => {
-        return <StatusCounts statusCounts={entity.tasks}/>;
+        return <StatusCounts statusCounts={entity.tasks} />;
       },
     },
   ];
 
-  return (<>
-    <Descriptions bordered size="small">
-      <Descriptions.Item label={l('pages.devops.jobinfo.overview')}>
-        {job?.jobHistory?.job ? <StatusCounts statusCounts={job?.jobHistory?.job['status-counts']}/> : undefined}
-      </Descriptions.Item>
-      <Descriptions.Item
-        label={l('pages.devops.baseinfo.restart_number')}>{job?.instance?.failedRestartCount ? job?.instance?.failedRestartCount : 0}</Descriptions.Item>
-      <Descriptions.Item label={l('global.table.useTime')}>{parseSecondStr(job?.instance?.duration)}</Descriptions.Item>
-      <Descriptions.Item label={l('global.table.startUpTime')}>{job?.instance?.createTime}</Descriptions.Item>
-      <Descriptions.Item label={l('global.table.updateTime')}>{job?.instance?.updateTime}</Descriptions.Item>
-      <Descriptions.Item label={l('global.table.finishTime')}>{job?.instance?.finishTime}</Descriptions.Item>
-    </Descriptions>
-    {job?.jobHistory?.job ?
-      <ProTable
-        columns={columns}
-        style={{width: '100%'}}
-        dataSource={job?.jobHistory?.job.vertices}
-        rowKey="name"
-        pagination={{
-          defaultPageSize: 10,
-          showSizeChanger: true,
-        }}
-        toolBarRender={false}
-        search={false}
-        size="small"
-      /> : undefined}
-  </>)
+  return (
+    <>
+      <Descriptions bordered size="small">
+        <Descriptions.Item label={l('pages.devops.jobinfo.overview')}>
+          {job?.jobHistory?.job ? (
+            <StatusCounts statusCounts={job?.jobHistory?.job['status-counts']} />
+          ) : undefined}
+        </Descriptions.Item>
+        <Descriptions.Item label={l('pages.devops.baseinfo.restart_number')}>
+          {job?.instance?.failedRestartCount ? job?.instance?.failedRestartCount : 0}
+        </Descriptions.Item>
+        <Descriptions.Item label={l('global.table.useTime')}>
+          {parseSecondStr(job?.instance?.duration)}
+        </Descriptions.Item>
+        <Descriptions.Item label={l('global.table.startUpTime')}>
+          {job?.instance?.createTime}
+        </Descriptions.Item>
+        <Descriptions.Item label={l('global.table.updateTime')}>
+          {job?.instance?.updateTime}
+        </Descriptions.Item>
+        <Descriptions.Item label={l('global.table.finishTime')}>
+          {job?.instance?.finishTime}
+        </Descriptions.Item>
+      </Descriptions>
+      {job?.jobHistory?.job ? (
+        <ProTable
+          columns={columns}
+          style={{ width: '100%' }}
+          dataSource={job?.jobHistory?.job.vertices}
+          rowKey="name"
+          pagination={{
+            defaultPageSize: 10,
+            showSizeChanger: true,
+          }}
+          toolBarRender={false}
+          search={false}
+          size="small"
+        />
+      ) : undefined}
+    </>
+  );
 };
 
 export default BaseInfo;

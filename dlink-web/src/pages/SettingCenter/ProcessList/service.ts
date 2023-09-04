@@ -17,8 +17,8 @@
  *
  */
 
-import {getData} from "@/components/Common/crud";
+import { getData } from '@/components/Common/crud';
 
 export function getConsoleInfo() {
-  return getData("api/process/getConsoleByUserId");
+  return getData('api/process/getConsoleByUserId');
 }

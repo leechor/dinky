@@ -17,11 +17,10 @@
  *
  */
 
-
-import {Button, Result} from 'antd';
+import { Button, Result } from 'antd';
 import React from 'react';
-import {history} from 'umi';
-import {l} from "@/utils/intl";
+import { history } from 'umi';
+import { l } from '@/utils/intl';
 
 const BuildPage: React.FC = () => {
   return (
@@ -36,7 +35,6 @@ const BuildPage: React.FC = () => {
       }
     />
   );
-
 };
 
 export default BuildPage;

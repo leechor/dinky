@@ -17,10 +17,9 @@
  *
  */
 
-
-import {Tag} from 'antd';
-import {CameraOutlined, CarryOutOutlined, EditOutlined,} from "@ant-design/icons";
-import {l} from "@/utils/intl";
+import { Tag } from 'antd';
+import { CameraOutlined, CarryOutOutlined, EditOutlined } from '@ant-design/icons';
+import { l } from '@/utils/intl';
 
 export type JobLifeCycleFormProps = {
   step: number | undefined;
@@ -44,23 +43,34 @@ export const isDeletedTask = (taskStep: number) => {
 };
 
 const JobLifeCycle = (props: JobLifeCycleFormProps) => {
-
-  const {step} = props;
+  const { step } = props;
 
   const renderJobLifeCycle = () => {
     switch (step) {
       case JOB_LIFE_CYCLE.DEVELOP:
-        return (<Tag icon={<EditOutlined/>} color="default">{l('global.table.lifecycle.dev')}</Tag>);
+        return (
+          <Tag icon={<EditOutlined />} color="default">
+            {l('global.table.lifecycle.dev')}
+          </Tag>
+        );
       case JOB_LIFE_CYCLE.RELEASE:
-        return (<Tag icon={<CameraOutlined/>} color="green">{l('global.table.lifecycle.publish')}</Tag>);
+        return (
+          <Tag icon={<CameraOutlined />} color="green">
+            {l('global.table.lifecycle.publish')}
+          </Tag>
+        );
       case JOB_LIFE_CYCLE.ONLINE:
-        return (<Tag icon={<CarryOutOutlined/>} color="blue">{l('global.table.lifecycle.online')}</Tag>);
+        return (
+          <Tag icon={<CarryOutOutlined />} color="blue">
+            {l('global.table.lifecycle.online')}
+          </Tag>
+        );
       default:
         return undefined;
     }
   };
 
-  return (<>{renderJobLifeCycle()}</>)
+  return <>{renderJobLifeCycle()}</>;
 };
 
 export default JobLifeCycle;

@@ -17,17 +17,16 @@
  *
  */
 
-
-import React, {useEffect, useImperativeHandle, useRef, useState} from 'react';
-import * as _monaco from "monaco-editor";
-import MonacoEditor from "react-monaco-editor";
-import {connect, Dispatch} from "umi";
-import {DocumentStateType} from "@/pages/RegistrationCenter/Document/model";
-import {DocumentTableListItem} from "@/pages/RegistrationCenter/data";
-import {parseSqlMetaData} from "@/components/Studio/StudioEvent/Utils";
-import {Column, MetaData, SqlMetaData} from "@/components/Studio/StudioEvent/data";
-import StudioExplain from "@/components/Studio/StudioConsole/StudioExplain";
-import {format} from "sql-formatter";
+import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
+import * as _monaco from 'monaco-editor';
+import MonacoEditor from 'react-monaco-editor';
+import { connect, Dispatch } from 'umi';
+import { DocumentStateType } from '@/pages/RegistrationCenter/Document/model';
+import { DocumentTableListItem } from '@/pages/RegistrationCenter/data';
+import { parseSqlMetaData } from '@/components/Studio/StudioEvent/Utils';
+import { Column, MetaData, SqlMetaData } from '@/components/Studio/StudioEvent/data';
+import StudioExplain from '@/components/Studio/StudioConsole/StudioExplain';
+import { format } from 'sql-formatter';
 
 let provider = {
   dispose: () => {},
@@ -40,26 +39,26 @@ interface ISuggestions {
   detail?: string;
 }
 
-const FlinkSqlEditor = (props:any) => {
-  console.log("FlinkSqlEditor");
-  
+const FlinkSqlEditor = (props: any) => {
+  console.log('FlinkSqlEditor');
+
   const {
     tabsKey,
-      height = '100%',
-      width = '100%',
-      language = 'sql',
-      onChange=(val: string, event: any)=>{},
-      options = {
-        selectOnLineNumbers: true,
-        renderSideBySide: false,
-        autoIndent:'None',
-        automaticLayout: true,
-      },
+    height = '100%',
+    width = '100%',
+    language = 'sql',
+    onChange = (val: string, event: any) => {},
+    options = {
+      selectOnLineNumbers: true,
+      renderSideBySide: false,
+      autoIndent: 'None',
+      automaticLayout: true,
+    },
     sql,
     monaco,
     // sqlMetaData,
     fillDocuments,
-    } = props;
+  } = props;
 
   const editorInstance: any = useRef<any>();
   const monacoInstance: any = useRef();
@@ -70,7 +69,9 @@ const FlinkSqlEditor = (props:any) => {
   useEffect(
     () => () => {
       reloadCompletion();
-    }, [code]);
+    },
+    [code],
+  );
 
   useImperativeHandle(editorInstance, () => ({
     handleSetEditorVal,
@@ -86,7 +87,7 @@ const FlinkSqlEditor = (props:any) => {
         selection.startLineNumber,
         selection.startColumn,
         selection.endLineNumber,
-        selection.endColumn
+        selection.endColumn,
       );
       const id = { major: 1, minor: 1 };
       const op = { identifier: id, range, text: value, forceMoveMarkers: true };
@@ -97,18 +98,18 @@ const FlinkSqlEditor = (props:any) => {
 
   const onChangeHandle = (val: string, event: any) => {
     setCode(val);
-    onChange(val,event);
+    onChange(val, event);
     props.saveSql(val);
   };
 
-  const reloadCompletion = () =>{
+  const reloadCompletion = () => {
     let newSqlMetaData = parseSqlMetaData(code);
-    setMetaData({...newSqlMetaData});
-    provider.dispose();// 清空提示项
+    setMetaData({ ...newSqlMetaData });
+    provider.dispose(); // 清空提示项
     provider = monacoInstance.current.languages.registerCompletionItemProvider('sql', {
       provideCompletionItems() {
         return {
-          suggestions:buildSuggestions(),
+          suggestions: buildSuggestions(),
         };
       },
     });
@@ -123,34 +124,34 @@ const FlinkSqlEditor = (props:any) => {
         kind: _monaco.languages.CompletionItemKind.Constant,
         insertText: item.table,
         insertTextRules: _monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-        detail: 'FlinkSQL Connector => '+item.connector
+        detail: 'FlinkSQL Connector => ' + item.connector,
       });
-      item.columns.forEach((column:Column) => {
+      item.columns.forEach((column: Column) => {
         suggestions.push({
           label: column.name,
           kind: _monaco.languages.CompletionItemKind.Field,
           insertText: column.name,
           insertTextRules: _monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-          detail: 'Column => '+column.type +' from '+item.table
+          detail: 'Column => ' + column.type + ' from ' + item.table,
         });
-      })
+      });
     });
-    fillDocuments.forEach((item:DocumentTableListItem) => {
-      if(_monaco.languages.CompletionItemKind[item.category]) {
+    fillDocuments.forEach((item: DocumentTableListItem) => {
+      if (_monaco.languages.CompletionItemKind[item.category]) {
         suggestions.push({
           label: item.name,
           kind: _monaco.languages.CompletionItemKind[item.category],
           insertText: item.fillValue,
           insertTextRules: _monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-          detail: item.description
+          detail: item.description,
         });
-      }else {
+      } else {
         suggestions.push({
           label: item.name,
           kind: _monaco.languages.CompletionItemKind.Text,
           insertText: item.fillValue,
           insertTextRules: _monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-          detail: item.description
+          detail: item.description,
         });
       }
     });
@@ -161,30 +162,39 @@ const FlinkSqlEditor = (props:any) => {
     monacoInstance.current = monaco;
     editorInstance.current = editor;
 
-    editor.addCommand(monaco.KeyMod.Alt|monaco.KeyCode.KEY_2,function (){
+    editor.addCommand(monaco.KeyMod.Alt | monaco.KeyCode.KEY_2, function () {
       handleModalVisible(true);
-    })
-    editor.addCommand(monaco.KeyMod.Alt|monaco.KeyCode.KEY_3,function (){
+    });
+    editor.addCommand(monaco.KeyMod.Alt | monaco.KeyCode.KEY_3, function () {
       editor.getAction(['editor.action.formatDocument'])._run();
-    })
+    });
 
     reloadCompletion();
     monaco.languages.registerDocumentRangeFormattingEditProvider('sql', {
       provideDocumentRangeFormattingEdits(model, range, options) {
         var formatted = format(model.getValueInRange(range), {
-          indent: ' '.repeat(options.tabSize)
+          indent: ' '.repeat(options.tabSize),
         });
-        formatted = formatted.replaceAll(/` ([^`]*) `/g,function (){return '`'+arguments[1].trim()+'`'})
-          .replaceAll(/\$ {([^}]*)}/g,function (){return '${'+arguments[1].trim()+'}'})
-          .replaceAll(/\| ([^}]*)\|/g,function (){return '|'+arguments[1].trim()+'|'})
-          .replaceAll(/ - /g,function (){return '-'});
+        formatted = formatted
+          .replaceAll(/` ([^`]*) `/g, function () {
+            return '`' + arguments[1].trim() + '`';
+          })
+          .replaceAll(/\$ {([^}]*)}/g, function () {
+            return '${' + arguments[1].trim() + '}';
+          })
+          .replaceAll(/\| ([^}]*)\|/g, function () {
+            return '|' + arguments[1].trim() + '|';
+          })
+          .replaceAll(/ - /g, function () {
+            return '-';
+          });
         return [
           {
             range: range,
-            text: formatted
-          }
+            text: formatted,
+          },
         ];
-      }
+      },
     });
     editor.focus();
   };
@@ -204,31 +214,39 @@ const FlinkSqlEditor = (props:any) => {
       />
       <StudioExplain
         modalVisible={modalVisible}
-        onClose={()=>{handleModalVisible(false)}}
+        onClose={() => {
+          handleModalVisible(false);
+        }}
         visible={modalVisible}
       />
     </React.Fragment>
-  )
-}
+  );
+};
 
-const mapDispatchToProps = (dispatch:Dispatch)=>({
+const mapDispatchToProps = (dispatch: Dispatch) => ({
   /*saveText:(tabs:any,tabIndex:any)=>dispatch({
     type: "Studio/saveTask",
     payload: tabs.panes[tabIndex].task,
   }),*/
-  saveSql:(val: any)=>dispatch({
-    type: "Studio/saveSql",
-    payload: val,
-  }),saveSqlMetaData:(sqlMetaData: any,key: number)=>dispatch({
-    type: "Studio/saveSqlMetaData",
-    payload: {
-      activeKey:key,
-      sqlMetaData,
-      isModified: true,
-    }
-  }),
-})
+  saveSql: (val: any) =>
+    dispatch({
+      type: 'Studio/saveSql',
+      payload: val,
+    }),
+  saveSqlMetaData: (sqlMetaData: any, key: number) =>
+    dispatch({
+      type: 'Studio/saveSqlMetaData',
+      payload: {
+        activeKey: key,
+        sqlMetaData,
+        isModified: true,
+      },
+    }),
+});
 
-export default connect(({ Document }: { Document: DocumentStateType }) => ({
-  fillDocuments: Document.fillDocuments,
-}),mapDispatchToProps)(FlinkSqlEditor);
+export default connect(
+  ({ Document }: { Document: DocumentStateType }) => ({
+    fillDocuments: Document.fillDocuments,
+  }),
+  mapDispatchToProps,
+)(FlinkSqlEditor);

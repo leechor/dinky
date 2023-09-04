@@ -17,12 +17,12 @@
  *
  */
 
-import {Reducer} from "umi";
+import { Reducer } from 'umi';
 
 export type SettingsStateType = {
-  useRestAPI: boolean,
-  sqlSeparator: string,
-  jobIdWait: number,
+  useRestAPI: boolean;
+  sqlSeparator: string;
+  jobIdWait: number;
 };
 
 export type ModelType = {
@@ -45,13 +45,12 @@ const SettingsModel: ModelType = {
   effects: {},
 
   reducers: {
-    saveSettings(state, {payload}) {
+    saveSettings(state, { payload }) {
       return {
         ...state,
         ...payload,
       };
     },
-
   },
 };
 

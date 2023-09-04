@@ -130,10 +130,8 @@ export default {
   'global.table.runmode.local': 'Local',
   'global.table.runmode.remote': 'Remote',
 
-  'global.savepoint.strategy.disabled':'Disabled',
-  'global.savepoint.strategy.latest':'Latest',
-  'global.savepoint.strategy.earliest':'Earliest',
-  'global.savepoint.strategy.custom':'Custom',
-
-
+  'global.savepoint.strategy.disabled': 'Disabled',
+  'global.savepoint.strategy.latest': 'Latest',
+  'global.savepoint.strategy.earliest': 'Earliest',
+  'global.savepoint.strategy.custom': 'Custom',
 };

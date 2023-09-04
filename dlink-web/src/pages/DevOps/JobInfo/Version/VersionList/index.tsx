@@ -17,52 +17,56 @@
  *
  */
 
-
-import ProTable, {ActionType, ProColumns} from "@ant-design/pro-table";
-import {TaskVersion} from "@/pages/DevOps/data";
-import {useRef, useState,} from "react";
-import {queryData} from "@/components/Common/crud";
-import {getIcon} from "@/components/Studio/icon";
-import {Button, Modal, Tag} from "antd";
-import {FullscreenOutlined} from "@ant-design/icons";
-import CodeShow from "@/components/Common/CodeShow";
-import {l} from "@/utils/intl";
+import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
+import { TaskVersion } from '@/pages/DevOps/data';
+import { useRef, useState } from 'react';
+import { queryData } from '@/components/Common/crud';
+import { getIcon } from '@/components/Studio/icon';
+import { Button, Modal, Tag } from 'antd';
+import { FullscreenOutlined } from '@ant-design/icons';
+import CodeShow from '@/components/Common/CodeShow';
+import { l } from '@/utils/intl';
 
 const url = '/api/task/version';
 const VersionList = (props: any) => {
-  const {job} = props;
+  const { job } = props;
 
   const actionRef = useRef<ActionType>();
   const [row, setRow] = useState<TaskVersion>();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
-
   const cancelHandle = () => {
     setRow(undefined);
     setModalVisible(false);
-  }
+  };
 
   const handleShowStatement = (item: any) => {
     return (
-      <div style={{width: "1100px"}}>
-        <Modal title={l('pages.devops.jobinfo.version.sql.title')} open={modalVisible} destroyOnClose={true} width={"60%"}
-               onCancel={() => {
-                 cancelHandle();
-               }}
-               footer={[
-                 <Button key="back" onClick={() => {
-                   cancelHandle();
-                 }}>
-                   {l('button.close')}
-                 </Button>,
-               ]}>
-          <CodeShow language={"sql"} code={item?.statement} height={'600px'}/>
+      <div style={{ width: '1100px' }}>
+        <Modal
+          title={l('pages.devops.jobinfo.version.sql.title')}
+          open={modalVisible}
+          destroyOnClose={true}
+          width={'60%'}
+          onCancel={() => {
+            cancelHandle();
+          }}
+          footer={[
+            <Button
+              key="back"
+              onClick={() => {
+                cancelHandle();
+              }}
+            >
+              {l('button.close')}
+            </Button>,
+          ]}
+        >
+          <CodeShow language={'sql'} code={item?.statement} height={'600px'} />
         </Modal>
       </div>
-    )
-
-  }
-
+    );
+  };
 
   const columns: ProColumns<TaskVersion>[] = [
     {
@@ -81,27 +85,19 @@ const VersionList = (props: any) => {
       title: l('pages.devops.jobinfo.version.dialect'),
       align: 'center',
       render: (dom, entity) => {
-        return <>
-          {getIcon(entity.dialect)}
-          {
-            <Tag color="blue">
-              {entity.dialect}
-            </Tag>
-          }
-        </>;
+        return (
+          <>
+            {getIcon(entity.dialect)}
+            {<Tag color="blue">{entity.dialect}</Tag>}
+          </>
+        );
       },
     },
     {
       title: l('pages.devops.jobinfo.version.type'),
       align: 'center',
       render: (dom, entity) => {
-        return <>
-          {
-            <Tag color="blue">
-              {entity.type}
-            </Tag>
-          }
-        </>;
+        return <>{<Tag color="blue">{entity.type}</Tag>}</>;
       },
     },
     {
@@ -116,21 +112,25 @@ const VersionList = (props: any) => {
       ellipsis: true,
       hideInSearch: true,
       render: (dom, entity) => {
-        return <>
-          {<>
-            <a onClick={() => {
-              setRow(entity)
-              setModalVisible(true);
-            }}>
-              <Tag color="green">
-                <FullscreenOutlined title={l('pages.devops.jobinfo.version.sql.showdetail')}/>
-              </Tag> {l('pages.devops.jobinfo.version.sql.showdetail')}
-            </a>
-
+        return (
+          <>
+            {
+              <>
+                <a
+                  onClick={() => {
+                    setRow(entity);
+                    setModalVisible(true);
+                  }}
+                >
+                  <Tag color="green">
+                    <FullscreenOutlined title={l('pages.devops.jobinfo.version.sql.showdetail')} />
+                  </Tag>{' '}
+                  {l('pages.devops.jobinfo.version.sql.showdetail')}
+                </a>
+              </>
+            }
           </>
-          }
-        </>
-          ;
+        );
       },
     },
     {
@@ -164,8 +164,10 @@ const VersionList = (props: any) => {
     <>
       <ProTable<TaskVersion>
         columns={columns}
-        style={{width: '100%'}}
-        request={(params, sorter, filter) => queryData(url, {taskId: job?.instance.taskId, ...params, sorter, filter})}
+        style={{ width: '100%' }}
+        request={(params, sorter, filter) =>
+          queryData(url, { taskId: job?.instance.taskId, ...params, sorter, filter })
+        }
         actionRef={actionRef}
         rowKey="id"
         pagination={{
@@ -178,7 +180,7 @@ const VersionList = (props: any) => {
       />
       {handleShowStatement(row)}
     </>
-  )
+  );
 };
 
 export default VersionList;

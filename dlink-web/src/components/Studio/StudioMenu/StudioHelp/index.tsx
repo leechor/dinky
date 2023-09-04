@@ -17,23 +17,18 @@
  *
  */
 
+import { Typography } from 'antd';
+import { l } from '@/utils/intl';
 
-import {Typography} from "antd";
-import {l} from "@/utils/intl";
-
-
-const {Title, Paragraph, Link} = Typography;
+const { Title, Paragraph, Link } = Typography;
 
 const StudioMsg = () => {
-
   return (
     <Typography>
       <Title level={3}>欢迎加入 ZDPX </Title>
-      <Paragraph>
-      </Paragraph>
+      <Paragraph></Paragraph>
       <Title level={4}>社区守则</Title>
-      <Paragraph>
-      </Paragraph>
+      <Paragraph></Paragraph>
     </Typography>
   );
 };

@@ -17,11 +17,10 @@
  *
  */
 
-
-import {handleAddOrUpdate, postAll} from "@/components/Common/crud";
-import {AlertInstanceTableListItem} from "@/pages/RegistrationCenter/data";
-import {message} from "antd";
-import {l} from "@/utils/intl";
+import { handleAddOrUpdate, postAll } from '@/components/Common/crud';
+import { AlertInstanceTableListItem } from '@/pages/RegistrationCenter/data';
+import { message } from 'antd';
+import { l } from '@/utils/intl';
 
 export async function createOrModifyAlertInstance(alertInstance: AlertInstanceTableListItem) {
   return handleAddOrUpdate('/api/alertInstance', alertInstance);
@@ -30,9 +29,9 @@ export async function createOrModifyAlertInstance(alertInstance: AlertInstanceTa
 export async function sendTest(alertInstance: AlertInstanceTableListItem) {
   const hide = message.loading(l('app.request.test.alert.msg'));
   try {
-    const {code,msg} = await postAll('/api/alertInstance/sendTest',alertInstance);
+    const { code, msg } = await postAll('/api/alertInstance/sendTest', alertInstance);
     hide();
-    code==0?message.success(msg):message.error(msg);
+    code == 0 ? message.success(msg) : message.error(msg);
   } catch (error) {
     hide();
     message.error(l('app.request.failed'));

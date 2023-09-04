@@ -17,10 +17,9 @@
  *
  */
 
-
 import { useRef } from 'react';
 import { off, on } from '../utils/dom';
-import useMount from './useMount'
+import useMount from './useMount';
 
 /**
  * @hook useDraggable
@@ -46,13 +45,12 @@ const useDraggable = (
   const ref = useRef(null);
 
   useMount(() => {
-    const mouseMove = e => {
+    const mouseMove = (e) => {
       if (ref.current === currentTarget) {
         if (isDragging.current) {
           if (onMouseMove) {
             // ref.current | dom | 拖拽元素的父元素
-            const roots =
-              container?.current ?? container ?? ref.current.parentNode;
+            const roots = container?.current ?? container ?? ref.current.parentNode;
 
             let x = e.clientX - initPosition.x;
             let y = e.clientY - initPosition.y;
@@ -62,10 +60,7 @@ const useDraggable = (
               if (x < 0) x = 0;
               if (y < 0) y = 0;
               const { clientWidth: pWidth, clientHeight: pHeight } = roots;
-              const {
-                clientWidth: cWidth,
-                clientHeight: cHeight,
-              } = ref.current;
+              const { clientWidth: cWidth, clientHeight: cHeight } = ref.current;
               if (x + cWidth > pWidth) x = pWidth - cWidth;
               if (y + cHeight > pHeight) y = pHeight - cHeight;
             }
@@ -74,7 +69,7 @@ const useDraggable = (
         }
       }
     };
-    const mouseUp = e => {
+    const mouseUp = (e) => {
       if (ref.current === currentTarget) {
         isDragging.current = false;
         if (onMouseUp) onMouseUp(e);
@@ -91,7 +86,7 @@ const useDraggable = (
 
   const props = {
     ref,
-    onMouseDown: e => {
+    onMouseDown: (e) => {
       isDragging.current = true;
       const target = e.target || e.srcElement;
       // 缓存此次触发事件的元素

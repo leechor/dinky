@@ -17,30 +17,28 @@
  *
  */
 
+import { Tabs } from 'antd';
+import { ContainerOutlined, ScheduleOutlined, SettingOutlined } from '@ant-design/icons';
+import { StateType } from '@/pages/DataStudio/model';
+import { connect } from 'umi';
+import StudioConfig from './StudioConfig';
+import StudioSetting from './StudioSetting';
+import StudioSavePoint from './StudioSavePoint';
+import StudioHistory from './StudioHistory';
+import StudioEnvSetting from './StudioEnvSetting';
+import StudioSqlConfig from './StudioSqlConfig';
+import StudioUDFInfo from './StudioUDFInfo';
+import StudioJarSetting from './StudioJarSetting';
+import StudioGuide from './StudioGuide';
+import StudioTaskInfo from './StudioTaskInfo';
+import { DIALECT, isSql } from '@/components/Studio/conf';
+import StudioKubernetesConfig from '@/components/Studio/StudioRightTool/StudioKubernetesConfig';
+import { l } from '@/utils/intl';
 
-import {Tabs} from "antd";
-import {ContainerOutlined, ScheduleOutlined, SettingOutlined} from "@ant-design/icons";
-import {StateType} from "@/pages/DataStudio/model";
-import {connect} from "umi";
-import StudioConfig from "./StudioConfig";
-import StudioSetting from "./StudioSetting";
-import StudioSavePoint from "./StudioSavePoint";
-import StudioHistory from "./StudioHistory";
-import StudioEnvSetting from "./StudioEnvSetting";
-import StudioSqlConfig from "./StudioSqlConfig";
-import StudioUDFInfo from "./StudioUDFInfo";
-import StudioJarSetting from "./StudioJarSetting";
-import StudioGuide from "./StudioGuide";
-import StudioTaskInfo from "./StudioTaskInfo";
-import {DIALECT, isSql} from "@/components/Studio/conf";
-import StudioKubernetesConfig from "@/components/Studio/StudioRightTool/StudioKubernetesConfig";
-import {l} from "@/utils/intl";
-
-const {TabPane} = Tabs;
+const { TabPane } = Tabs;
 
 const StudioRightTool = (props: any) => {
-
-  const {current, form, toolHeight} = props;
+  const { current, form, toolHeight } = props;
 
   const renderContent = () => {
     if (isSql(current.task.dialect)) {
@@ -69,83 +67,176 @@ const StudioRightTool = (props: any) => {
 
   const renderTaskInfoContent = () => {
     return (
-      <TabPane tab={<span><ContainerOutlined/> {l('pages.datastudio.label.jobInfo')}</span>} key="StudioTaskInfo">
-        <StudioTaskInfo form={form}/>
+      <TabPane
+        tab={
+          <span>
+            <ContainerOutlined /> {l('pages.datastudio.label.jobInfo')}
+          </span>
+        }
+        key="StudioTaskInfo"
+      >
+        <StudioTaskInfo form={form} />
       </TabPane>
-    )
+    );
   };
 
   const renderSqlContent = () => {
-    return (<>
-      <TabPane tab={<span><SettingOutlined/> {l('pages.datastudio.label.execConfig')}</span>} key="StudioSqlConfig">
-        <StudioSqlConfig form={form}/>
-      </TabPane>
-    </>)
+    return (
+      <>
+        <TabPane
+          tab={
+            <span>
+              <SettingOutlined /> {l('pages.datastudio.label.execConfig')}
+            </span>
+          }
+          key="StudioSqlConfig"
+        >
+          <StudioSqlConfig form={form} />
+        </TabPane>
+      </>
+    );
   };
 
   const renderKubernetesContent = () => {
-    return (<>
-      <TabPane tab={<span><SettingOutlined/> {l('pages.datastudio.label.execConfig')}</span>} key="StudioSqlConfig">
-        <StudioKubernetesConfig form={form}/>
-      </TabPane>
-      <TabPane tab={<span><ScheduleOutlined/> {l('pages.datastudio.label.savepoint')}</span>} key="StudioSavePoint">
-        <StudioSavePoint/>
-      </TabPane>
-    </>)
+    return (
+      <>
+        <TabPane
+          tab={
+            <span>
+              <SettingOutlined /> {l('pages.datastudio.label.execConfig')}
+            </span>
+          }
+          key="StudioSqlConfig"
+        >
+          <StudioKubernetesConfig form={form} />
+        </TabPane>
+        <TabPane
+          tab={
+            <span>
+              <ScheduleOutlined /> {l('pages.datastudio.label.savepoint')}
+            </span>
+          }
+          key="StudioSavePoint"
+        >
+          <StudioSavePoint />
+        </TabPane>
+      </>
+    );
   };
 
   const renderJarContent = () => {
-    return (<>
-      <TabPane tab={<span><SettingOutlined/> {l('pages.datastudio.label.jobConfig')}</span>} key="StudioJarSetting">
-        <StudioJarSetting form={form}/>
-      </TabPane>
-    </>)
+    return (
+      <>
+        <TabPane
+          tab={
+            <span>
+              <SettingOutlined /> {l('pages.datastudio.label.jobConfig')}
+            </span>
+          }
+          key="StudioJarSetting"
+        >
+          <StudioJarSetting form={form} />
+        </TabPane>
+      </>
+    );
   };
 
   const renderEnvContent = () => {
-    return (<>
-      <TabPane tab={<span><SettingOutlined/> {l('pages.datastudio.label.jobConfig')}</span>} key="StudioEnvSetting">
-        <StudioEnvSetting form={form}/>
-      </TabPane>
-    </>)
+    return (
+      <>
+        <TabPane
+          tab={
+            <span>
+              <SettingOutlined /> {l('pages.datastudio.label.jobConfig')}
+            </span>
+          }
+          key="StudioEnvSetting"
+        >
+          <StudioEnvSetting form={form} />
+        </TabPane>
+      </>
+    );
   };
 
   const renderUDFContent = () => {
-    return (<>
-      <TabPane tab={<span><SettingOutlined/> {l('pages.datastudio.label.udfInfo')}</span>} key="StudioUDFInfo">
-        <StudioUDFInfo form={form}/>
-      </TabPane>
-    </>)
+    return (
+      <>
+        <TabPane
+          tab={
+            <span>
+              <SettingOutlined /> {l('pages.datastudio.label.udfInfo')}
+            </span>
+          }
+          key="StudioUDFInfo"
+        >
+          <StudioUDFInfo form={form} />
+        </TabPane>
+      </>
+    );
   };
 
   const renderFlinkSqlContent = () => {
-    return (<><TabPane tab={<span><SettingOutlined/> {l('pages.datastudio.label.jobConfig')}</span>} key="StudioSetting">
-      <StudioSetting form={form}/>
-    </TabPane>
-      <TabPane tab={<span><SettingOutlined/> {l('pages.datastudio.label.execConfig')}</span>} key="StudioConfig">
-        <StudioConfig form={form}/>
-      </TabPane>
-      <TabPane tab={<span><ScheduleOutlined/> {l('pages.datastudio.label.savepoint')}</span>} key="StudioSavePoint">
-        <StudioSavePoint/>
-      </TabPane>
-      <TabPane tab={<span><ScheduleOutlined/> {l('pages.datastudio.label.version')}</span>} key="StudioHistory">
-        <StudioHistory/>
-      </TabPane>
-    </>)
+    return (
+      <>
+        <TabPane
+          tab={
+            <span>
+              <SettingOutlined /> {l('pages.datastudio.label.jobConfig')}
+            </span>
+          }
+          key="StudioSetting"
+        >
+          <StudioSetting form={form} />
+        </TabPane>
+        <TabPane
+          tab={
+            <span>
+              <SettingOutlined /> {l('pages.datastudio.label.execConfig')}
+            </span>
+          }
+          key="StudioConfig"
+        >
+          <StudioConfig form={form} />
+        </TabPane>
+        <TabPane
+          tab={
+            <span>
+              <ScheduleOutlined /> {l('pages.datastudio.label.savepoint')}
+            </span>
+          }
+          key="StudioSavePoint"
+        >
+          <StudioSavePoint />
+        </TabPane>
+        <TabPane
+          tab={
+            <span>
+              <ScheduleOutlined /> {l('pages.datastudio.label.version')}
+            </span>
+          }
+          key="StudioHistory"
+        >
+          <StudioHistory />
+        </TabPane>
+      </>
+    );
   };
 
   return (
     <>
-      {current?.task ?
-        <Tabs defaultActiveKey="1" size="small" tabPosition="right" style={{height: toolHeight}}>
+      {current?.task ? (
+        <Tabs defaultActiveKey="1" size="small" tabPosition="right" style={{ height: toolHeight }}>
           {renderContent()}
           {renderTaskInfoContent()}
-        </Tabs> : <StudioGuide toolHeight={toolHeight}/>}
+        </Tabs>
+      ) : (
+        <StudioGuide toolHeight={toolHeight} />
+      )}
     </>
   );
 };
 
-export default connect(({Studio}: { Studio: StateType }) => ({
+export default connect(({ Studio }: { Studio: StateType }) => ({
   sql: Studio.sql,
   toolHeight: Studio.toolHeight,
   current: Studio.current,

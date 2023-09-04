@@ -17,13 +17,12 @@
  *
  */
 
+import React, { useState } from 'react';
+import { Button, Form, Input, Modal, Select, Switch } from 'antd';
 
-import React, {useState} from 'react';
-import {Button, Form, Input, Modal, Select, Switch} from 'antd';
-
-import {ClusterTableListItem} from "@/pages/RegistrationCenter/data";
-import {RUN_MODE} from "@/components/Studio/conf";
-import {l} from "@/utils/intl";
+import { ClusterTableListItem } from '@/pages/RegistrationCenter/data';
+import { RUN_MODE } from '@/components/Studio/conf';
+import { l } from '@/utils/intl';
 
 export type ClusterFormProps = {
   onCancel: (flag?: boolean) => void;
@@ -34,12 +33,11 @@ export type ClusterFormProps = {
 const Option = Select.Option;
 
 const formLayout = {
-  labelCol: {span: 7},
-  wrapperCol: {span: 13},
+  labelCol: { span: 7 },
+  wrapperCol: { span: 13 },
 };
 
 const ClusterForm: React.FC<ClusterFormProps> = (props) => {
-
   const [form] = Form.useForm();
   const [formVals, setFormVals] = useState<Partial<ClusterTableListItem>>({
     id: props.values.id,
@@ -51,11 +49,7 @@ const ClusterForm: React.FC<ClusterFormProps> = (props) => {
     enabled: props.values.enabled,
   });
 
-  const {
-    onSubmit: handleSubmit,
-    onCancel: handleModalVisible,
-    modalVisible,
-  } = props;
+  const { onSubmit: handleSubmit, onCancel: handleModalVisible, modalVisible } = props;
 
   const submitForm = async () => {
     const fieldsValue = await form.validateFields();
@@ -79,19 +73,17 @@ const ClusterForm: React.FC<ClusterFormProps> = (props) => {
         <Form.Item
           name="name"
           label={l('pages.rc.cluster.instanceName')}
-          rules={[{required: true, message: l('pages.rc.cluster.namePlaceholder') }]}>
-          <Input placeholder={l('pages.rc.cluster.namePlaceholder') }/>
-        </Form.Item>
-        <Form.Item
-          name="alias"
-          label={l('pages.rc.cluster.alias')}
+          rules={[{ required: true, message: l('pages.rc.cluster.namePlaceholder') }]}
         >
-          <Input placeholder={l('pages.rc.cluster.aliasPlaceholder') }/>
+          <Input placeholder={l('pages.rc.cluster.namePlaceholder')} />
+        </Form.Item>
+        <Form.Item name="alias" label={l('pages.rc.cluster.alias')}>
+          <Input placeholder={l('pages.rc.cluster.aliasPlaceholder')} />
         </Form.Item>
         <Form.Item
           name="type"
           label={l('pages.rc.cluster.type')}
-          rules={[{required: true, message: l('pages.rc.cluster.typePlaceholder')}]}
+          rules={[{ required: true, message: l('pages.rc.cluster.typePlaceholder') }]}
         >
           <Select>
             <Option value={RUN_MODE.STANDALONE}>Standalone</Option>
@@ -112,15 +104,21 @@ const ClusterForm: React.FC<ClusterFormProps> = (props) => {
               validator(_, hostsValue) {
                 let hostArray = [];
                 if (hostsValue.trim().length === 0) {
-                  return Promise.reject(new Error(l('pages.rc.cluster.jobManagerHaAddressPlaceholder')));
+                  return Promise.reject(
+                    new Error(l('pages.rc.cluster.jobManagerHaAddressPlaceholder')),
+                  );
                 } else {
-                  hostArray = hostsValue.split(',')
+                  hostArray = hostsValue.split(',');
                   for (let i = 0; i < hostArray.length; i++) {
                     if (hostArray[i].includes('/')) {
-                      return Promise.reject(new Error(l('pages.rc.cluster.jobManagerHaAddress.validate.slash')));
+                      return Promise.reject(
+                        new Error(l('pages.rc.cluster.jobManagerHaAddress.validate.slash')),
+                      );
                     }
                     if (parseInt(hostArray[i].split(':')[1]) >= 65535) {
-                      return Promise.reject(new Error(l('pages.rc.cluster.jobManagerHaAddress.validate.port')));
+                      return Promise.reject(
+                        new Error(l('pages.rc.cluster.jobManagerHaAddress.validate.port')),
+                      );
                     }
                   }
                   return Promise.resolve();
@@ -132,20 +130,22 @@ const ClusterForm: React.FC<ClusterFormProps> = (props) => {
           <Input.TextArea
             placeholder={l('pages.rc.cluster.jobManagerHaAddressPlaceholderText')}
             allowClear
-            autoSize={{minRows: 3, maxRows: 10}}/>
+            autoSize={{ minRows: 3, maxRows: 10 }}
+          />
         </Form.Item>
-        <Form.Item
-          name="note"
-          label={l('global.table.note')}
-        >
-          <Input.TextArea placeholder={l('global.table.notePlaceholder')} allowClear
-                          autoSize={{minRows: 3, maxRows: 10}}/>
+        <Form.Item name="note" label={l('global.table.note')}>
+          <Input.TextArea
+            placeholder={l('global.table.notePlaceholder')}
+            allowClear
+            autoSize={{ minRows: 3, maxRows: 10 }}
+          />
         </Form.Item>
-        <Form.Item
-          name="enabled"
-          label={l('global.table.isEnable')}>
-          <Switch checkedChildren={l('button.enable')} unCheckedChildren={l('button.disable')}
-                  defaultChecked={formValsPara.enabled}/>
+        <Form.Item name="enabled" label={l('global.table.isEnable')}>
+          <Switch
+            checkedChildren={l('button.enable')}
+            unCheckedChildren={l('button.disable')}
+            defaultChecked={formValsPara.enabled}
+          />
         </Form.Item>
       </>
     );
@@ -164,19 +164,15 @@ const ClusterForm: React.FC<ClusterFormProps> = (props) => {
 
   return (
     <Modal
-      width={"40%"}
-      bodyStyle={{padding: '32px 40px 48px'}}
+      width={'40%'}
+      bodyStyle={{ padding: '32px 40px 48px' }}
       destroyOnClose
       title={formVals.id ? l('pages.rc.cluster.modify') : l('pages.rc.cluster.create')}
       visible={modalVisible}
       footer={renderFooter()}
       onCancel={() => onModalCancel()}
     >
-      <Form
-        {...formLayout}
-        form={form}
-        initialValues={formVals}
-      >
+      <Form {...formLayout} form={form} initialValues={formVals}>
         {renderContent(formVals)}
       </Form>
     </Modal>

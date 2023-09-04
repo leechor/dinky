@@ -18,65 +18,87 @@
  */
 
 import React from 'react';
-import {Button, Modal, Table, Tooltip} from 'antd'
-import {l} from "@/utils/intl";
+import { Button, Modal, Table, Tooltip } from 'antd';
+import { l } from '@/utils/intl';
 
 interface IStatusDetailedModal {
   statusDetailedVisible: boolean;
   statusDetailedList: any;
-  onCancelStatusDetailed: () => void
+  onCancelStatusDetailed: () => void;
   opsStatus: string;
 }
 
 export const OpsStatusTitle = {
   '1': l('pages.devops.lable.online.list'),
-  '0': l('pages.devops.lable.offline.list')
-}
-
+  '0': l('pages.devops.lable.offline.list'),
+};
 
 const StatusDetailedModal: React.FC<IStatusDetailedModal> = (props): React.ReactElement => {
-  const {statusDetailedVisible, statusDetailedList, opsStatus, onCancelStatusDetailed} = props
+  const { statusDetailedVisible, statusDetailedList, opsStatus, onCancelStatusDetailed } = props;
 
-  const columns = [{
-    title: l('pages.devops.lable.line.name'),
-    dataIndex: 'name'
-  }, {
-    title: l('pages.devops.lable.line.status'),
-    dataIndex: 'status'
-  }, {
-    title: l('pages.devops.lable.line.code'),
-    dataIndex: 'code'
-  }, {
-    title: l('pages.devops.lable.line.message'),
-    dataIndex: 'message',
-    render: (text: string) => <Tooltip overlayInnerStyle={{width: '800px'}} placement="bottom" title={text}>
-      <div style={{width: '150px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>{text}</div>
-    </Tooltip>,
-    width: 150
-  }, {
-    title: l('pages.devops.lable.line.piontConfig'),
-    dataIndex: 'taskOperatingSavepointSelect',
-  }].filter((item) => {
+  const columns = [
+    {
+      title: l('pages.devops.lable.line.name'),
+      dataIndex: 'name',
+    },
+    {
+      title: l('pages.devops.lable.line.status'),
+      dataIndex: 'status',
+    },
+    {
+      title: l('pages.devops.lable.line.code'),
+      dataIndex: 'code',
+    },
+    {
+      title: l('pages.devops.lable.line.message'),
+      dataIndex: 'message',
+      render: (text: string) => (
+        <Tooltip overlayInnerStyle={{ width: '800px' }} placement="bottom" title={text}>
+          <div
+            style={{
+              width: '150px',
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {text}
+          </div>
+        </Tooltip>
+      ),
+      width: 150,
+    },
+    {
+      title: l('pages.devops.lable.line.piontConfig'),
+      dataIndex: 'taskOperatingSavepointSelect',
+    },
+  ].filter((item) => {
     if (item.dataIndex === 'taskOperatingSavepointSelect') {
       if (opsStatus === '1') {
-        return true
+        return true;
       } else {
-        return false
+        return false;
       }
     } else {
-      return true
+      return true;
     }
-  })
+  });
 
-  const onFooter = () => <Button onClick={() => onCancelStatusDetailed()}>
-    {l('button.back')}
-  </Button>
+  const onFooter = () => (
+    <Button onClick={() => onCancelStatusDetailed()}>{l('button.back')}</Button>
+  );
 
   return (
-    <Modal title={OpsStatusTitle[opsStatus]} width={800} onCancel={() => onCancelStatusDetailed()} footer={onFooter()}
-           visible={statusDetailedVisible}>
-      <Table rowKey={'id'} dataSource={statusDetailedList} columns={columns}/>
-    </Modal>)
-}
+    <Modal
+      title={OpsStatusTitle[opsStatus]}
+      width={800}
+      onCancel={() => onCancelStatusDetailed()}
+      footer={onFooter()}
+      visible={statusDetailedVisible}
+    >
+      <Table rowKey={'id'} dataSource={statusDetailedList} columns={columns} />
+    </Modal>
+  );
+};
 
-export default StatusDetailedModal
+export default StatusDetailedModal;

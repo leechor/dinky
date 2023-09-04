@@ -17,20 +17,18 @@
  *
  */
 
+import { connect } from 'umi';
+import { StateType } from '@/pages/DataStudio/model';
+import { Button, Col, Form, InputNumber, Row, Select, Tag, Tooltip } from 'antd';
+import { MinusSquareOutlined } from '@ant-design/icons';
+import styles from './index.less';
+import { Scrollbars } from 'react-custom-scrollbars';
+import { l } from '@/utils/intl';
 
-import {connect} from "umi";
-import {StateType} from "@/pages/DataStudio/model";
-import {Button, Col, Form, InputNumber, Row, Select, Tag, Tooltip,} from "antd";
-import {MinusSquareOutlined} from "@ant-design/icons";
-import styles from "./index.less";
-import {Scrollbars} from 'react-custom-scrollbars';
-import {l} from "@/utils/intl";
-
-const {Option} = Select;
+const { Option } = Select;
 
 const StudioSqlConfig = (props: any) => {
-
-  const {current, form, dispatch, tabs, database, toolHeight} = props;
+  const { current, form, dispatch, tabs, database, toolHeight } = props;
 
   form.setFieldsValue(current.task);
 
@@ -45,22 +43,28 @@ const StudioSqlConfig = (props: any) => {
       }
     }
 
-    dispatch && dispatch({
-      type: "Studio/saveTabs",
-      payload: newTabs,
-    });
+    dispatch &&
+      dispatch({
+        type: 'Studio/saveTabs',
+        payload: newTabs,
+      });
   };
-
 
   const getDataBaseOptions = () => {
     const itemList = [];
     for (const item of database) {
       if (item.type.toUpperCase() === current.task.dialect.toUpperCase()) {
-        const tag = (<><Tag
-          color={item.enabled ? "processing" : "error"}>{item.type}</Tag>{item.name}</>);
-        itemList.push(<Option key={item.id} value={item.id} label={tag}>
-          {tag}
-        </Option>)
+        const tag = (
+          <>
+            <Tag color={item.enabled ? 'processing' : 'error'}>{item.type}</Tag>
+            {item.name}
+          </>
+        );
+        itemList.push(
+          <Option key={item.id} value={item.id} label={tag}>
+            {tag}
+          </Option>,
+        );
       }
     }
     return itemList;
@@ -70,17 +74,14 @@ const StudioSqlConfig = (props: any) => {
     <>
       <Row>
         <Col span={24}>
-          <div style={{float: "right"}}>
+          <div style={{ float: 'right' }}>
             <Tooltip title={l('component.minimize')}>
-              <Button
-                type="text"
-                icon={<MinusSquareOutlined/>}
-              />
+              <Button type="text" icon={<MinusSquareOutlined />} />
             </Tooltip>
           </div>
         </Col>
       </Row>
-      <Scrollbars style={{height: (toolHeight - 32)}}>
+      <Scrollbars style={{ height: toolHeight - 32 }}>
         <Form
           form={form}
           layout="vertical"
@@ -89,11 +90,14 @@ const StudioSqlConfig = (props: any) => {
         >
           <Row>
             <Col span={24}>
-              <Form.Item label={l('pages.datastudio.label.datasource')} tooltip={l('pages.datastudio.label.execConfig.selectDatabase.tip')}
-                         name="databaseId"
-                         className={styles.form_item}>
+              <Form.Item
+                label={l('pages.datastudio.label.datasource')}
+                tooltip={l('pages.datastudio.label.execConfig.selectDatabase.tip')}
+                name="databaseId"
+                className={styles.form_item}
+              >
                 <Select
-                  style={{width: '100%'}}
+                  style={{ width: '100%' }}
                   placeholder={l('pages.datastudio.label.execConfig.selectDatabase')}
                   optionLabelProp="label"
                 >
@@ -103,10 +107,12 @@ const StudioSqlConfig = (props: any) => {
             </Col>
             <Col span={24}>
               <Form.Item
-                label={l('pages.datastudio.label.maxrows')} className={styles.form_item} name="maxRowNum"
+                label={l('pages.datastudio.label.maxrows')}
+                className={styles.form_item}
+                name="maxRowNum"
                 tooltip={l('pages.datastudio.label.execConfig.maxrow.tip')}
               >
-                <InputNumber min={1} max={9999} defaultValue={100}/>
+                <InputNumber min={1} max={9999} defaultValue={100} />
               </Form.Item>
             </Col>
           </Row>
@@ -116,7 +122,7 @@ const StudioSqlConfig = (props: any) => {
   );
 };
 
-export default connect(({Studio}: { Studio: StateType }) => ({
+export default connect(({ Studio }: { Studio: StateType }) => ({
   database: Studio.database,
   current: Studio.current,
   tabs: Studio.tabs,

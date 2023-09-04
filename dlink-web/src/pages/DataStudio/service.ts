@@ -17,10 +17,14 @@
  *
  */
 
-
-import {CAParam, StudioMetaStoreParam, StudioParam, WatchParam} from "@/components/Studio/StudioEdit/data";
-import {request2} from "@/components/Common/crud";
-import {request} from "umi";
+import {
+  CAParam,
+  StudioMetaStoreParam,
+  StudioParam,
+  WatchParam,
+} from '@/components/Studio/StudioEdit/data';
+import { request2 } from '@/components/Common/crud';
+import { request } from 'umi';
 
 export async function executeSql(params: StudioParam) {
   return request<API.Result>('/api/studio/executeSql', {
@@ -78,20 +82,20 @@ export async function getJobData(jobId: string) {
 
 export async function registerWatchTable(params?: WatchParam) {
   return request2<API.Result>('/api/subscribe/watch', {
-    method : 'PUT',
-    params : {
+    method: 'PUT',
+    params: {
       ...params,
-    }
-  })
+    },
+  });
 }
 
 export async function unRegisterWatchTable(params?: WatchParam) {
   return request2<API.Result>('/api/unSubscribe/watch', {
-    method : 'PUT',
-    params : {
+    method: 'PUT',
+    params: {
       ...params,
-    }
-  })
+    },
+  });
 }
 
 export async function getCatalogueTreeData(params?: StudioParam) {
@@ -151,12 +155,16 @@ export async function getTaskMainInfos(dinkyTaskId: string) {
 }
 
 //海豚 创建任务定义
-export async function createTaskDefinition(dinkyTaskId: string, upstreamCodes: string, params: object) {
+export async function createTaskDefinition(
+  dinkyTaskId: string,
+  upstreamCodes: string,
+  params: object,
+) {
   return request<API.Result>('/api/scheduler/task', {
     method: 'POST',
     params: {
       dinkyTaskId,
-      upstreamCodes
+      upstreamCodes,
     },
     data: {
       ...params,
@@ -165,14 +173,20 @@ export async function createTaskDefinition(dinkyTaskId: string, upstreamCodes: s
 }
 
 //海豚 更新任务定义
-export async function updateTaskDefinition(processCode: string, projectCode: string, taskCode: string, upstreamCodes: string, params: object) {
+export async function updateTaskDefinition(
+  processCode: string,
+  projectCode: string,
+  taskCode: string,
+  upstreamCodes: string,
+  params: object,
+) {
   return request<API.Result>('/api/scheduler/task', {
     method: 'PUT',
     params: {
       processCode,
       projectCode,
       taskCode,
-      upstreamCodes
+      upstreamCodes,
     },
     data: {
       ...params,

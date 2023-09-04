@@ -17,25 +17,22 @@
  *
  */
 
-
-import {connect} from "umi";
-import {StateType} from "@/pages/DataStudio/model";
-import {Button, Col, Form, Row, Switch, Tooltip} from "antd";
-import {InfoCircleOutlined, MinusSquareOutlined} from "@ant-design/icons";
-import styles from "./index.less";
-import {useEffect} from "react";
-import {JarStateType} from "@/pages/RegistrationCenter/Jar/model";
-import {Scrollbars} from "react-custom-scrollbars";
-import {l} from "@/utils/intl";
+import { connect } from 'umi';
+import { StateType } from '@/pages/DataStudio/model';
+import { Button, Col, Form, Row, Switch, Tooltip } from 'antd';
+import { InfoCircleOutlined, MinusSquareOutlined } from '@ant-design/icons';
+import styles from './index.less';
+import { useEffect } from 'react';
+import { JarStateType } from '@/pages/RegistrationCenter/Jar/model';
+import { Scrollbars } from 'react-custom-scrollbars';
+import { l } from '@/utils/intl';
 
 const StudioEnvSetting = (props: any) => {
-
-  const {current, form, dispatch, tabs, toolHeight} = props;
+  const { current, form, dispatch, tabs, toolHeight } = props;
 
   useEffect(() => {
     form.setFieldsValue(current.task);
   }, [current.task]);
-
 
   const onValuesChange = (change: any, all: any) => {
     const newTabs = tabs;
@@ -48,7 +45,7 @@ const StudioEnvSetting = (props: any) => {
       }
     }
     dispatch({
-      type: "Studio/saveTabs",
+      type: 'Studio/saveTabs',
       payload: newTabs,
     });
   };
@@ -57,17 +54,14 @@ const StudioEnvSetting = (props: any) => {
     <>
       <Row>
         <Col span={24}>
-          <div style={{float: "right"}}>
+          <div style={{ float: 'right' }}>
             <Tooltip title={l('component.minimize')}>
-              <Button
-                type="text"
-                icon={<MinusSquareOutlined/>}
-              />
+              <Button type="text" icon={<MinusSquareOutlined />} />
             </Tooltip>
           </div>
         </Col>
       </Row>
-      <Scrollbars style={{height: (toolHeight - 32)}}>
+      <Scrollbars style={{ height: toolHeight - 32 }}>
         <Form
           form={form}
           layout="vertical"
@@ -77,13 +71,18 @@ const StudioEnvSetting = (props: any) => {
           <Row>
             <Col span={12}>
               <Form.Item
-                label={l('pages.datastudio.label.jobConfig.fragment')} className={styles.form_item} name="fragment" valuePropName="checked"
+                label={l('pages.datastudio.label.jobConfig.fragment')}
+                className={styles.form_item}
+                name="fragment"
+                valuePropName="checked"
                 tooltip={{
                   title: l('pages.datastudio.label.jobConfig.fragment.tip'),
-                  icon: <InfoCircleOutlined/>
+                  icon: <InfoCircleOutlined />,
                 }}
               >
-                <Switch  checkedChildren={l('button.enable')} unCheckedChildren={l('button.disable')}
+                <Switch
+                  checkedChildren={l('button.enable')}
+                  unCheckedChildren={l('button.disable')}
                 />
               </Form.Item>
             </Col>
@@ -94,7 +93,7 @@ const StudioEnvSetting = (props: any) => {
   );
 };
 
-export default connect(({Studio, Jar}: { Studio: StateType, Jar: JarStateType }) => ({
+export default connect(({ Studio, Jar }: { Studio: StateType; Jar: JarStateType }) => ({
   current: Studio.current,
   tabs: Studio.tabs,
   toolHeight: Studio.toolHeight,

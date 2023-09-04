@@ -17,38 +17,57 @@
  *
  */
 
-import {Tabs} from "antd";
-import {AppstoreOutlined, BarsOutlined, InsertRowAboveOutlined} from "@ant-design/icons";
-import {StateType} from "@/pages/DataStudio/model";
-import {connect} from "umi";
-import StudioTree from "../StudioTree";
-import StudioMetaData from "./StudioMetaData";
-import StudioMetaStore from "./StudioMetaStore";
-import {l} from "@/utils/intl";
+import { Tabs } from 'antd';
+import { AppstoreOutlined, BarsOutlined, InsertRowAboveOutlined } from '@ant-design/icons';
+import { StateType } from '@/pages/DataStudio/model';
+import { connect } from 'umi';
+import StudioTree from '../StudioTree';
+import StudioMetaData from './StudioMetaData';
+import StudioMetaStore from './StudioMetaStore';
+import { l } from '@/utils/intl';
 
-const {TabPane} = Tabs;
+const { TabPane } = Tabs;
 
 const StudioLeftTool = (props: any) => {
-
-  const {toolHeight} = props;
+  const { toolHeight } = props;
 
   return (
-    <Tabs defaultActiveKey="1" size="small" tabPosition="left" style={{height: toolHeight}}>
-      <TabPane tab={<span><BarsOutlined/> {l('pages.datastudio.label.directory')}</span>} key="StudioTree">
-        <StudioTree/>
+    <Tabs defaultActiveKey="1" size="small" tabPosition="left" style={{ height: toolHeight }}>
+      <TabPane
+        tab={
+          <span>
+            <BarsOutlined /> {l('pages.datastudio.label.directory')}
+          </span>
+        }
+        key="StudioTree"
+      >
+        <StudioTree />
       </TabPane>
-      <TabPane tab={<span><InsertRowAboveOutlined/> {l('pages.datastudio.label.structure')}</span>}
-               key="MetaStore">
-        <StudioMetaStore/>
+      <TabPane
+        tab={
+          <span>
+            <InsertRowAboveOutlined /> {l('pages.datastudio.label.structure')}
+          </span>
+        }
+        key="MetaStore"
+      >
+        <StudioMetaStore />
       </TabPane>
-      <TabPane tab={<span><AppstoreOutlined/> {l('pages.datastudio.label.meta')}</span>} key="MetaData">
-        <StudioMetaData/>
+      <TabPane
+        tab={
+          <span>
+            <AppstoreOutlined /> {l('pages.datastudio.label.meta')}
+          </span>
+        }
+        key="MetaData"
+      >
+        <StudioMetaData />
       </TabPane>
     </Tabs>
   );
 };
 
-export default connect(({Studio}: { Studio: StateType }) => ({
+export default connect(({ Studio }: { Studio: StateType }) => ({
   sql: Studio.sql,
   toolHeight: Studio.toolHeight,
 }))(StudioLeftTool);

@@ -3,7 +3,7 @@ import RightDetail from './cpns/right-detail';
 import LeftEditor from './cpns/left-editor';
 import styles from './index.less';
 import { Portal } from '@antv/x6-react-shape';
-const x6ReactProtalProvider = Portal.getProvider()
+const x6ReactProtalProvider = Portal.getProvider();
 const GraphEditor = memo((props) => {
   //获取数据
 
@@ -15,7 +15,5 @@ const GraphEditor = memo((props) => {
     </div>
   );
 });
-
-
 
 export default GraphEditor;

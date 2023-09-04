@@ -11,15 +11,15 @@ export const handleInitPort = () => {
         zIndex: 999,
         position: 'right',
         markup: {
-          tagName: "path",
-          selector: "path",
+          tagName: 'path',
+          selector: 'path',
           attrs: {
-            d: "m-6,0,a5,5.5 0 0 1 12,0",
-            fill: "#b2a2e9",
-            transform: "rotate(90)",
+            d: 'm-6,0,a5,5.5 0 0 1 12,0',
+            fill: '#b2a2e9',
+            transform: 'rotate(90)',
             strokeWidth: 1,
-            stroke: "null",
-          }
+            stroke: 'null',
+          },
         },
         attrs: {
           path: {
@@ -35,15 +35,15 @@ export const handleInitPort = () => {
         zIndex: 999,
         position: 'left',
         markup: {
-          tagName: "path",
-          selector: "path",
+          tagName: 'path',
+          selector: 'path',
           attrs: {
-            d: "m-6,0,a5,5.5 0 0 1 12,0",
-            fill: "#b2a2e9",
-            transform: "rotate(-90)",
+            d: 'm-6,0,a5,5.5 0 0 1 12,0',
+            fill: '#b2a2e9',
+            transform: 'rotate(-90)',
             strokeWidth: 1,
-            stroke: "null",
-          }
+            stroke: 'null',
+          },
         },
         attrs: {
           path: {
@@ -66,15 +66,15 @@ export const handleInitGroupPort = () => {
         zIndex: 999,
         position: 'right',
         markup: {
-          tagName: "path",
-          selector: "path",
+          tagName: 'path',
+          selector: 'path',
           attrs: {
-            d: "m-6,0,a5,5.5 0 0 1 12,0",
-            fill: "#b2a2e9",
-            transform: "rotate(90)",
+            d: 'm-6,0,a5,5.5 0 0 1 12,0',
+            fill: '#b2a2e9',
+            transform: 'rotate(90)',
             strokeWidth: 1,
-            stroke: "null",
-          }
+            stroke: 'null',
+          },
         },
         attrs: {
           path: {
@@ -90,15 +90,15 @@ export const handleInitGroupPort = () => {
         zIndex: 999,
         position: 'left',
         markup: {
-          tagName: "path",
-          selector: "path",
+          tagName: 'path',
+          selector: 'path',
           attrs: {
-            d: "m-6,0,a5,5.5 0 0 1 12,0",
-            fill: "#b2a2e9",
-            transform: "rotate(-90)",
+            d: 'm-6,0,a5,5.5 0 0 1 12,0',
+            fill: '#b2a2e9',
+            transform: 'rotate(-90)',
             strokeWidth: 1,
-            stroke: "null",
-          }
+            stroke: 'null',
+          },
         },
         attrs: {
           path: {
@@ -115,15 +115,15 @@ export const handleInitGroupPort = () => {
         zIndex: 999,
         position: 'left',
         markup: {
-          tagName: "path",
-          selector: "path",
+          tagName: 'path',
+          selector: 'path',
           attrs: {
-            d: "m-6,0,a5,5.5 0 0 1 12,0",
-            fill: "#2ac0c4",
-            transform: "rotate(90)",
+            d: 'm-6,0,a5,5.5 0 0 1 12,0',
+            fill: '#2ac0c4',
+            transform: 'rotate(90)',
             strokeWidth: 1,
-            stroke: "null",
-          }
+            stroke: 'null',
+          },
         },
         attrs: {
           path: {
@@ -139,15 +139,15 @@ export const handleInitGroupPort = () => {
         zIndex: 999,
         position: 'right',
         markup: {
-          tagName: "path",
-          selector: "path",
+          tagName: 'path',
+          selector: 'path',
           attrs: {
-            d: "m-6,0,a5,5.5 0 0 1 12,0",
-            fill:  "#2ac0c4",
-            transform: "rotate(-90)",
+            d: 'm-6,0,a5,5.5 0 0 1 12,0',
+            fill: '#2ac0c4',
+            transform: 'rotate(-90)',
             strokeWidth: 1,
-            stroke: "null",
-          }
+            stroke: 'null',
+          },
         },
         attrs: {
           path: {
@@ -158,7 +158,7 @@ export const handleInitGroupPort = () => {
             },
           },
         },
-      }
+      },
     },
   };
-}
+};

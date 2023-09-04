@@ -17,25 +17,24 @@
  *
  */
 
-
 import React, { useCallback, useRef, useState } from 'react';
 import {
   LogoutOutlined,
   SafetyOutlined,
   SecurityScanOutlined,
   SettingOutlined,
-  UserSwitchOutlined
+  UserSwitchOutlined,
 } from '@ant-design/icons';
 import { Avatar, Menu, Modal, Spin } from 'antd';
-import { handleOption } from "@/components/Common/crud";
+import { handleOption } from '@/components/Common/crud';
 import { history, useModel } from 'umi';
 import { stringify } from 'querystring';
 import HeaderDropdown from '../HeaderDropdown';
 import styles from './index.less';
 import { outLogin } from '@/services/ant-design-pro/api';
-import { ActionType } from "@ant-design/pro-table";
-import { l } from "@/utils/intl";
-import PasswordForm from "@/pages/AuthenticationCenter/UserManager/components/PasswordForm";
+import { ActionType } from '@ant-design/pro-table';
+import { l } from '@/utils/intl';
+import PasswordForm from '@/pages/AuthenticationCenter/UserManager/components/PasswordForm';
 
 export type GlobalHeaderRightProps = {
   menu?: boolean;
@@ -58,7 +57,6 @@ const loginOut = async () => {
     });
   }
 };
-
 
 const requestUrl = '/api/tenant/switchTenant';
 
@@ -84,9 +82,8 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
         return;
       } else if (key === 'changePassWord') {
         handlePasswordModalVisible(true);
-        setFormValues({ username: initialState?.currentUser?.user.username })
+        setFormValues({ username: initialState?.currentUser?.user.username });
       } else {
-
       }
       // history.push(`/account/${key}`);
     },
@@ -149,32 +146,31 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
                   //  2.同步刷新所有页面 获取该租户id下的数据
                   //actionRef.current?.reload()
                   // actionRef.current?.reloadAndRest?.();
-                }
+                },
               });
             }}
           >
             {item.tenantCode}
           </Menu.Item>
-        </>
-      )
-    })
-    return <>
-      <Menu.SubMenu
-        key="chooseTenantList"
-        title={l('menu.account.checkTenant')}
-        icon={<UserSwitchOutlined />}
-      >
-        {chooseTenantList}
-      </Menu.SubMenu>
-    </>;
-  }
-
+        </>,
+      );
+    });
+    return (
+      <>
+        <Menu.SubMenu
+          key="chooseTenantList"
+          title={l('menu.account.checkTenant')}
+          icon={<UserSwitchOutlined />}
+        >
+          {chooseTenantList}
+        </Menu.SubMenu>
+      </>
+    );
+  };
 
   const menuHeaderDropdown = (
     <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
-      {menu && (
-        getChooseTenantListForm()
-      )}
+      {menu && getChooseTenantListForm()}
       {menu && (
         <Menu.Item key="personSettings" disabled>
           <SettingOutlined />
@@ -198,14 +194,23 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
     <div>
       <HeaderDropdown overlay={menuHeaderDropdown}>
         <span className={`${styles.action} ${styles.account}`}>
-          <Avatar size="small" className={styles.avatar} src={currentUser.user.avatar} alt="avatar" />
+          <Avatar
+            size="small"
+            className={styles.avatar}
+            src={currentUser.user.avatar}
+            alt="avatar"
+          />
           <span className={`${styles.name} anticon`}>{currentUser.user.username}</span>
         </span>
       </HeaderDropdown>
       {formValues && Object.keys(formValues).length ? (
         <PasswordForm
           onSubmit={async (value) => {
-            const success = await handleOption(url + "/modifyPassword", l('button.changePassword'), value);
+            const success = await handleOption(
+              url + '/modifyPassword',
+              l('button.changePassword'),
+              value,
+            );
             if (success) {
               handlePasswordModalVisible(false);
               setFormValues({});

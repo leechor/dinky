@@ -17,28 +17,30 @@
  *
  */
 
-
-import {getData, postAll} from "@/components/Common/crud";
-import {message} from "antd";
-import {l} from "@/utils/intl";
+import { getData, postAll } from '@/components/Common/crud';
+import { message } from 'antd';
+import { l } from '@/utils/intl';
 
 export function loadSettings(dispatch: any) {
   const res = getData('api/sysConfig/getAll');
   res.then((result) => {
-    result.datas && dispatch && dispatch({
-      type: "Settings/saveSettings",
-      payload: result.datas,
-    });
+    result.datas &&
+      dispatch &&
+      dispatch({
+        type: 'Settings/saveSettings',
+        payload: result.datas,
+      });
   });
 }
 
-export function saveSettings(values:{},dispatch: any) {
-  const res = postAll("api/sysConfig/updateSysConfigByJson",values);
+export function saveSettings(values: {}, dispatch: any) {
+  const res = postAll('api/sysConfig/updateSysConfigByJson', values);
   res.then((result) => {
     message.success(l('app.request.update.setting.success'));
-    dispatch && dispatch({
-      type: "Settings/saveSettings",
-      payload: values,
-    });
+    dispatch &&
+      dispatch({
+        type: 'Settings/saveSettings',
+        payload: values,
+      });
   });
 }
