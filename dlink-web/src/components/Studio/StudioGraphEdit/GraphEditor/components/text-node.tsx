@@ -1,24 +1,11 @@
 import React, { FC, useEffect, useRef } from 'react';
+import { NodeType } from '../types';
 import styles from './index.less';
-import { NodeType } from './cpn-shape';
+
 
 const TextNode: FC<NodeType> = ({ node }: NodeType) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  // const convertVerticalAlign = (align: string) => {
-  //   switch (align) {
-  //     case "top":
-  //       return "flex-start";
-  //     case "bottom":
-  //       return "flex-end";
-  //     case "center":
-  //       return "center"
-  //     default:
-  //       return "flex-start"
-  //   }
-  // }
-  window.testnode = node;
   const horizontalAlign = node.getData()?.horizontalAlign ?? 'left';
-  // const verticalAlign = (node.getData()?.verticalAlign) ? convertVerticalAlign(node.getData()?.verticalAlign) : "flex-start"
   const backgroundColor = node.getData()?.backgroundColor ?? '#efdbff';
   const fontColor = node.getData()?.fontColor ?? { fontColor: '#000000' };
   const fontSize = node.getData()?.fontSize ?? { fontSize: 14 };

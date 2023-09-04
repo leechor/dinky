@@ -1,4 +1,4 @@
-import { Graph, KeyValue, Shape } from '@antv/x6';
+import { Graph } from '@antv/x6';
 import { Clipboard } from '@antv/x6-plugin-clipboard';
 import { Selection } from '@antv/x6-plugin-selection';
 import { Keyboard } from '@antv/x6-plugin-keyboard';
@@ -89,32 +89,10 @@ export const history = (graph: Graph) => {
       if (args.options) {
         return args.options.ignored !== true;
       }
+      return true
     },
-    // afterAddCommand(event,args,cmd){
-    //   console.log("afterAddCommand",event,args,cmd);
-
-    // },
-    // executeCommand(cmd,revert,options){
-    //   console.log("executeCommand",cmd,revert,options);
-
-    // }
   });
   graph.use(history);
-  // history.on("batch", ({ cmd, options }: { cmd: any, options: any }) => {
-  //   switch (cmd.event) {
-  //     case "cell:change:ports":
-  //       const cell = graph.getCellById(cmd.data.id)
-  //       if (cell.isNode()) {
-  //         const nextPortId = cmd.data.next.ports.items.map((item: any) => item.id)
-  //         const prePortId = cmd.data.next.ports.items.map((item: any) => item.id)
-  //         const changedPortId = nextPortId.find((nId: string) => !prePortId.includes(nId))
-  //         cell.removePort(changedPortId)
-  //       }
-
-  //       break;
-  //   }
-
-  // })
   //undo redo
   graph.bindKey(['meta+z', 'ctrl+z'], () => {
     if (graph.canUndo()) {

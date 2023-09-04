@@ -1,10 +1,11 @@
 import { Tooltip } from 'antd';
 import { WarningOutlined, CloseOutlined } from '@ant-design/icons';
 import styles from './index.less';
-import CpnShape, { NodeType } from './cpn-shape';
+import CpnShape from './cpn-shape';
 import { useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks/redux-hooks';
 import { changeStencilMenuInfo } from '../store/modules/home';
+import { NodeType } from '../types';
 
 const BaseNode = (props: { nodeType: NodeType; iconPath: string; name: string }) => {
   const dispatch = useAppDispatch();

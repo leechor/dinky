@@ -1,17 +1,8 @@
 import { autoPromptFunction } from '@/components/Common/crud';
 import { Node } from '@antv/x6';
 import store from '../store';
+import { configObjType, configType } from '../types';
 import { isSourceDataType } from './graph-tools-func';
-interface configType {
-  flag: boolean;
-  name?: string;
-  type: string;
-  decs: string;
-  outName?: string;
-}
-interface configObjType {
-  [propName: string]: configType[];
-}
 const helper = {
   getFieldsByFunction: () => {
     return new Promise((resolve, reject) => {

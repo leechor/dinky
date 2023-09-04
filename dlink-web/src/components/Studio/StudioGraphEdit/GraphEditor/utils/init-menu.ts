@@ -1,13 +1,7 @@
-import { Cell, Graph, Node } from '@antv/x6';
+import { Cell, Graph } from '@antv/x6';
+import { DispatchMenuInfo } from '../types';
 
-export type DispatchMenuInfo = React.Dispatch<
-  React.SetStateAction<{
-    show: boolean;
-    top: number;
-    left: number;
-    node: Node | null;
-  }>
->;
+
 
 export function initMenu(
   graph: Graph,

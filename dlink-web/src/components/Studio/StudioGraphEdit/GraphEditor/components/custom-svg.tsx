@@ -1,9 +1,7 @@
 import { FC } from 'react';
+import { SvgType } from '../types';
 
-export type SvgType = {
-  iconPath: string;
-  styleObj?: any;
-};
+
 
 const defaultStyle = {
   width: '20px',

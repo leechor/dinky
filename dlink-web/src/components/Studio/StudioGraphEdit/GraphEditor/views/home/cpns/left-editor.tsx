@@ -32,7 +32,7 @@ import {
   removeGraphTabs,
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import localCache from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/localStorage';
-import CustomShape, { GraphHistory } from '../../../utils/cons';
+import CustomShape, { DataSourceType, GraphHistory } from '../../../utils/cons';
 import DataSourceModal from '../../../components/data-source-modal';
 import GroupName from '../../../components/group-name-modal';
 import EdgeClickModal from '../../../components/edge-click-modal';
@@ -46,44 +46,10 @@ import {
   getTargetNodeAndPort,
   getSourceNodeAndPort,
   getId,
+  strMapToObj,
 } from '../../../utils/graph-tools-func';
+import { ColumnType, MenuInfo, SubGraphCells } from '../../../types';
 
-export interface columnType {
-  name: string;
-  outName: string;
-  desc: string;
-  type: string;
-}
-interface ReadConfigData {
-  currentCell: Cell;
-  currentPort: string;
-  id?: string;
-}
-enum DataSourceType {
-  Mysql = 'Mysql',
-}
-type SubGraphCells = {
-  [oldCellId: string]: Cell;
-};
-type MenuInfo = {
-  x: number;
-  y: number;
-  node: Node;
-  showStencilMenu: boolean;
-};
-export interface ParametersData {
-  isOutputs: boolean;
-  parametersConfig: columnType[];
-  readConfigData: ReadConfigData;
-}
-
-function strMapToObj(strMap: Map<string, columnType[]>) {
-  let obj = {};
-  for (let [key, value] of strMap) {
-    obj[key] = value;
-  }
-  return obj;
-}
 export const warningTip = (code: number, msg: string) => {
   if (code === 1) {
     message.error(msg);
@@ -128,7 +94,7 @@ const LeftEditor = memo(() => {
     previewInfo,
     dataSourceInfo,
     edgeClickInfo,
-  }: { tabs: GroupTabItem[]; [key: string]: any } = useAppSelector((state) => ({
+  }: { tabs: GroupTabItem[];[key: string]: any } = useAppSelector((state) => ({
     flowData: state.home.flowData,
     operatorParameters: state.home.operatorParameters,
     jsonEditor: state.home.editor,
@@ -283,7 +249,7 @@ const LeftEditor = memo(() => {
 
           //获取source的columns
           if (!sourceNode?.getData()) return;
-          let parametersConfig: columnType[];
+          let parametersConfig: ColumnType[];
           if (sourceNode.shape === CustomShape.DUPLICATE_OPERATOR) {
             //修改（如果是DuplicateOperator则需要从输入节点的config里读取 ）
             //修改（如果是DuplicateOperator则需要从节点的输入连线的config里读取 ）
@@ -307,7 +273,7 @@ const LeftEditor = memo(() => {
           }
           if (!parametersConfig) return;
 
-          let configMap: Map<string, columnType[]> = new Map();
+          let configMap: Map<string, ColumnType[]> = new Map();
           //转换为config设置到当前节点的node-data里
           if (sourceNode && sourcePortId && targetNode && targetPortId) {
             const id = getId(sourceNode, sourcePortId, targetNode, targetPortId);
@@ -405,7 +371,7 @@ const LeftEditor = memo(() => {
                 message.warning('请设置输入参数配置!');
                 return;
               }
-              let parametersConfig: columnType[] = parametersByOutPortConfig[id];
+              let parametersConfig: ColumnType[] = parametersByOutPortConfig[id];
               // 给每个连接桩赋初始值
               let newConfigObj = {};
               newConfigObj[id] = parametersConfig;
@@ -419,7 +385,7 @@ const LeftEditor = memo(() => {
       }
       //  else {
       //   //非连线下直接添加新的config
-      //   let configMap: Map<string, columnType[]> = new Map();
+      //   let configMap: Map<string, ColumnType[]> = new Map();
       //   configMap.set(value.portName, []);
       //   let newConfigObj = strMapToObj(configMap)
       //   setConfigToNode(node, newConfigObj)
@@ -483,7 +449,6 @@ const LeftEditor = memo(() => {
         dispatch(initFlowDataAction());
       });
     } else if (type === 'CHANGE') {
-      window.mynode = node;
       changeCustomGroupInfo(
         `/api/zdpx/customer/oldName/${node.prop().name}/newName/${groupName}`,
       ).then((res) => {
@@ -501,7 +466,7 @@ const LeftEditor = memo(() => {
   const handlePreviewCancel = () => {
     dispatch(changePreviewInfo({ node: null, values: '', isShow: false }));
   };
-  const handlePreviewSubmit = () => {};
+  const handlePreviewSubmit = () => { };
   const handleDataSourceSubmit = (datas: any) => {
     const { tableItem, value: data, type, tableName } = datas;
     //将数据源配置到config
@@ -612,7 +577,6 @@ const LeftEditor = memo(() => {
         dispatch,
         jsonEditor,
       );
-      window.graph = graphRef.current;
       initMenu(graphRef.current, setShowMenuInfo, changeNode, changePosition);
 
       if (stencilRef.current) {

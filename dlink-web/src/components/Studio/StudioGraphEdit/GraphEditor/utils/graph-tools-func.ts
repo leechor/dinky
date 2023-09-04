@@ -9,12 +9,8 @@ import { Graph, Edge, Node, Cell } from '@antv/x6';
 import { changeEdgeClickInfo, initGraphAndEditorInfo } from '../store/modules/home';
 import { getFunctionName } from '@/components/Common/crud';
 import store from '../store';
-export interface sourceConfigType {
-  name: string;
-  type: string;
-  desc: string;
-  outName: string;
-}
+import { sourceConfigType } from '../types';
+
 
 //判断是否为数据源类型节点
 export const isSourceDataType = (node: Node) => {

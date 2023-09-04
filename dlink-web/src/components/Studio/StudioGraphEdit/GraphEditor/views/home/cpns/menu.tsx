@@ -19,6 +19,7 @@ import {
   EyeOutlined,
   DatabaseOutlined,
 } from '@ant-design/icons';
+
 import CustomShape, {
   GraphHistory,
   PreNodeInfo,
@@ -28,7 +29,7 @@ import {
   useAppSelector,
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
 import type { Parameter } from '@/components/Studio/StudioGraphEdit/GraphEditor/ts-define/parameter';
-import { formatDate } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/math';
+import { formatDate } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/func-tools';
 import {
   convertAbsoluteToRelativePosition,
   getGraphViewSize,
@@ -41,40 +42,9 @@ import {
 } from '../../../store/modules/home';
 import { getNodePreviewInfo, getDataSourceType } from '@/components/Common/crud';
 import CpnShape from '@/components/Studio/StudioGraphEdit/GraphEditor/components/cpn-shape';
+import { HorizontalAlignState, MenuPropsType, NoteTextColor, OuterEdgeType, VerticalAlignState } from '../../../types';
 
-type MenuPropsType = {
-  top: number;
-  left: number;
-  graph: Graph;
-  node: Node | null;
-  show: boolean;
-  handleShowMenu: (value: boolean) => void;
-};
 
-enum HorizontalAlignState {
-  LEFT = 1,
-  CENTER,
-  RIGHT,
-}
-
-type OuterEdgeType = 'input' | 'output';
-
-enum VerticalAlignState {
-  TOP = 1,
-  CENTER,
-  BOTTOM,
-}
-
-enum NoteTextColor {
-  YELLOW = 1,
-  ORANGE,
-  RED,
-  PURPLE,
-  GREEN,
-  BLUE,
-  GRAY,
-  TRANSPARENT,
-}
 
 const NoteTextColorValue: { [key in NoteTextColor]: string } = {
   [NoteTextColor.YELLOW]: '#fcf987',
@@ -847,9 +817,8 @@ export const CustomMenu: FC<MenuPropsType> = memo(
                         .filter((key) => !isNaN(Number(NoteTextColor[key])))
                         .map((key) => (
                           <div key={key}>
-                            <style>{`.ant-radio > input#radio-text-${key} + span.ant-radio-inner {background-color: ${
-                              NoteTextColorValue[NoteTextColor[key]]
-                            }}`}</style>
+                            <style>{`.ant-radio > input#radio-text-${key} + span.ant-radio-inner {background-color: ${NoteTextColorValue[NoteTextColor[key]]
+                              }}`}</style>
                             <Radio id={`radio-text-${key}`} value={NoteTextColor[key]} />
                           </div>
                         ))}

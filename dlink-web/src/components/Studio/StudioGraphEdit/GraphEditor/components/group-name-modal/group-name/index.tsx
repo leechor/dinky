@@ -20,8 +20,8 @@
 import React from 'react';
 import { FormInstance } from 'antd/es/form/hooks/useForm';
 import { Values } from 'async-validator';
-import { Input, Form, Row, Col } from 'antd';
-import { Cell, Node } from '@antv/x6';
+import { Input, Form } from 'antd';
+import { Node } from '@antv/x6';
 type PortProFormProps = {
   values: Node;
   form: FormInstance<Values>;
@@ -31,7 +31,7 @@ export const FORM_LAYOUT_PUBLIC = {
   wrapperCol: { span: 15 },
 };
 const GroupName: React.FC<PortProFormProps> = (props) => {
-  const { values, form } = props;
+  const { form } = props;
   const vallidateGroupName = (rule: any, val: string, callback: any) => {
     if (val === '') {
       callback('GroupName 不能为空');

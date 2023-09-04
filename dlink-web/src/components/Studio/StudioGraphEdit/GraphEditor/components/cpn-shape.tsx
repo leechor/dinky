@@ -1,9 +1,6 @@
 import { memo } from 'react';
-import CustomSvg, { SvgType } from './custom-svg';
-
-export type NodeType = {
-  node?: any;
-};
+import { SvgType } from '../types';
+import CustomSvg from './custom-svg';
 
 const CpnShape = memo<SvgType>(({ iconPath, styleObj }) => {
   return <CustomSvg iconPath={iconPath} styleObj={styleObj} />;

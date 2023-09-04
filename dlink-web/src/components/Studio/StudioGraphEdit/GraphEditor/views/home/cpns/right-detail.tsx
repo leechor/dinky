@@ -3,11 +3,14 @@ import Editor from './json-editor';
 import styles from './index.less';
 import CpnShape from '../../../components/cpn-shape';
 import { useAppSelector } from '@/components/Studio/StudioGraphEdit/GraphEditor/hooks/redux-hooks';
+
 const RightDetail = memo(() => {
+
   const { currentSelectNode, operatorParameters } = useAppSelector((state) => ({
     currentSelectNode: state.home.currentSelectNode,
     operatorParameters: state.home.operatorParameters,
   }));
+
   const getTitleInfo = () => {
     if (currentSelectNode && currentSelectNode.shape) {
       const found = operatorParameters.find((item: any) => item.code === currentSelectNode.shape);
@@ -18,12 +21,9 @@ const RightDetail = memo(() => {
             <span>{found.name}</span>
           </>
         );
-      } else {
-        return <span>节点信息</span>;
       }
-    } else {
-      return <span>节点信息</span>;
     }
+    return <span>节点信息</span>;
   };
   return (
     <div className={styles['rightDetail']}>

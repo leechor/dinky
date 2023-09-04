@@ -4,9 +4,7 @@ import { useAppDispatch } from '@/components/Studio/StudioGraphEdit/GraphEditor/
 import { initFlowDataAction } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import styles from './index.less';
 
-const FlinkGraphEditor = memo((props) => {
-  //获取数据
-
+const FlinkGraphEditor = memo(() => {
   const dispatch = useAppDispatch();
   dispatch(initFlowDataAction());
   return (

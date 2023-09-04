@@ -100,7 +100,6 @@ const cloneSubCells = (cell: Cell, graph: Graph) => {
           }
         });
         //克隆子图，删除原先子图
-        window.addedGroup = addedGroup;
         const clonedCells = graph.cloneSubGraph([addedGroup], { deep: true });
         Object.values(clonedCells).forEach((cell) => {
           //考虑到组节点父子关系与位置关系，再次进行处理
@@ -131,23 +130,20 @@ const setNodeAndEdgeAttrs = (node: Node, hasInsertsection: boolean, graph: Graph
   const edges = graph.getConnectedEdges(node);
   const lineAttrs = hasInsertsection
     ? {
-      strokeDasharray: 5,
-      style: {
-        animation: 'ant-line 30s infinite linear',
-      },
-      stroke: {
-        type: 'linearGradient',
-        stops: [
-          { offset: '0%', color: '#949494' },
-          { offset: '50%', color: '#b2a2e9' },
-          { offset: '100%', color: '#949494' },
-        ],
-      },
-      strokeWidth: 3,
+      stroke: "#b2a2e9",
+      filter: {
+        name: "outline",
+        args: {
+          width: 2,
+          color: "#ffffff",
+          blur: 5,
+          opacity: 0.8,
+          margin: 0
+        }
+      }
     }
     : {
-      strokeDasharray: null,
-      style: null,
+      filter: null,
       stroke: '#b2a2e9',
       strokeWidth: 2,
       targetMarker: '',
@@ -464,8 +460,6 @@ export const initGraph = (
     if (cell.shape === CustomShape.GROUP_PROCESS) {
       console.log(cell.id, 'groupid');
     }
-
-    window.cell = cell;
   });
 
   graph.on('cell:added', ({ cell }) => {

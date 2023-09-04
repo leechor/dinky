@@ -1,16 +1,6 @@
-import { Graph, Node, Cell } from '@antv/x6';
-interface VerifyOperatorItem {
-  color: string;
-  edge: null | string[];
-  operatorErrorMsg: null | string[];
-  operatorId: string;
-  portInformation: PortInformation | null;
-  sqlErrorMsg: string | null;
-  tableName: string;
-}
-interface PortInformation {
-  [propName: string]: string[];
-}
+import { Graph, Node } from '@antv/x6';
+import { VerifyOperatorItem } from '../types';
+
 export default (verifyDatas: VerifyOperatorItem[], graph: Graph) => {
   graph instanceof Graph && setOriginColor(graph);
   graph instanceof Graph &&
@@ -31,7 +21,6 @@ export default (verifyDatas: VerifyOperatorItem[], graph: Graph) => {
     const cell = graph.getCellById(operatorId);
 
     if (sqlErrorMsg) {
-      // cell.prop("previousNodeColor", cell.getAttrByPath("body/style"))
       //改变节点边框颜色
       cell &&
         cell.attr(
@@ -50,7 +39,6 @@ export default (verifyDatas: VerifyOperatorItem[], graph: Graph) => {
     if (portInformation) {
       //设置连接桩错误颜色
       Object.keys(portInformation).forEach((portInfo) => {
-        // cell.prop("previousPortColor", (cell as Node).getPortProp(portInfo, 'attrs/path'));
         cell &&
           (cell as Node).setPortProp(portInfo, 'attrs/path', {
             fill: color,

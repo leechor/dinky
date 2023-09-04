@@ -21,9 +21,6 @@ export const convertAbsoluteToRelativePosition = (
     y: source.y - target.position().y,
   };
 };
-const convertAbsoluteToRelativePositionNode = (source: Node, target: Node) => {
-  return convertAbsoluteToRelativePosition(source.position(), target);
-};
 
 export interface PreNodeRect {
   x: number;
