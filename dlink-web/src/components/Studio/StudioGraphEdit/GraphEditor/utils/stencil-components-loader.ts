@@ -1,5 +1,5 @@
 import { Stencil } from '@antv/x6-plugin-stencil';
-import { Graph, Node, Cell } from '@antv/x6';
+import { Graph, Node } from '@antv/x6';
 import { Parameter } from '@/components/Studio/StudioGraphEdit/GraphEditor/ts-define/parameter';
 import CustomShape from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons';
 

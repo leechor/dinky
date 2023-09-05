@@ -39,11 +39,15 @@ const AddModalPort: FC<PortAddProps> = memo((props) => {
    * submit form
    */
   const submitForm = async () => {
-    const fieldsValue = await form.validateFields();
-    console.log(fieldsValue);
+    try {
+      const fieldsValue = await form.validateFields();
+      console.log(fieldsValue);
 
-    await handleSubmit({ ...fieldsValue });
-    await handleCancel();
+      await handleSubmit({ ...fieldsValue });
+      await handleCancel();
+    } catch (error) {
+      return
+    }
   };
 
   return (

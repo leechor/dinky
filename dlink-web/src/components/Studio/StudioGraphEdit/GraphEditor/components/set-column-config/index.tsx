@@ -3,6 +3,7 @@ import type { ProColumns } from '@ant-design/pro-components';
 import { EditableProTable, ProCard, ProFormField } from '@ant-design/pro-components';
 import { Button } from 'antd';
 import styles from './index.less';
+import { l } from '@/utils/intl';
 
 type PortProFormProps = {
   dataConfig: originDataType[];
@@ -33,20 +34,20 @@ const SetColumnConfig: React.FC<PortProFormProps> = (props) => {
 
   const columns: ProColumns<originDataType>[] = [
     {
-      title: '字段名称',
+      title: l('graph.edgeclick.field.name'),
       dataIndex: 'name',
-      tooltip: '原始输出配置字段名称',
+      tooltip: l('graph.setcolumn.origin.name'),
     },
     {
-      title: '类型',
+      title: l('graph.edgeclick.type'),
       key: 'type',
       dataIndex: 'type',
-      tooltip: '原始输出配置类型',
+      tooltip: l("graph.setcolumn.origin.type"),
     },
     {
-      title: '注释',
+      title: l('graph.edgeclick.desc'),
       dataIndex: 'desc',
-      tooltip: '原始输出配置注释',
+      tooltip: l("graph.setcolumn.origin.description"),
     },
   ];
 
@@ -70,7 +71,7 @@ const SetColumnConfig: React.FC<PortProFormProps> = (props) => {
           }}
           scroll={{ y: 500 }}
           tableAlertRender={() => {
-            return `已选择 ${mySelectedRowKeys.length} 项`;
+            return l('graph.setcolumn.selected.items', "", { length: mySelectedRowKeys.length });
           }}
           columns={columns}
           rowKey="id"
@@ -85,7 +86,7 @@ const SetColumnConfig: React.FC<PortProFormProps> = (props) => {
                   setColumnOrConfig();
                 }}
               >
-                确定选中
+                {l("graph.setcolumn.confirm.selection")}
               </Button>,
             ];
           }}
@@ -101,7 +102,7 @@ const SetColumnConfig: React.FC<PortProFormProps> = (props) => {
     <>
       <div className={styles['container']}>{renderSourceForm()}</div>
       <div className={styles['footer']}>
-        <ProCard title="原始输出数据展示" headerBordered collapsible defaultCollapsed>
+        <ProCard title={l("graph.setcolumn.origin.output.data.display")} headerBordered collapsible defaultCollapsed>
           <ProFormField
             ignoreFormItem
             fieldProps={{

@@ -1,7 +1,7 @@
 import { Cell, Edge, Graph, Model, Node, Shape } from '@antv/x6';
 import loadPlugin from './plugin';
 import { removeBtnEdgeRegister, removeBtnNodeRegister } from './remove-btn-register';
-import CustomShape, { GraphHistory, PreNodeInfo } from './cons';
+import CustomShape, { GraphHistory, PreNodeInfo, PortType } from './cons';
 import store from '../store';
 import {
   addGraphTabs,
@@ -235,27 +235,8 @@ export const initGraph = (
           attrs: {
             line: {
               stroke: '#b2a2e9',
-              // stroke: {
-              //   type: "linearGradient",
-              //   stops: [
-              //     { offset: "0%", color: "#b2a2e9" },
-              //     { offset: "50%", color: "#8c7ccf" },
-              //     { offset: "100%", color: "#b2a2e9" },
-              //   ]
-              // },
               strokeWidth: 2,
               targetMarker: '',
-              // filter: {
-              //   name: "dropShadow",
-              //   args: {
-              //     color: "#c6b7f1",
-              //     width: 2,
-              //     dx:10,
-              //     dy:10,
-              //     blur: 0,
-              //     opacity: 0.5
-              //   }
-              // }
             },
             outline: {
               stroke: '#effabc',
@@ -264,14 +245,6 @@ export const initGraph = (
               strokeLinejoin: 'round',
             },
           },
-          // tools: {
-          //   name: "vertices",
-          //   args: {
-          //     attrs: {
-          //       fill: "#666"
-          //     }
-          //   }
-          // },
         });
         edge.toFront();
         return edge;
@@ -283,10 +256,10 @@ export const initGraph = (
 
         //输入桩限制 (目标桩是输入桩的话则不能连接)
         const inputsPort = targetMagnet.getAttribute('port-group') ?? '';
-        if (['inputs', 'innerInputs'].includes(inputsPort)) {
+        if ([PortType.INPUTS, PortType.INNER_INPUTS].includes(inputsPort)) {
           //输出桩限制 如果
           const outputsPort = sourceMagnet.getAttribute('port-group') ?? '';
-          return ['outputs', 'innerOutputs'].includes(outputsPort);
+          return [PortType.OUTPUTS, PortType.INNER_OUTPUTS].includes(outputsPort);
         }
         return false;
       },
@@ -380,7 +353,7 @@ export const initGraph = (
       ?.setPortProp(edge.getTargetPortId()!, VISIBILITY_PATH, visibility, { ignored: true });
   }
 
-  graph.on('edge:mouseenter', ({ e, view, edge, cell }) => {
+  graph.on('edge:mouseenter', ({ view, edge }) => {
     // edge.attr(LINE_STOKE_WIDTH, 4);
     showEdgePorts(edge, true);
 
@@ -392,7 +365,15 @@ export const initGraph = (
             distance: view.path.length() / 2,
           },
         },
-        // "vertices",
+        {
+          name: "vertices",
+          args: {
+            attrs: {
+              fill: "#666"
+            }
+          }
+        }
+
       ],
       { ignored: true },
     );
@@ -401,7 +382,7 @@ export const initGraph = (
     if (node.shape === CustomShape.TEXT_NODE) {
     }
   });
-  graph.on('edge:mouseleave', ({ e, view, edge, cell }) => {
+  graph.on('edge:mouseleave', ({ edge }) => {
     // edge.setAttrByPath(LINE_STOKE_WIDTH, 2);
     showEdgePorts(edge, false);
     edge.removeTools({ ignored: true });
@@ -430,7 +411,7 @@ export const initGraph = (
     node.toggleCollapse(node.isCollapsed());
   });
 
-  graph.on('node:change:size', ({ node, options }) => {
+  graph.on('node:change:size', ({ options }) => {
     if (options.skipParentHandler) {
       return;
     }
@@ -464,9 +445,6 @@ export const initGraph = (
 
   graph.on('cell:added', ({ cell }) => {
     //更新表格数据
-    if (cell.shape === 'package') {
-      cell.setZIndex(-1);
-    }
     cloneSubCells(cell, graph);
   });
 
@@ -508,7 +486,7 @@ export const initGraph = (
         children.push(edge);
       });
 
-    const innerInputPorts = groupNode.getPortsByGroup('innerInputs');
+    const innerInputPorts = groupNode.getPortsByGroup(PortType.INNER_INPUTS);
     graph
       ?.getIncomingEdges(groupNode)
       ?.filter((edge) => innerInputPorts.some((port) => edge.getTargetPortId() == port.id))
@@ -564,18 +542,11 @@ export const initGraph = (
     });
   }
 
-  graph.on('node:dblclick', ({ node, e, view }) => {
-    graph.batchUpdate(
-      'dbclick',
-      () => {
-        extendGroupNode(node);
-      },
-      { name: 'xingke' },
-    );
+  graph.on('node:dblclick', ({ node }) => {
+    extendGroupNode(node);
   });
 
   graph.on('edge:dblclick', ({ edge }) => {
-    console.log(edge.id, 'edgeid');
     getSourceTargetByEdge(graph, edge, dispatch);
   });
   graph.on('history:undo', ({ cmds, options }: { cmds: any; options: any }) => {

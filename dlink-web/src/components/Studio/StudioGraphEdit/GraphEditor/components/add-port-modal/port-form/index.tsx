@@ -5,6 +5,7 @@ import { Input, Form, Row, Col, Button } from 'antd';
 import { Node } from '@antv/x6';
 import CustomShape from '../../../utils/cons';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { l } from '@/utils/intl';
 type PortProFormProps = {
   values: Node;
   form: FormInstance<Values>;
@@ -20,13 +21,13 @@ const PortForm: React.FC<PortProFormProps> = (props) => {
   const { values, form } = props;
   const vallidatePortName = (rule: any, val: string, callback: any) => {
     if (val === '') {
-      callback('portName 不能为空');
+      callback(l("graph.portform.portname.cannot.empty"));
     } else {
       const found = values.getPorts().find((item) => item.id === val);
       if (!found) {
         callback();
       } else {
-        callback('portName 不能重复');
+        callback(l("graph.portform.portname.cannot.repeat"));
       }
     }
   };
@@ -42,7 +43,7 @@ const PortForm: React.FC<PortProFormProps> = (props) => {
           name="portName"
           label="portName"
           rules={[
-            { required: true, message: 'portName不能为空' },
+            { required: true, message: l("graph.portform.portname.cannot.empty") },
             {
               validator: (rule, val, callback) => {
                 vallidatePortName(rule, val, callback);

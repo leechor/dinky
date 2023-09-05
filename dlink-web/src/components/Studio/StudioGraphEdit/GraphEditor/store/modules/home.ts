@@ -4,10 +4,11 @@ import { Parameter } from '@/components/Studio/StudioGraphEdit/GraphEditor/ts-de
 import { Edge, Graph, Node } from '@antv/x6';
 import { getOperatorConfigure } from '../../service/request/test';
 import { message } from 'antd';
+import { l } from '@/utils/intl';
 export const initFlowDataAction = createAsyncThunk('fetchData', (payload, store) => {
   getOperatorConfigure().then((res: any) => {
     if (res.status !== 200) {
-      message.error('请求节点参数失败!');
+      message.error(l("graph.module.home.request.failed"));
       return;
     }
     if (res?.data?.datas) {

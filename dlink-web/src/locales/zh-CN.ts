@@ -26,6 +26,7 @@ import settings from './zh-CN/settings';
 import pages from './zh-CN/pages';
 import shortKey from './zh-CN/shortcutKey';
 import chart from './zh-CN/chart';
+import graph from './zh-CN/graph';
 
 export default {
   'navBar.lang': '语言',
@@ -45,4 +46,5 @@ export default {
   ...request,
   ...shortKey,
   ...chart,
+  ...graph,
 };

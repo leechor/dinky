@@ -1,8 +1,9 @@
 import { Stencil } from '@antv/x6-plugin-stencil';
-import { Cell, Graph } from '@antv/x6';
+import { Graph } from '@antv/x6';
 import { Parameter } from '@/components/Studio/StudioGraphEdit/GraphEditor/ts-define/parameter';
 import CustomShape from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons';
-import { getCustomGroupInfo } from '@/components/Common/crud';
+import { l } from '@/utils/intl';
+
 
 export const initStencil = (
   graph: Graph,
@@ -32,7 +33,7 @@ export const initStencil = (
   const otherGroups = [
     {
       name: 'textArea',
-      title: '文本',
+      title: l("graph.stencil.text"),
       collapsable: true,
       collapsed: true,
       layoutOptions: {
@@ -42,7 +43,7 @@ export const initStencil = (
   ];
 
   const stencil = new Stencil({
-    title: '组件信息',
+    title: l("graph.stencil.components.info"),
     target: graph,
     search(cell, keyword) {
       if (cell.shape === CustomShape.GROUP_PROCESS) {
@@ -61,7 +62,7 @@ export const initStencil = (
         return node.clone();
       }
     },
-    placeholder: '查找',
+    placeholder: l("graph.stencil.find"),
     notFoundText: 'Not Found',
     collapsable: true,
     stencilGraphWidth: 180,

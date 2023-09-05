@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Form, Table, Tooltip } from 'antd';
-
 import {
   FormOutlined,
   FileOutlined,
@@ -8,8 +7,10 @@ import {
   QuestionCircleOutlined,
   DeleteOutlined,
 } from '@ant-design/icons';
+
 import { DataSourceType } from '.';
 import { getInputNode, getInputType } from './target-table';
+import { l } from '@/utils/intl';
 
 interface SourceTableProps {
   dataSource: DataSourceType[];
@@ -53,7 +54,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
                   return;
                 }
                 if (!value) {
-                  callback('该字段不能为空');
+                  callback(l("graph.edgeclick.field.cannot.empty"));
                 } else {
                   callback();
                 }
@@ -86,6 +87,7 @@ const SourceTable: React.FC<SourceTableProps> = (props) => {
   const cancel = () => {
     setEditingKey('');
   };
+
   const deleteItem = (record: Partial<DataSourceType> & { id: React.Key }) => {
     const newData = [...data];
     const index = newData.findIndex((item) => record.id === item.id);
@@ -94,10 +96,10 @@ const SourceTable: React.FC<SourceTableProps> = (props) => {
     dataChange(newData);
     setEditingKey('');
   };
+
   const save = async (key: React.Key) => {
     try {
       const row = (await form.validateFields()) as DataSourceType;
-
       const newData = [...data];
       const index = newData.findIndex((item) => key === item.id);
       if (index > -1) {
@@ -124,8 +126,8 @@ const SourceTable: React.FC<SourceTableProps> = (props) => {
     {
       title: () => (
         <span>
-          {'字段名称'}
-          <Tooltip title="映射字段名称">
+          {l("graph.edgeclick.field.name")}
+          <Tooltip title={l("graph.edgeclick.mapping.field.name")}>
             <QuestionCircleOutlined />
           </Tooltip>
         </span>
@@ -137,8 +139,8 @@ const SourceTable: React.FC<SourceTableProps> = (props) => {
     {
       title: () => (
         <span>
-          {'类型'}
-          <Tooltip title="映射类型">
+          {l("graph.edgeclick.type")}
+          <Tooltip title={l('graph.edgeclick.mapping.type')}>
             <QuestionCircleOutlined />
           </Tooltip>
         </span>
@@ -150,8 +152,8 @@ const SourceTable: React.FC<SourceTableProps> = (props) => {
     {
       title: () => (
         <span>
-          {'别名'}
-          <Tooltip title="映射别名">
+          {l("graph.edgeclick.alias")}
+          <Tooltip title={l('graph.edgeclick.mapping.alias')}>
             <QuestionCircleOutlined />
           </Tooltip>
         </span>
@@ -163,8 +165,8 @@ const SourceTable: React.FC<SourceTableProps> = (props) => {
     {
       title: () => (
         <span>
-          {'注释'}
-          <Tooltip title="映射注释">
+          {l('graph.edgeclick.desc')}
+          <Tooltip title={l("graph.edgeclick.mapping.desc")}>
             <QuestionCircleOutlined />
           </Tooltip>
         </span>
@@ -174,7 +176,7 @@ const SourceTable: React.FC<SourceTableProps> = (props) => {
       editable,
     },
     {
-      title: '操作',
+      title: l("graph.edgeclick.operation"),
       width: '15%',
       dataIndex: 'operation',
       render: (_: any, record: DataSourceType) => {
@@ -239,9 +241,11 @@ const SourceTable: React.FC<SourceTableProps> = (props) => {
       }),
     };
   });
+
   useEffect(() => {
     setData(props.dataSource);
   }, [props.dataSource]);
+
   return (
     <>
       <Form form={form} component={false}>

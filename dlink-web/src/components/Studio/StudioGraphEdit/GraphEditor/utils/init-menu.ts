@@ -1,8 +1,6 @@
 import { Cell, Graph } from '@antv/x6';
 import { DispatchMenuInfo } from '../types';
 
-
-
 export function initMenu(
   graph: Graph,
   isShowMenuInfo: DispatchMenuInfo,

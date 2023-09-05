@@ -18,6 +18,7 @@ import { changeEdgeClickInfo } from '../../../store/modules/home';
 import { FileAddOutlined } from '@ant-design/icons';
 import CustomShape from '../../../utils/cons';
 import { ProCard, ProFormField } from '@ant-design/pro-components';
+import { l } from '@/utils/intl';
 
 const NORMAL_MODAL_OPTIONS = {
   width: '60%',
@@ -48,11 +49,14 @@ export const FORM_LAYOUT_PUBLIC = {
   wrapperCol: { span: 15 },
 };
 const EdgeClick: React.FC<PortProFormProps> = (props) => {
+
   const { edgeClickInfo } = useAppSelector((state) => ({
     edgeClickInfo: state.home.edgeClickInfo,
   }));
+
   const dispatch = useAppDispatch();
   const { sourceNode, sourcePortId, targetNode, targetPortId, edge } = props.edgeInfo;
+
   const defaultSourceData: DataSourceType[] = getSourceColOrCon(
     sourceNode,
     sourcePortId,
@@ -60,6 +64,7 @@ const EdgeClick: React.FC<PortProFormProps> = (props) => {
     targetPortId,
     edgeClickInfo.data,
   );
+
   const defaultTargetData: DataSourceType[] = getTargetConfig(
     sourceNode,
     sourcePortId,
@@ -82,9 +87,9 @@ const EdgeClick: React.FC<PortProFormProps> = (props) => {
     }
     return dataconfig.length
       ? dataconfig.map((item: any, index: number) => ({
-          ...item,
-          id: (Date.now() + index).toString(),
-        }))
+        ...item,
+        id: (Date.now() + index).toString(),
+      }))
       : [];
   };
   const dataConfig: originDataType[] = getDataConfig();
@@ -95,6 +100,7 @@ const EdgeClick: React.FC<PortProFormProps> = (props) => {
   const handleSourceDataChange = (newData: DataSourceType[]) => {
     // //设置column/config
     setSourceColumnOrConfig(sourceNode, sourcePortId, targetNode, targetPortId, newData);
+
     dispatch(
       changeEdgeClickInfo({
         isShowedgeClickModal: true,
@@ -102,62 +108,65 @@ const EdgeClick: React.FC<PortProFormProps> = (props) => {
         data: edgeClickInfo.data,
       }),
     );
+
     setDataSource([...newData]);
+
     const data: DataSourceType[] = getTargetConfig(
       sourceNode,
       sourcePortId,
       targetNode,
       targetPortId,
     );
+
     setDataTarget(data);
   };
+
   const handleTargetDataChange = (newData: DataSourceType[]) => {
     setTargetConfig(sourceNode, sourcePortId, targetNode, targetPortId, newData);
-    // setSourceColumnOrConfig(sourceNode, sourcePortId, targetNode, targetPortId, newData)
-    // setDataSource([...newData])
   };
+
   const handleOriginDataChange = (newData: originDataType[]) => {
-    if (newData.length) {
-      let transData: DataSourceType[] = newData.map((item, index) => ({
-        ...item,
-        outName: '',
-        id: (Date.now() + index).toString(),
-      }));
-      let joinData = [...dataSource, ...transData];
-      setSourceColumnOrConfig(sourceNode, sourcePortId, targetNode, targetPortId, joinData);
-      setDataSource(joinData);
-      dispatch(
-        changeEdgeClickInfo({
-          isShowedgeClickModal: true,
-          edgeInfo: { edge, sourceNode, sourcePortId, targetNode, targetPortId },
-          data: edgeClickInfo.data,
-        }),
-      );
-      const data: DataSourceType[] = getTargetConfig(
-        sourceNode,
-        sourcePortId,
-        targetNode,
-        targetPortId,
-      );
-      setDataTarget(data);
-    }
+    if (!newData.length) return
+    let transData: DataSourceType[] = newData.map((item, index) => ({
+      ...item,
+      outName: '',
+      id: (Date.now() + index).toString(),
+    }));
+    let joinData = [...dataSource, ...transData];
+    setSourceColumnOrConfig(sourceNode, sourcePortId, targetNode, targetPortId, joinData);
+    setDataSource(joinData);
+
+    dispatch(
+      changeEdgeClickInfo({
+        isShowedgeClickModal: true,
+        edgeInfo: { edge, sourceNode, sourcePortId, targetNode, targetPortId },
+        data: edgeClickInfo.data,
+      }),
+    );
+
+    const data: DataSourceType[] = getTargetConfig(
+      sourceNode,
+      sourcePortId,
+      targetNode,
+      targetPortId,
+    );
+
+    setDataTarget(data);
     setIsShowConfig(false);
-    message.success('同步成功');
+    message.success(l("graph.edgeclick.synch.success"))
   };
+
   const setColumnOrConfig = () => {
     setIsShowConfig(true);
   };
+
   useEffect(() => {
     handleSourceDataChange(dataSource);
   }, []);
+
   useEffect(() => {
     handleTargetDataChange(dataTarget);
   }, [dataTarget]);
-
-  /**
-   * construct role form
-   * @constructor
-   */
 
   const renderSourceForm = () => {
     return (
@@ -170,6 +179,7 @@ const EdgeClick: React.FC<PortProFormProps> = (props) => {
       </>
     );
   };
+
   const renderTargetForm = () => {
     return (
       <>
@@ -186,9 +196,9 @@ const EdgeClick: React.FC<PortProFormProps> = (props) => {
       <div className={styles['header']}>
         <div className={styles['head']}>
           <div className={styles['head-mid']}>
-            <Tooltip title="根据元数据配置输出">
+            <Tooltip title={l("graph.edgeclick.config.output.based.metadata")}>
               <Button type="primary" onClick={setColumnOrConfig} icon={<FileAddOutlined />}>
-                配置项
+                {l("graph.edgeclick.config.item")}
               </Button>
             </Tooltip>
           </div>
@@ -196,15 +206,13 @@ const EdgeClick: React.FC<PortProFormProps> = (props) => {
       </div>
       <div className={styles['container']}>
         <div className={styles['left']}>
-          {/* sourceForm */}
           {renderSourceForm()}
         </div>
         <div className={styles['right']}>
-          {/* targetForm */}
           {renderTargetForm()}
         </div>
       </div>
-      <ProCard title="映射数据展示" headerBordered collapsible defaultCollapsed>
+      <ProCard title={l("graph.edgeclick.mapping.data")} headerBordered collapsible defaultCollapsed>
         <ProFormField
           ignoreFormItem
           fieldProps={{
@@ -219,7 +227,7 @@ const EdgeClick: React.FC<PortProFormProps> = (props) => {
       </ProCard>
       <Modal
         {...NORMAL_MODAL_OPTIONS}
-        title={sourceNode && `${sourceNode.shape}输出配置选择`}
+        title={sourceNode && `${sourceNode.shape} ${l("graph.edgeclick.output.config.selection")}`}
         open={isShowConfigModal}
         onCancel={() => handleCancel()}
       >

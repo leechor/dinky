@@ -49,6 +49,7 @@ import {
   strMapToObj,
 } from '../../../utils/graph-tools-func';
 import { ColumnType, MenuInfo, SubGraphCells } from '../../../types';
+import { l } from '@/utils/intl';
 
 export const warningTip = (code: number, msg: string) => {
   if (code === 1) {
@@ -238,81 +239,80 @@ const LeftEditor = memo(() => {
 
     graph.on('edge:connected', ({ isNew, edge, currentCell, currentPort }) => {
       //创建新边
-      if (isNew) {
-        const targetInfo = getTargetNodeAndPort(edge, graph);
-        const sourceInfo = getSourceNodeAndPort(edge, graph);
-        if (typeof targetInfo !== null && typeof sourceInfo !== null) {
-          const targetNode = targetInfo?.targetNode!;
-          const targetPortId = targetInfo?.targetPortId!;
-          const sourceNode = sourceInfo?.sourceNode!;
-          const sourcePortId = sourceInfo?.sourcePortId!;
+      if (!isNew) return
 
-          //获取source的columns
-          if (!sourceNode?.getData()) return;
-          let parametersConfig: ColumnType[];
-          if (sourceNode.shape === CustomShape.DUPLICATE_OPERATOR) {
-            //修改（如果是DuplicateOperator则需要从输入节点的config里读取 ）
-            //修改（如果是DuplicateOperator则需要从节点的输入连线的config里读取 ）
-            const [lastEdge] = graph.getIncomingEdges(sourceNode)!;
-            const lastSourceInfo = getSourceNodeAndPort(lastEdge, graph);
-            const lastTargetInfo = getTargetNodeAndPort(lastEdge, graph);
+      const targetInfo = getTargetNodeAndPort(edge, graph);
+      const sourceInfo = getSourceNodeAndPort(edge, graph);
+      if (typeof targetInfo !== null && typeof sourceInfo !== null) {
+        const targetNode = targetInfo?.targetNode!;
+        const targetPortId = targetInfo?.targetPortId!;
+        const sourceNode = sourceInfo?.sourceNode!;
+        const sourcePortId = sourceInfo?.sourcePortId!;
 
-            const id = getId(
-              lastSourceInfo?.sourceNode!,
-              lastSourceInfo?.sourcePortId!,
-              lastTargetInfo?.targetNode!,
-              lastTargetInfo?.targetPortId!,
-            );
-            parametersConfig = sourceNode?.getData()['config'][0][id!];
+        //获取source的columns
+        if (!sourceNode?.getData()) return;
+        let parametersConfig: ColumnType[];
+        if (sourceNode.shape === CustomShape.DUPLICATE_OPERATOR) {
+          //修改（如果是DuplicateOperator则需要从输入节点的config里读取 ）
+          //修改（如果是DuplicateOperator则需要从节点的输入连线的config里读取 ）
+          const [lastEdge] = graph.getIncomingEdges(sourceNode)!;
+          const lastSourceInfo = getSourceNodeAndPort(lastEdge, graph);
+          const lastTargetInfo = getTargetNodeAndPort(lastEdge, graph);
+
+          const id = getId(
+            lastSourceInfo?.sourceNode!,
+            lastSourceInfo?.sourcePortId!,
+            lastTargetInfo?.targetNode!,
+            lastTargetInfo?.targetPortId!,
+          );
+          parametersConfig = sourceNode?.getData()['config'][0][id!];
+        } else {
+          if (!sourceNode.getData().hasOwnProperty('parameters')) {
+            parametersConfig = [];
           } else {
-            if (!sourceNode.getData().hasOwnProperty('parameters')) {
-              parametersConfig = [];
-            } else {
-              parametersConfig = sourceNode?.getData()?.parameters.output.columns;
-            }
-          }
-          if (!parametersConfig) return;
-
-          let configMap: Map<string, ColumnType[]> = new Map();
-          //转换为config设置到当前节点的node-data里
-          if (sourceNode && sourcePortId && targetNode && targetPortId) {
-            const id = getId(sourceNode, sourcePortId, targetNode, targetPortId);
-            configMap.set(id, parametersConfig);
-            let config = strMapToObj(configMap);
-            let newConfigObj = getNewConfig(targetNode, config);
-            if (targetNode.shape === CustomShape.DUPLICATE_OPERATOR) {
-              //连接的是自定义节点遍历节点config,重新赋值
-              //设置前节点和当前节点连接config
-              let currentNode = edge.getTargetNode();
-              newConfigObj = getNewConfig(targetNode, config);
-              const edges = graph.model.getOutgoingEdges(targetNode);
-              if (edges) {
-                for (let edge of edges) {
-                  let targetNode = edge.getTargetNode();
-                  let targetPortId = edge.getTargetPortId();
-                  let sourcePortId = edge.getSourcePortId();
-                  let id = `${currentNode!.id}&${sourcePortId} ${targetNode!.id}&${targetPortId}`;
-                  newConfigObj[id] = cloneDeep(config);
-                }
-              }
-            }
-            setConfigToNode(null, newConfigObj, targetNode);
-            if (
-              sourceNode.shape === CustomShape.DUPLICATE_OPERATOR ||
-              sourceNode.shape === CustomShape.CUSTOMER_OPERATOR
-            ) {
-              //把input-output config 设置进自定义节点config
-              let oldConfigObj = sourceNode.getData()['config'][0];
-              if (!oldConfigObj) {
-                oldConfigObj = {};
-              }
-              oldConfigObj[id] = parametersConfig;
-              setConfigToNode(null, cloneDeep(oldConfigObj), sourceNode);
-            }
+            parametersConfig = sourceNode?.getData()?.parameters.output.columns;
           }
         }
-        getSourceTargetByEdge(graph, edge, dispatch);
+        if (!parametersConfig) return;
+
+        let configMap: Map<string, ColumnType[]> = new Map();
+        //转换为config设置到当前节点的node-data里
+        if (sourceNode && sourcePortId && targetNode && targetPortId) {
+          const id = getId(sourceNode, sourcePortId, targetNode, targetPortId);
+          configMap.set(id, parametersConfig);
+          let config = strMapToObj(configMap);
+          let newConfigObj = getNewConfig(targetNode, config);
+          if (targetNode.shape === CustomShape.DUPLICATE_OPERATOR) {
+            //连接的是自定义节点遍历节点config,重新赋值
+            //设置前节点和当前节点连接config
+            let currentNode = edge.getTargetNode();
+            newConfigObj = getNewConfig(targetNode, config);
+            const edges = graph.model.getOutgoingEdges(targetNode);
+            edges && edges.forEach(edge => {
+              let targetNode = edge.getTargetNode();
+              let targetPortId = edge.getTargetPortId();
+              let sourcePortId = edge.getSourcePortId();
+              let id = `${currentNode!.id}&${sourcePortId} ${targetNode!.id}&${targetPortId}`;
+              newConfigObj[id] = cloneDeep(config);
+            })
+          }
+          setConfigToNode(null, newConfigObj, targetNode);
+          if (
+            sourceNode.shape === CustomShape.DUPLICATE_OPERATOR ||
+            sourceNode.shape === CustomShape.CUSTOMER_OPERATOR
+          ) {
+            //把input-output config 设置进自定义节点config
+            let oldConfigObj = sourceNode.getData()['config'][0];
+            if (!oldConfigObj) {
+              oldConfigObj = {};
+            }
+            oldConfigObj[id] = parametersConfig;
+            setConfigToNode(null, cloneDeep(oldConfigObj), sourceNode);
+          }
+        }
       }
+      getSourceTargetByEdge(graph, edge, dispatch);
+
     });
   };
   const handleCancelPort = () => {
@@ -368,7 +368,7 @@ const LeftEditor = memo(() => {
             if (targetNode?.getData().config) {
               let parametersByOutPortConfig = targetNode.getData().config[0];
               if (!parametersByOutPortConfig[id]) {
-                message.warning('请设置输入参数配置!');
+                message.warning(l("graph.lefteditor.set.input.data.para.config"));
                 return;
               }
               let parametersConfig: ColumnType[] = parametersByOutPortConfig[id];
@@ -406,7 +406,7 @@ const LeftEditor = memo(() => {
         });
       }
     }
-    message.success('连接桩添加成功！');
+    message.success(l("graph.lefteditor.add.port.success"));
   };
   const handleShowMenu = (value: boolean) => {
     setShowMenuInfo({ ...showMenuInfo, show: value });
@@ -493,7 +493,7 @@ const LeftEditor = memo(() => {
           service: { ...jsonconfig.service, tableName, password, username, url },
         };
         jsonEditor.setValue(newJsonConfig);
-        message.success('配置成功！');
+        message.success(l("graph.lefteditor.config.success"));
         break;
     }
   };
@@ -530,8 +530,7 @@ const LeftEditor = memo(() => {
 
     const otherTopCells =
       graph.getCellById(tabs[clickLayer].groupCellId)?.getChildren() ??
-      graph.getCells().filter((cell) => !cell.parent) ??
-      [];
+      graph.getCells().filter((cell) => !cell.parent) ?? [];
 
     //设置外部元素可选
     graph.setSelectionFilter((cell) => otherTopCells.map((c: Cell) => c.id).includes(cell.id));
@@ -552,9 +551,7 @@ const LeftEditor = memo(() => {
   };
 
   const getSubprocess = () => {
-    if (tabs.length === 0) {
-      return;
-    }
+    if (tabs.length === 0) return;
 
     return tabs.map((tab: GroupTabItem, index) => (
       <Breadcrumb.Item onClick={() => processTabClick(index)} key={index}>
@@ -609,9 +606,7 @@ const LeftEditor = memo(() => {
         graphRef.current.dispose();
         unRegisterShape(operatorParameters);
       }
-      if (timer) {
-        clearTimeout(timer);
-      }
+      timer && clearTimeout(timer)
     };
   }, [dispatch, flowData, operatorParameters]);
 
@@ -643,14 +638,14 @@ const LeftEditor = memo(() => {
         </div>
       </div>
 
-      {addPortInfo.node ? (
+      {addPortInfo.node && (
         <AddModalPort
           onSubmit={(value: any) => handleSubmitPort(value)}
           onCancel={() => handleCancelPort()}
           modalVisible={addPortInfo.isShow}
           values={addPortInfo.node}
         />
-      ) : null}
+      )}
 
       <NodeModalPreview
         onSubmit={() => handlePreviewSubmit()}

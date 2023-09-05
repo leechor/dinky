@@ -10,6 +10,7 @@ import { changeEdgeClickInfo, initGraphAndEditorInfo } from '../store/modules/ho
 import { getFunctionName } from '@/components/Common/crud';
 import store from '../store';
 import { sourceConfigType } from '../types';
+import { l } from '@/utils/intl';
 
 
 //判断是否为数据源类型节点
@@ -33,7 +34,7 @@ export const getSourceTargetByEdge = (graph: Graph, edge: Edge, dispatch: any) =
         !sourceNode.getData().hasOwnProperty('parameters') ||
         !sourceNode.getData().hasOwnProperty('config')
       ) {
-        message.warning('请设置输出原始配置!');
+        message.warning(l("graph.toolsfuc.set.origin.config"));
         return;
       } else {
         let columns = [];
@@ -58,7 +59,7 @@ export const getSourceTargetByEdge = (graph: Graph, edge: Edge, dispatch: any) =
                 }),
               );
             } else {
-              message.error('获取函数别名失败' + res.msg);
+              message.error(l("graph.toolsfuc.get.func.alias.failed", "", { msg: res.msg }));
               data = [];
             }
           });
@@ -73,7 +74,7 @@ export const getSourceTargetByEdge = (graph: Graph, edge: Edge, dispatch: any) =
         }
       }
     } else {
-      message.warning('请设置数据源参数配置!');
+      message.warning(l("graph.toolsfuc.set.origin.data.para.config"));
       return;
     }
   } else {
@@ -192,9 +193,9 @@ export const getTargetConfig = (
         dataTarget = targetNode?.getData()['config'][0][id];
         return dataTarget
           ? dataTarget.map((item, index) => ({
-              ...item,
-              id: (Date.now() + index).toString(),
-            }))
+            ...item,
+            id: (Date.now() + index).toString(),
+          }))
           : [];
       } else {
         return [];

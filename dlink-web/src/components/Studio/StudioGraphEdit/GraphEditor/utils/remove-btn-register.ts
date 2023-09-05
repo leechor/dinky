@@ -1,3 +1,4 @@
+import { l } from '@/utils/intl';
 import { Graph, Cell, Edge } from '@antv/x6';
 import { Modal } from 'antd';
 
@@ -31,32 +32,12 @@ export const removeBtnEdgeRegister = (graph: Graph) => {
     onClick({ cell }: { cell: Edge }) {
       const { confirm } = Modal;
       confirm({
-        title: '确定删除连线？',
-        content: '删除连线，清除节点数据，确定删除？',
+        title: l("graph.removebtn.confirm.delete.edge"),
+        content: l("graph.removebtn.delete.nodeinfo"),
         okType: 'danger',
-        okText: 'Yes',
-        cancelText: 'No',
+        okText: l("graph.removebtn.oktext.yes"),
+        cancelText: l("graph.removebtn.canceltext.no"),
         onOk() {
-          // //清除下游直连node 的config
-          // const sourceNode = cell.getSourceNode();
-          // const sourcePort = cell.getSourcePortId();
-          // const targetNode = cell.getTargetNode();
-          // const targetPort = cell.getTargetPortId();
-          // let id = `${sourceNode?.id}&${sourcePort} ${targetNode?.id}&${targetPort}`
-          // //删除上下游连线相关id的config、
-          // let sourceConfig = sourceNode?.getData()
-          // let targetConfig = targetNode?.getData()
-
-          // if (sourceConfig) {
-          //     if (sourceConfig["config"].length) {
-          //         delete sourceConfig["config"][0][id]
-          //     }
-          // }
-          // if (targetConfig) {
-          //     if (targetConfig["config"].length) {
-          //         delete targetConfig["config"][0][id]
-          //     }
-          // }
           graph.removeEdge(cell);
         },
       });

@@ -1,7 +1,6 @@
 import { Menu } from '@antv/x6-react-components';
-import { FC, memo, useState } from 'react';
+import { memo } from 'react';
 import { message } from 'antd';
-import { Cell, DataUri, Edge, Graph, Node } from '@antv/x6';
 import '@antv/x6-react-components/es/menu/style/index.css';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 
@@ -16,6 +15,7 @@ import {
 } from '../store/modules/home';
 import { deleteCustomGroupInfo } from '@/components/Common/crud';
 import { warningTip } from '../views/home/cpns/left-editor';
+import { l } from '@/utils/intl';
 export const StencilMenu = memo(() => {
   const { stencilMenuInfo } = useAppSelector((state) => ({
     stencilMenuInfo: state.home.stencilMenuInfo,
@@ -46,8 +46,8 @@ export const StencilMenu = memo(() => {
   const blankMenu = () => {
     return (
       <Menu hasIcon={true} onClick={onMenuClick}>
-        <MenuItem name="Change Name" icon={<EditOutlined />} text="Change Name" />
-        <MenuItem name="Delete" icon={<DeleteOutlined />} text="Delete" />
+        <MenuItem name="Change Name" icon={<EditOutlined />} text={l('graph.stencilmenu.change.name')} />
+        <MenuItem name="Delete" icon={<DeleteOutlined />} text={l('graph.stencilmenu.delete')} />
       </Menu>
     );
   };

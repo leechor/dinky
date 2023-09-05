@@ -3,11 +3,14 @@ import { Form, Input, Select, Table, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { DataSourceType } from '.';
 import TextArea from 'antd/lib/input/TextArea';
+import { options } from '../../../utils/cons';
+import { l } from '@/utils/intl';
 
 interface TargetTableProps {
   dataTarget: DataSourceType[];
   dataChange: (newData: DataSourceType[]) => void;
 }
+
 interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
   editing: boolean;
   dataIndex: string;
@@ -17,33 +20,8 @@ interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
   index: number;
   children: React.ReactNode;
 }
-const optionsType = [
-  'CHAR',
-  'VARCHAR',
-  'STRING',
-  'BOOLEAN',
-  'BINARY',
-  'VARBINARY',
-  'BYTES',
-  'DECIMAL',
-  'TINYINT',
-  'SMALLINT',
-  'INT',
-  'BIGINT',
-  'FLOAT',
-  'DOUBLE',
-  'DATE',
-  'TIME',
-  'TIMESTAMP',
-  'TIMESTAMP(3)',
-  'TIMESTAMP_LTZ(3)',
-  'INTERVAL',
-  'ARRAY',
-  'MULTISET',
-  'MAP',
-  'ROW',
-  'RAW',
-].map((type) => ({ label: type, value: type }));
+const optionsType = options.map((type) => ({ label: type, value: type }));
+
 export const getInputNode = (inputType: string) => {
   switch (inputType) {
     case 'select':
@@ -94,19 +72,9 @@ const EditableCell: React.FC<EditableCellProps> = ({
 const TargetTable: React.FC<TargetTableProps> = (props) => {
   const [form] = Form.useForm();
   const [data, setData] = useState([...props.dataTarget]);
-  const dataChange = props.dataChange;
-  const [editingKey, setEditingKey] = useState('');
+  const [editingKey] = useState('');
 
   const isEditing = (record: DataSourceType) => record.id === editingKey;
-
-  // const deleteItem = (record: Partial<DataSourceType> & { id: React.Key }) => {
-  //     const newData = [...data];
-  //     const index = newData.findIndex((item) => record.id === item.id);
-  //     newData.splice(index, 1)
-  //     setData(newData)
-  //     dataChange(newData)
-  //     setEditingKey("");
-  // };
 
   useEffect(() => {
     setData([...props.dataTarget]);
@@ -116,8 +84,8 @@ const TargetTable: React.FC<TargetTableProps> = (props) => {
     {
       title: () => (
         <span>
-          {'实际输出名称'}
-          <Tooltip title="映射后实际输出名称">
+          {l("graph.edgeclick.actual.output.name")}
+          <Tooltip title={l("graph.edgeclick.mapping.actual.output.name")}>
             <QuestionCircleOutlined />
           </Tooltip>
         </span>

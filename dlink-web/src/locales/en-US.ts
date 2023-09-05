@@ -26,6 +26,7 @@ import request from './en-US/request';
 import settings from './en-US/settings';
 import shortKey from './en-US/shortcutKey';
 import chart from './en-US/chart';
+import graph from './en-US/graph';
 
 export default {
   'navBar.lang': 'Languages',
@@ -45,4 +46,5 @@ export default {
   ...request,
   ...shortKey,
   ...chart,
+  ...graph
 };

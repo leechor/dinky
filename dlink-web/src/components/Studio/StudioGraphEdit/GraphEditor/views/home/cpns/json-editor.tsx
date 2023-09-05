@@ -21,7 +21,7 @@ import {
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import { MyMonacoEditor as myMonaco } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/my-monaco-editor';
 import { MyAutoCompleteEditor as myautoinput } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/my-auto-complete-editor';
-import CustomShape, { FunctionType } from '../../../utils/cons';
+import CustomShape, { aceModes, FunctionType } from '../../../utils/cons';
 import {
   getId,
   getSourceNodeAndPort,
@@ -42,58 +42,7 @@ const EditorTip = (title: string) => {
 function preProcessJsonEditor() {
   // register monaco
   JSONEditor.defaults.editors['monaco'] = myMonaco;
-  const aceModes = [
-    'actionscript',
-    'batchfile',
-    'c',
-    'c++',
-    'cpp',
-    'coffee',
-    'csharp',
-    'css',
-    'dart',
-    'django',
-    'ejs',
-    'erlang',
-    'golang',
-    'groovy',
-    'handlebars',
-    'haskell',
-    'haxe',
-    'html',
-    'ini',
-    'jade',
-    'java',
-    'javascript',
-    'json',
-    'less',
-    'lisp',
-    'lua',
-    'makefile',
-    'matlab',
-    'mysql',
-    'objectivec',
-    'pascal',
-    'perl',
-    'pgsql',
-    'php',
-    'python',
-    'r',
-    'ruby',
-    'sass',
-    'scala',
-    'scss',
-    'sh',
-    'smarty',
-    'sql',
-    'sqlserver',
-    'stylus',
-    'svg',
-    'twig',
-    'vbscript',
-    'xml',
-    'yaml',
-  ];
+
   const monaco: any = (schema: any) =>
     schema.type === 'string' && aceModes.includes(schema.format) && 'monaco';
   JSONEditor.defaults.resolvers = [monaco, ...JSONEditor.defaults.resolvers];

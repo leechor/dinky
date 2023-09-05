@@ -21,7 +21,10 @@ export enum HorizontalAlignState {
     RIGHT,
 }
 
-export type OuterEdgeType = 'input' | 'output';
+export enum OuterEdgeType {
+    INPUT = 'input',
+    OUTPUT = "output"
+};
 
 export enum VerticalAlignState {
     TOP = 1,

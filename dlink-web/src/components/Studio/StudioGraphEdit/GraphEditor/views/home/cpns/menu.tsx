@@ -22,6 +22,7 @@ import {
 
 import CustomShape, {
   GraphHistory,
+  PortType,
   PreNodeInfo,
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons';
 import {
@@ -43,6 +44,7 @@ import {
 import { getNodePreviewInfo, getDataSourceType } from '@/components/Common/crud';
 import CpnShape from '@/components/Studio/StudioGraphEdit/GraphEditor/components/cpn-shape';
 import { HorizontalAlignState, MenuPropsType, NoteTextColor, OuterEdgeType, VerticalAlignState } from '../../../types';
+import { l } from '@/utils/intl';
 
 
 
@@ -58,7 +60,7 @@ const NoteTextColorValue: { [key in NoteTextColor]: string } = {
 };
 
 const DuplicateOperatorMenu = () => {
-  return <Menu.Item icon={<EditOutlined />} name="add-port" text="Add Port" key="add-port" />;
+  return <Menu.Item icon={<EditOutlined />} name="add-port" text={l("graph.menu.addport")} key="add-port" />;
 };
 
 function createPackageNode(graph: Graph) {
@@ -410,9 +412,9 @@ export const CustomMenu: FC<MenuPropsType> = memo(
           const targetCell = edge?.getTargetNode();
           const portMetadata = portId && targetCell?.getPort(portId);
           const portGroupType = portMetadata && portMetadata.group;
-          return portGroupType !== 'innerInputs';
+          return portGroupType !== PortType.INNER_INPUTS;
         });
-      addOuterPortAndEdge(selectedIncomingEdge, groupNode, 'input', originJson);
+      addOuterPortAndEdge(selectedIncomingEdge, groupNode, OuterEdgeType.INPUT, originJson);
       removeEdges(selectedIncomingEdge, originJson);
 
       const selectedOutgoingEdge: (Edge | null)[] = selectedNodes
@@ -424,9 +426,9 @@ export const CustomMenu: FC<MenuPropsType> = memo(
           const sourceCell = edge?.getSourceNode();
           const portMetadata = portId && sourceCell?.getPort(portId);
           const portGroupType = portMetadata && portMetadata.group;
-          return portGroupType !== 'innerOutputs';
+          return portGroupType !== PortType.INNER_OUTPUTS;
         });
-      addOuterPortAndEdge(selectedOutgoingEdge, groupNode, 'output', originJson);
+      addOuterPortAndEdge(selectedOutgoingEdge, groupNode, OuterEdgeType.OUTPUT, originJson);
       removeEdges(selectedOutgoingEdge, originJson);
 
       //将隐藏的节点设置为不可选
@@ -529,7 +531,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(
             //添加内部桩和连线
             addInnerPortAndEdge(
               groupNode,
-              'output',
+              OuterEdgeType.OUTPUT,
               `input_${index}`,
               innerTargetCell,
               innerTargetPortId,
@@ -559,7 +561,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(
             );
             addInnerPortAndEdge(
               groupNode,
-              'input',
+              OuterEdgeType.INPUT,
               `${type}_${index}`,
               innerSourceCell,
               innerSourcePortId,
@@ -578,12 +580,12 @@ export const CustomMenu: FC<MenuPropsType> = memo(
       targetPortId: string | undefined,
       originJson: any,
     ) => {
-      if (type === 'output') {
+      if (type === OuterEdgeType.OUTPUT) {
         //添加连接桩
         if (!groupNode.hasPort(`${outPortId}_in`)) {
           groupNode.addPort({
             id: `${outPortId}_in`,
-            group: 'innerOutputs',
+            group: PortType.INNER_OUTPUTS,
             attrs: {
               text: {
                 text: outPortId + '_in',
@@ -605,7 +607,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(
         addInnerEdges(
           groupNode.id,
           `${outPortId}_in`,
-          'output',
+          OuterEdgeType.OUTPUT,
           targetCell!.id,
           targetPortId!,
           originJson,
@@ -615,7 +617,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(
         if (!groupNode.hasPort(`${outPortId}_in`)) {
           groupNode.addPort({
             id: `${outPortId}_in`,
-            group: 'innerInputs',
+            group: PortType.INNER_INPUTS,
             attrs: {
               text: {
                 text: outPortId + '_in',
@@ -637,7 +639,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(
         addInnerEdges(
           groupNode.id,
           `${outPortId}_in`,
-          'input',
+          OuterEdgeType.INPUT,
           targetCell!.id,
           targetPortId!,
           origin,
@@ -663,7 +665,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(
       conSourPortId: string,
       originJson: any,
     ) => {
-      if (type === 'output') {
+      if (type === OuterEdgeType.OUTPUT) {
         graph
           .addEdge(
             {
@@ -764,7 +766,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(
                 key="align"
                 name="align"
                 icon={<AlignCenterOutlined />}
-                text="Text alignment"
+                text={l("graph.menu.text.alignment")}
               >
                 <Radio.Group
                   key="horizontal"
@@ -774,13 +776,13 @@ export const CustomMenu: FC<MenuPropsType> = memo(
                 >
                   <Space key="Space-horizontal" direction="vertical">
                     <Radio key="LEFT" name="horizontal" value={HorizontalAlignState.LEFT}>
-                      Left
+                      {l("graph.menu.text.horizontal.left")}
                     </Radio>
                     <Radio key="CENTER" name="horizontal" value={HorizontalAlignState.CENTER}>
-                      H-Center
+                      {l("graph.menu.text.horizontal.center")}
                     </Radio>
                     <Radio key="RIGHT" name="horizontal" value={HorizontalAlignState.RIGHT}>
-                      Right
+                      {l("graph.menu.text.horizontal.right")}
                     </Radio>
                   </Space>
                 </Radio.Group>
@@ -793,18 +795,18 @@ export const CustomMenu: FC<MenuPropsType> = memo(
                 >
                   <Space direction="vertical" key="Space-vertical">
                     <Radio key="Top" name="vertical" value={VerticalAlignState.TOP}>
-                      Top
+                      {l("graph.menu.text.vertical.top")}
                     </Radio>
                     <Radio key="V-Center" name="vertical" value={VerticalAlignState.CENTER}>
-                      V-Center
+                      {l("graph.menu.text.vertical.center")}
                     </Radio>
                     <Radio key="Bottom" name="vertical" value={VerticalAlignState.BOTTOM}>
-                      Bottom
+                      {l("graph.menu.text.vertical.bottom")}
                     </Radio>
                   </Space>
                 </Radio.Group>
               </SubMenu>
-              <SubMenu key="color" name="color" icon={<BgColorsOutlined />} text="Note Color">
+              <SubMenu key="color" name="color" icon={<BgColorsOutlined />} text={l("graph.menu.note.color")}>
                 <MenuItem>
                   <Radio.Group
                     name="color"
@@ -834,20 +836,20 @@ export const CustomMenu: FC<MenuPropsType> = memo(
               <MenuItem
                 name="createProcess"
                 icon={<GroupOutlined />}
-                text="Move into new subprocess"
+                text={l("graph.menu.createProcess")}
                 key="createProcess"
               />
             </>
           )}
           {node && node?.shape !== CustomShape.GROUP_PROCESS && (
-            <MenuItem name="preview" icon={<EyeOutlined />} text="Node preview" key="preview" />
+            <MenuItem name="preview" icon={<EyeOutlined />} text={l("graph.menu.node.preview")} key="preview" />
           )}
           {node && (
             <MenuItem
               key="customGroup"
               name="customGroup"
               icon={<EyeOutlined />}
-              text="Custom Group"
+              text={l("graph.menu.custom.group")}
             />
           )}
           {node && isDataSource && (
@@ -855,25 +857,25 @@ export const CustomMenu: FC<MenuPropsType> = memo(
               name="setDataSource"
               key="setDataSource"
               icon={<DatabaseOutlined />}
-              text="Select dataSource"
+              text={l("graph.menu.select.dataSource")}
             />
           )}
-          <MenuItem name="undo" key="undo" icon={<UndoOutlined />} hotkey="Cmd+Z" text="Undo" />
-          <MenuItem name="redo" icon={<RedoOutlined />} hotkey="Cmd+Shift+Z" text="Redo" />
-          <MenuItem name="import" icon={<UploadOutlined />} key="import" text="Import" />
+          <MenuItem name="undo" key="undo" icon={<UndoOutlined />} hotkey="Cmd+Z" text={l("graph.menu.undo")} />
+          <MenuItem name="redo" icon={<RedoOutlined />} hotkey="Cmd+Shift+Z" text={l("graph.menu.redo")} />
+          <MenuItem name="import" icon={<UploadOutlined />} key="import" text={l("graph.menu.import")} />
           {!node && (
-            <SubMenu key="Export" text="Export" icon={<ExportOutlined />}>
-              <MenuItem key="save-PNG" name="save-PNG" text="Save As PNG" />
-              <MenuItem key="save-SVG" name="save-SVG" text="Save As SVG" />
-              <MenuItem key="save-JPEG" name="save-JPEG" text="Save As JPEG" />
-              <MenuItem key="save-JSON" name="save-JSON" text="Save As JSON" />
+            <SubMenu key="Export" text={l("graph.menu.export")} icon={<ExportOutlined />}>
+              <MenuItem key="save-PNG" name="save-PNG" text={l("graph.menu.export.png")} />
+              <MenuItem key="save-SVG" name="save-SVG" text={l("graph.menu.export.svg")} />
+              <MenuItem key="save-JPEG" name="save-JPEG" text={l("graph.menu.export.jpeg")} />
+              <MenuItem key="save-JSON" name="save-JSON" text={l("graph.menu.export.json")} />
             </SubMenu>
           )}
 
           <Divider />
 
-          <MenuItem key="cut" icon={<ScissorOutlined />} name="cut" hotkey="Cmd+X" text="Cut" />
-          <MenuItem key="copy" icon={<CopyOutlined />} name="copy" hotkey="Cmd+C" text="Copy" />
+          <MenuItem key="cut" icon={<ScissorOutlined />} name="cut" hotkey="Cmd+X" text={l("graph.menu.cut")} />
+          <MenuItem key="copy" icon={<CopyOutlined />} name="copy" hotkey="Cmd+C" text={l("graph.menu.copy")} />
 
           <MenuItem
             key="paste"
@@ -881,14 +883,14 @@ export const CustomMenu: FC<MenuPropsType> = memo(
             icon={<SnippetsOutlined />}
             hotkey="Cmd+V"
             disabled={isDisablePaste}
-            text="Paste"
+            text={l("graph.menu.paste")}
           />
           <MenuItem
             key="delete"
             name="delete"
             icon={<DeleteOutlined />}
             hotkey="Delete"
-            text="Delete"
+            text={l("graph.menu.delete")}
           />
 
           <Divider />
@@ -897,21 +899,21 @@ export const CustomMenu: FC<MenuPropsType> = memo(
             name="order"
             key="order"
             icon={<CpnShape iconPath="icon-a-ziyuan52-copy" />}
-            text="Change Order"
+            text={l("graph.menu.change.order")}
           >
             <MenuItem
               key="front"
               name="front"
               icon={<CpnShape iconPath="icon-zhiyudingceng" />}
               hotkey="Cmd+Shift+F"
-              text="Bring to Front"
+              text={l("graph.menu.bring.front")}
             />
             <MenuItem
               key="back"
               name="back"
               icon={<CpnShape iconPath="icon-zhiyudiceng" />}
               hotkey="Cmd+Shift+B"
-              text="Bring to Back"
+              text={l("graph.menu.bring.back")}
             />
             <Divider />
             <MenuItem
@@ -919,14 +921,14 @@ export const CustomMenu: FC<MenuPropsType> = memo(
               name="forward"
               icon={<CpnShape iconPath="icon-xiangqianyiceng" />}
               hotkey="Cmd+F"
-              text="Bring Forward"
+              text={l("graph.menu.bring.forward")}
             />
             <MenuItem
               key="backward"
               name="backward"
               icon={<CpnShape iconPath="icon-xianghouyiceng" />}
               hotkey="Cmd+B"
-              text="Bring Backward"
+              text={l("graph.menu.bring.backward")}
             />
           </SubMenu>
         </Menu>

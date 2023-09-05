@@ -9,7 +9,7 @@ const FlinkGraphEditor = memo(() => {
   dispatch(initFlowDataAction());
   return (
     <div className={styles['graph-container']}>
-      <GraphEditor></GraphEditor>
+      <GraphEditor />
     </div>
   );
 });

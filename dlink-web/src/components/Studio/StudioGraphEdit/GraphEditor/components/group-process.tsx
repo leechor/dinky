@@ -1,6 +1,6 @@
-import { Menu, Tooltip } from 'antd';
+import { Tooltip } from 'antd';
 import styles from './index.less';
-import CpnShape, { NodeType } from './cpn-shape';
+import CpnShape from './cpn-shape';
 
 import { useEffect, useRef } from 'react';
 import {
@@ -29,13 +29,13 @@ const GroupProcess = (props: any) => {
             (postionToGroup.isFullScreen
               ? dispatch(changeStencilMenuInfo({ x, y, showStencilMenu: true, node }))
               : dispatch(
-                  changeStencilMenuInfo({
-                    x: x - postionToGroup.x,
-                    y: y - postionToGroup.y,
-                    showStencilMenu: true,
-                    node,
-                  }),
-                ));
+                changeStencilMenuInfo({
+                  x: x - postionToGroup.x,
+                  y: y - postionToGroup.y,
+                  showStencilMenu: true,
+                  node,
+                }),
+              ));
         });
         timerRef.current.push(timer);
       }
@@ -57,9 +57,8 @@ const GroupProcess = (props: any) => {
         </div>
       )}
       <div
-        className={`${
-          isStencil ? 'custom-calcu-node-process-stencil' : ''
-        } custom-calcu-node-process`}
+        className={`${isStencil ? 'custom-calcu-node-process-stencil' : ''
+          } custom-calcu-node-process`}
       >
         {node && isStencil && (
           <Tooltip title={node.prop().name ? node.prop().name : 'subProcess'}>

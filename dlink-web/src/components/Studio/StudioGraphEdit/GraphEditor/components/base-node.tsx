@@ -6,6 +6,7 @@ import { useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks/redux-hooks';
 import { changeStencilMenuInfo } from '../store/modules/home';
 import { NodeType } from '../types';
+import { l } from '@/utils/intl';
 
 const BaseNode = (props: { nodeType: NodeType; iconPath: string; name: string }) => {
   const dispatch = useAppDispatch();
@@ -18,7 +19,7 @@ const BaseNode = (props: { nodeType: NodeType; iconPath: string; name: string })
     name,
   } = props;
 
-  const handleWarning = () => {};
+  const handleWarning = () => { };
   const isShowMenu = node.shape.includes('custom-node') && node.prop().isStencil;
   const eventRef = useRef<any>([]);
   useEffect(() => {
@@ -34,13 +35,13 @@ const BaseNode = (props: { nodeType: NodeType; iconPath: string; name: string })
             (postionToGroup.isFullScreen
               ? dispatch(changeStencilMenuInfo({ x, y, showStencilMenu: isShowMenu, node }))
               : dispatch(
-                  changeStencilMenuInfo({
-                    x: x - postionToGroup.x,
-                    y: y - postionToGroup.y,
-                    showStencilMenu: isShowMenu,
-                    node,
-                  }),
-                ));
+                changeStencilMenuInfo({
+                  x: x - postionToGroup.x,
+                  y: y - postionToGroup.y,
+                  showStencilMenu: isShowMenu,
+                  node,
+                }),
+              ));
         });
         eventRef.current.push(timer);
       }
@@ -61,7 +62,7 @@ const BaseNode = (props: { nodeType: NodeType; iconPath: string; name: string })
           <div className={styles['error-msg']}>
             <div className={styles['error-msg-title']}>
               <CloseOutlined style={{ color: 'red' }} />
-              <span>节点错误：</span>
+              <span>{l("graph.basenode.node.error")}</span>
             </div>
             <div className={styles['error-msg-body']}>{sqlErrorMsg}</div>
           </div>
@@ -70,7 +71,7 @@ const BaseNode = (props: { nodeType: NodeType; iconPath: string; name: string })
           <div className={styles['error-msg']}>
             <div className={styles['error-msg-title']}>
               <CloseOutlined style={{ color: 'red' }} />
-              <span>边错误:</span>
+              <span>{l("graph.basenode.edge.error")}</span>
             </div>
             <div className={styles['error-msg-body']}>
               {edge.map((e: string) => (
@@ -83,7 +84,7 @@ const BaseNode = (props: { nodeType: NodeType; iconPath: string; name: string })
           <div className={styles['error-msg']}>
             <div className={styles['error-msg-title']}>
               <CloseOutlined style={{ color: 'red' }} />
-              <span>链接桩错误:</span>
+              <span>{l("graph.basenode.port.error")}</span>
             </div>
             <div className={styles['error-msg-body']}>
               {portInformation &&

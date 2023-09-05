@@ -22,6 +22,7 @@ import { FormInstance } from 'antd/es/form/hooks/useForm';
 import { Values } from 'async-validator';
 import { Input, Form } from 'antd';
 import { Node } from '@antv/x6';
+import { l } from '@/utils/intl';
 type PortProFormProps = {
   values: Node;
   form: FormInstance<Values>;
@@ -34,7 +35,7 @@ const GroupName: React.FC<PortProFormProps> = (props) => {
   const { form } = props;
   const vallidateGroupName = (rule: any, val: string, callback: any) => {
     if (val === '') {
-      callback('GroupName 不能为空');
+      callback(l("graph.groupname.groupname.cannot.empty"));
     } else {
       callback();
     }
@@ -51,7 +52,7 @@ const GroupName: React.FC<PortProFormProps> = (props) => {
           name="groupName"
           label="groupName"
           rules={[
-            { required: true, message: 'groupName不能为空' },
+            { required: true, message: l("graph.groupname.groupname.cannot.empty") },
             {
               validator: (rule, val, callback) => {
                 vallidateGroupName(rule, val, callback);
