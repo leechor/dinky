@@ -1,3 +1,4 @@
+import { isGroupProcess } from './graph-tools-func';
 import { Graph } from '@antv/x6';
 import { Clipboard } from '@antv/x6-plugin-clipboard';
 import { Selection } from '@antv/x6-plugin-selection';
@@ -126,7 +127,7 @@ export const transform = (graph: Graph) => {
     new Transform({
       resizing: {
         enabled(node) {
-          if (node.shape === CustomShape.GROUP_PROCESS) {
+          if (isGroupProcess(node)) {
             return false;
           } else {
             return true;

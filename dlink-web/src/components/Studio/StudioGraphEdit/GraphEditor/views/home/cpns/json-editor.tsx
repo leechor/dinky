@@ -26,6 +26,8 @@ import {
   getId,
   getSourceNodeAndPort,
   getTargetNodeAndPort,
+  isCustomerOperator,
+  isCustomTextNode,
   setConfigToNode,
 } from '../../../utils/graph-tools-func';
 import { handleMultipleFuction } from '@/components/Common/crud';
@@ -119,8 +121,8 @@ const Editor = memo(() => {
       }
       //解决bug 防止直接将config的值设置
       currentSelectNode.getData()?.parameters && editor.setValue(currentSelectNode.getData().parameters);
-      currentSelectNode.shape === CustomShape.TEXT_NODE && editor.setValue(currentSelectNode.getData());
-      if (currentSelectNode.shape.includes(CustomShape.CUSTOMER_OPERATOR)) {
+      isCustomTextNode(currentSelectNode) && editor.setValue(currentSelectNode.getData());
+      if (isCustomerOperator(currentSelectNode)) {
         editor.watch('root.service', async () => {
           let editorData: any = editor.getValue();
 
@@ -144,10 +146,10 @@ const Editor = memo(() => {
       if (!(currentSelectNode instanceof Node)) {
         return;
       }
-      if (currentSelectNode.shape.includes(CustomShape.CUSTOMER_OPERATOR)) {
+      if (isCustomerOperator(currentSelectNode)) {
         setCustomData();
       }
-      if (currentSelectNode.shape === CustomShape.TEXT_NODE) {
+      if (isCustomTextNode(currentSelectNode)) {
         currentSelectNode.setData(editor.getValue());
         dispatch(changeCurrentSelectNode(currentSelectNode));
         return;

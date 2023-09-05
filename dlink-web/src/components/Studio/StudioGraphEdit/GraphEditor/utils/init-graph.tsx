@@ -1,7 +1,7 @@
 import { Cell, Edge, Graph, Model, Node, Shape } from '@antv/x6';
 import loadPlugin from './plugin';
 import { removeBtnEdgeRegister, removeBtnNodeRegister } from './remove-btn-register';
-import CustomShape, { GraphHistory, PreNodeInfo, PortType } from './cons';
+import CustomShape, { GraphHistory, PreNodeInfo, PortTypeConst } from './cons';
 import store from '../store';
 import {
   addGraphTabs,
@@ -18,7 +18,7 @@ import {
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/graph-helper';
 import { getCustomGroupInfo } from '@/components/Common/crud';
 import { warningTip } from '../views/home/cpns/left-editor';
-import { getSourceTargetByEdge } from './graph-tools-func';
+import { getSourceTargetByEdge, isCustomTextNode, isGroupProcess } from './graph-tools-func';
 
 const setParentAndSelection = (graph: Graph, preGroupNodeId: string, node: Cell) => {
   if (preGroupNodeId) {
@@ -38,7 +38,8 @@ const cloneSubCells = (cell: Cell, graph: Graph) => {
   const tabs = store.getState().home.graphTabs;
   const currentGroupId = tabs[tabs.length - 1];
   let addedCell: Cell[] = [];
-  if (cell.shape !== CustomShape.GROUP_PROCESS && cell.shape.includes('custom-node')) {
+
+  if (!isGroupProcess(cell) && cell.shape.includes('custom-node')) {
     getCustomGroupInfo(`/api/zdpx/customer/${cell.prop().name!}`).then((res) => {
       if (res.code === 0) {
         graph.removeCell(cell);
@@ -63,7 +64,7 @@ const cloneSubCells = (cell: Cell, graph: Graph) => {
   }
 
   if (
-    cell.shape == CustomShape.GROUP_PROCESS &&
+    isGroupProcess(cell) &&
     cell.prop().name &&
     cell.prop().isStencil !== undefined
   ) {
@@ -80,7 +81,7 @@ const cloneSubCells = (cell: Cell, graph: Graph) => {
             addedCells.push(edge);
           } else {
             const node = graph.addNode(c as Node);
-            if (node.shape === CustomShape.GROUP_PROCESS && !node.hasParent()) {
+            if (isGroupProcess(node) && !node.hasParent()) {
               node.prop('name', cell.prop().name!);
               const { x, y } = (cell as Node).position();
               node.setPosition(x, y, { relative: true, deep: true });
@@ -104,7 +105,7 @@ const cloneSubCells = (cell: Cell, graph: Graph) => {
         Object.values(clonedCells).forEach((cell) => {
           //考虑到组节点父子关系与位置关系，再次进行处理
           graph.addCell(cell);
-          if (cell.shape === CustomShape.GROUP_PROCESS && !cell.hasParent()) {
+          if (isGroupProcess(cell) && !cell.hasParent()) {
             //将新增组节点设置为当前组节点的子节点
             setParentAndSelection(graph, currentGroupId.groupCellId, cell);
           }
@@ -115,7 +116,7 @@ const cloneSubCells = (cell: Cell, graph: Graph) => {
     });
   }
 
-  if (cell.shape === CustomShape.TEXT_NODE) {
+  if (isCustomTextNode(cell)) {
     setParentAndSelection(graph, currentGroupId.groupCellId, cell);
   }
 };
@@ -158,7 +159,7 @@ const getOhterTextNode = (node: Node, graph: Graph) => {
   return graph
     .getNodes()
     .filter((n) => n.id !== node.id)
-    .filter((n) => n.shape === CustomShape.TEXT_NODE);
+    .filter((n) => isCustomTextNode(n));
 };
 
 const isNodeIntersect = (node: Node, otherTextNodes: Node[], graph: Graph) => {
@@ -256,10 +257,10 @@ export const initGraph = (
 
         //输入桩限制 (目标桩是输入桩的话则不能连接)
         const inputsPort = targetMagnet.getAttribute('port-group') ?? '';
-        if ([PortType.INPUTS, PortType.INNER_INPUTS].includes(inputsPort)) {
+        if ([PortTypeConst.INPUTS, PortTypeConst.INNER_INPUTS].includes(inputsPort)) {
           //输出桩限制 如果
           const outputsPort = sourceMagnet.getAttribute('port-group') ?? '';
-          return [PortType.OUTPUTS, PortType.INNER_OUTPUTS].includes(outputsPort);
+          return [PortTypeConst.OUTPUTS, PortTypeConst.INNER_OUTPUTS].includes(outputsPort);
         }
         return false;
       },
@@ -379,7 +380,7 @@ export const initGraph = (
     );
   });
   graph.on('node:change', ({ node }: { node: Node }) => {
-    if (node.shape === CustomShape.TEXT_NODE) {
+    if (isCustomTextNode(node)) {
     }
   });
   graph.on('edge:mouseleave', ({ edge }) => {
@@ -391,13 +392,13 @@ export const initGraph = (
   graph.on('node:selected', ({ node }) => {
     //组节点放大后不允许选择
     if (
-      node.shape === CustomShape.GROUP_PROCESS &&
+      isGroupProcess(node) &&
       (node.getSize().height >= graph.getGraphArea().height ||
         node.getSize().width >= graph.getGraphArea().height)
     ) {
       graph.unselect(node);
     } else {
-      if (node.shape == CustomShape.TEXT_NODE) {
+      if (isCustomTextNode(node)) {
       }
       dispatch(changeCurrentSelectNode(node));
       dispatch(changeCurrentSelectNodeName(node.shape));
@@ -438,7 +439,7 @@ export const initGraph = (
     const ports = container.querySelectorAll('.x6-port-body');
     showPortsOrLabels(ports, false);
     //放大节点时不允许选
-    if (cell.shape === CustomShape.GROUP_PROCESS) {
+    if (isGroupProcess(cell)) {
       console.log(cell.id, 'groupid');
     }
   });
@@ -449,7 +450,7 @@ export const initGraph = (
   });
 
   function extendGroupNode(groupNode: Node<Node.Properties>) {
-    if (groupNode.shape !== CustomShape.GROUP_PROCESS) {
+    if (!isGroupProcess(groupNode)) {
       return;
     }
 
@@ -486,7 +487,7 @@ export const initGraph = (
         children.push(edge);
       });
 
-    const innerInputPorts = groupNode.getPortsByGroup(PortType.INNER_INPUTS);
+    const innerInputPorts = groupNode.getPortsByGroup(PortTypeConst.INNER_INPUTS);
     graph
       ?.getIncomingEdges(groupNode)
       ?.filter((edge) => innerInputPorts.some((port) => edge.getTargetPortId() == port.id))
@@ -532,7 +533,7 @@ export const initGraph = (
           localY;
         item.setPosition(x, y);
 
-        if (item.shape === CustomShape.GROUP_PROCESS) {
+        if (isGroupProcess(item)) {
           item.setAttrs({ fo: { visibility: 'visible' } });
         }
       }

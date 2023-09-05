@@ -9,6 +9,8 @@ import {
   getTargetConfig,
   setTargetConfig,
   getId,
+  isDuplicateOperator,
+  isCustomerOperator,
 } from '../../../utils/graph-tools-func';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux-hooks';
 import SetColumnConfig, { originDataType } from '../../set-column-config';
@@ -77,8 +79,8 @@ const EdgeClick: React.FC<PortProFormProps> = (props) => {
   const getDataConfig = () => {
     let dataconfig = [];
     if (
-      sourceNode.shape !== CustomShape.DUPLICATE_OPERATOR &&
-      sourceNode.shape !== CustomShape.CUSTOMER_OPERATOR
+      !isDuplicateOperator(sourceNode) &&
+      !isCustomerOperator(sourceNode)
     ) {
       dataconfig = sourceNode?.getData()?.parameters.output.source;
     } else {
@@ -174,7 +176,7 @@ const EdgeClick: React.FC<PortProFormProps> = (props) => {
         <SourceTable
           dataSource={dataSource}
           dataChange={handleSourceDataChange}
-          editable={sourceNode.shape !== CustomShape.DUPLICATE_OPERATOR}
+          editable={isDuplicateOperator(sourceNode)}
         />
       </>
     );

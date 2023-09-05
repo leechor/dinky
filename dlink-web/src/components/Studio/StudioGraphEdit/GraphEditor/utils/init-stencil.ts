@@ -1,3 +1,4 @@
+import { isGroupProcess } from './graph-tools-func';
 import { Stencil } from '@antv/x6-plugin-stencil';
 import { Graph } from '@antv/x6';
 import { Parameter } from '@/components/Studio/StudioGraphEdit/GraphEditor/ts-define/parameter';
@@ -46,7 +47,7 @@ export const initStencil = (
     title: l("graph.stencil.components.info"),
     target: graph,
     search(cell, keyword) {
-      if (cell.shape === CustomShape.GROUP_PROCESS) {
+      if (isGroupProcess(cell)) {
         return cell.prop().name.indexOf(keyword) !== -1;
       } else {
         return cell.shape.indexOf(keyword) !== -1;

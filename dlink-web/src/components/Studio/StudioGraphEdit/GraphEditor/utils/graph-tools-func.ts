@@ -38,10 +38,7 @@ export const getSourceTargetByEdge = (graph: Graph, edge: Edge, dispatch: any) =
         return;
       } else {
         let columns = [];
-        if (
-          sourceNode.shape === CustomShape.DUPLICATE_OPERATOR ||
-          sourceNode.shape === CustomShape.CUSTOMER_OPERATOR
-        ) {
+        if (isDuplicateOperator(sourceNode) || isCustomerOperator(sourceNode)) {
           columns = sourceNode.getData()['config'][0][id];
         } else {
           columns = sourceNode.getData()?.parameters.output.columns;
@@ -86,7 +83,8 @@ export const getTargetNodeAndPort = (
   graph: Graph,
 ): { targetNode: Node; targetPortId: string } | null => {
   const node = edge.getTargetNode()!;
-  if (node.shape !== CustomShape.GROUP_PROCESS) {
+
+  if (!isGroupProcess(node)) {
     return { targetNode: node, targetPortId: edge.getTargetPortId()! };
   } else {
     const portIdOutter = edge.getTargetPortId();
@@ -118,7 +116,7 @@ export const getSourceNodeAndPort = (
   graph: Graph,
 ): { sourceNode: Node; sourcePortId: string } | null => {
   const node = edge.getSourceNode()!;
-  if (node.shape !== CustomShape.GROUP_PROCESS) {
+  if (!isGroupProcess(node)) {
     return { sourceNode: node, sourcePortId: edge.getSourcePortId()! };
   } else {
     const portIdOutter = edge.getSourcePortId();
@@ -156,8 +154,8 @@ export const getSourceColOrCon = (
   const id = getId(sourceNode, sourcePortId, targetNode, targetPortId);
   let dataSource: DataSourceType[];
   if (
-    sourceNode.shape === CustomShape.DUPLICATE_OPERATOR ||
-    sourceNode.shape === CustomShape.CUSTOMER_OPERATOR
+    isDuplicateOperator(sourceNode) ||
+    isCustomerOperator(sourceNode)
   ) {
     //修改（如果是DuplicateOperator则需要从输入节点的config里读取 ）
     columns = sourceNode?.getData()['config'][0][id];
@@ -276,14 +274,10 @@ export const setSourceColumnOrConfig = (
   const columns = transDataToColumn(data);
   const transColumns = transOutNameToName(columns);
   //修改目标 config
-  // const config = columns.filter(item => item.flag)
   const id = getId(sourceNode, sourcePortId, targetNode, targetPortId);
-  if (sourceNode.shape === CustomShape.DUPLICATE_OPERATOR) {
+  if (isDuplicateOperator(sourceNode)) {
     //修改源 config
     let newConfigObj = {};
-    // for (let key in sourceNode.getData()["config"][0]) {
-    //     newConfigObj[key] = cloneDeep(columns)
-    // }
     for (let key in sourceNode.getData()['config'][0]) {
       if (key !== id) {
         newConfigObj[key] = cloneDeep(sourceNode.getData()['config'][0][key]);
@@ -305,7 +299,7 @@ export const setSourceColumnOrConfig = (
     setConfigToNode(targetNode, newConfigObj);
   }
 
-  if (targetNode.shape === CustomShape.DUPLICATE_OPERATOR) {
+  if (isDuplicateOperator(targetNode)) {
     let newConfigObj: any = {};
     //将下个节点的所有连接装都重置(不影响前节点config保持input-output config不变)
     for (let key in targetNode.getData()['config'][0]) {
@@ -336,7 +330,7 @@ export const setTargetConfig = (
   //修改目标 config
   // const config = columns.filter(item => item.flag)
   const id = getId(sourceNode, sourcePortId, targetNode, targetPortId);
-  if (sourceNode.shape === CustomShape.CUSTOMER_OPERATOR) {
+  if (isCustomerOperator(sourceNode)) {
     //修改自身config中的信息
     let newConfigObj: any = {};
     //将下个节点的所有连接装都重置(不影响前节点config保持input-output config不变)
@@ -349,7 +343,7 @@ export const setTargetConfig = (
     }
     setConfigToNode(sourceNode, newConfigObj);
   }
-  if (targetNode.shape === CustomShape.DUPLICATE_OPERATOR) {
+  if (isDuplicateOperator(targetNode)) {
     let newConfigObj: any = {};
     //将下个节点的所有连接装都重置(不影响前节点config保持input-output config不变)
     for (let key in targetNode.getData()['config'][0]) {
@@ -386,3 +380,9 @@ export const initGraphAndEditor = (dispatch: any, graph: any, editor: any) => {
   }
   dispatch(initGraphAndEditorInfo());
 };
+
+
+export const isCustomTextNode = (cell: Cell) => cell.shape.includes(CustomShape.TEXT_NODE)
+export const isGroupProcess = (cell: Cell) => cell.shape.includes(CustomShape.GROUP_PROCESS)
+export const isDuplicateOperator = (cell: Cell) => cell.shape.includes(CustomShape.DUPLICATE_OPERATOR)
+export const isCustomerOperator = (cell: Cell) => cell.shape.includes(CustomShape.CUSTOMER_OPERATOR)

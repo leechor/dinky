@@ -1,4 +1,4 @@
-import { PortType } from './cons';
+import { PortTypeConst } from './cons';
 import { Graph, Node } from '@antv/x6';
 import { register } from '@antv/x6-react-shape';
 import TextNode from '@/components/Studio/StudioGraphEdit/GraphEditor/components/text-node';
@@ -46,7 +46,7 @@ function registerGroupProgress(ports: Partial<PortManager.Metadata> | PortManage
       ...ports,
       items: [
         {
-          group: PortType.INPUTS,
+          group: PortTypeConst.INPUTS,
           zIndex: 999,
           attrs: {
             text: {
@@ -67,7 +67,7 @@ function registerGroupProgress(ports: Partial<PortManager.Metadata> | PortManage
           id: 'input_0',
         },
         {
-          group: PortType.OUTPUTS,
+          group: PortTypeConst.OUTPUTS,
           zIndex: 999,
           id: 'output_0',
           attrs: {
@@ -88,7 +88,7 @@ function registerGroupProgress(ports: Partial<PortManager.Metadata> | PortManage
           },
         },
         {
-          group: PortType.INNER_OUTPUTS,
+          group: PortTypeConst.INNER_OUTPUTS,
           zIndex: 999,
           attrs: {
             text: {
@@ -112,7 +112,7 @@ function registerGroupProgress(ports: Partial<PortManager.Metadata> | PortManage
           id: 'input_0_in',
         },
         {
-          group: PortType.INNER_INPUTS,
+          group: PortTypeConst.INNER_INPUTS,
           zIndex: 999,
           attrs: {
             text: {

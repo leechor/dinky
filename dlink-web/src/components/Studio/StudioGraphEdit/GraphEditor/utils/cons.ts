@@ -40,11 +40,18 @@ export enum DataSourceType {
   Mysql = 'Mysql',
 }
 
-export const PortType = {
+export const PortTypeConst = {
   INPUTS: "inputs",
   OUTPUTS: "outputs",
   INNER_INPUTS: "innerInputs",
   INNER_OUTPUTS: "innerOutputs",
+}
+
+export enum PortType {
+  INPUTS = "inputs",
+  OUTPUTS = "outputs",
+  INNER_INPUTS = "innerInputs",
+  INNER_OUTPUTS = "innerOutputs",
 }
 
 export const options = [

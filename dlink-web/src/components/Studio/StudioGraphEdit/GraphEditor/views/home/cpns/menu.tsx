@@ -22,7 +22,7 @@ import {
 
 import CustomShape, {
   GraphHistory,
-  PortType,
+  PortTypeConst,
   PreNodeInfo,
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons';
 import {
@@ -45,6 +45,7 @@ import { getNodePreviewInfo, getDataSourceType } from '@/components/Common/crud'
 import CpnShape from '@/components/Studio/StudioGraphEdit/GraphEditor/components/cpn-shape';
 import { HorizontalAlignState, MenuPropsType, NoteTextColor, OuterEdgeType, VerticalAlignState } from '../../../types';
 import { l } from '@/utils/intl';
+import { isCustomerOperator, isCustomTextNode, isDuplicateOperator, isGroupProcess } from '../../../utils/graph-tools-func';
 
 
 
@@ -193,7 +194,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(
       })(horizontalAlign);
       graph
         .getSelectedCells()
-        ?.filter((c) => c.shape == CustomShape.TEXT_NODE)
+        ?.filter((c) => isCustomTextNode(c))
         .forEach((c) => c.setData({ ...c.getData(), horizontalAlign: align }));
       setHorizontalAlign(horizontalAlign);
     };
@@ -212,7 +213,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(
             return 'top';
         }
       })(verticalAlign);
-      const cc = graph.getSelectedCells()?.filter((c) => c.shape == CustomShape.TEXT_NODE);
+      const cc = graph.getSelectedCells()?.filter((c) => isCustomTextNode(c));
       cc.forEach((c) => c.setData({ ...c.getData(), verticalAlign: align }));
       setVerticalAlign(verticalAlign);
     };
@@ -222,7 +223,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(
       const color = noteTextColor
         ? NoteTextColorValue[noteTextColor]
         : NoteTextColorValue[NoteTextColor.TRANSPARENT];
-      const cc = graph.getSelectedCells()?.filter((c) => c.shape == CustomShape.TEXT_NODE);
+      const cc = graph.getSelectedCells()?.filter((c) => isCustomTextNode(c));
       cc.forEach((c) => c.setData({ ...c.getData(), backgroundColor: color }));
       setNoteTextColor(noteTextColor);
     };
@@ -412,7 +413,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(
           const targetCell = edge?.getTargetNode();
           const portMetadata = portId && targetCell?.getPort(portId);
           const portGroupType = portMetadata && portMetadata.group;
-          return portGroupType !== PortType.INNER_INPUTS;
+          return portGroupType !== PortTypeConst.INNER_INPUTS;
         });
       addOuterPortAndEdge(selectedIncomingEdge, groupNode, OuterEdgeType.INPUT, originJson);
       removeEdges(selectedIncomingEdge, originJson);
@@ -426,7 +427,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(
           const sourceCell = edge?.getSourceNode();
           const portMetadata = portId && sourceCell?.getPort(portId);
           const portGroupType = portMetadata && portMetadata.group;
-          return portGroupType !== PortType.INNER_OUTPUTS;
+          return portGroupType !== PortTypeConst.INNER_OUTPUTS;
         });
       addOuterPortAndEdge(selectedOutgoingEdge, groupNode, OuterEdgeType.OUTPUT, originJson);
       removeEdges(selectedOutgoingEdge, originJson);
@@ -585,7 +586,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(
         if (!groupNode.hasPort(`${outPortId}_in`)) {
           groupNode.addPort({
             id: `${outPortId}_in`,
-            group: PortType.INNER_OUTPUTS,
+            group: PortTypeConst.INNER_OUTPUTS,
             attrs: {
               text: {
                 text: outPortId + '_in',
@@ -617,7 +618,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(
         if (!groupNode.hasPort(`${outPortId}_in`)) {
           groupNode.addPort({
             id: `${outPortId}_in`,
-            group: PortType.INNER_INPUTS,
+            group: PortTypeConst.INNER_INPUTS,
             attrs: {
               text: {
                 text: outPortId + '_in',
@@ -756,11 +757,11 @@ export const CustomMenu: FC<MenuPropsType> = memo(
     const blankMenu = () => {
       return (
         <Menu hasIcon={true} onClick={onMenuClick}>
-          {(node?.shape === CustomShape.CUSTOMER_OPERATOR ||
-            node?.shape === CustomShape.DUPLICATE_OPERATOR) &&
+          {((node && isCustomerOperator(node)) ||
+            (node && isDuplicateOperator(node))) &&
             DuplicateOperatorMenu()}
 
-          {node?.shape == CustomShape.TEXT_NODE && (
+          {node && isCustomTextNode(node) && (
             <>
               <SubMenu
                 key="align"
@@ -841,7 +842,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(
               />
             </>
           )}
-          {node && node?.shape !== CustomShape.GROUP_PROCESS && (
+          {node && !isGroupProcess(node) && (
             <MenuItem name="preview" icon={<EyeOutlined />} text={l("graph.menu.node.preview")} key="preview" />
           )}
           {node && (

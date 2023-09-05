@@ -6,6 +6,7 @@ import { Node } from '@antv/x6';
 import CustomShape from '../../../utils/cons';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { l } from '@/utils/intl';
+import { isDuplicateOperator } from '../../../utils/graph-tools-func';
 type PortProFormProps = {
   values: Node;
   form: FormInstance<Values>;
@@ -179,7 +180,7 @@ const PortForm: React.FC<PortProFormProps> = (props) => {
   return (
     <>
       <Form form={form} {...FORM_LAYOUT_PUBLIC_LABEL} preserve={false}>
-        {values.shape === CustomShape.DUPLICATE_OPERATOR
+        {isDuplicateOperator(values)
           ? renderDuplicatePorts()
           : renderCustomerPorts()}
       </Form>
