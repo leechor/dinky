@@ -32,7 +32,7 @@ import {
   removeGraphTabs,
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/store/modules/home';
 import localCache from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/localStorage';
-import CustomShape, { DataSourceType, GraphHistory, PortType } from '../../../utils/cons';
+import { DataSourceType, GraphHistory, OperatorType, PortType } from '../../../utils/cons';
 import DataSourceModal from '../../../components/data-source-modal';
 import GroupName from '../../../components/group-name-modal';
 import EdgeClickModal from '../../../components/edge-click-modal';
@@ -50,6 +50,7 @@ import {
   isGroupProcess,
   isDuplicateOperator,
   isCustomerOperator,
+  getNodeAndPort,
 } from '../../../utils/graph-tools-func';
 import { ColumnType, MenuInfo, SubGraphCells } from '../../../types';
 import { l } from '@/utils/intl';
@@ -246,73 +247,60 @@ const LeftEditor = memo(() => {
 
       const targetInfo = getTargetNodeAndPort(edge, graph);
       const sourceInfo = getSourceNodeAndPort(edge, graph);
-      if (typeof targetInfo !== null && typeof sourceInfo !== null) {
-        const targetNode = targetInfo?.targetNode!;
-        const targetPortId = targetInfo?.targetPortId!;
-        const sourceNode = sourceInfo?.sourceNode!;
-        const sourcePortId = sourceInfo?.sourcePortId!;
+      if (typeof targetInfo === null || typeof sourceInfo === null) {
+        message.warning(l("graph.toolsfuc.sure.connected"));
+        return
+      }
+      const { targetNode, sourceNode, id } = getNodeAndPort(targetInfo!, sourceInfo!)
+      //获取source的columns
+      if (!sourceNode?.getData()) return;
+      let parametersConfig: ColumnType[];
+      if (isDuplicateOperator(sourceNode)) {
+        //修改（如果是DuplicateOperator则需要从输入节点的config里读取 ）
+        //修改（如果是DuplicateOperator则需要从节点的输入连线的config里读取 ）
+        const [lastEdge] = graph.getIncomingEdges(sourceNode)!;
+        const lastSourceInfo = getSourceNodeAndPort(lastEdge, graph);
+        const lastTargetInfo = getTargetNodeAndPort(lastEdge, graph);
 
-        //获取source的columns
-        if (!sourceNode?.getData()) return;
-        let parametersConfig: ColumnType[];
-        if (isDuplicateOperator(sourceNode)) {
-          //修改（如果是DuplicateOperator则需要从输入节点的config里读取 ）
-          //修改（如果是DuplicateOperator则需要从节点的输入连线的config里读取 ）
-          const [lastEdge] = graph.getIncomingEdges(sourceNode)!;
-          const lastSourceInfo = getSourceNodeAndPort(lastEdge, graph);
-          const lastTargetInfo = getTargetNodeAndPort(lastEdge, graph);
+        const { id } = getNodeAndPort(lastTargetInfo!, lastSourceInfo!,);
+        parametersConfig = sourceNode?.getData()['config'][0][id!];
+      } else {
+        parametersConfig = sourceNode.getData().hasOwnProperty('parameters') ?
+          (sourceNode?.getData()?.parameters.output.columns) : []
+      }
+      if (!parametersConfig) return;
 
-          const id = getId(
-            lastSourceInfo?.sourceNode!,
-            lastSourceInfo?.sourcePortId!,
-            lastTargetInfo?.targetNode!,
-            lastTargetInfo?.targetPortId!,
-          );
-          parametersConfig = sourceNode?.getData()['config'][0][id!];
-        } else {
-          if (!sourceNode.getData().hasOwnProperty('parameters')) {
-            parametersConfig = [];
-          } else {
-            parametersConfig = sourceNode?.getData()?.parameters.output.columns;
-          }
+      let configMap: Map<string, ColumnType[]> = new Map();
+      //转换为config设置到当前节点的node-data里
+      configMap.set(id, parametersConfig);
+      let config = strMapToObj(configMap);
+      let newConfigObj = getNewConfig(targetNode, config);
+      if (isDuplicateOperator(targetNode)) {
+        //连接的是自定义节点遍历节点config,重新赋值
+        //设置前节点和当前节点连接config
+        let currentNode = edge.getTargetNode();
+        newConfigObj = getNewConfig(targetNode, config);
+        const edges = graph.model.getOutgoingEdges(targetNode);
+        edges && edges.forEach(edge => {
+          let targetNode = edge.getTargetNode();
+          let targetPortId = edge.getTargetPortId();
+          let sourcePortId = edge.getSourcePortId();
+          let id = `${currentNode!.id}&${sourcePortId} ${targetNode!.id}&${targetPortId}`;
+          newConfigObj[id] = cloneDeep(config);
+        })
+      }
+      setConfigToNode(null, newConfigObj, targetNode);
+      if (
+        isDuplicateOperator(sourceNode) ||
+        isCustomerOperator(sourceNode)
+      ) {
+        //把input-output config 设置进自定义节点config
+        let oldConfigObj = sourceNode.getData()['config'][0];
+        if (!oldConfigObj) {
+          oldConfigObj = {};
         }
-        if (!parametersConfig) return;
-
-        let configMap: Map<string, ColumnType[]> = new Map();
-        //转换为config设置到当前节点的node-data里
-        if (sourceNode && sourcePortId && targetNode && targetPortId) {
-          const id = getId(sourceNode, sourcePortId, targetNode, targetPortId);
-          configMap.set(id, parametersConfig);
-          let config = strMapToObj(configMap);
-          let newConfigObj = getNewConfig(targetNode, config);
-          if (isDuplicateOperator(targetNode)) {
-            //连接的是自定义节点遍历节点config,重新赋值
-            //设置前节点和当前节点连接config
-            let currentNode = edge.getTargetNode();
-            newConfigObj = getNewConfig(targetNode, config);
-            const edges = graph.model.getOutgoingEdges(targetNode);
-            edges && edges.forEach(edge => {
-              let targetNode = edge.getTargetNode();
-              let targetPortId = edge.getTargetPortId();
-              let sourcePortId = edge.getSourcePortId();
-              let id = `${currentNode!.id}&${sourcePortId} ${targetNode!.id}&${targetPortId}`;
-              newConfigObj[id] = cloneDeep(config);
-            })
-          }
-          setConfigToNode(null, newConfigObj, targetNode);
-          if (
-            isDuplicateOperator(sourceNode) ||
-            isCustomerOperator(sourceNode)
-          ) {
-            //把input-output config 设置进自定义节点config
-            let oldConfigObj = sourceNode.getData()['config'][0];
-            if (!oldConfigObj) {
-              oldConfigObj = {};
-            }
-            oldConfigObj[id] = parametersConfig;
-            setConfigToNode(null, cloneDeep(oldConfigObj), sourceNode);
-          }
-        }
+        oldConfigObj[id] = parametersConfig;
+        setConfigToNode(null, cloneDeep(oldConfigObj), sourceNode);
       }
       getSourceTargetByEdge(graph, edge, dispatch);
 
@@ -357,27 +345,23 @@ const LeftEditor = memo(() => {
       edges && edges.forEach((edge) => {
         const targetInfo = getTargetNodeAndPort(edge, graphRef.current!);
         const sourceInfo = getSourceNodeAndPort(edge, graphRef.current!);
-
-        if (typeof targetInfo !== null && typeof sourceInfo !== null) {
-          const targetNode = targetInfo?.targetNode!;
-          const targetPortId = targetInfo?.targetPortId!;
-          const sourceNode = sourceInfo?.sourceNode!;
-          const sourcePortId = sourceInfo?.sourcePortId!;
-          const id = getId(sourceNode, sourcePortId, targetNode, targetPortId);
-
-          //获取最新输0-0连接桩配置
-          if (targetNode?.getData().config) {
-            let parametersByOutPortConfig = targetNode.getData().config[0];
-            if (!parametersByOutPortConfig[id]) {
-              message.warning(l("graph.lefteditor.set.input.data.para.config"));
-              return;
-            }
-            let parametersConfig: ColumnType[] = parametersByOutPortConfig[id];
-            // 给每个连接桩赋初始值
-            let newConfigObj = {};
-            newConfigObj[id] = parametersConfig;
-            setConfigToNode(node, newConfigObj);
+        if (typeof targetInfo === null || typeof sourceInfo === null) {
+          message.warning(l("graph.toolsfuc.sure.connected"));
+          return
+        }
+        const { targetNode, id } = getNodeAndPort(targetInfo!, sourceInfo!)
+        //获取最新输0-0连接桩配置
+        if (targetNode?.getData().config) {
+          let parametersByOutPortConfig = targetNode.getData().config[0];
+          if (!parametersByOutPortConfig[id]) {
+            message.warning(l("graph.lefteditor.set.input.data.para.config"));
+            return;
           }
+          let parametersConfig: ColumnType[] = parametersByOutPortConfig[id];
+          // 给每个连接桩赋初始值
+          let newConfigObj = {};
+          newConfigObj[id] = parametersConfig;
+          setConfigToNode(node, newConfigObj);
         }
       })
 
@@ -404,49 +388,54 @@ const LeftEditor = memo(() => {
   const handleGroupNameSubmit = (value: any) => {
     const { node, type, groupName } = value;
     const graph = graphRef.current!;
-    if (type === 'ADD') {
-      let groupJson: Cell<Cell.Properties>[] = [];
-      if (isGroupProcess(node)) {
-        let subGroupObj: SubGraphCells =
-          node && graph.cloneSubGraph([graph.getCellById(node.id)], { deep: true });
-        subGroupObj &&
-          Object.values(subGroupObj).forEach((cls) => {
-            groupJson.push(cls);
-          });
-      } else {
-        let subGroupObj: SubGraphCells = node && graph.cloneCells([graph.getCellById(node.id)]);
-        subGroupObj &&
-          Object.values(subGroupObj).forEach((cls) => {
-            if (cls.getData().hasOwnProperty('config')) {
-              cls.setData(
-                {
-                  ...(node.getData() ? node.getData() : {}),
-                  config: [],
-                },
-                { overwrite: true },
-              );
-            }
-            groupJson.push(cls);
-          });
-      }
-      saveCustomGroupInfo('/api/zdpx/customer/save', {
-        script: JSON.stringify({ cells: groupJson }),
-        name: groupName,
-        code: node.shape,
-      }).then((res) => {
-        warningTip(res.code, res.msg);
+
+    switch (type) {
+      case OperatorType.ADD:
+        let groupJson: Cell<Cell.Properties>[] = [];
+        if (isGroupProcess(node)) {
+          let subGroupObj: SubGraphCells =
+            node && graph.cloneSubGraph([graph.getCellById(node.id)], { deep: true });
+          subGroupObj &&
+            Object.values(subGroupObj).forEach((cls) => {
+              groupJson.push(cls);
+            });
+        } else {
+          let subGroupObj: SubGraphCells = node && graph.cloneCells([graph.getCellById(node.id)]);
+          subGroupObj &&
+            Object.values(subGroupObj).forEach((cls) => {
+              if (cls.getData().hasOwnProperty('config')) {
+                cls.setData(
+                  {
+                    ...(node.getData() ? node.getData() : {}),
+                    config: [],
+                  },
+                  { overwrite: true },
+                );
+              }
+              groupJson.push(cls);
+            });
+        }
+        saveCustomGroupInfo('/api/zdpx/customer/save', {
+          script: JSON.stringify({ cells: groupJson }),
+          name: groupName,
+          code: node.shape,
+        }).then((res) => {
+          warningTip(res.code, res.msg);
+          dispatch(initFlowDataAction());
+        });
+        break;
+      case OperatorType.CHANGE:
+        changeCustomGroupInfo(
+          `/api/zdpx/customer/oldName/${node.prop().name}/newName/${groupName}`,
+        ).then((res) => {
+          warningTip(res.code, res.msg);
+        });
         dispatch(initFlowDataAction());
-      });
-    } else if (type === 'CHANGE') {
-      changeCustomGroupInfo(
-        `/api/zdpx/customer/oldName/${node.prop().name}/newName/${groupName}`,
-      ).then((res) => {
-        warningTip(res.code, res.msg);
-      });
-      dispatch(initFlowDataAction());
-    } else {
-      node.prop('name', groupName);
+        break;
+      default:
+        node.prop('name', groupName);
     }
+
   };
   const handleGroupNameCancel = () => {
     dispatch(changeGroupNameInfo({ isShowGroupNameModal: false }));
@@ -465,12 +454,8 @@ const LeftEditor = memo(() => {
         const { url, username, password } = tableItem;
         const getType = (str: string) => {
           const lastIndex = str.lastIndexOf('_');
-          if (lastIndex !== -1) {
-            const result = str.substring(lastIndex + 1);
-            return result;
-          } else {
-            return str;
-          }
+          if (lastIndex === -1) return str;
+          return str.substring(lastIndex + 1);
         };
         const columns = data.map((item: any) => ({
           type: getType(item.javaType),

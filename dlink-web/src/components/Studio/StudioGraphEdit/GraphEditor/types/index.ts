@@ -101,6 +101,15 @@ export interface sourceConfigType {
     outName: string;
 }
 
+export interface TargetInfoType {
+    targetNode: Node;
+    targetPortId: string
+}
+export interface SourceInfoType {
+    sourceNode: Node;
+    sourcePortId: string
+}
+
 /*autocomplete-utils.ts*/
 export interface configType {
     flag: boolean;

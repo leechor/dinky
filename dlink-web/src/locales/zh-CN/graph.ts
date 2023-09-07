@@ -86,6 +86,10 @@ export default {
     "graph.menu.bring.forward": "上移一层",
     "graph.menu.bring.backward": "下移一层",
 
+    "graph.menu.import.data.failed": "导入数据失败!",
+    "graph.menu.file.type.json": "文件类型为json",
+    "graph.menu.only.onefile.everytime": "每次只能上传一个文件!",
+
     "graph.rightdetail.node.information": "节点信息",
 
 

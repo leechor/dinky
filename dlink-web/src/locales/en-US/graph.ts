@@ -86,6 +86,10 @@ export default {
     "graph.menu.bring.forward": "Bring Forward",
     "graph.menu.bring.backward": "Bring Backward",
 
+    "graph.menu.import.data.failed": "import data failed!",
+    "graph.menu.file.type.json": "file type must be .json",
+    "graph.menu.only.onefile.everytime": "only  one file can upload everytime !",
+
     "graph.rightdetail.node.information": "node information",
 
 };

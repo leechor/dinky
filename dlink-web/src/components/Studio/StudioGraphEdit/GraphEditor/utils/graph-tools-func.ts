@@ -1,5 +1,6 @@
+
 import { JSONEditor } from '@json-editor/json-editor';
-import CustomShape from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons';
+import CustomShape, { IN } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons';
 import { cloneDeep } from 'lodash';
 
 import { message } from 'antd';
@@ -9,7 +10,7 @@ import { Graph, Edge, Node, Cell } from '@antv/x6';
 import { changeEdgeClickInfo, initGraphAndEditorInfo } from '../store/modules/home';
 import { getFunctionName } from '@/components/Common/crud';
 import store from '../store';
-import { sourceConfigType } from '../types';
+import { sourceConfigType, SourceInfoType, TargetInfoType } from '../types';
 import { l } from '@/utils/intl';
 
 
@@ -23,124 +24,111 @@ export const isSourceDataType = (node: Node) => {
 export const getSourceTargetByEdge = (graph: Graph, edge: Edge, dispatch: any) => {
   const targetInfo = getTargetNodeAndPort(edge, graph);
   const sourceInfo = getSourceNodeAndPort(edge, graph);
-  if (typeof targetInfo !== null && typeof sourceInfo !== null) {
-    const targetNode = targetInfo?.targetNode!;
-    const targetPortId = targetInfo?.targetPortId!;
-    const sourceNode = sourceInfo?.sourceNode!;
-    const sourcePortId = sourceInfo?.sourcePortId!;
-    const id = getId(sourceNode, sourcePortId, targetNode, targetPortId);
-    if (sourceNode.getData() !== undefined) {
-      if (
-        !sourceNode.getData().hasOwnProperty('parameters') ||
-        !sourceNode.getData().hasOwnProperty('config')
-      ) {
-        message.warning(l("graph.toolsfuc.set.origin.config"));
-        return;
-      } else {
-        let columns = [];
-        if (isDuplicateOperator(sourceNode) || isCustomerOperator(sourceNode)) {
-          columns = sourceNode.getData()['config'][0][id];
-        } else {
-          columns = sourceNode.getData()?.parameters.output.columns;
-        }
-        let data: string[] = [];
-        if (columns.length) {
-          getFunctionName('/api/zdpx/getFunction', { columns }).then((res) => {
-            if (res.code === 0) {
-              data = res.datas;
-              dispatch(
-                changeEdgeClickInfo({
-                  isShowedgeClickModal: true,
-                  edgeInfo: { edge, sourceNode, sourcePortId, targetNode, targetPortId },
-                  data: data,
-                }),
-              );
-            } else {
-              message.error(l("graph.toolsfuc.get.func.alias.failed", "", { msg: res.msg }));
-              data = [];
-            }
-          });
-        } else {
-          dispatch(
-            changeEdgeClickInfo({
-              isShowedgeClickModal: true,
-              edgeInfo: { edge, sourceNode, sourcePortId, targetNode, targetPortId },
-              data,
-            }),
-          );
-        }
-      }
-    } else {
-      message.warning(l("graph.toolsfuc.set.origin.data.para.config"));
-      return;
-    }
-  } else {
-    message.warning('请先确定是否连线！');
+  if (typeof targetInfo === null || typeof sourceInfo === null) {
+    message.warning(l("graph.toolsfuc.sure.connected"));
+    return
   }
+  const { targetNode, targetPortId, sourceNode, sourcePortId, id } = getNodeAndPort(targetInfo!, sourceInfo!)
+
+  if (sourceNode.getData() === undefined) {
+    message.warning(l("graph.toolsfuc.set.origin.data.para.config"));
+    return;
+  }
+
+  if (
+    !sourceNode.getData().hasOwnProperty('parameters') ||
+    !sourceNode.getData().hasOwnProperty('config')
+  ) {
+    message.warning(l("graph.toolsfuc.set.origin.config"));
+    return;
+  }
+  let columns = [];
+  if (isDuplicateOperator(sourceNode) || isCustomerOperator(sourceNode)) {
+    columns = sourceNode.getData()['config'][0][id];
+  } else {
+    columns = sourceNode.getData()?.parameters.output.columns;
+  }
+  let data: string[] = [];
+  if (columns.length) {
+    getFunctionName('/api/zdpx/getFunction', { columns }).then((res) => {
+      if (res.code === 0) {
+        data = res.datas;
+        dispatch(
+          changeEdgeClickInfo({
+            isShowedgeClickModal: true,
+            edgeInfo: { edge, sourceNode, sourcePortId, targetNode, targetPortId },
+            data: data,
+          }),
+        );
+      } else {
+        message.error(l("graph.toolsfuc.get.func.alias.failed", "", { msg: res.msg }));
+        data = [];
+      }
+    });
+  } else {
+    dispatch(
+      changeEdgeClickInfo({
+        isShowedgeClickModal: true,
+        edgeInfo: { edge, sourceNode, sourcePortId, targetNode, targetPortId },
+        data,
+      }),
+    );
+  }
+
+
+
 };
 export const getTargetNodeAndPort = (
   edge: Edge,
   graph: Graph,
-): { targetNode: Node; targetPortId: string } | null => {
+): TargetInfoType | null => {
   const node = edge.getTargetNode()!;
 
   if (!isGroupProcess(node)) {
     return { targetNode: node, targetPortId: edge.getTargetPortId()! };
-  } else {
-    const portIdOutter = edge.getTargetPortId();
-    let findEdge: Edge<Edge.Properties>[] | undefined;
-
-    if (!portIdOutter?.includes('_in')) {
-      //从外面连线
-      findEdge = graph.getOutgoingEdges(node)?.filter((edge) => {
-        return edge.getSourcePortId() === `${portIdOutter}_in`;
-      });
-    } else {
-      //从里面连线
-      findEdge = graph.getOutgoingEdges(node)?.filter((edge) => {
-        return (
-          edge.getSourcePortId() === portIdOutter.substring(0, portIdOutter.lastIndexOf('_in'))
-        );
-      });
-    }
-
-    if (findEdge) {
-      return getTargetNodeAndPort(findEdge[0], graph);
-    } else {
-      return null;
-    }
   }
+  const portIdOutter = edge.getTargetPortId();
+  let findEdge: Edge<Edge.Properties>[] | undefined;
+
+  if (!portIdOutter?.includes(IN)) {
+    //从外面连线
+    findEdge = graph.getOutgoingEdges(node)?.filter((edge) => {
+      return edge.getSourcePortId() === `${portIdOutter}${IN}`;
+    });
+  } else {
+    //从里面连线
+    findEdge = graph.getOutgoingEdges(node)?.filter((edge) =>
+      edge.getSourcePortId() === portIdOutter.substring(0, portIdOutter.lastIndexOf(IN))
+    );
+  }
+  if (!findEdge) return null
+  return getTargetNodeAndPort(findEdge[0], graph);
+
 };
 export const getSourceNodeAndPort = (
   edge: Edge,
   graph: Graph,
-): { sourceNode: Node; sourcePortId: string } | null => {
+): SourceInfoType | null => {
   const node = edge.getSourceNode()!;
   if (!isGroupProcess(node)) {
     return { sourceNode: node, sourcePortId: edge.getSourcePortId()! };
-  } else {
-    const portIdOutter = edge.getSourcePortId();
-    let findEdge: Edge<Edge.Properties>[] | undefined;
-    if (!portIdOutter?.includes('_in')) {
-      //从外面连线
-      findEdge = graph.getIncomingEdges(node)?.filter((edge) => {
-        return edge.getTargetPortId() === `${portIdOutter}_in`;
-      });
-    } else {
-      //从里面连线
-      findEdge = graph.getIncomingEdges(node)?.filter((edge) => {
-        return (
-          edge.getTargetPortId() === portIdOutter.substring(0, portIdOutter.lastIndexOf('_in'))
-        );
-      });
-    }
-
-    if (findEdge) {
-      return getSourceNodeAndPort(findEdge[0], graph);
-    } else {
-      return null;
-    }
   }
+  const portIdOutter = edge.getSourcePortId();
+  let findEdge: Edge<Edge.Properties>[] | undefined;
+  if (!portIdOutter?.includes(IN)) {
+    //从外面连线
+    findEdge = graph.getIncomingEdges(node)?.filter((edge) => {
+      return edge.getTargetPortId() === `${portIdOutter}${IN}`;
+    });
+  } else {
+    //从里面连线
+    findEdge = graph.getIncomingEdges(node)?.filter((edge) =>
+      edge.getTargetPortId() === portIdOutter.substring(0, portIdOutter.lastIndexOf(IN))
+    );
+  }
+  if (!findEdge) return null;
+  return getSourceNodeAndPort(findEdge[0], graph);
+
 };
 //获取源column或config
 export const getSourceColOrCon = (
@@ -185,25 +173,19 @@ export const getTargetConfig = (
 ) => {
   const id = getId(sourceNode, sourcePortId, targetNode, targetPortId);
   let dataTarget: DataSourceType[];
-  if (targetNode.getData() !== undefined) {
-    if (targetNode.getData().hasOwnProperty('config')) {
-      if (targetNode.getData()['config'].length) {
-        dataTarget = targetNode?.getData()['config'][0][id];
-        return dataTarget
-          ? dataTarget.map((item, index) => ({
-            ...item,
-            id: (Date.now() + index).toString(),
-          }))
-          : [];
-      } else {
-        return [];
-      }
-    } else {
-      return [];
-    }
-  } else {
-    return [];
-  }
+  if (targetNode.getData() === undefined) return []
+  if (!targetNode.getData().hasOwnProperty('config')) return []
+  if (!targetNode.getData()['config'].length) return []
+  dataTarget = targetNode?.getData()['config'][0][id];
+  return dataTarget
+    ? dataTarget.map((item, index) => ({
+      ...item,
+      id: (Date.now() + index).toString(),
+    }))
+    : [];
+
+
+
 };
 //返回config 中id
 export const getId = (
@@ -364,12 +346,10 @@ export const setTargetConfig = (
   }
 };
 export const transOutNameToName = (originColumn: sourceConfigType[]) => {
-  return originColumn.map((column: sourceConfigType) => {
-    return {
-      ...column,
-      name: column.outName ? column.outName : column.name,
-    };
-  });
+  return originColumn.map((column: sourceConfigType) => ({
+    ...column,
+    name: column.outName ? column.outName : column.name,
+  }));
 };
 export const initGraphAndEditor = (dispatch: any, graph: any, editor: any) => {
   if (editor instanceof JSONEditor<any>) {
@@ -386,3 +366,12 @@ export const isCustomTextNode = (cell: Cell) => cell.shape.includes(CustomShape.
 export const isGroupProcess = (cell: Cell) => cell.shape.includes(CustomShape.GROUP_PROCESS)
 export const isDuplicateOperator = (cell: Cell) => cell.shape.includes(CustomShape.DUPLICATE_OPERATOR)
 export const isCustomerOperator = (cell: Cell) => cell.shape.includes(CustomShape.CUSTOMER_OPERATOR)
+
+export const getNodeAndPort = (targetInfo: TargetInfoType, sourceInfo: SourceInfoType) => {
+  const targetNode = targetInfo.targetNode;
+  const targetPortId = targetInfo.targetPortId;
+  const sourceNode = sourceInfo.sourceNode;
+  const sourcePortId = sourceInfo.sourcePortId;
+  const id = getId(sourceNode, sourcePortId, targetNode, targetPortId);
+  return { targetNode, targetPortId, sourceNode, sourcePortId, id }
+}

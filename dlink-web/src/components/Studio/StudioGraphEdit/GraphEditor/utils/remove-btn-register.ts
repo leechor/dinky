@@ -9,15 +9,13 @@ export const removeBtnNodeRegister = (graph: Graph) => {
     onClick({ cell }: { cell: Cell }) {
       //清除下游直连node 的config
       let outEdges = graph.model.getOutgoingEdges(cell);
-      if (outEdges) {
-        for (let outEdge of outEdges) {
-          let targetNode = outEdge.getTargetNode();
-          targetNode?.setData(
-            { ...(targetNode?.getData() ? targetNode.getData() : {}), config: [] },
-            { overwrite: true },
-          );
-        }
-      }
+      outEdges && outEdges.forEach(outEdge => {
+        let targetNode = outEdge.getTargetNode();
+        targetNode?.setData(
+          { ...(targetNode?.getData() ? targetNode.getData() : {}), config: [] },
+          { overwrite: true },
+        );
+      })
       //清除node所有的边
       graph.model.removeConnectedEdges(cell);
       //删除该节点

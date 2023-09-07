@@ -18,7 +18,6 @@ import SourceTable from './source-table';
 import TargetTable from './target-table';
 import { changeEdgeClickInfo } from '../../../store/modules/home';
 import { FileAddOutlined } from '@ant-design/icons';
-import CustomShape from '../../../utils/cons';
 import { ProCard, ProFormField } from '@ant-design/pro-components';
 import { l } from '@/utils/intl';
 
@@ -176,7 +175,7 @@ const EdgeClick: React.FC<PortProFormProps> = (props) => {
         <SourceTable
           dataSource={dataSource}
           dataChange={handleSourceDataChange}
-          editable={isDuplicateOperator(sourceNode)}
+          editable={!isDuplicateOperator(sourceNode)}
         />
       </>
     );

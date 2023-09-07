@@ -1,6 +1,6 @@
 import { isGroupProcess } from './graph-tools-func';
 import { Cell, Graph, Node } from '@antv/x6';
-import CustomShape, {
+import {
   PreNodeInfo,
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons';
 
@@ -80,7 +80,7 @@ export function shrinkGroupNode(graph: Graph, groupNode: Node) {
         ...cell.size(),
       });
       cell.setPosition(groupNode.position());
-      
+
       if (isGroupProcess(cell)) {
         cell.setAttrs({ fo: { visibility: 'hidden' } });
       }

@@ -8,7 +8,6 @@ import { History } from '@antv/x6-plugin-history';
 import { Scroller } from '@antv/x6-plugin-scroller';
 import { Transform } from '@antv/x6-plugin-transform';
 import { Export } from '@antv/x6-plugin-export';
-import CustomShape from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons';
 
 //复制粘贴
 export const clipboard = (graph: Graph) => {

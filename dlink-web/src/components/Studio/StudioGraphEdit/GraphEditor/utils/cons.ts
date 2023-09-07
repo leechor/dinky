@@ -135,4 +135,11 @@ export const aceModes = [
   'yaml',
 ];
 
+export enum OperatorType {
+  ADD = "ADD",
+  CHANGE = "CHANGE"
+}
+
+export const IN = "_in"
+
 export default CustomShape;

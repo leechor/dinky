@@ -3,7 +3,6 @@ import { FormInstance } from 'antd/es/form/hooks/useForm';
 import { Values } from 'async-validator';
 import { Input, Form, Row, Col, Button } from 'antd';
 import { Node } from '@antv/x6';
-import CustomShape from '../../../utils/cons';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { l } from '@/utils/intl';
 import { isDuplicateOperator } from '../../../utils/graph-tools-func';

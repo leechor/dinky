@@ -22,6 +22,7 @@ import {
 
 import CustomShape, {
   GraphHistory,
+  IN,
   PortTypeConst,
   PreNodeInfo,
 } from '@/components/Studio/StudioGraphEdit/GraphEditor/utils/cons';
@@ -81,6 +82,17 @@ function createPackageNode(graph: Graph) {
     },
   });
   return node;
+}
+
+const attrs = {
+  line: {
+    stroke: '#b2a2e9',
+    strokeWidth: 2,
+    targetMarker: {
+      name: 'classic',
+      size: 10,
+    },
+  },
 }
 
 export const CustomMenu: FC<MenuPropsType> = memo(
@@ -177,6 +189,45 @@ export const CustomMenu: FC<MenuPropsType> = memo(
         c.setZIndex((c.getZIndex() ?? 0) - 1);
       });
     };
+    const saveAsPng = () => {
+      graph.toPNG(
+        (dataUri: string) => {
+          DataUri.downloadDataUri(dataUri, 'chartx.png');
+        },
+        {
+          backgroundColor: 'white',
+          padding: {
+            top: 20,
+            right: 30,
+            bottom: 40,
+            left: 50,
+          },
+          quality: 1,
+        },
+      );
+    }
+
+    const saveAsSvg = () => {
+      graph.toSVG((dataUri: string) => {
+        DataUri.downloadDataUri(DataUri.svgToDataUrl(dataUri), 'chart.svg');
+      });
+    }
+
+    const saveAsJpeg = () => {
+      graph.toJPEG((dataUri: string) => {
+        DataUri.downloadDataUri(dataUri, 'chart.jpeg');
+      });
+    }
+    const saveAsJson = () => {
+      let data = JSON.stringify(graph.toJSON(), null, 4);
+      const blob = new Blob([data], { type: 'text/json' }),
+        e = new MouseEvent('click'),
+        a = document.createElement('a');
+      a.download = `${taskName}_${formatDate(Date.now())}.json`;
+      a.href = window.URL.createObjectURL(blob);
+      a.dataset.downloadurl = ['text/json', a.download, a.href].join(':');
+      a.dispatchEvent(e);
+    }
 
     const horizontalAlignHandler = (e: RadioChangeEvent) => {
       const horizontalAlign = e.target.value as number;
@@ -248,33 +299,13 @@ export const CustomMenu: FC<MenuPropsType> = memo(
           deleteCells();
           break;
         case 'save-PNG':
-          graph.toPNG(
-            (dataUri: string) => {
-              DataUri.downloadDataUri(dataUri, 'chartx.png');
-            },
-            {
-              backgroundColor: 'white',
-              padding: {
-                top: 20,
-                right: 30,
-                bottom: 40,
-                left: 50,
-              },
-              quality: 1,
-            },
-          );
+          saveAsPng()
           break;
         case 'save-SVG':
-          graph.toSVG((dataUri: string) => {
-            // 下载
-            DataUri.downloadDataUri(DataUri.svgToDataUrl(dataUri), 'chart.svg');
-          });
+          saveAsSvg()
           break;
         case 'save-JPEG':
-          graph.toJPEG((dataUri: string) => {
-            // 下载
-            DataUri.downloadDataUri(dataUri, 'chart.jpeg');
-          });
+          saveAsJpeg()
           break;
         case 'copy':
           copy();
@@ -289,14 +320,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(
           setIsDisablePaste(true);
           break;
         case 'save-JSON':
-          let data = JSON.stringify(graph.toJSON(), null, 4);
-          const blob = new Blob([data], { type: 'text/json' }),
-            e = new MouseEvent('click'),
-            a = document.createElement('a');
-          a.download = `${taskName}_${formatDate(Date.now())}.json`;
-          a.href = window.URL.createObjectURL(blob);
-          a.dataset.downloadurl = ['text/json', a.download, a.href].join(':');
-          a.dispatchEvent(e);
+          saveAsJson()
           break;
         case 'add-port':
           dispatch(changeAddPortInfo({ isShow: true, values: '', node }));
@@ -469,13 +493,8 @@ export const CustomMenu: FC<MenuPropsType> = memo(
       originJson: any,
     ) => {
       //将外部节点与组节点连线
-
-      if (!outEdge.length) {
-        //情况1：所选组无连线，默认一个连接装并且无连线
-
-        return;
-      }
-
+      //情况1：所选组无连线，默认一个连接装并且无连线
+      if (!outEdge.length) return;
       //添加外部输入桩
       if (outEdge.length > 0) {
         //根据连线长度，添加n-1个输入桩
@@ -514,16 +533,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(
             const innerTargetPortId = edge?.getTargetPortId();
             graph.addEdge(
               {
-                attrs: {
-                  line: {
-                    stroke: '#b2a2e9',
-                    strokeWidth: 2,
-                    targetMarker: {
-                      name: 'classic',
-                      size: 10,
-                    },
-                  },
-                },
+                attrs,
                 source: { cell: sourceCell!, port: sourcePortId },
                 target: { cell: groupNode!, port: `input_${index}` },
               },
@@ -545,16 +555,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(
             const innerSourcePortId = edge?.getSourcePortId();
             graph.addEdge(
               {
-                attrs: {
-                  line: {
-                    stroke: '#b2a2e9',
-                    strokeWidth: 2,
-                    targetMarker: {
-                      name: 'classic',
-                      size: 10,
-                    },
-                  },
-                },
+                attrs,
                 source: { cell: groupNode!, port: `${type}_${index}` },
                 target: { cell: targetCell!, port: targetPortId },
               },
@@ -583,13 +584,13 @@ export const CustomMenu: FC<MenuPropsType> = memo(
     ) => {
       if (type === OuterEdgeType.OUTPUT) {
         //添加连接桩
-        if (!groupNode.hasPort(`${outPortId}_in`)) {
+        if (!groupNode.hasPort(`${outPortId}${IN}`)) {
           groupNode.addPort({
-            id: `${outPortId}_in`,
+            id: `${outPortId}${IN}`,
             group: PortTypeConst.INNER_OUTPUTS,
             attrs: {
               text: {
-                text: outPortId + '_in',
+                text: outPortId + IN,
                 style: {
                   visibility: 'hidden',
                   fontSize: 10,
@@ -607,7 +608,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(
         }
         addInnerEdges(
           groupNode.id,
-          `${outPortId}_in`,
+          `${outPortId}${IN}`,
           OuterEdgeType.OUTPUT,
           targetCell!.id,
           targetPortId!,
@@ -615,13 +616,13 @@ export const CustomMenu: FC<MenuPropsType> = memo(
         );
       } else {
         //添加连接桩
-        if (!groupNode.hasPort(`${outPortId}_in`)) {
+        if (!groupNode.hasPort(`${outPortId}${IN}`)) {
           groupNode.addPort({
-            id: `${outPortId}_in`,
+            id: `${outPortId}${IN}`,
             group: PortTypeConst.INNER_INPUTS,
             attrs: {
               text: {
-                text: outPortId + '_in',
+                text: outPortId + IN,
                 style: {
                   visibility: 'hidden',
                   fontSize: 10,
@@ -639,7 +640,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(
         }
         addInnerEdges(
           groupNode.id,
-          `${outPortId}_in`,
+          `${outPortId}${IN}`,
           OuterEdgeType.INPUT,
           targetCell!.id,
           targetPortId!,
@@ -648,14 +649,12 @@ export const CustomMenu: FC<MenuPropsType> = memo(
       }
     };
     const removeEdges = (edges: (Edge | null)[], originJson: any) => {
-      if (edges.length) {
-        for (let edge of edges) {
-          graph.removeEdge(edge!, {
-            eventType: GraphHistory.CREATE_PROCESS,
-            graphJson: originJson,
-          });
-        }
-      }
+      edges && edges.forEach(edge => {
+        graph.removeEdge(edge!, {
+          eventType: GraphHistory.CREATE_PROCESS,
+          graphJson: originJson,
+        });
+      })
     };
 
     const addInnerEdges = (
@@ -670,16 +669,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(
         graph
           .addEdge(
             {
-              attrs: {
-                line: {
-                  stroke: '#b2a2e9',
-                  strokeWidth: 2,
-                  targetMarker: {
-                    name: 'classic',
-                    size: 10,
-                  },
-                },
-              },
+              attrs,
               router: 'orth',
               connector: {
                 name: 'rounded',
@@ -694,16 +684,7 @@ export const CustomMenu: FC<MenuPropsType> = memo(
         graph
           .addEdge(
             {
-              attrs: {
-                line: {
-                  stroke: '#b2a2e9',
-                  strokeWidth: 2,
-                  targetMarker: {
-                    name: 'classic',
-                    size: 10,
-                  },
-                },
-              },
+              attrs,
               router: 'orth',
               connector: {
                 name: 'rounded',
@@ -737,15 +718,15 @@ export const CustomMenu: FC<MenuPropsType> = memo(
             try {
               graph.fromJSON(jsonData);
             } catch (error) {
-              message.error('导入数据失败！');
+              message.error(l("graph.menu.import.data.failed"));
             }
           };
           reader.readAsText(selectFile);
         } else {
-          message.warning('文件类型为json');
+          message.warning(l("graph.menu.file.type.json"));
         }
       } else {
-        message.warning('每次只能上传一个文件！');
+        message.warning(l("graph.menu.only.onefile.everytime"));
       }
     };
 

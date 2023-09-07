@@ -1,7 +1,7 @@
 import { Cell, Edge, Graph, Model, Node, Shape } from '@antv/x6';
 import loadPlugin from './plugin';
 import { removeBtnEdgeRegister, removeBtnNodeRegister } from './remove-btn-register';
-import CustomShape, { GraphHistory, PreNodeInfo, PortTypeConst } from './cons';
+import { GraphHistory, PreNodeInfo, PortTypeConst } from './cons';
 import store from '../store';
 import {
   addGraphTabs,
@@ -366,14 +366,14 @@ export const initGraph = (
             distance: view.path.length() / 2,
           },
         },
-        {
-          name: "vertices",
-          args: {
-            attrs: {
-              fill: "#666"
-            }
-          }
-        }
+        // {
+        //   name: "vertices",
+        //   args: {
+        //     attrs: {
+        //       fill: "#666"
+        //     }
+        //   }
+        // }
 
       ],
       { ignored: true },
