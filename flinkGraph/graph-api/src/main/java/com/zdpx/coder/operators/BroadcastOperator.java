@@ -19,11 +19,7 @@
 
 package com.zdpx.coder.operators;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 import javax.lang.model.element.Modifier;
@@ -35,15 +31,11 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.zdpx.coder.graph.DataType;
-import com.zdpx.coder.operator.Column;
-import com.zdpx.coder.operator.OperatorParameterUtils;
+import com.zdpx.coder.operator.*;
 import com.zdpx.coder.Specifications;
 import com.zdpx.coder.code.CodeJavaBuilder;
 import com.zdpx.coder.graph.InputPortObject;
 import com.zdpx.coder.graph.OutputPortObject;
-import com.zdpx.coder.operator.Operator;
-import com.zdpx.coder.operator.OperatorUtil;
-import com.zdpx.coder.operator.TableInfo;
 import com.zdpx.coder.utils.NameHelper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -100,6 +92,14 @@ public class BroadcastOperator extends Operator {
         primaryInput = registerInputObjectPort("primaryInput");
         broadcastInput = registerInputObjectPort("broadcastInput");
         outputPort = registerOutputObjectPort("output_0");
+    }
+
+    @Override
+    public Optional<OperatorFeature> getOperatorFeature() {
+        OperatorFeature operatorFeature = OperatorFeature.builder()
+                .icon("icon-broadcast")
+                .build();
+        return Optional.of(operatorFeature);
     }
 
     @Override

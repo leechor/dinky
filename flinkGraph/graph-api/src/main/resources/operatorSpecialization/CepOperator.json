@@ -1,249 +1,335 @@
 {
-  "title": "CepOperator",
-  "description": "复杂事件处理算子",
-  "type": "object",
-
-          "required": [
-            "partition",
-            "orderBy",
-            "outPutMode",
-            "patterns",
-            "skipStrategy",
-            "columns",
-            "defines"
-          ],
-          "properties": {
-			"tableName": {
-				"type": "string",
-				"title": "tableName",
-				"pattern":"^[A-Za-z0-9_]*$",
-				"description": "表名称，若为空将随机生成"
-			},
-            "partition": {
-              "type": "string",
-			  "pattern":"^[A-Za-z0-9_]*$",
-              "minLength": 1,
-			  "format": "autoinput",
-			    "autoinput": {
-                  "name": "my-autoComplete",
-                  "function": {
-                    "name": "getFieldsByConfig"
-                }
-              },
-              "description": "分组，分配计算节点"
-            },
-            "orderBy": {
-              "type": "string",
-              "minLength": 1,
-			  "pattern":"^[A-Za-z0-9_]*$",
-              "description": "在窗口内，对事件时间进行排序",
-              "format": "autoinput",
-              "autoinput": {
-                  "name": "my-autoComplete",
-                  "function": {
-                    "name": "getFieldsByConfig"
-                }
-              }
-            },
-            "outPutMode": {
-              "type":"string",
-              "enum":["ONE","ALL"],
-              "description": "设置匹配成功后的输出策略"
-            },
-"skipStrategy": {
-        "type": "object",
-        "title": "skipStrategy",
-        "description": "设置匹配成功后的跳转规则",
-        "required": [
-            "strategy"
-        ],
-        "properties": {
-            "strategy": {
-                "type": "string",
-				"description": "跳转策略",
-                "enum":["LAST_ROW","NEXT_ROW","LAST","FIRST"]
-            },
-            "variable": {
-                "type": "integer",
-                "description": "跳过的行数，strategy为‘LAST’或‘FIRST’时需要指定"
-            }
-        }
-},
-            "timeSpan":{
-              "type":"integer",
-			  "minimum":0,
-              "description": "非标准sql , 指定匹配的事件区间"
-            },
-            "timeUnit":{
-              "type":"string",
-              "enum":["SECOND","MINUTE","DAY","MONTH","YEAR"],
-              "description": "非标准sql ,指定时间单位"
-            },
-"patterns": {
-    "type": "array",
-    "minItems": 1,
-    "description": "定义事件",
-    "items": {
-        "type": "object",
-        "title": "patterns",
-        "required": [
-            "variable",
-            "quantifier"
-        ],
-        "properties": {
-            "variable": {
-                "type": "string",
-                "minLength": 1,
-				"pattern":"^[A-Za-z0-9-_]*$",
-                "description": "定义事件名称"
-            },
-            "quantifier": {
-                "type": "string",
-                "minLength": 1,
-                "title": "quantifier",
-                "description": "定义事件匹配规则： * + ? {n} {n,} {n,m} {,m}"
-            }
-        }
-    }
-},
-"columns": {
-    "type": "array",
-    "minItems": 1,
-    "title": "columns",
-    "items": {
-        "type": "object",
-        "title": "columns",
-        "description": " 设置输出字段 ",
-        "required": [
-			"flag"
-        ],
-        "properties": {
-            "outName": {
-                "type": "string",
-				"pattern":"^[A-Za-z0-9_]*$",
-                "title": "outName"
-            },
-			"name": {
-				"type": "string",
-				"title": "name",
-				"description": "字段名称"
-			},
-			"function": {
-			   "title": "function",
-			   "description": "前端传递该结构至后端，后端返回嵌套结果，前端将结果存放在name字段中",
-			   "$ref": "#/function"
-            },
-			"type": {
-				"type": "string",
-				"minLength": 1,
-				"title": "type",
-				"default": "STRING",
-				"enum":["CHAR","VARCHAR","STRING","BOOLEAN","BINARY","VARBINARY","BYTES","DECIMAL","TINYINT","SMALLINT","INT","BIGINT","FLOAT","DOUBLE","DATE","TIME","TIMESTAMP","TIMESTAMP(3)","TIMESTAMP_LTZ(3)","INTERVAL","ARRAY","MULTISET","MAP","ROW","RAW"],
-				"examples": [
-					"STRING",
-					"INT",
-					"TIMESTAMP(3)"
-				]
-			},
-			"flag":{
-				"type": "boolean",
-				"default": true,
-				"title": "checked ?"
-			},
-			"decs":{
-				"type": "string",
-				"description": "备注"
-			}
-        }
-    }
-},
-            "defines": {
-                "type": "array",
-                "minItems": 1,
-                "title": "defines",
-                "items": {
+    "title": "CepOperator",
+    "description": "复杂事件处理算子",
+    "type": "object",
+    "format": "categories",
+	"basicCategoryTitle": "service",
+    "properties": {
+        "service": {
+            "required": [
+                "partition",
+                "orderBy",
+                "outPutMode",
+                "patterns",
+                "skipStrategy",
+                "defines"
+            ],
+            "properties": {
+                "tableName": {
+                    "type": "string",
+                    "title": "tableName",
+                    "pattern": "^[A-Za-z0-9_]*$",
+                    "description": "表名称，若为空将随机生成"
+                },
+                "partition": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9_]*$",
+                    "minLength": 1,
+                    "format": "autoinput",
+                    "autoinput": {
+                        "name": "my-autoComplete",
+                        "function": {
+                            "name": "getFieldsByConfig"
+                        }
+                    },
+                    "description": "分组，分配计算节点"
+                },
+                "orderBy": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "^[A-Za-z0-9_]*$",
+                    "description": "在窗口内，对事件时间进行排序",
+                    "format": "autoinput",
+                    "autoinput": {
+                        "name": "my-autoComplete",
+                        "function": {
+                            "name": "getFieldsByConfig"
+                        }
+                    }
+                },
+                "outPutMode": {
+                    "type": "string",
+                    "enum": [
+                        "ONE",
+                        "ALL"
+                    ],
+                    "description": "设置匹配成功后的输出策略"
+                },
+                "skipStrategy": {
                     "type": "object",
-                    "title": "Schema",
-                    "description": "定义事件的具体含义",
+                    "title": "skipStrategy",
+                    "description": "设置匹配成功后的跳转规则",
                     "required": [
-                        "variable",
-                        "condition"
+                        "strategy"
                     ],
                     "properties": {
-                        "variable": {
+                        "strategy": {
                             "type": "string",
-                            "minLength": 1,
-							"pattern":"^[A-Za-z0-9_]*$",
-                            "description": "事件名称"
+                            "description": "跳转策略",
+                            "enum": [
+                                "LAST_ROW",
+                                "NEXT_ROW",
+                                "LAST",
+                                "FIRST"
+                            ]
                         },
-                        "condition": {
-                            "type": "string",
-                            "minLength": 1,
-                            "description": "事件规则"
+                        "variable": {
+                            "type": "integer",
+                            "description": "跳过的行数，strategy为‘LAST’或‘FIRST’时需要指定"
+                        }
+                    }
+                },
+                "timeSpan": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "非标准sql , 指定匹配的事件区间"
+                },
+                "timeUnit": {
+                    "type": "string",
+                    "enum": [
+                        "SECOND",
+                        "MINUTE",
+                        "DAY",
+                        "MONTH",
+                        "YEAR"
+                    ],
+                    "description": "非标准sql ,指定时间单位"
+                },
+                "patterns": {
+                    "type": "array",
+                    "minItems": 1,
+                    "description": "定义事件",
+                    "items": {
+                        "type": "object",
+                        "title": "patterns",
+                        "required": [
+                            "variable",
+                            "quantifier"
+                        ],
+                        "properties": {
+                            "variable": {
+                                "type": "string",
+                                "minLength": 1,
+                                "pattern": "^[A-Za-z0-9-_]*$",
+                                "description": "定义事件名称"
+                            },
+                            "quantifier": {
+                                "type": "string",
+                                "minLength": 1,
+                                "title": "quantifier",
+                                "description": "定义事件匹配规则： * + ? {n} {n,} {n,m} {,m}"
+                            }
+                        }
+                    }
+                },
+                "defines": {
+                    "type": "array",
+                    "minItems": 1,
+                    "title": "defines",
+                    "items": {
+                        "type": "object",
+                        "title": "Schema",
+                        "description": "定义事件的具体含义",
+                        "required": [
+                            "variable",
+                            "condition"
+                        ],
+                        "properties": {
+                            "variable": {
+                                "type": "string",
+                                "minLength": 1,
+                                "pattern": "^[A-Za-z0-9_]*$",
+                                "description": "事件名称"
+                            },
+                            "condition": {
+                                "type": "string",
+                                "minLength": 1,
+                                "description": "事件规则"
+                            }
                         }
                     }
                 }
             }
-          },
-
-
-	   "function": {
-		   "type": "array",
-			"items": {
-				"type": "object",
-				"title": "_",
-				"properties": {
-					"functionName": {
-						"type": "string",
-						"format": "autoinput",
-						"autoinput": {
-							  "name": "my-autoComplete",
-							  "function": {
-								"name": "getFieldsByFunction"
+        },
+        "output": {
+			"type": "object",
+			"properties": {
+				"columns": {
+					"type": "array",
+					"title": "mapping",
+					"items": {
+						"type": "object",
+						"title": "columns",
+						"properties": {
+							"outName": {
+								"type": "string",
+								"pattern": "^[A-Za-z0-9_]*$",
+								"title": "outName"
+							},
+							"name": {
+								"type": "string",
+								"title": "name",
+								"description": "字段名称"
+							},
+							"function": {
+								"title": "function",
+								"description": "前端传递该结构至后端，后端返回嵌套结果，前端将结果存放在name字段中",
+								"$ref": "#/function"
+							},
+							"type": {
+								"type": "string",
+								"minLength": 1,
+								"title": "type",
+								"default": "STRING",
+								"enum": [
+									"CHAR",
+									"VARCHAR",
+									"STRING",
+									"BOOLEAN",
+									"BINARY",
+									"VARBINARY",
+									"BYTES",
+									"DECIMAL",
+									"TINYINT",
+									"SMALLINT",
+									"INT",
+									"BIGINT",
+									"FLOAT",
+									"DOUBLE",
+									"DATE",
+									"TIME",
+									"TIMESTAMP",
+									"TIMESTAMP(3)",
+									"TIMESTAMP_LTZ(3)",
+									"INTERVAL",
+									"ARRAY",
+									"MULTISET",
+									"MAP",
+									"ROW",
+									"RAW"
+								]
+							},
+							"desc": {
+								"type": "string",
+								"description": "备注"
 							}
-						  },
-						"title": "functionName"
-					},
-					"recursionFunc": {
-					   "title": "function",
-					   "$ref": "#/function"
-					},
-					"recursionName": {
-					   "title": "name",
-					   "$ref": "#/name"
-					}
-				}
-			}
-		},
-		"name": {
-		   "type": "array",
-			"items": {
-				"title": "_",
-				"type": "object",
-				"properties": {
-					"name": {
-						"type": "array",
-						"items": {
-							"title": "_",
-							"format": "autoinput",
-							"autoinput": {
-								  "name": "my-autoComplete",
-								  "function": {
-									"name": "getFieldsByConfig"
-								}
-							  },
-						    "type": "string"
 						}
-					},
-					"recursionFunc": {
-					   "title": "function",
-					   "$ref": "#/function"
-					},
-					"recursionName": {
-					   "title": "name",
-					   "$ref": "#/name"
+					}
+				},
+				"source": {
+					"type": "array",
+					"title": "source",
+					"items": {
+						"type": "object",
+						"title": "schema",
+						"properties": {
+							"name": {
+								"type": "string",
+								"minLength": 1,
+								"pattern": "^[A-Za-z0-9_]*$",
+								"title": "name",
+								"description": "field name"
+							},
+							"type": {
+								"type": "string",
+								"minLength": 1,
+								"title": "type",
+								"default": "STRING",
+								"enum": [
+									"CHAR",
+									"VARCHAR",
+									"STRING",
+									"BOOLEAN",
+									"BINARY",
+									"VARBINARY",
+									"BYTES",
+									"DECIMAL",
+									"TINYINT",
+									"SMALLINT",
+									"INT",
+									"BIGINT",
+									"FLOAT",
+									"DOUBLE",
+									"DATE",
+									"TIME",
+									"TIMESTAMP",
+									"TIMESTAMP(3)",
+									"TIMESTAMP_LTZ(3)",
+									"INTERVAL",
+									"ARRAY",
+									"MULTISET",
+									"MAP",
+									"ROW",
+									"RAW"
+								]
+							},
+							"desc": {
+								"type": "string",
+								"description": "备注"
+							}
+						}
 					}
 				}
 			}
 		}
+    },
+    "function": {
+        "type": "array",
+        "items": {
+            "type": "object",
+            "title": "_",
+            "properties": {
+                "functionName": {
+                    "type": "string",
+                    "format": "autoinput",
+                    "autoinput": {
+                        "name": "my-autoComplete",
+                        "function": {
+                            "name": "getFieldsByFunction"
+                        }
+                    },
+                    "title": "functionName"
+                },
+                "recursionFunc": {
+                    "title": "function",
+                    "$ref": "#/function"
+                },
+                "recursionName": {
+                    "title": "name",
+                    "$ref": "#/name"
+                }
+            }
+        }
+    },
+    "name": {
+        "type": "array",
+        "items": {
+            "title": "_",
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "array",
+                    "items": {
+                        "title": "_",
+                        "format": "autoinput",
+                        "autoinput": {
+                            "name": "my-autoComplete",
+                            "function": {
+                                "name": "getFieldsByConfig"
+                            }
+                        },
+                        "type": "string"
+                    }
+                },
+                "recursionFunc": {
+                    "title": "function",
+                    "$ref": "#/function"
+                },
+                "recursionName": {
+                    "title": "name",
+                    "$ref": "#/name"
+                }
+            }
+        }
+    }
 }

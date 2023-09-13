@@ -21,7 +21,9 @@ package com.zdpx.coder.operators;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
+import com.zdpx.coder.operator.OperatorFeature;
 import com.zdpx.coder.operator.Parameter;
 import com.zdpx.coder.Specifications;
 import com.zdpx.coder.code.CodeJavaBuilder;
@@ -44,6 +46,14 @@ public class TableConvertToDataStreamOperator extends Operator {
         parameters.getParameterList().add(new Parameter(Specifications.TABLE_NAME));
         outputPortObject = registerOutputObjectPort(OUTPUT_0);
         registerInputObjectPort(INPUT_0);
+    }
+
+    @Override
+    public Optional<OperatorFeature> getOperatorFeature() {
+        OperatorFeature operatorFeature = OperatorFeature.builder()
+                .icon("icon-TableConvertToRange-copy")
+                .build();
+        return Optional.of(operatorFeature);
     }
 
     @Override

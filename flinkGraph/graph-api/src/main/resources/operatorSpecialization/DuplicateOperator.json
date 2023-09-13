@@ -1,7 +1,6 @@
 {
-    "type": "object",
+	"type": "object",
 	"description": "数据复制算子，将输入端口的数据赋值为多路输出，不改变其中内容",
-    "title": "DuplicateOperator",
-	"properties": {
-	}
+	"title": "DuplicateOperator",
+	"properties": {}
 }

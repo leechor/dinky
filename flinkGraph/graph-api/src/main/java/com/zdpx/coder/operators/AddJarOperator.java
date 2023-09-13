@@ -3,6 +3,7 @@ package com.zdpx.coder.operators;
 import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.operator.Operator;
 import com.zdpx.coder.Specifications;
+import com.zdpx.coder.operator.OperatorFeature;
 import com.zdpx.coder.utils.TemplateUtils;
 import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 
@@ -10,10 +11,7 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 引入jar或 udf
@@ -29,6 +27,14 @@ public class AddJarOperator extends Operator {
     @Override
     protected void initialize() {
 
+    }
+
+    @Override
+    public Optional<OperatorFeature> getOperatorFeature() {
+        OperatorFeature operatorFeature = OperatorFeature.builder()
+                .icon("icon-addjar")
+                .build();
+        return Optional.of(operatorFeature);
     }
 
     @Override
@@ -57,7 +63,7 @@ public class AddJarOperator extends Operator {
         CheckInformationModel model = new CheckInformationModel();
         model.setOperatorId(map.get(ID).toString());
         model.setColor(GREEN);
-        model.setTableName("ADD JAR");
+        model.setTableName("ADD");
 
         List<String> msg = new ArrayList<>();
 

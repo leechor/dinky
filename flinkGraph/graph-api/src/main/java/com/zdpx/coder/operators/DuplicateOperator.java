@@ -22,10 +22,12 @@ package com.zdpx.coder.operators;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.graph.OutputPortObject;
 import com.zdpx.coder.operator.Operator;
+import com.zdpx.coder.operator.OperatorFeature;
 import com.zdpx.coder.operator.TableInfo;
 
 import static com.zdpx.coder.utils.TableDataStreamConverter.assembleNewTableInfo;
@@ -60,6 +62,14 @@ public class DuplicateOperator extends Operator {
         return getFirstParameterMap();
     }
 
+    @Override
+    public Optional<OperatorFeature> getOperatorFeature() {
+        OperatorFeature operatorFeature = OperatorFeature.builder()
+                .icon("icon-shujufubenguanlijikuaisuhuifuxitong")
+                .build();
+        return Optional.of(operatorFeature);
+    }
+
     /**
      * 校验内容： 无
      */
@@ -84,12 +94,17 @@ public class DuplicateOperator extends Operator {
         //从config中获取输出字段,数组的长度只可能是1
         @SuppressWarnings("unchecked")
         Map<String, Object> firstParameterMap = ((List<Map<String, Object>>) getFirstParameterMap().get(CONFIG)).get(0);
+        Map<String, Object> cup = new HashMap<>();
+        for(Map.Entry<String, Object> first : firstParameterMap.entrySet()){
+            cup.put(first.getKey().split(" ")[0],first.getValue());
+        }
 
         getOutputPorts()
                 .values()
                 .forEach(t -> {
+                    String name = t.getParent().getId()+"&"+t.getName();
                     @SuppressWarnings("unchecked")
-                    List<Map<String, Object>> o = (List<Map<String, Object>>)firstParameterMap.get(t.getName());
+                    List<Map<String, Object>> o = (List<Map<String, Object>>)cup.get(name);
                     ((OutputPortObject<TableInfo>) t).setPseudoData(assembleNewTableInfo(pseudoData, o));
                 });
     }

@@ -19,20 +19,13 @@
 
 package com.zdpx.coder.operators;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import com.zdpx.coder.operator.FieldFunction;
+import com.zdpx.coder.operator.*;
 import com.zdpx.coder.Specifications;
 import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.graph.InputPortObject;
 import com.zdpx.coder.graph.OutputPortObject;
-import com.zdpx.coder.operator.Column;
-import com.zdpx.coder.operator.Operator;
-import com.zdpx.coder.operator.OperatorUtil;
-import com.zdpx.coder.operator.TableInfo;
 import com.zdpx.coder.utils.NameHelper;
 import com.zdpx.coder.utils.TemplateUtils;
 
@@ -61,6 +54,14 @@ public class JoinOperator extends Operator {
     private OutputPortObject<TableInfo> outputPort;
 
     private Map<String, List<Map<String, Object>>> inputColumn;
+
+    @Override
+    public Optional<OperatorFeature> getOperatorFeature() {
+        OperatorFeature operatorFeature = OperatorFeature.builder()
+                .icon("icon-join")
+                .build();
+        return Optional.of(operatorFeature);
+    }
 
     @Override
     protected void initialize() {
@@ -125,7 +126,7 @@ public class JoinOperator extends Operator {
         if (forSystemTime != null && !forSystemTime.equals("")) {
             dataModel.put(
                     SYSTEM_TIME_COLUMN,
-                    FieldFunction.insertTableName(primaryTableName, forSystemTime, true,null));
+                    FieldFunction.insertTableName(primaryTableName, forSystemTime, true));
             dataModel.put("forSystemTime",forSystemTime);
         }
         if (where != null && !where.equals("")) {
@@ -193,7 +194,7 @@ public class JoinOperator extends Operator {
 
 
     public void setUpTableName(Map<String, String> l, String tableName, String column) {
-        String onLeftColumn = FieldFunction.insertTableName(tableName, l.get(column), true,null);
+        String onLeftColumn = FieldFunction.insertTableName(tableName, l.get(column), true);
         l.put(column, onLeftColumn);
     }
 
@@ -217,15 +218,13 @@ public class JoinOperator extends Operator {
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> columns = (List<Map<String, Object>>) parameters.get(COLUMNS);
         for (Map<String, Object> column : columns) {
-            if ((boolean) column.get(FLAG)) {
-                switch (column.get("inputTable").toString()) {
-                    case PRIMARY_INPUT:
-                        primaryInput.add(column);
-                        break;
-                    case SECOND_INPUT:
-                        secondInput.add(column);
-                        break;
-                }
+            switch (column.get("inputTable").toString()) {
+                case PRIMARY_INPUT:
+                    primaryInput.add(column);
+                    break;
+                case SECOND_INPUT:
+                    secondInput.add(column);
+                    break;
             }
         }
         out.put(PRIMARY_INPUT,primaryInput);

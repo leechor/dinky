@@ -26,14 +26,10 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zdpx.coder.graph.CheckInformationModel;
-import com.zdpx.coder.operator.FieldFunction;
+import com.zdpx.coder.operator.*;
 import com.zdpx.coder.Specifications;
 import com.zdpx.coder.graph.InputPortObject;
 import com.zdpx.coder.graph.OutputPortObject;
-import com.zdpx.coder.operator.Column;
-import com.zdpx.coder.operator.Operator;
-import com.zdpx.coder.operator.OperatorUtil;
-import com.zdpx.coder.operator.TableInfo;
 import com.zdpx.coder.utils.NameHelper;
 import com.zdpx.coder.utils.TemplateUtils;
 import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
@@ -114,6 +110,14 @@ public class CepOperator extends Operator {
     protected void initialize() {
         inputPortObject = registerInputObjectPort(INPUT_0);
         outputPortObject = registerOutputObjectPort(OUTPUT_0);
+    }
+
+    @Override
+    public Optional<OperatorFeature> getOperatorFeature() {
+        OperatorFeature operatorFeature = OperatorFeature.builder()
+                .icon("icon-cepfuzashijianchuli")
+                .build();
+        return Optional.of(operatorFeature);
     }
 
     @Override

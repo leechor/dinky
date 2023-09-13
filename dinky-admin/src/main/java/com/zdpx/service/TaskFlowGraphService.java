@@ -24,6 +24,7 @@ import org.dinky.data.model.Task;
 import org.dinky.mybatis.service.ISuperService;
 
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.zdpx.model.FlowGraph;
@@ -44,5 +45,5 @@ public interface TaskFlowGraphService extends ISuperService<FlowGraph> {
 
     void updateTaskFlowGraph(Task task);
 
-    Object generalProcess(String graph, String operate);
+    Map<String,Object> generalProcess(Map<String,String> graph);
 }

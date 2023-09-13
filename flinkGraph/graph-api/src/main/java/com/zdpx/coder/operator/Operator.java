@@ -46,6 +46,8 @@ import com.zdpx.coder.utils.JsonSchemaValidator;
 
 import lombok.extern.slf4j.Slf4j;
 
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
+
 /**
  * 宏算子抽象类
  *
@@ -222,9 +224,18 @@ public abstract class Operator extends Node implements Runnable {
     protected Map<String, Object> getFirstParameterMap() {
         List<Map<String, Object>> parameterLists = getParameterLists();//增加config中的字段
         Map<String, Object> map = new HashMap<>();
-        for (Map<String, Object> p : parameterLists) {
-            map.putAll(p);
+        Map<String, Object> p = parameterLists.get(0);
+        if(p.get(SERVICE)!=null){
+            @SuppressWarnings("unchecked")
+            Map<String, Object> service = (Map<String, Object>) p.get(SERVICE);
+            map.putAll(service);
         }
+        if(p.get(OUTPUT)!=null){
+            @SuppressWarnings("unchecked")
+            Map<String, Object> output = (Map<String, Object>) p.get(OUTPUT);
+            map.putAll(output);
+        }
+        map.putAll(parameterLists.get(1));
         return map;
     }
 
@@ -387,7 +398,7 @@ public abstract class Operator extends Node implements Runnable {
         return fullColumnName.substring(fullColumnName.lastIndexOf('.') + 1);
     }
 
-    //处理config中的数据格式和勾选情况
+    //处理config中的数据格式
     public List<Map<String, Object>> formatProcessing(Map<String, Object> dataModel) {
 
         List<Map<String, Object>> input = new ArrayList<>();
@@ -401,18 +412,10 @@ public abstract class Operator extends Node implements Runnable {
         for (Map.Entry<String, List<Map<String, Object>>> m2 : config.get(0).entrySet()) {
             String[] split = m2.getKey().split("&");
             m2.getValue().forEach(l->{
-                if ((boolean) l.get(OperatorSpecializationFieldConfig.FLAG)) {
-                    l.put(OperatorSpecializationFieldConfig.TABLE_NAME,split[split.length-1]);
-                    input.add(l);
-                }
+                l.put(OperatorSpecializationFieldConfig.TABLE_NAME,split[split.length-1]);
+                input.add(l);
             });
         }
-
-        //删除没有勾选的字段
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> output = (List<Map<String, Object>>) dataModel.get(OperatorSpecializationFieldConfig.COLUMNS);
-        output.removeIf(s -> !(boolean) s.get(OperatorSpecializationFieldConfig.FLAG));
-
         return input;
     }
 

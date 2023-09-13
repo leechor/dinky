@@ -31,9 +31,10 @@ public class CustomerOperatorServiceImpl extends SuperServiceImpl<CustomerOperat
         }else{
             customerOperator.setFeature(null);
             customerOperator.setGroups("group-process");
-            customerOperator.setCode("custom-node-"+customerOperator.getName()+"-"+customerOperator.getCode());
             if(customerOperator.getCode().equals("group-process")){
                 customerOperator.setCode(customerOperator.getCode());
+            }else{
+                customerOperator.setCode("custom-node-"+customerOperator.getName()+"-"+customerOperator.getCode());
             }
 
             customerOperator.setType(null);

@@ -1,159 +1,191 @@
 {
-    "type": "object",
-    "title": "ESSinkOperator",
+	"type": "object",
+	"title": "ESSinkOperator",
 	"description": "ES输出算子",
-	"minItems": 1,
-        "required": [
-			"connector",
-			"hosts",
-			"index",
-			"sink.bulk-flush.max-actions"
-        ],
-        "properties": {
-		"tableName": {
-			"type": "string",
-			"title": "tableName",
-			"description": "表名称，若为空将随机生成"
-		},
-		"connector": {
-			"type": "string",
-			"default": "elasticsearch-7",
-			"title": "connector",
-			"enum":["elasticsearch-7"]
-		},
-		"hosts": {
-			"type": "string",
-			"minLength": 1,
-			"pattern":"^[A-Za-z0-9:-_./]*$",
-			"title": "hosts",
-			"default": "http://localhost:9200",
-			"examples": [
-				"http://localhost:9200"
-			]
-		},
-		"index": {
-			"type": "string",
-			"default": "users",
-			"minLength": 1,
-			"title": "index",
-			"examples": [
-				"users"
-			]
-		},
-		"sink.bulk-flush.max-actions": {
-			"type": "integer",
-			"default": 1,
-			"title": "sink.bulk-flush.max-actions",
-			"examples": [
-				1
-			]
-		},
-		
-	   "other":{
-		 "title": "otherConnect",
-		  "type": "array",
-		  "description": "扩展字段",
-		  "items": {
-			"type": "object",
-			"title": "otherConfig",
+	"format": "categories",
+	"basicCategoryTitle": "service",
+	"properties": {
+		"service": {
 			"required": [
-				"key",
-				"values"
+				"connector",
+				"hosts",
+				"index",
+				"sink.bulk-flush.max-actions"
 			],
 			"properties": {
-				"key": {
+				"tableName": {
 					"type": "string",
-					"minLength": 1,
-					"description": "自定义字段的key，与values共同构成：key = values 的结构 ",
-					"title": "key"
+					"title": "tableName",
+					"description": "表名称，若为空将随机生成"
 				},
-				"values": {
+				"connector": {
+					"type": "string",
+					"default": "elasticsearch-7",
+					"title": "connector",
+					"enum": [
+						"elasticsearch-7"
+					]
+				},
+				"hosts": {
 					"type": "string",
 					"minLength": 1,
-					"description": "自定义字段的values，与key共同构成：key = values 的结构",
-					"title": "values"
+					"pattern": "^[A-Za-z0-9:-_./]*$",
+					"title": "hosts",
+					"default": "http://localhost:9200",
+					"examples": [
+						"http://localhost:9200"
+					]
+				},
+				"index": {
+					"type": "string",
+					"default": "users",
+					"minLength": 1,
+					"title": "index",
+					"examples": [
+						"users"
+					]
+				},
+				"sink.bulk-flush.max-actions": {
+					"type": "integer",
+					"default": 1,
+					"title": "sink.bulk-flush.max-actions",
+					"examples": [
+						1
+					]
+				},
+				"other": {
+					"title": "otherConnect",
+					"type": "array",
+					"description": "扩展字段",
+					"items": {
+						"type": "object",
+						"title": "otherConfig",
+						"required": [
+							"key",
+							"values"
+						],
+						"properties": {
+							"key": {
+								"type": "string",
+								"minLength": 1,
+								"description": "自定义字段的key，与values共同构成：key = values 的结构 ",
+								"title": "key"
+							},
+							"values": {
+								"type": "string",
+								"minLength": 1,
+								"description": "自定义字段的values，与key共同构成：key = values 的结构",
+								"title": "values"
+							}
+						}
+					}
+				},
+				"primary": {
+					"type": "string",
+					"pattern": "^[A-Za-z0-9_]*$",
+					"description": "设置主键",
+					"format": "autoinput",
+					"autoinput": {
+						"name": "my-autoComplete",
+						"function": {
+							"name": "getFieldsByConfig"
+						}
+					}
+				},
+				"watermark": {
+					"type": "object",
+					"properties": {
+						"column": {
+							"type": "string",
+							"pattern": "^[A-Za-z0-9_]*$",
+							"description": "指定为watermark的列，需要TIMESTAMP或TIMESTAMP_LTZ类型",
+							"format": "autoinput",
+							"autoinput": {
+								"name": "my-autoComplete",
+								"function": {
+									"name": "getFieldsByConfig"
+								}
+							}
+						},
+						"timeSpan": {
+							"type": "integer",
+							"minimum": 0,
+							"description": "指定最大延时时间"
+						},
+						"timeUnit": {
+							"type": "string",
+							"enum": [
+								"SECOND",
+								"MINUTE",
+								"DAY",
+								"MONTH",
+								"YEAR"
+							],
+							"description": "延时单位"
+						}
+					},
+					"additionalProperties": false
 				}
 			}
-		  }
-	   },
-		
-		"columns": {
-			"type": "array",
-			"minItems": 1,
-			"title": "columns",
-			"items": {
-				"type": "object",
-				"title": "schema",
-				"required": [
-					"name",
-					"type",
-					"flag"
-				],
-				"properties": {
-					"name": {
-						"type": "string",
-						"minLength": 1,
-						"pattern":"^[A-Za-z0-9_]*$",
-						"title": "name",
-						"examples": [
-							"typ",
-							"taskId",
-							"taskStatus",
-							"dt",
-							"WATERMARK FOR dt AS dt - INTERVAL '15' SECOND",
-							"PRIMARY KEY(taskId) NOT ENFORCED "
-						],
-						"description": "field name"
-					},
-					"type": {
-						"type": "string",
-						"minLength": 1,
-						"title": "type",
-						"default": "STRING",
-						"enum":["CHAR","VARCHAR","STRING","BOOLEAN","BINARY","VARBINARY","BYTES","DECIMAL","TINYINT","SMALLINT","INTEGER","BIGINT","FLOAT","DOUBLE","DATE","TIME","TIMESTAMP(3)","TIMESTAMP_LTZ(3)","INTERVAL","ARRAY","MULTISET","MAP","ROW","RAW"],
-						"examples": [
-							"STRING",
-							"INT",
-							"TIMESTAMP(3)"
-						]
-					},
-					"flag":{
-						"type": "boolean",
-						"default": true,
-						"title": "checked ?"
-					},
-					"decs":{
-						"type": "string",
-						"description": "备注"
+		},
+		"output": {
+			"type": "object",
+			"properties": {
+				"source": {
+					"type": "array",
+					"title": "source",
+					"items": {
+						"type": "object",
+						"title": "schema",
+						"properties": {
+							"name": {
+								"type": "string",
+								"minLength": 1,
+								"pattern": "^[A-Za-z0-9_]*$",
+								"title": "name",
+								"description": "field name"
+							},
+							"type": {
+								"type": "string",
+								"minLength": 1,
+								"title": "type",
+								"default": "STRING",
+								"enum": [
+									"CHAR",
+									"VARCHAR",
+									"STRING",
+									"BOOLEAN",
+									"BINARY",
+									"VARBINARY",
+									"BYTES",
+									"DECIMAL",
+									"TINYINT",
+									"SMALLINT",
+									"INT",
+									"BIGINT",
+									"FLOAT",
+									"DOUBLE",
+									"DATE",
+									"TIME",
+									"TIMESTAMP",
+									"TIMESTAMP(3)",
+									"TIMESTAMP_LTZ(3)",
+									"INTERVAL",
+									"ARRAY",
+									"MULTISET",
+									"MAP",
+									"ROW",
+									"RAW"
+								]
+							},
+							"desc": {
+								"type": "string",
+								"description": "备注"
+							}
+						}
 					}
 				}
 			}
-		},
-		"primary":{
-			"type": "string",
-			"pattern":"^[A-Za-z0-9_]*$",
-			"description": "设置主键"
-		},
-		"watermark":{
-		  "type": "object",
-		  "properties": {
-			"column": {
-				"type": "string",
-				"pattern":"^[A-Za-z0-9_]*$",
-				"description": "指定为watermark的列，需要TIMESTAMP或TIMESTAMP_LTZ类型"
-			},
-			"timeSpan": {
-				"type": "integer",
-				"minimum":0,
-				"description": "指定最大延时时间"
-			},
-			"timeUnit": {
-				"type": "string",
-				"enum":["SECOND","MINUTE","DAY","MONTH","YEAR"],
-				"description": "延时单位"
-			}
-		  },
-		  "additionalProperties":false
 		}
 	}
 }

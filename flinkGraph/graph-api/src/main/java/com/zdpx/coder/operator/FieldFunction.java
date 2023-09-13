@@ -116,15 +116,27 @@ public class FieldFunction  {
      * @param fos 字段配置信息
      * @return 方法定义
      */
-    static FieldFunction processFieldConfigure(String tableName, Map<String, Object> fos, boolean flag, List<Map<String, Object>> inputColumns) {
+    public static FieldFunction processFieldConfigure(String tableName, Map<String, Object> fos, boolean flag, List<Map<String, Object>> inputColumns) {
 
         FieldFunction fo = new FieldFunction();
-        fo.setOutName(fos.get(OUT_NAME).equals("")? null:(String) fos.get(OUT_NAME));
-        fo.setDelimiter((String) fos.get("delimiter"));//此字段可以去掉
 
+        Object outName = fos.get(NAME);
+        if(fos.get(OUT_NAME)!=null&&!fos.get(OUT_NAME).equals("")){
+            outName = fos.get(OUT_NAME);
+        }
+        fo.setOutName(outName.toString());
+
+
+        String pretreatment = insertTableName(tableName,fos.get(NAME).toString(),flag);
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> columns = ((List<Map<String, Object>>) fos.get(FUNCTION));
-        fo.setFunctionName(pretreatment(tableName, columns, flag,inputColumns,new StringBuffer(),"").toString());
+        if(columns!=null&&!columns.isEmpty()){
+            pretreatment = pretreatment(tableName, columns, flag, inputColumns, new StringBuffer(), "").toString();
+        }
+        if(pretreatment.equals(fo.getOutName())||pretreatment.equals("")){
+            pretreatment=null;
+        }
+        fo.setFunctionName(pretreatment);
 
         return fo;
     }
@@ -148,7 +160,7 @@ public class FieldFunction  {
                     if(inputColumns!=null){
                         for(Map<String, Object> map : inputColumns){//出现在输入连接桩中的字段，设置表名称
                             if(map.get(NAME).equals(n)){
-                                input = insertTableName(tableName,n,flag,functionName);
+                                input = insertTableName(tableName,n,flag);
                             }
                         }
                     }
@@ -196,18 +208,13 @@ public class FieldFunction  {
     /**
      * @param flag 是否需要在列明前增加表名
      * */
-    public static String insertTableName(String primaryTableName, String param , boolean flag ,Object functionName) {
-        boolean notAt = !param.startsWith("@");
+    public static String insertTableName(String primaryTableName, String param , boolean flag) {
 
-        if (notAt || Strings.isBlank(primaryTableName)) {
+        if(primaryTableName.equals("")){
             return param;
         }
-
-        if (param.startsWith("@")) {
-            param = param.substring(1);
-        }
         if(flag){
-            return primaryTableName + "." + modifyName(param);
+            return modifyName(primaryTableName + "." + param);
         }
         return modifyName(param);
     }
@@ -230,12 +237,10 @@ public class FieldFunction  {
     public static List<FieldFunction> analyzeParameters(
             String primaryTableName, List<Map<String, Object>> funcs ,boolean flag ,List<Column> inputColumn, List<Map<String, Object>> config) {
         List<FieldFunction> fieldFunctions = new ArrayList<>();
-        for (Map<String, Object> fos : funcs) {//此处过滤掉未选中的节点
-            if((boolean)fos.get(FLAG)){
-                FieldFunction fo = processFieldConfigure(primaryTableName, fos ,flag, config);
-                fo.setOutType(typeInference(inputColumn, fo ,fos.get(TYPE)==null? null:fos.get(TYPE).toString()));
-                fieldFunctions.add(fo);
-            }
+        for (Map<String, Object> fos : funcs) {
+            FieldFunction fo = processFieldConfigure(primaryTableName, fos ,flag, config);
+            fo.setOutType(typeInference(inputColumn, fo ,fos.get(TYPE)==null? null:fos.get(TYPE).toString()));
+            fieldFunctions.add(fo);
         }
         return fieldFunctions;
     }
@@ -259,7 +264,7 @@ public class FieldFunction  {
 
             if(str.toString().endsWith("(") && flag){
                 return "";
-            }else if("to_timestamp".compareToIgnoreCase(sep.toString())==0){
+            }else if("CAST".compareToIgnoreCase(sep.toString())==0){
                 separator=" AS ";
             }else{
                 separator=",";

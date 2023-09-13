@@ -31,15 +31,15 @@ import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 public class TableDataStreamConverter {
     private TableDataStreamConverter() {}
 
-    //字段非函数格式，使用此方法构建tableInfo
+    //source，使用此方法构建tableInfo
     public static TableInfo getTableInfo(Map<String, Object> dataModel) {
         @SuppressWarnings("unchecked")
-        List<Map<String, Object>> columns = (List<Map<String, Object>>) dataModel.get(COLUMNS);
+        List<Map<String, Object>> columns = ((Map<String,List<Map<String, Object>>>) dataModel.get(OUTPUT)).get(COLUMNS);
+
         List<Column> cs = new ArrayList<>();
         for (Map<String, Object> dm : columns) {
-            if((boolean)dm.get(FLAG)){
-                cs.add(new Column(dm.get(NAME).toString(), dm.get(TYPE).toString()));
-            }
+            Object name = dm.get(OUT_NAME)== null||dm.get(OUT_NAME).equals("") ? dm.get(NAME):dm.get(OUT_NAME);
+            cs.add(new Column(name.toString(), dm.get(TYPE).toString()));
         }
         return TableInfo.newBuilder().name((String) dataModel.get(TABLE_NAME)).columns(cs).build();
     }
@@ -49,7 +49,7 @@ public class TableDataStreamConverter {
         List<Column> cs = new ArrayList<>();
         List<Column> columns = old.getColumns();
 
-        count.stream().filter(dm-> (boolean)dm.get(FLAG)).forEach(dm->{
+        count.forEach(dm->{
             columns.stream().filter(c-> c.getName().equals(dm.get(NAME))).forEach(c->{
                 cs.add(new Column(c.getName(), c.getType()));
             });

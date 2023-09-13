@@ -1,197 +1,86 @@
 {
-  "title": "JoinOperator Define",
-  "description": "define the JoinOperator parameter",
-  "type": "object",
-
-	  "required": [
-		"statementBody",
-		"placeholder"
-	  ],
-	  "properties": {
-		"statementBody": {
-		  "type": "string",
-		  "minLength": 1,
-		  "description": "field for statementBody"
-		},
-		"placeholder": {
-			"type": "array",
-			"minItems": 1,
-			"title": "The placeholder Schema",
-			"items": {
-				"type": "object",
-				"title": "placeholder",
-				"description": "output field",
-				"required": [
-				],
-				"properties": {
-					"type": {
-						"type": "string",
-						"minLength": 1,
-						"title": "The functionName Schema"
-					},
-					"columns": {
-						"type": "string",
-						"pattern":"^[A-Za-z0-9_]*$",
-						"minLength": 1,
-						"title": "The outName Schema"
-					},
-					"needBrackets": {
-						"type": "array",
-						"minItems": 1,
-						"title": "The parameters Schema",
-						"items": {
-						   "type": "string"
-						}
-					}
+	"title": "CustomerOperator",
+	"description": "这是一个自定义sql节点",
+	"type": "object",
+	"format": "categories",
+	"basicCategoryTitle": "service",
+	"properties": {
+		"service": {
+			"properties": {
+				"statementBody": {
+					"type": "string",
+					"description": "field for statementBody",
+					"format": "autoinput",
+							"autoinput": {
+								"name": "my-autoComplete",
+								"function": {
+									"name": "getFieldsByConfig"
+								}
+							}
 				}
 			}
 		},
-"properties": {
-  "title": "The properties Schema",
-  "anyOf": [
-	{
-	  "title": "inputTableName",
-	  "type": "object",
-	  "properties": {
-		"type": {
-			"type": "string",
-			"enum":["inputTableName"],
-			"title": "The inputTableName Schema"
-		},
-		"column": {
-			"type": "string",
-			"pattern":"^[A-Za-z0-9_]*$",
-			"minLength": 1,
-			"title": "The column Schema"
-		}
-	  },
-	  "additionalProperties":false
-	},
-	{
-	  "title": "outPutTableName",
-	  "type": "object",
-	  "properties": {
-		"type": {
-			"type": "string",
-			"enum":["outPutTableName"],
-			"title": "The outPutTableName Schema"
-		},
-		"column": {
-			"type": "string",
-			"pattern":"^[A-Za-z0-9_]*$",
-			"minLength": 1,
-			"title": "The column Schema"
-		}
-	  },
-	  "additionalProperties":false
-	},
-	{
-	  "title": "fieldName",
-	  "type": "object",
-	  "properties": {
-		"type": {
-			"type": "string",
-			"enum":["fieldName"],
-			"title": "The type Schema"
-		},
-		"needBrackets": {
-			"type": "string",
-			"minLength": 1,
-			"enum":["true","false"],
-			"title": "The needBrackets Schema"
-		},
-		"columns": {
-			"type": "array",
-			"minItems": 1,
-			"title": "The measures Schema",
-			"items": {
-				"type": "object",
-				"title": "measures",
-				"pattern":"^[A-Za-z0-9_]*$",
-				"description": "output field",
-				"required": [
-					"functionName",
-					"name",
-					"parameters"
-				],
-				"properties": {
-					"functionName": {
-						"type": "string",
-						"title": "The functionName Schema"
-					},
-					"name": {
-						"type": "string",
-						"minLength": 1,
-						"title": "The outName Schema"
-					},
-					"parameters": {
-						"type": "array",
-						"minItems": 1,
-						"title": "The parameters Schema",
-						"items": {
-						   "type": "string"
+		"output": {
+			"type": "object",
+			"properties": {
+				"columns": {
+					"type": "array",
+					"title": "mapping",
+					"items": {
+						"type": "object",
+						"title": "columns",
+						"properties": {
+							"name": {
+								"type": "string",
+								"pattern": "^[A-Za-z0-9_]*$",
+								"title": "outName"
+							},
+							"type": {
+								"type": "string",
+								"minLength": 1,
+								"title": "type",
+								"default": "STRING",
+								"enum": [
+									"CHAR",
+									"VARCHAR",
+									"STRING",
+									"BOOLEAN",
+									"BINARY",
+									"VARBINARY",
+									"BYTES",
+									"DECIMAL",
+									"TINYINT",
+									"SMALLINT",
+									"INT",
+									"BIGINT",
+									"FLOAT",
+									"DOUBLE",
+									"DATE",
+									"TIME",
+									"TIMESTAMP",
+									"TIMESTAMP(3)",
+									"TIMESTAMP_LTZ(3)",
+									"INTERVAL",
+									"ARRAY",
+									"MULTISET",
+									"MAP",
+									"ROW",
+									"RAW"
+								],
+								"examples": [
+									"STRING",
+									"INT",
+									"TIMESTAMP(3)"
+								]
+							},
+							"desc": {
+								"type": "string",
+								"description": "备注"
+							}
 						}
 					}
 				}
 			}
 		}
-	  },
-	  "additionalProperties":false
-	},
-	{
-	  "title": "outPutFieldName",
-	  "type": "object",
-	  "properties": {
-		"type": {
-			"type": "string",
-			"enum":["outPutFieldName"],
-			"title": "The type Schema"
-		},
-		"needBrackets": {
-			"type": "string",
-			"minLength": 1,
-			"enum":["true","false"],
-			"title": "The needBrackets Schema"
-		},
-		"columns": {
-			"type": "array",
-			"minItems": 1,
-			"title": "The measures Schema",
-			"items": {
-				"type": "object",
-				"title": "measures",
-				"description": "output field",
-				"required": [
-					"functionName",
-					"name",
-					"parameters"
-				],
-				"properties": {
-					"functionName": {
-						"type": "string",
-						"minLength": 1,
-						"title": "The functionName Schema"
-					},
-					"name": {
-						"type": "string",
-						"minLength": 1,
-						"title": "The outName Schema"
-					},
-					"parameters": {
-						"type": "array",
-						"minItems": 1,
-						"title": "The parameters Schema",
-						"items": {
-						   "type": "string"
-						}
-					}
-				}
-			}
-		}
-	  },
-	  "additionalProperties":false
 	}
-  ]
-}
-	  }
 }

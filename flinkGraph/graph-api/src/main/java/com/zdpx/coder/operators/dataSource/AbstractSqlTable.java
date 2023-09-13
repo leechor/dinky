@@ -27,10 +27,8 @@ import com.zdpx.coder.operator.Column;
 import com.zdpx.coder.utils.TemplateUtils;
 import org.apache.commons.collections.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import com.zdpx.coder.operator.Operator;
 import com.zdpx.coder.operator.TableInfo;
@@ -52,12 +50,16 @@ public abstract class AbstractSqlTable extends Operator {
                     + "'${key}' = '${value}'<#sep>,</#sep>"
                     + "</#list>)";
 
+    public static final String OUTPUT_SQL =
+            "CREATE VIEW ${tableName} AS "
+            + "SELECT<#list columns as column>" +
+            "<#if column.name??>`${column.name}`<#if column.outName?? && column.outName?length gt 1> AS `${column.outName}` </#if></#if><#sep>,</#sep></#list>"
+            + "FROM ${inputTableName} ";
 
     public static final String INPUT_SQL =
-            "INSERT INTO ${outputTableName} (<#list columns as column>`${column.name}`<#sep>,</#sep></#list>) "
+            "INSERT INTO ${outputTableName} (<#list source as column>`${column.name}`<#sep>,</#sep></#list>) "
                     + "SELECT <#list tableInfo as column>`${column.name}`<#sep>, </#list> "
                     + "FROM ${inputTableName}";
-    protected TableInfo tableInfo;
 
     protected abstract String getDefaultName();
 
@@ -92,7 +94,6 @@ public abstract class AbstractSqlTable extends Operator {
         Map<String, List<String>> portInformation = new HashMap<>();
         List<String> list = new ArrayList<>();
         List<String> edge = new ArrayList<>();
-        String linkId ;
 
         boolean flag = this.getClass().getName().contains("Sink");
 
@@ -114,32 +115,8 @@ public abstract class AbstractSqlTable extends Operator {
             }
         }
 
-        if (flag) {
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> config = (List<Map<String, Object>>) map.get(CONFIG);
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> columns = (List<Map<String, Object>>) map.get(COLUMNS);
-            if(config.size()!=columns.size()){
-                list.add("输入字段和输出表中指定的字段数量不匹配");
-            }
-            linkId = getInputPorts().get(portName).getConnection().getId();
-            //目前按顺序比较参数类型
-            List<Column> columns1 = ((TableInfo)getInputPorts().get(portName).getConnection().getFromPort().getPseudoData()).getColumns();
-            if(columns1.size()==columns.size()){
-                for(int i=0;i<columns.size();i++){
-                    if(!columns.get(i).get(TYPE).equals(columns1.get(i).getType())){
-                        list.add("输入字段和输出表中指定参数类型不匹配 ，参数名称： "+columns.get(i).get(NAME)+" 参数类型 ： "+ columns1.get(i).getType()+" -> "+columns.get(i).get(TYPE));
-                    }
-                }
-            }
-        }
-        else{
-            linkId = getOutputPorts().get(portName).getConnection().getId();
-        }
-
         if(!list.isEmpty()){
             model.setColor(RED);
-            edge.add(linkId);
             model.setEdge(edge);
             portInformation.put(portName,list);
             model.setPortInformation(portInformation);
@@ -152,25 +129,38 @@ public abstract class AbstractSqlTable extends Operator {
 
         String tableName = dataModel.get(TABLE_NAME).toString();
 
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> columns = (List<Map<String, Object>>)dataModel.get(COLUMNS);
+        //columns排序
+        dataModel.put(COLUMNS,columns.stream().sorted(Comparator.comparing(item -> item.get(NAME).toString())).collect(Collectors.toList()));
+
         if (this.getClass().getName().contains("Sink")) {
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> config = (List<Map<String, Object>>) dataModel.get(CONFIG);
-            connectToSink(INPUT_0, dataModel, config);
-        } else {
-            //删除没有勾选的字段
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> columns = (List<Map<String, Object>>) dataModel.get(COLUMNS);
-            columns.removeIf(s -> !(boolean) s.get(FLAG));
+            // config排序
+            connectToSink(INPUT_0, dataModel, config.stream().sorted(Comparator.comparing(item -> item.get(NAME).toString())).collect(Collectors.toList()));
+
+            String sqlStr = TemplateUtils.format(tableName, dataModel, TEMPLATE);
+            this.getSceneCode().getGenerateResult().generate(sqlStr);
+        }else{
+
+            String inputName ="transTable";
+
+            dataModel.put(TABLE_NAME,inputName);
+            String sqlStr = TemplateUtils.format(inputName, dataModel, TEMPLATE);
+            this.getSceneCode().getGenerateResult().generate(sqlStr);
+
+            dataModel.put("inputTableName",inputName);
+            dataModel.put(TABLE_NAME,tableName);
+            String rename = TemplateUtils.format(tableName, dataModel, OUTPUT_SQL);
+            this.getSceneCode().getGenerateResult().generate(rename);
+
             Map<String, Object> parameters = getParameterLists().get(0); // [ parameters , config ]
             final TableInfo ti = TableDataStreamConverter.getTableInfo(parameters);
             ti.setName(tableName);
 
             outputPortObject.setPseudoData(ti);
         }
-
-        String sqlStr = TemplateUtils.format(tableName, dataModel, TEMPLATE);
-        this.getSceneCode().getGenerateResult().generate(sqlStr);
-
     }
 
     //兼容任意类型的数据源
@@ -197,11 +187,19 @@ public abstract class AbstractSqlTable extends Operator {
             tableName = in.getOutputPseudoData().getName();
         }
 
+        for(Map<String, Object> map : input){
+            Object outName = map.get(OUT_NAME);
+            if(outName!=null&&!outName.equals("")){
+                map.put(NAME,outName);
+            }
+        }
+
         Map<String, Object> data = new HashMap<>();
         data.put(OUTPUT_TABLE_NAME, dataModel.get(TABLE_NAME));
-        data.put(TABLE_INFO, input);
         data.put(INPUT_TABLE_NAME, tableName);
-        data.put(COLUMNS, dataModel.get(COLUMNS));
+        data.put(SOURCE, dataModel.get(COLUMNS));
+        data.put(TABLE_INFO, input);
+
         String insertSqlStr = TemplateUtils.format("insert", data, INPUT_SQL);
         this.getSceneCode().getGenerateResult().generate(insertSqlStr);
 
@@ -210,7 +208,9 @@ public abstract class AbstractSqlTable extends Operator {
     protected Map<String, Object> getDataModel() {
 
         List<Map<String, Object>> parameterLists = getParameterLists();
-        Map<String, Object> psFirst = parameterLists.get(0);
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> psFirst = (Map<String, Object>)parameterLists.get(0).get(SERVICE);
 
         Map<String, Object> result = new HashMap<>();
         result.put(PARAMETERS, new HashMap<String, Object>());
@@ -218,14 +218,14 @@ public abstract class AbstractSqlTable extends Operator {
         if (psFirst.get(TABLE_NAME) != null) {
             result.put(TABLE_NAME, psFirst.get(TABLE_NAME));
         }
-        String primary = psFirst.get(PRIMARY).toString();
+        Object primary = psFirst.get(PRIMARY);
         if (primary != null && !primary.equals("")) {
             result.put(PRIMARY, primary);
         }
 
         @SuppressWarnings("unchecked")
         Map<String, Object> watermark = (Map<String, Object>) psFirst.get(WATERMARK);
-        if (watermark.get(COLUMN) != null && !watermark.get(COLUMN).equals("")) {
+        if (watermark != null && watermark.get(COLUMN) != null && !watermark.get(COLUMN).equals("")) {
             if ((Integer) watermark.get(TIME_SPAN) == 0) {
                 watermark.remove(TIME_SPAN);
             }
@@ -236,16 +236,14 @@ public abstract class AbstractSqlTable extends Operator {
         psFirst.remove(WATERMARK);
         psFirst.remove(TABLE_NAME);
 
-
         @SuppressWarnings("unchecked")
         HashMap<String, Object> ps = (HashMap<String, Object>) result.get(PARAMETERS);
-        for (Map.Entry<String, Object> m : psFirst.entrySet()) {
-            if (m.getKey().equals(COLUMNS)) {
-                result.put(COLUMNS, m.getValue());
-                continue;
-            }
-            ps.put(m.getKey(), m.getValue());
-        }
+        ps.putAll(psFirst);
+        @SuppressWarnings("unchecked")
+        Map<String,List<Map<String, Object>>> outPut = (Map<String,List<Map<String, Object>>>) parameterLists.get(0).get(OUTPUT);
+
+        result.put(COLUMNS,outPut.get(COLUMNS)==null? outPut.get(SOURCE):outPut.get(COLUMNS));
+
         if (parameterLists.size() > 1) {//文件中存在config
             result.putAll(parameterLists.get(1));
         }
@@ -259,11 +257,6 @@ public abstract class AbstractSqlTable extends Operator {
 
     @Override
     protected void handleParameters(String parameters) {
-        List<Map<String, Object>> pl = getParameterLists(parameters);
-        if (CollectionUtils.isEmpty(pl)) {
-            return;
-        }
-        tableInfo = TableDataStreamConverter.getTableInfo(getParameterLists(parameters).get(0));
     }
 
     @Override

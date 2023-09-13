@@ -25,7 +25,6 @@ import com.zdpx.model.FunctionManagement;
 import org.dinky.data.model.Task;
 import org.dinky.data.result.Result;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -75,12 +74,13 @@ public class TaskFlowGraphController {
         return Result.succeed(configurations);
     }
 
-    //通用算子处理类，入参：当前算子的json，需要处理的方法。 返回处理结果。 包含功能：预览、函数转换
-    @PostMapping("/operator/generalProcess/{operate}")
-    public Result<Object> generalProcess(@RequestBody String graph, @PathVariable String operate) {
-        return Result.succeed(taskFlowGraphService.generalProcess(graph, operate));
+    //传入parameters层的信息和需要处理的方法。获取函数嵌套、解析sql
+    @PostMapping("/operator/generalProcess")
+    public Result<Map<String,Object> > generalProcess(@RequestBody Map<String,String> graph) {
+        return Result.succeed(taskFlowGraphService.generalProcess(graph));
     }
 
+    //全量传入一个算子的所有信息。预览
     @PutMapping("/preview")
     public Result<String> operatorPreview(@RequestBody String graph) {
         String s = taskFlowGraphService.operatorPreview(graph);
@@ -94,11 +94,13 @@ public class TaskFlowGraphController {
 
         List<Map<String, Object>> column = columns.get("columns");
 
-        if(column.get(0).get("function")==null){//是一个源算子
-            lists.addAll(column.stream().map(i-> i.get("name").toString()).collect(Collectors.toList()));
-        }else{//是一个中间算子
-            List<FieldFunction> fieldFunctions = FieldFunction.analyzeParameters("", column, false, null, null);
-            lists.addAll(fieldFunctions.stream().map(FieldFunction::getFunctionName).collect(Collectors.toList()));
+        for(Map<String, Object> c: column){
+            FieldFunction fo = FieldFunction.processFieldConfigure("", c ,false, null);
+            if(fo.getFunctionName()!=null){
+                lists.add(fo.getFunctionName());
+            }else{
+                lists.add(c.get("name").toString());
+            }
         }
 
         return Result.succeed(lists);

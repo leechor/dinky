@@ -49,7 +49,7 @@ public class MysqlSourceOperator extends AbstractSqlTable {
     @Override
     public Optional<OperatorFeature> getOperatorFeature() {
         OperatorFeature operatorFeature = OperatorFeature.builder()
-                .icon("icon-MySQL-icon-02")
+                .icon("icon-xingzhuang1")
                 .build();
         return Optional.of(operatorFeature);
     }

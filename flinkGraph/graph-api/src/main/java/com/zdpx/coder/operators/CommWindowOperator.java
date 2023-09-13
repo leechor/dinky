@@ -8,10 +8,7 @@ import com.zdpx.coder.utils.NameHelper;
 import com.zdpx.coder.utils.TemplateUtils;
 import com.zdpx.coder.graph.CheckInformationModel;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 
@@ -49,12 +46,12 @@ public class CommWindowOperator extends Operator {
                             "<#if window.step ??>INTERVAL '${window.step.timeSpan}' ${window.step.timeUnit},</#if>" +
                             "INTERVAL '${window.size.timeSpan}' ${window.size.timeUnit}) " +
                             "</#if>" +
-                            "<#if group??>GROUP BY " +
+                            "<#if group??>GROUP BY" +
                             "<#if (group.aggregation) == \"group\" > ${group.column} " +
-                            "<#elseif (group.aggregation) == \"windowGroup\"> ${group.windowsStart} , ${group.windowEnd} " +
+                            "<#elseif (group.aggregation) == \"windowGroup\"> ${group.windowsStart},${group.windowEnd} " +
                             "</#if>" +
                             "</#if>" +
-                            "<#if orderBy??>ORDER BY <#list orderBy as o> `${o.order}` ${o.sort} </#list></#if>" +
+                            "<#if orderBy??>ORDER BY<#list orderBy as o> `${o.order}` ${o.sort} </#list></#if>" +
                             "<#if limit?? && (limit?size!=0) >limit <#list limit as l> `${l}` <#sep>,</#sep></#list></#if>"
                     ,
                     Specifications.TEMPLATE_FILE);
@@ -69,14 +66,15 @@ public class CommWindowOperator extends Operator {
     }
 
     @Override
+    public Optional<OperatorFeature> getOperatorFeature() {
+        OperatorFeature operatorFeature = OperatorFeature.builder()
+                .icon("icon-operator")
+                .build();
+        return Optional.of(operatorFeature);
+    }
+
+    @Override
     protected Map<String, String> declareUdfFunction() {
-//        Map<String, Object> parameters = getParameterLists().get(0);
-//        List<FieldFunction> ffs = Operator.getFieldFunctions(parameters.get(TABLE_NAME).toString(), parameters,new ArrayList<>());
-//        List<String> functions =
-//                ffs.stream().map(FieldFunction::getFunctionName).collect(Collectors.toList());
-//        return Scene.getUserDefinedFunctionMaps().entrySet().stream()
-//                .filter(k -> functions.contains(k.getKey()))
-//                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         return new HashMap<>();
     }
 
@@ -108,10 +106,14 @@ public class CommWindowOperator extends Operator {
         p.put(TABLE_NAME, outputTableName);
         p.put(COLUMNS, ffs);
         p.put(INPUT_TABLE_NAME, tableName);
-        p.put(WHERE, parameters.get(WHERE));
         p.put(LIMIT, parameters.get(LIMIT));
         p.put(ID, parameters.get(ID));
         p.put(CONFIG,maps);
+
+        String where = parameters.get(WHERE).toString();
+        if(!where.equals("")){
+            p.put(WHERE, where);
+        }
 
         @SuppressWarnings("unchecked")
         Map<String, Object> hints = (Map<String, Object>)parameters.get(HINTS_OPTIONS);
@@ -201,9 +203,10 @@ public class CommWindowOperator extends Operator {
 
         boolean groupFlag = true;
         int orderFlag=0;
+
         for(String s:inputName){
-            if(map.get(GROUP)!=null&&s.equals(map.get(GROUP))){
-                if(group.get("aggregation").equals("group")&&group.get(COLUMN).equals(s)){
+            if(map.get(GROUP)!=null){
+                if(s.equals(map.get(GROUP))&&group.get("aggregation").equals("group")&&group.get(COLUMN).equals(s)){
                     groupFlag=false;
                 }
             }
@@ -215,7 +218,8 @@ public class CommWindowOperator extends Operator {
                 }
             }
         }
-        if(groupFlag){
+
+        if(map.get(GROUP)!=null&&groupFlag){
             list.add("该算子输入字段中不包含 group 定义字段，请检查字段名称");
         }
         if(orderColumn!=null&&orderFlag!=orderColumn.size()){

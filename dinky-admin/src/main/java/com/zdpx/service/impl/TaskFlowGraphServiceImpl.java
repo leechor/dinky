@@ -20,6 +20,7 @@
 package com.zdpx.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zdpx.coder.SceneCode;
 import com.zdpx.coder.Specifications;
@@ -80,6 +81,8 @@ public class TaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScriptMa
         this.studioServiceImpl = studioServiceImpl;
         this.customerOperatorMapper=customerOperatorMapper;
     }
+
+    static ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public boolean insert(FlowGraph statement) {
@@ -167,7 +170,7 @@ public class TaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScriptMa
                 String substring = error.substring(0, error.indexOf("\n"));
                 if (s.getSql().split(" ")[2].contains(c.getTableName())){
                     c.setSqlErrorMsg(substring);
-                }else if(s.getSql().contains(c.getTableName())){//特殊算子 ADD JAR 异常参数添加
+                }else if(s.getSql().split(" ")[0].contains(c.getTableName())){//特殊算子 ADD JAR 异常参数添加
                     c.setSqlErrorMsg(substring);
                 }
             });
@@ -195,18 +198,27 @@ public class TaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScriptMa
     }
 
     @Override
-    public Object generalProcess(String graph, String operate) {
+    public Map<String,Object> generalProcess(Map<String,String> graph) {
 
         GeneralProcess generalProcess = new GeneralProcessImpl();
+        Map<String,Object> map = new HashMap<>();
 
-        switch (operate){
-            case "preview": // 算子预览
-                return generalProcess.operatorPreview(graph);
-            case "function": //获取函数嵌套结果
-                return generalProcess.getFunction(graph);
-            default:
-                return null;
+        for(Map.Entry<String,String> g:graph.entrySet()){
+            try {
+                Map<String, Map<String, Object>> parametersLocal = objectMapper.readValue(g.getValue(), new TypeReference<Map<String, Map<String, Object>>>() {});
+                switch (g.getKey()){
+                    case "function": //获取函数嵌套结果
+                        map.put(g.getKey(),generalProcess.getFunction(parametersLocal));break;
+                    case "analyse": //自定义算子使用，根据sql分析出输出字段
+                        map.put(g.getKey(),generalProcess.getOutPutColumn(parametersLocal));break;
+                    default:
+                        return null;
+                }
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
         }
+        return map;
     }
 
     public Map<String, Object> convertToSql(String flowGraphScript) {

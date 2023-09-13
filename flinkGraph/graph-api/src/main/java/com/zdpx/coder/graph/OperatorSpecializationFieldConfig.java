@@ -14,8 +14,14 @@ public class OperatorSpecializationFieldConfig {
     //存放输入输出勾选情况的标记
     public static final String CONFIG = "config";
 
-    //算子输出字段名称标记，其内容一般为List<Map<String, Object>>类型，可转换为List<FieldFunction> FIELD_FUNCTIONS
+    //算子业务信息，将输出字段参数从中剥离
+    public static final String SERVICE = "service";
+    //算子输出参数，包括原始输出和映射输出
+    public static final String OUTPUT = "output";
+    //映射输出字段名称标记
     public static final String COLUMNS = "columns";
+    //原始输出字段名称标记
+    public static final String SOURCE = "source";
 
     /**
      * Json源文件，解析时使用的参数信息
@@ -66,8 +72,6 @@ public class OperatorSpecializationFieldConfig {
     /**
      * 数据源中参数的特殊标记 和 columns中包含的参数名称
      * */
-    //字段是否勾选
-    public static final String FLAG = "flag";
     //源算子中直接展示字段名称，中间算子中展示嵌套过后的函数
     public static final String NAME = "name";
     //中间算子别名

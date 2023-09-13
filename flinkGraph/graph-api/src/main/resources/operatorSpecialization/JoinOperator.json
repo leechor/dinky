@@ -1,177 +1,293 @@
 {
-  "title": "JoinOperator",
-  "description": "处理两表的连接，包含多种连接方式，操作中不需要对表起别名",
-  "type": "object",
-	  "required": [
-		"joinType",
-		"columnList",
-		"columns"
-	  ],
-	  "properties": {
-	  	"tableName": {
-			"type": "string",
-			"title": "tableName",
-			"description": "表名称，若为空将随机生成"
-		},
-		"joinType": {
-		  "type": "string",
-		  "enum":["INNER","LEFT","RIGHT","FULL OUTER","LEFT OUTER","RIGHT OUTER","CROSS",""],
-		  "description": "选择连接方式"
-		},
-		"systemTimeColumn": {
-		  "type": "string",
-		  "description": "设置时间基准列，需要时间属性字段"
-		},
-		"columnList": {
-			"type": "array",
-			"minItems": 1,
-			"items": {
-				"type": "object",
-				"description": "设置连接字段",
-				"required": [
-					"onLeftColumn",
-					"onRightColumn"
-				],
-				"properties": {
-					"onLeftColumn": {
-						"type": "string",
-						"description": "左表的连接字段"
-					},
-					"onRightColumn": {
-						"type": "string",
-						"description": "右表的连接字段"
-					}
-				}
-			}
-		},
-
-		"hints": {
-		  "description": "选择提示字段",
-		  "type": "array",
-		  "items": {
-		    "type": "object",
-			"title": "hints",
-		    "properties": {
-				"joinHints": {
-				  "type": "string",
-				  "enum":["BROADCAST","SHUFFLE_HASH","SHUFFLE_MERGE","NEST_LOOP"],
-				  "description": "选择连接提示"
+	"title": "JoinOperator",
+	"description": "处理两表的连接，包含多种连接方式，操作中不需要对表起别名",
+	"format": "categories",
+	"basicCategoryTitle": "service",
+	"type": "object",
+	"properties": {
+		"service": {
+			"required": [
+                "joinType",
+                "columnList"
+            ],
+			"properties": {
+				"tableName": {
+					"type": "string",
+					"title": "tableName",
+					"description": "表名称，若为空将随机生成"
 				},
-				"joinColumn": {
-				  "description": "选择提示字段",
-				  "type": "array",
-					"items": {
-					   "type": "string",
-					   "pattern":"^[A-Za-z0-9_]*$"
-					}
-				}
-		    }
-		  }
-		},
-		
-		"where":{
-		  "type":"string",
-		  "description": "过滤条件"
-		},
-		"columns": {
-			"type": "array",
-			"minItems": 1,
-			"title": "The columns Schema",
-			"items": {
-				"type": "object",
-				"title": "columns",
-				"description": "output field",
-				"required": [
-				],
-				"properties": {
-				
-					"outName": {
-						"type": "string",
-						"pattern":"^[A-Za-z0-9_]*$",
-						"title": "outName"
-					},
-					"name": {
-						"type": "string",
-						"title": "name",
-						"description": "字段名称"
-					},
-					"function": {
-					   "title": "function",
-					   "description": "前端传递该结构至后端，后端返回嵌套结果，前端将结果存放在name字段中",
-					   "$ref": "#/function"
-					},
-					"type": {
-						"type": "string",
-						"minLength": 1,
-						"title": "type",
-						"default": "STRING",
-						"enum":["CHAR","VARCHAR","STRING","BOOLEAN","BINARY","VARBINARY","BYTES","DECIMAL","TINYINT","SMALLINT","INT","BIGINT","FLOAT","DOUBLE","DATE","TIME","TIMESTAMP","TIMESTAMP(3)","TIMESTAMP_LTZ(3)","INTERVAL","ARRAY","MULTISET","MAP","ROW","RAW"],
-						"examples": [
-							"STRING",
-							"INT",
-							"TIMESTAMP(3)"
-						]
-					},
-					"flag":{
-						"type": "boolean",
-						"default": true,
-						"title": "checked ?"
-					},
-					"decs":{
-						"type": "string",
-						"description": "备注"
-					},
-					"inputTable":{
-						"type": "string",
-						"enum":["primaryInput","secondInput"]
-					}
-				}
-			}
-		}
-	  },
-	   "function": {
-		   "type": "array",
-			"items": {
-				"type": "object",
-				"title": "_",
-				"properties": {
-					"functionName": {
-						"type": "string",
-						"title": "functionName"
-					},
-					"recursionFunc": {
-					   "title": "function",
-					   "$ref": "#/function"
-					},
-					"recursionName": {
-					   "title": "name",
-					   "$ref": "#/name"
-					}
-				}
-			}
-		},
-		"name": {
-		   "type": "array",
-			"items": {
-				"title": "_",
-				"type": "object",
-				"properties": {
-					"name": {
-						"type": "array",
-						"items": {
-							"title": "_",
-						    "type": "string"
+				"joinType": {
+					"type": "string",
+					"enum": [
+						"INNER",
+						"LEFT",
+						"RIGHT",
+						"FULL OUTER",
+						"LEFT OUTER",
+						"RIGHT OUTER",
+						"CROSS",
+						""
+					],
+					"description": "选择连接方式"
+				},
+				"systemTimeColumn": {
+					"type": "string",
+					"description": "设置时间基准列，需要时间属性字段",
+					"format": "autoinput",
+					"autoinput": {
+						"name": "my-autoComplete",
+						"function": {
+							"name": "getFieldsByConfig"
 						}
-					},
-					"recursionFunc": {
-					   "title": "function",
-					   "$ref": "#/function"
-					},
-					"recursionName": {
-					   "title": "name",
-					   "$ref": "#/name"
+					}
+				},
+				"columnList": {
+					"type": "array",
+					"minItems": 1,
+					"items": {
+						"type": "object",
+						"description": "设置连接字段",
+						"required": [
+							"onLeftColumn",
+							"onRightColumn"
+						],
+						"properties": {
+							"onLeftColumn": {
+								"type": "string",
+								"description": "左表的连接字段",
+								"format": "autoinput",
+								"autoinput": {
+									"name": "my-autoComplete",
+									"function": {
+										"name": "getFieldsByConfig"
+									}
+								}
+							},
+							"onRightColumn": {
+								"type": "string",
+								"description": "右表的连接字段",
+								"format": "autoinput",
+								"autoinput": {
+									"name": "my-autoComplete",
+									"function": {
+										"name": "getFieldsByConfig"
+									}
+								}
+							}
+						}
+					}
+				},
+				"hints": {
+					"description": "选择提示字段",
+					"type": "array",
+					"items": {
+						"type": "object",
+						"title": "hints",
+						"properties": {
+							"joinHints": {
+								"type": "string",
+								"enum": [
+									"BROADCAST",
+									"SHUFFLE_HASH",
+									"SHUFFLE_MERGE",
+									"NEST_LOOP"
+								],
+								"description": "选择连接提示"
+							},
+							"joinColumn": {
+								"description": "选择提示字段",
+								"type": "array",
+								"items": {
+									"type": "string",
+									"pattern": "^[A-Za-z0-9_]*$"
+								}
+							}
+						}
+					}
+				},
+				"where": {
+					"type": "string",
+					"description": "过滤条件"
+				}
+			}
+		},
+		"output": {
+			"type": "object",
+			"properties": {
+				"columns": {
+					"type": "array",
+					"title": "mapping",
+					"items": {
+						"type": "object",
+						"title": "columns",
+						"properties": {
+							"outName": {
+								"type": "string",
+								"pattern": "^[A-Za-z0-9_]*$",
+								"title": "outName"
+							},
+							"name": {
+								"type": "string",
+								"title": "name",
+								"description": "字段名称"
+							},
+							"function": {
+								"title": "function",
+								"description": "前端传递该结构至后端，后端返回嵌套结果，前端将结果存放在name字段中",
+								"$ref": "#/function"
+							},
+							"type": {
+								"type": "string",
+								"minLength": 1,
+								"title": "type",
+								"default": "STRING",
+								"enum": [
+									"CHAR",
+									"VARCHAR",
+									"STRING",
+									"BOOLEAN",
+									"BINARY",
+									"VARBINARY",
+									"BYTES",
+									"DECIMAL",
+									"TINYINT",
+									"SMALLINT",
+									"INT",
+									"BIGINT",
+									"FLOAT",
+									"DOUBLE",
+									"DATE",
+									"TIME",
+									"TIMESTAMP",
+									"TIMESTAMP(3)",
+									"TIMESTAMP_LTZ(3)",
+									"INTERVAL",
+									"ARRAY",
+									"MULTISET",
+									"MAP",
+									"ROW",
+									"RAW"
+								],
+								"examples": [
+									"STRING",
+									"INT",
+									"TIMESTAMP(3)"
+								]
+							},
+							"desc": {
+								"type": "string",
+								"description": "备注"
+							},
+							"inputTable": {
+								"type": "string",
+								"enum": [
+									"primaryInput",
+									"secondInput"
+								]
+							}
+						}
+					}
+				},
+				"source": {
+					"type": "array",
+					"title": "source",
+					"items": {
+						"type": "object",
+						"title": "schema",
+						"properties": {
+							"name": {
+								"type": "string",
+								"minLength": 1,
+								"pattern": "^[A-Za-z0-9_]*$",
+								"title": "name",
+								"description": "field name"
+							},
+							"type": {
+								"type": "string",
+								"minLength": 1,
+								"title": "type",
+								"default": "STRING",
+								"enum": [
+									"CHAR",
+									"VARCHAR",
+									"STRING",
+									"BOOLEAN",
+									"BINARY",
+									"VARBINARY",
+									"BYTES",
+									"DECIMAL",
+									"TINYINT",
+									"SMALLINT",
+									"INT",
+									"BIGINT",
+									"FLOAT",
+									"DOUBLE",
+									"DATE",
+									"TIME",
+									"TIMESTAMP",
+									"TIMESTAMP(3)",
+									"TIMESTAMP_LTZ(3)",
+									"INTERVAL",
+									"ARRAY",
+									"MULTISET",
+									"MAP",
+									"ROW",
+									"RAW"
+								]
+							},
+							"desc": {
+								"type": "string",
+								"description": "备注"
+							}
+						}
 					}
 				}
 			}
 		}
+	},
+	"function": {
+		"type": "array",
+		"items": {
+			"type": "object",
+			"title": "_",
+			"properties": {
+				"functionName": {
+					"type": "string",
+					"title": "functionName"
+				},
+				"recursionFunc": {
+					"title": "function",
+					"$ref": "#/function"
+				},
+				"recursionName": {
+					"title": "name",
+					"$ref": "#/name"
+				}
+			}
+		}
+	},
+	"name": {
+		"type": "array",
+		"items": {
+			"title": "_",
+			"type": "object",
+			"properties": {
+				"name": {
+					"type": "array",
+					"items": {
+						"title": "_",
+						"type": "string"
+					}
+				},
+				"recursionFunc": {
+					"title": "function",
+					"$ref": "#/function"
+				},
+				"recursionName": {
+					"title": "name",
+					"$ref": "#/name"
+				}
+			}
+		}
+	}
 }
