@@ -26,9 +26,15 @@ import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.apache.flink.table.api.bridge.java.internal.StreamTableEnvironmentImpl;
 import org.apache.flink.table.delegation.ExtendedOperationExecutor;
 import org.apache.flink.table.delegation.Planner;
+import org.apache.flink.table.planner.delegation.ParserImpl;
 import org.apache.flink.table.planner.delegation.PlannerBase;
 
 import cn.hutool.core.util.ReflectUtil;
+import org.apache.flink.table.planner.parse.ExtendedParseStrategy;
+import org.dinky.utils.DinkyReflectUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** */
 public abstract class AbstractCustomTableEnvironment
@@ -55,9 +61,19 @@ public abstract class AbstractCustomTableEnvironment
         return ((StreamTableEnvironmentImpl) streamTableEnvironment).getPlanner();
     }
 
-    @Override
-    public void injectParser(CustomParser parser) {
-        ReflectUtil.setFieldValue(getPlanner(), "parser", new ParserWrapper(parser));
+    public void injectParseStrategies(List<ExtendedParseStrategy> extendedParseStrategies) {
+        Planner planner = getPlanner();
+        DinkyReflectUtil.removeFinalStaticField(ParserImpl.class, "PARSE_STRATEGIES");
+        List<ExtendedParseStrategy> parseStrategies =
+                (List<ExtendedParseStrategy>) ReflectUtil.getFieldValue(planner.getParser(), "PARSE_STRATEGIES");
+        List<ExtendedParseStrategy> newParseStrategies = new ArrayList<>(parseStrategies);
+        for (ExtendedParseStrategy extendedParseStrategy : extendedParseStrategies) {
+            if (!newParseStrategies.contains(extendedParseStrategy)){
+                newParseStrategies.add(extendedParseStrategy);
+            }
+        }
+
+        ReflectUtil.setFieldValue(planner.getParser(), "PARSE_STRATEGIES", newParseStrategies);
     }
 
     @Override

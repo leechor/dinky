@@ -20,13 +20,16 @@
 package org.dinky.executor;
 
 import org.apache.flink.table.api.TableEnvironment;
+import org.apache.flink.table.planner.parse.ExtendedParseStrategy;
+
+import java.util.List;
 
 /** */
 public interface TableEnvironmentInstance {
 
     TableEnvironment getTableEnvironment();
 
-    default void injectParser(CustomParser parser) {}
+    default void injectParseStrategies(List<ExtendedParseStrategy> extendedParseStrategies) {}
 
     default void injectExtendedExecutor(CustomExtendedOperationExecutor extendedExecutor) {}
 }

@@ -19,9 +19,12 @@
 
 package org.apache.calcite.sql;
 
+import cn.hutool.core.util.ReflectUtil;
+import org.apache.flink.table.delegation.Parser;
+import org.apache.flink.table.planner.delegation.ParserImpl;
+import org.apache.flink.table.planner.parse.CalciteParser;
 import org.dinky.context.CustomTableEnvironmentContext;
 import org.dinky.context.RowLevelPermissionsContext;
-import org.dinky.executor.ExtendedParser;
 
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.validate.SqlValidator;
@@ -31,6 +34,7 @@ import org.apache.calcite.util.ImmutableNullableList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
 
@@ -133,14 +137,10 @@ public class SqlSelect extends SqlCall {
         if (permissionsMap != null) {
             String permissionsStatement = permissionsMap.get(tableName);
             if (permissionsStatement != null && !"".equals(permissionsStatement)) {
-                if (CustomTableEnvironmentContext.get().getParser() instanceof ExtendedParser) {
-                    ExtendedParser extendedParser =
-                            (ExtendedParser) CustomTableEnvironmentContext.get().getParser();
-                    permissions =
-                            (SqlBasicCall) (extendedParser.getCustomParser()).parseExpression(permissionsStatement);
-                } else {
-                    throw new RuntimeException("CustomParser is not set");
-                }
+                Parser parser = CustomTableEnvironmentContext.get().getParser();
+                permissions =
+                        (SqlBasicCall) (getCalciteParserSupplier(parser).get()).parseExpression(permissionsStatement);
+
             }
         }
 
@@ -153,6 +153,17 @@ public class SqlSelect extends SqlCall {
 
         return buildWhereClause(where, permissions);
     }
+
+    public static Supplier<CalciteParser> getCalciteParserSupplier(Parser parser) {
+        if (parser instanceof ParserImpl) {
+            ParserImpl parserImpl = (ParserImpl) parser;
+            return (Supplier<CalciteParser>) ReflectUtil.getFieldValue(parserImpl, "calciteParserSupplier");
+        } else {
+            throw new RuntimeException("Unsupported parser type for getCalciteParserSupplier: "
+                    + parser.getClass().getName());
+        }
+    }
+
 
     /** Rebuild the where clause */
     private SqlNode buildWhereClause(SqlNode where, SqlBasicCall permissions) {

@@ -26,7 +26,7 @@ import org.dinky.data.model.LineageRel;
 import org.dinky.data.result.SqlExplainResult;
 import org.dinky.interceptor.FlinkInterceptor;
 import org.dinky.interceptor.FlinkInterceptorResult;
-import org.dinky.parser.CustomParserImpl;
+import org.dinky.trans.CreateTemporalTableFunctionParseStrategy;
 import org.dinky.utils.KerberosUtil;
 
 import org.apache.flink.api.common.ExecutionConfig;
@@ -135,8 +135,7 @@ public abstract class Executor {
 
         tableEnvironment = createCustomTableEnvironment();
         CustomTableEnvironmentContext.set(tableEnvironment);
-        tableEnvironment.injectParser(
-                new CustomParserImpl(tableEnvironment.getPlanner().getParser()));
+        tableEnvironment.injectParseStrategies(Arrays.asList(CreateTemporalTableFunctionParseStrategy.INSTANCE));
         tableEnvironment.injectExtendedExecutor(new CustomExtendedOperationExecutorImpl(this));
 
         Configuration configuration = tableEnvironment.getConfig().getConfiguration();
