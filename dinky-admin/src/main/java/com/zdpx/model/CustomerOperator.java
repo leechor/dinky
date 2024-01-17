@@ -1,13 +1,14 @@
 package com.zdpx.model;
 
+import java.io.Serializable;
+import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
 
-import java.io.Serializable;
-import java.util.Date;
+import lombok.Data;
 
 @Data
 @TableName("zdpx_customer_operator")
@@ -33,16 +34,30 @@ public class CustomerOperator implements Serializable {
     private Date deleteTime;
 
     @TableField(exist = false)
-    private String specification;//从文件中动态读取，不许要存入数据库
+    private String specification; // 从文件中动态读取，不许要存入数据库
 
     @Override
     public String toString() {
-        return "{\"name\": \""+name+"\","
-                + "\"code\": \""+code+"\","
-                + "\"feature\": \""+feature+"\","
-                + "\"group\":\""+groups+"\","
-                + "\"type\":\""+type+"\","
-                + "\"ports\":"+ports+","
-                + "\"specification\": "+specification+"}";
+        return "{\"name\": \""
+                + name
+                + "\","
+                + "\"code\": \""
+                + code
+                + "\","
+                + "\"feature\": \""
+                + feature
+                + "\","
+                + "\"group\":\""
+                + groups
+                + "\","
+                + "\"type\":\""
+                + type
+                + "\","
+                + "\"ports\":"
+                + ports
+                + ","
+                + "\"specification\": "
+                + specification
+                + "}";
     }
 }

@@ -1,19 +1,17 @@
-
 package com.zdpx.coder.operators.dataSource.customer;
 
-import com.zdpx.coder.graph.InputPortObject;
-import com.zdpx.coder.operator.OperatorFeature;
-import com.zdpx.coder.operators.dataSource.AbstractSqlTable;
-import lombok.extern.slf4j.Slf4j;
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 
 import java.util.Map;
 import java.util.Optional;
 
-import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
+import com.zdpx.coder.graph.InputPortObject;
+import com.zdpx.coder.operator.OperatorFeature;
+import com.zdpx.coder.operators.dataSource.AbstractSqlTable;
 
-/**
- *
- */
+import lombok.extern.slf4j.Slf4j;
+
+/** */
 @Slf4j
 public class CustomerSinkOperator extends AbstractSqlTable {
 
@@ -26,15 +24,13 @@ public class CustomerSinkOperator extends AbstractSqlTable {
 
     @Override
     public Optional<OperatorFeature> getOperatorFeature() {
-        OperatorFeature operatorFeature = OperatorFeature.builder()
-                .icon("icon-tanzichan")
-                .build();
+        OperatorFeature operatorFeature = OperatorFeature.builder().icon("icon-tanzichan").build();
         return Optional.of(operatorFeature);
     }
 
     @Override
     protected void execute(Map<String, Object> dataModel) {
-        processLogic( null, dataModel);
+        processLogic(null, dataModel);
     }
 
     @Override

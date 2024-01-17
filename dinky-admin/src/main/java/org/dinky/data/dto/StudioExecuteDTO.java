@@ -112,7 +112,7 @@ public class StudioExecuteDTO extends AbstractStatementDTO {
         return taskId == null ? getId() : taskId;
     }
 
-    public StudioExecuteDTO task2DTO(Task task){
+    public StudioExecuteDTO task2DTO(Task task) {
         StudioExecuteDTO studioExecuteDTO = new StudioExecuteDTO();
         studioExecuteDTO.setConfigJson(task.getConfigJson());
         studioExecuteDTO.setDialect(task.getDialect());
@@ -124,5 +124,4 @@ public class StudioExecuteDTO extends AbstractStatementDTO {
 
         return studioExecuteDTO;
     }
-
 }

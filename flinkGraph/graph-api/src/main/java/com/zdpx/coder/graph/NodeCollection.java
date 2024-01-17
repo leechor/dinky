@@ -1,10 +1,10 @@
 package com.zdpx.coder.graph;
 
-import com.zdpx.coder.operator.Identifier;
-import com.zdpx.coder.operator.Operator;
-
 import java.util.List;
 import java.util.Set;
+
+import com.zdpx.coder.operator.Identifier;
+import com.zdpx.coder.operator.Operator;
 
 public interface NodeCollection extends Identifier {
     boolean isExpanded();
@@ -14,6 +14,7 @@ public interface NodeCollection extends Identifier {
     Set<Operator> getOperators();
 
     Set<NodeCollection> getProcessPackages();
+
     Set<NodeCollection> getProcessGroup();
 
     void setChildren(Set<Node> originOperatorWrappers);
@@ -25,5 +26,4 @@ public interface NodeCollection extends Identifier {
     List<Connection> getConnects();
 
     NodeWrapper getNodeWrapper();
-
 }

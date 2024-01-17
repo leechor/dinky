@@ -1,39 +1,32 @@
 package com.zdpx.coder.operators;
 
-import com.zdpx.coder.graph.CheckInformationModel;
-import com.zdpx.coder.operator.Operator;
-import com.zdpx.coder.Specifications;
-import com.zdpx.coder.operator.OperatorFeature;
-import com.zdpx.coder.utils.TemplateUtils;
 import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 
 import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.*;
 
-/**
- * 引入jar或 udf
- */
+import com.zdpx.coder.Specifications;
+import com.zdpx.coder.graph.CheckInformationModel;
+import com.zdpx.coder.operator.Operator;
+import com.zdpx.coder.operator.OperatorFeature;
+import com.zdpx.coder.utils.TemplateUtils;
+
+/** 引入jar或 udf */
 public class AddJarOperator extends Operator {
 
     public static final String TEMPLATE =
             String.format(
-                    "<#list jars as jar>ADD JAR '${jar}'<#sep>;</#sep><#rt></#list>"
-                    ,
+                    "<#list jars as jar>ADD JAR '${jar}'<#sep>;</#sep><#rt></#list>",
                     Specifications.TEMPLATE_FILE);
 
     @Override
-    protected void initialize() {
-
-    }
+    protected void initialize() {}
 
     @Override
     public Optional<OperatorFeature> getOperatorFeature() {
-        OperatorFeature operatorFeature = OperatorFeature.builder()
-                .icon("icon-addjar")
-                .build();
+        OperatorFeature operatorFeature = OperatorFeature.builder().icon("icon-addjar").build();
         return Optional.of(operatorFeature);
     }
 
@@ -52,11 +45,7 @@ public class AddJarOperator extends Operator {
         return getFirstParameterMap();
     }
 
-    /**
-     * 校验内容：
-     * jar的路径是否存在
-     * 是否为一个jar
-     */
+    /** 校验内容： jar的路径是否存在 是否为一个jar */
     @Override
     protected void generateCheckInformation(Map<String, Object> map) {
 
@@ -80,7 +69,7 @@ public class AddJarOperator extends Operator {
             }
         }
 
-        if(!msg.isEmpty()){
+        if (!msg.isEmpty()) {
             model.setColor(RED);
             model.setOperatorErrorMsg(msg);
         }
@@ -93,9 +82,9 @@ public class AddJarOperator extends Operator {
         this.getSceneCode().getGenerateResult().generate(sqlStr);
     }
 
-    //动态加载Jar
+    // 动态加载Jar
     public static void loadJar(URL jarUrl) {
-        //从URLClassLoader类加载器中获取类的addURL方法
+        // 从URLClassLoader类加载器中获取类的addURL方法
         Method method = null;
         try {
             method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
@@ -105,13 +94,13 @@ public class AddJarOperator extends Operator {
         // 获取方法的访问权限
         boolean accessible = method.isAccessible();
         try {
-            //修改访问权限为可写
+            // 修改访问权限为可写
             if (accessible == false) {
                 method.setAccessible(true);
             }
             // 获取系统类加载器
             URLClassLoader classLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-            //jar路径加入到系统url路径里
+            // jar路径加入到系统url路径里
             method.invoke(classLoader, jarUrl);
         } catch (Exception e) {
             e.printStackTrace();

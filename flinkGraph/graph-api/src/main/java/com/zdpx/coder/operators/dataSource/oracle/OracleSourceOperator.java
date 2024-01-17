@@ -19,19 +19,17 @@
 
 package com.zdpx.coder.operators.dataSource.oracle;
 
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
+
+import java.util.Map;
+import java.util.Optional;
+
 import com.zdpx.coder.graph.OutputPortObject;
 import com.zdpx.coder.operator.OperatorFeature;
 import com.zdpx.coder.operator.TableInfo;
 import com.zdpx.coder.operators.dataSource.AbstractSqlTable;
 
-import java.util.Map;
-import java.util.Optional;
-
-import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
-
-/**
- *
- */
+/** */
 public class OracleSourceOperator extends AbstractSqlTable {
 
     private OutputPortObject<TableInfo> outputPortObject;
@@ -42,14 +40,12 @@ public class OracleSourceOperator extends AbstractSqlTable {
     protected void initialize() {
         outputPortObject = new OutputPortObject<>(this, OUTPUT_0);
         getOutputPorts().put(OUTPUT_0, outputPortObject);
-        this.type= "Oracle";
+        this.type = "Oracle";
     }
 
     @Override
     public Optional<OperatorFeature> getOperatorFeature() {
-        OperatorFeature operatorFeature = OperatorFeature.builder()
-                .icon("icon-xingzhuang")
-                .build();
+        OperatorFeature operatorFeature = OperatorFeature.builder().icon("icon-xingzhuang").build();
         return Optional.of(operatorFeature);
     }
 

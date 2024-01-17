@@ -19,20 +19,19 @@
 
 package com.zdpx.coder.operators;
 
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
+
 import java.text.MessageFormat;
-import java.util.*;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zdpx.coder.graph.CheckInformationModel;
-import com.zdpx.coder.operator.*;
 import com.zdpx.coder.Specifications;
+import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.graph.InputPortObject;
 import com.zdpx.coder.graph.OutputPortObject;
 import com.zdpx.coder.utils.NameHelper;
 import com.zdpx.coder.utils.TemplateUtils;
-import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 
 /**
  * <b>Complex Event Processing</b> operator, which allows for pattern detection in event streams.
@@ -114,9 +113,8 @@ public class CepOperator extends Operator {
 
     @Override
     public Optional<OperatorFeature> getOperatorFeature() {
-        OperatorFeature operatorFeature = OperatorFeature.builder()
-                .icon("icon-cepfuzashijianchuli")
-                .build();
+        OperatorFeature operatorFeature =
+                OperatorFeature.builder().icon("icon-cepfuzashijianchuli").build();
         return Optional.of(operatorFeature);
     }
 
@@ -133,27 +131,27 @@ public class CepOperator extends Operator {
     @Override
     protected Map<String, Object> formatOperatorParameter() {
         Map<String, Object> parameters = getFirstParameterMap();
-        final String partition = (String) parameters.get(PARTITION);//定义表的逻辑分区
+        final String partition = (String) parameters.get(PARTITION); // 定义表的逻辑分区
 
-        String orderBy = (String) parameters.get(ORDER_BY);//指定传入行的排序方式
+        String orderBy = (String) parameters.get(ORDER_BY); // 指定传入行的排序方式
 
         @SuppressWarnings("unchecked")
-        List<Map<String, Object>> defineList = (List<Map<String, Object>>) parameters.get(DEFINES);//定义模式的具体含义
+        List<Map<String, Object>> defineList =
+                (List<Map<String, Object>>) parameters.get(DEFINES); // 定义模式的具体含义
         List<Define> defines =
-                mapper.convertValue(defineList, new TypeReference<List<Define>>() {
-                });
+                mapper.convertValue(defineList, new TypeReference<List<Define>>() {});
 
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> patternList =
-                (List<Map<String, Object>>) parameters.get(PATTERNS);//定义事件
+                (List<Map<String, Object>>) parameters.get(PATTERNS); // 定义事件
         List<Pattern> patterns =
-                mapper.convertValue(patternList, new TypeReference<List<Pattern>>() {
-                });
+                mapper.convertValue(patternList, new TypeReference<List<Pattern>>() {});
 
         SkipStrategy skipStrategy =
-                mapper.convertValue(parameters.get(SKIP_STRATEGY), SkipStrategy.class);//AFTER 跳过策略
+                mapper.convertValue(
+                        parameters.get(SKIP_STRATEGY), SkipStrategy.class); // AFTER 跳过策略
 
-        //算子预览的特殊处理
+        // 算子预览的特殊处理
         TableInfo tableInfo = null;
         String tableName = TABLE_NAME_DEFAULT;
         List<Column> columns = new ArrayList<>();
@@ -172,12 +170,16 @@ public class CepOperator extends Operator {
         @SuppressWarnings("unchecked")
         List<FieldFunction> ffs =
                 FieldFunction.analyzeParameters(
-                        outputTableName.toString(), (List<Map<String, Object>>) parameters.get(COLUMNS), false, columns,config); //根据匹配成功的输入事件构造输出事件,字段名不加表名
+                        outputTableName.toString(),
+                        (List<Map<String, Object>>) parameters.get(COLUMNS),
+                        false,
+                        columns,
+                        config); // 根据匹配成功的输入事件构造输出事件,字段名不加表名
 
-        //4 定义匹配成功后的输出方式  ONE ROW PER MATCH/ALL ROWS PER MATCH
+        // 4 定义匹配成功后的输出方式  ONE ROW PER MATCH/ALL ROWS PER MATCH
         String outPutMode = (String) parameters.get(OUT_PUT_MODE);
 
-        //6 定义匹配事件的最大时间跨度,格式： WITHIN INTERVAL "string" timeUnit
+        // 6 定义匹配事件的最大时间跨度,格式： WITHIN INTERVAL "string" timeUnit
         String timeSpan = null;
         String timeUnit = null;
         if (!parameters.get(TIME_SPAN).toString().equals("0")) {
@@ -202,18 +204,15 @@ public class CepOperator extends Operator {
 
         parameterMap.put(TABLE_INFO, tableInfo);
         parameterMap.put(ID, parameters.get(ID));
-        parameterMap.put(CONFIG,config);
+        parameterMap.put(CONFIG, config);
 
         return parameterMap;
     }
 
     /**
      * 校验内容：
-     * <p>
-     * 输入节点是否包含时间属性字段
-     * ORDER BY需要为时间属性字段
-     * 使用了未定义的事件
-     * partition、orderBy不属于输入参数
+     *
+     * <p>输入节点是否包含时间属性字段 ORDER BY需要为时间属性字段 使用了未定义的事件 partition、orderBy不属于输入参数
      */
     @Override
     protected void generateCheckInformation(Map<String, Object> map) {
@@ -225,11 +224,22 @@ public class CepOperator extends Operator {
 
         Map<String, List<String>> portInformation = new HashMap<>();
         List<String> list = new ArrayList<>();
-        List<Column> collect = ((TableInfo) map.get(TABLE_INFO)).getColumns().stream().filter(item -> item.getType()!=null&&item.getType().contains("TIMESTAMP")).collect(Collectors.toList());
+        List<Column> collect =
+                ((TableInfo) map.get(TABLE_INFO))
+                        .getColumns().stream()
+                                .filter(
+                                        item ->
+                                                item.getType() != null
+                                                        && item.getType().contains("TIMESTAMP"))
+                                .collect(Collectors.toList());
         if (collect.isEmpty()) {
             list.add("CEP算子入参需要包含时间属性字段，类型包括TIMESTAMP(3)、TIMESTAMP_LTZ(3)等");
-        }else{
-            Column column = collect.stream().filter(item -> item.getName().equals(map.get(ORDER_BY).toString())).findFirst().orElse(null);
+        } else {
+            Column column =
+                    collect.stream()
+                            .filter(item -> item.getName().equals(map.get(ORDER_BY).toString()))
+                            .findFirst()
+                            .orElse(null);
             if (column == null) {
                 list.add("ORDER BY 对应的字段，必须是时间属性字段");
             }
@@ -238,27 +248,39 @@ public class CepOperator extends Operator {
         @SuppressWarnings("unchecked")
         List<String> defines = (List<String>) map.get(DEFINES);
         String patterns = map.get(PATTERNS).toString();
-        String s = defines.stream().filter(item -> !patterns.contains(item.split(" AS")[0])).findFirst().orElse(null);
+        String s =
+                defines.stream()
+                        .filter(item -> !patterns.contains(item.split(" AS")[0]))
+                        .findFirst()
+                        .orElse(null);
         if (s != null) {
             list.add("DEFINE 使用了 PATTERN 中未声明的事件");
         }
 
         @SuppressWarnings("unchecked")
-        List<Map<String, Object>> config = (List<Map<String, Object>>)map.get(CONFIG);
-        Object par = config.stream().filter(item -> item.get(NAME).equals(map.get(PARTITION))).findFirst().orElse(null);
-        Object ord = config.stream().filter(item -> item.get(NAME).equals(map.get(ORDER_BY))).findFirst().orElse(null);
-        if(par==null){
+        List<Map<String, Object>> config = (List<Map<String, Object>>) map.get(CONFIG);
+        Object par =
+                config.stream()
+                        .filter(item -> item.get(NAME).equals(map.get(PARTITION)))
+                        .findFirst()
+                        .orElse(null);
+        Object ord =
+                config.stream()
+                        .filter(item -> item.get(NAME).equals(map.get(ORDER_BY)))
+                        .findFirst()
+                        .orElse(null);
+        if (par == null) {
             list.add("输入连接桩中未寻找到 PARTITION 中定义的字段");
         }
-        if(ord==null){
+        if (ord == null) {
             list.add("输入连接桩中未寻找到 ORDER_BY 中定义的字段");
         }
 
-        if(!list.isEmpty()){
+        if (!list.isEmpty()) {
             model.setColor(RED);
             edge.add(getInputPorts().get(INPUT_0).getConnection().getId());
             model.setEdge(edge);
-            portInformation.put(INPUT_0,list);
+            portInformation.put(INPUT_0, list);
             model.setPortInformation(portInformation);
         }
         this.getSceneCode().getGenerateResult().addCheckInformation(model);
@@ -272,25 +294,31 @@ public class CepOperator extends Operator {
         String sqlStr = TemplateUtils.format(this.getClass().getName(), result, TEMPLATE);
         this.getSceneCode().getGenerateResult().generate(sqlStr);
         @SuppressWarnings("unchecked")
-        List<Column> columns = Specifications.convertFieldFunctionToColumns((List<FieldFunction>) parameterMap.get(COLUMNS));
+        List<Column> columns =
+                Specifications.convertFieldFunctionToColumns(
+                        (List<FieldFunction>) parameterMap.get(COLUMNS));
 
         TableInfo tableInfo = (TableInfo) parameterMap.get(TABLE_INFO);
         if (parameterMap.get(TABLE_INFO) != null) {
-            Column first = tableInfo.getColumns().stream().filter(t -> t.getName().equals(parameterMap.get(PARTITION))).findFirst().orElse(null);
-            if(first!=null){
+            Column first =
+                    tableInfo.getColumns().stream()
+                            .filter(t -> t.getName().equals(parameterMap.get(PARTITION)))
+                            .findFirst()
+                            .orElse(null);
+            if (first != null) {
                 columns.removeIf(f -> f.getName().equals(first.getName()));
                 columns.add(first);
             }
         }
-        OperatorUtil.postTableOutput(outputPortObject, parameterMap.get(OUTPUT_TABLE_NAME).toString(), columns);
+        OperatorUtil.postTableOutput(
+                outputPortObject, parameterMap.get(OUTPUT_TABLE_NAME).toString(), columns);
     }
 
     @SuppressWarnings("unchecked")
     private <T> List<T> getSpecialTypeList(
             Map<String, Object> parameters, String key, Class<T> type) {
         List<Map<String, Object>> measureList = (List<Map<String, Object>>) parameters.get(key);
-        return mapper.convertValue(measureList, new TypeReference<List<T>>() {
-        });
+        return mapper.convertValue(measureList, new TypeReference<List<T>>() {});
     }
 
     /**
@@ -307,13 +335,9 @@ public class CepOperator extends Operator {
      */
     static class Define {
         private static final String AS = "AS";
-        /**
-         * Pattern Variable
-         */
+        /** Pattern Variable */
         private String variable;
-        /**
-         * condition like where sql statement.
-         */
+        /** condition like where sql statement. */
         private String condition;
 
         public Define() {
@@ -349,13 +373,9 @@ public class CepOperator extends Operator {
     }
 
     static class Pattern {
-        /**
-         * pattern variable name
-         */
+        /** pattern variable name */
         private String variable;
-        /**
-         * pattern variable quantifier
-         */
+        /** pattern variable quantifier */
         private String quantifier;
 
         public Pattern() {
@@ -417,29 +437,29 @@ public class CepOperator extends Operator {
          */
         public static final String FIRST = "FIRST";
 
-        /**
-         * strategy
-         */
+        /** strategy */
         private String strategy;
-        /**
-         * pattern variable
-         */
+        /** pattern variable */
         private String variable;
 
         public String generateStatement() {
             switch (strategy) {
-                case LAST_ROW: {
-                    return "PAST LAST ROW";
-                }
-                case NEXT_ROW: {
-                    return "TO NEXT ROW";
-                }
-                case LAST: {
-                    return "TO LAST " + variable;
-                }
-                case FIRST: {
-                    return "TO FIRST " + variable;
-                }
+                case LAST_ROW:
+                    {
+                        return "PAST LAST ROW";
+                    }
+                case NEXT_ROW:
+                    {
+                        return "TO NEXT ROW";
+                    }
+                case LAST:
+                    {
+                        return "TO LAST " + variable;
+                    }
+                case FIRST:
+                    {
+                        return "TO FIRST " + variable;
+                    }
                 default:
                     return "";
             }

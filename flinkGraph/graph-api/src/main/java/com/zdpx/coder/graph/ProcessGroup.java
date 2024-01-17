@@ -1,15 +1,13 @@
 package com.zdpx.coder.graph;
 
-import com.zdpx.coder.operator.Operator;
-
-import java.util.*;
 import java.util.stream.Collectors;
+
+import com.zdpx.coder.operator.Operator;
 
 public class ProcessGroup extends Operator implements NodeCollection {
     private boolean expanded;
 
     // region getter/setter
-
 
     public boolean isExpanded() {
         return expanded;
@@ -61,8 +59,7 @@ public class ProcessGroup extends Operator implements NodeCollection {
     }
 
     @Override
-    protected void initialize() {
-    }
+    protected void initialize() {}
 
     @Override
     protected Map<String, String> declareUdfFunction() {
@@ -80,12 +77,8 @@ public class ProcessGroup extends Operator implements NodeCollection {
     }
 
     @Override
-    protected void generateCheckInformation(Map<String, Object> map) {
-    }
+    protected void generateCheckInformation(Map<String, Object> map) {}
 
     @Override
-    protected void execute(Map<String, Object> result) {
-    }
-
-
+    protected void execute(Map<String, Object> result) {}
 }

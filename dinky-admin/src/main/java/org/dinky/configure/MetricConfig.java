@@ -31,7 +31,6 @@ import javax.annotation.PreDestroy;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +49,7 @@ public class MetricConfig {
     /** Update status per second */
 
     /** Entering the lake every 10 states */
-//    @Scheduled(fixedRate = 10000)
+    //    @Scheduled(fixedRate = 10000)
     @PreDestroy
     public void writeScheduled() {
         PaimonUtil.writeMetrics(new ArrayList<>(METRICS_QUEUE));

@@ -19,24 +19,23 @@
 
 package com.zdpx.coder.operators;
 
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.zdpx.coder.operator.OperatorFeature;
-import com.zdpx.coder.operator.Parameter;
 import com.zdpx.coder.Specifications;
 import com.zdpx.coder.code.CodeJavaBuilder;
 import com.zdpx.coder.graph.OutputPortObject;
 import com.zdpx.coder.graph.PseudoData;
 import com.zdpx.coder.operator.Operator;
+import com.zdpx.coder.operator.OperatorFeature;
+import com.zdpx.coder.operator.Parameter;
 import com.zdpx.coder.operator.TableInfo;
 import com.zdpx.coder.utils.NameHelper;
-import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 
-/**
- *
- */
+/** */
 public class TableConvertToDataStreamOperator extends Operator {
 
     private OutputPortObject<TableInfo> outputPortObject;
@@ -50,9 +49,8 @@ public class TableConvertToDataStreamOperator extends Operator {
 
     @Override
     public Optional<OperatorFeature> getOperatorFeature() {
-        OperatorFeature operatorFeature = OperatorFeature.builder()
-                .icon("icon-TableConvertToRange-copy")
-                .build();
+        OperatorFeature operatorFeature =
+                OperatorFeature.builder().icon("icon-TableConvertToRange-copy").build();
         return Optional.of(operatorFeature);
     }
 
@@ -71,13 +69,9 @@ public class TableConvertToDataStreamOperator extends Operator {
         return null;
     }
 
-    /**
-     * 校验内容：无
-     */
+    /** 校验内容：无 */
     @Override
-    protected void generateCheckInformation(Map<String, Object> map) {
-
-    }
+    protected void generateCheckInformation(Map<String, Object> map) {}
 
     @Override
     protected void execute(Map<String, Object> map) {

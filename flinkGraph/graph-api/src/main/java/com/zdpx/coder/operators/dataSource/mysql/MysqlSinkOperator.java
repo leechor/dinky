@@ -19,19 +19,18 @@
 
 package com.zdpx.coder.operators.dataSource.mysql;
 
-import com.zdpx.coder.operator.OperatorFeature;
-import com.zdpx.coder.operators.dataSource.AbstractSqlTable;
-import com.zdpx.coder.graph.InputPortObject;
-import lombok.extern.slf4j.Slf4j;
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 
 import java.util.Map;
 import java.util.Optional;
 
-import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
+import com.zdpx.coder.graph.InputPortObject;
+import com.zdpx.coder.operator.OperatorFeature;
+import com.zdpx.coder.operators.dataSource.AbstractSqlTable;
 
-/**
- *
- */
+import lombok.extern.slf4j.Slf4j;
+
+/** */
 @Slf4j
 public class MysqlSinkOperator extends AbstractSqlTable {
 
@@ -40,15 +39,14 @@ public class MysqlSinkOperator extends AbstractSqlTable {
     @Override
     protected void initialize() {
         getInputPorts().put(INPUT_0, new InputPortObject<>(this, INPUT_0));
-        this.type= "Mysql";
+        this.type = "Mysql";
         setName("MysqlSink");
     }
 
     @Override
     public Optional<OperatorFeature> getOperatorFeature() {
-        OperatorFeature operatorFeature = OperatorFeature.builder()
-                .icon("icon-xingzhuang1")
-                .build();
+        OperatorFeature operatorFeature =
+                OperatorFeature.builder().icon("icon-xingzhuang1").build();
         return Optional.of(operatorFeature);
     }
 

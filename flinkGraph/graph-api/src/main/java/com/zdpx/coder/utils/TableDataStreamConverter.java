@@ -19,42 +19,50 @@
 
 package com.zdpx.coder.utils;
 
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.zdpx.coder.operator.Column;
 import com.zdpx.coder.operator.TableInfo;
-import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 
 /** */
 public class TableDataStreamConverter {
     private TableDataStreamConverter() {}
 
-    //source，使用此方法构建tableInfo
+    // source，使用此方法构建tableInfo
     public static TableInfo getTableInfo(Map<String, Object> dataModel) {
         @SuppressWarnings("unchecked")
-        List<Map<String, Object>> columns = ((Map<String,List<Map<String, Object>>>) dataModel.get(OUTPUT)).get(COLUMNS);
+        List<Map<String, Object>> columns =
+                ((Map<String, List<Map<String, Object>>>) dataModel.get(OUTPUT)).get(COLUMNS);
 
         List<Column> cs = new ArrayList<>();
         for (Map<String, Object> dm : columns) {
-            Object name = dm.get(OUT_NAME)== null||dm.get(OUT_NAME).equals("") ? dm.get(NAME):dm.get(OUT_NAME);
+            Object name =
+                    dm.get(OUT_NAME) == null || dm.get(OUT_NAME).equals("")
+                            ? dm.get(NAME)
+                            : dm.get(OUT_NAME);
             cs.add(new Column(name.toString(), dm.get(TYPE).toString()));
         }
         return TableInfo.newBuilder().name((String) dataModel.get(TABLE_NAME)).columns(cs).build();
     }
 
-    //根据原有的TableInfo和config中的字段构建新的TableInfo
-    public static TableInfo assembleNewTableInfo(TableInfo old,List<Map<String, Object>> count){
+    // 根据原有的TableInfo和config中的字段构建新的TableInfo
+    public static TableInfo assembleNewTableInfo(TableInfo old, List<Map<String, Object>> count) {
         List<Column> cs = new ArrayList<>();
         List<Column> columns = old.getColumns();
 
-        count.forEach(dm->{
-            columns.stream().filter(c-> c.getName().equals(dm.get(NAME))).forEach(c->{
-                cs.add(new Column(c.getName(), c.getType()));
-            });
-        });
+        count.forEach(
+                dm -> {
+                    columns.stream()
+                            .filter(c -> c.getName().equals(dm.get(NAME)))
+                            .forEach(
+                                    c -> {
+                                        cs.add(new Column(c.getName(), c.getType()));
+                                    });
+                });
         return TableInfo.newBuilder().name(old.getName()).columns(cs).build();
     }
-
 }

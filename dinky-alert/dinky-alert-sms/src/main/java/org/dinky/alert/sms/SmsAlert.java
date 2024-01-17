@@ -1,4 +1,4 @@
-///*
+/// *
 // *
 // *  Licensed to the Apache Software Foundation (ASF) under one or more
 // *  contributor license agreements.  See the NOTICE file distributed with
@@ -17,15 +17,15 @@
 // *
 // */
 //
-//package org.dinky.alert.sms;
+// package org.dinky.alert.sms;
 //
-//import org.dinky.alert.AbstractAlert;
-//import org.dinky.alert.AlertResult;
+// import org.dinky.alert.AbstractAlert;
+// import org.dinky.alert.AlertResult;
 //
-//import cn.hutool.json.JSONUtil;
+// import cn.hutool.json.JSONUtil;
 //
-///** SmsAlert */
-//public class SmsAlert extends AbstractAlert {
+/// ** SmsAlert */
+// public class SmsAlert extends AbstractAlert {
 //
 //    @Override
 //    public String getType() {
@@ -37,4 +37,4 @@
 //        SmsSender sender = new SmsSender(JSONUtil.toJsonStr(getConfig().getParam()));
 //        return sender.send(title, content);
 //    }
-//}
+// }

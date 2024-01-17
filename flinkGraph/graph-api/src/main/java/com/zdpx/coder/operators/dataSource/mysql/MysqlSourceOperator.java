@@ -19,19 +19,17 @@
 
 package com.zdpx.coder.operators.dataSource.mysql;
 
-import com.zdpx.coder.operator.OperatorFeature;
-import com.zdpx.coder.operators.dataSource.AbstractSqlTable;
-import com.zdpx.coder.graph.OutputPortObject;
-import com.zdpx.coder.operator.TableInfo;
 import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 
+import java.util.Map;
 import java.util.Optional;
 
-import java.util.Map;
+import com.zdpx.coder.graph.OutputPortObject;
+import com.zdpx.coder.operator.OperatorFeature;
+import com.zdpx.coder.operator.TableInfo;
+import com.zdpx.coder.operators.dataSource.AbstractSqlTable;
 
-/**
- *
- */
+/** */
 public class MysqlSourceOperator extends AbstractSqlTable {
 
     private OutputPortObject<TableInfo> outputPortObject;
@@ -42,21 +40,20 @@ public class MysqlSourceOperator extends AbstractSqlTable {
     protected void initialize() {
         outputPortObject = new OutputPortObject<>(this, OUTPUT_0);
         getOutputPorts().put(OUTPUT_0, outputPortObject);
-        this.type= "Mysql";
+        this.type = "Mysql";
         setName("MySQL数据源");
     }
 
     @Override
     public Optional<OperatorFeature> getOperatorFeature() {
-        OperatorFeature operatorFeature = OperatorFeature.builder()
-                .icon("icon-xingzhuang1")
-                .build();
+        OperatorFeature operatorFeature =
+                OperatorFeature.builder().icon("icon-xingzhuang1").build();
         return Optional.of(operatorFeature);
     }
 
     @Override
     protected void execute(Map<String, Object> dataModel) {
-        processLogic( outputPortObject, dataModel);
+        processLogic(outputPortObject, dataModel);
     }
 
     @Override

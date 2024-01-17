@@ -19,19 +19,17 @@
 
 package com.zdpx.coder.operators.dataSource.es;
 
-import com.zdpx.coder.operator.OperatorFeature;
-import com.zdpx.coder.operators.dataSource.AbstractSqlTable;
-import com.zdpx.coder.graph.OutputPortObject;
-import com.zdpx.coder.operator.TableInfo;
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 
 import java.util.Map;
 import java.util.Optional;
 
-import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
+import com.zdpx.coder.graph.OutputPortObject;
+import com.zdpx.coder.operator.OperatorFeature;
+import com.zdpx.coder.operator.TableInfo;
+import com.zdpx.coder.operators.dataSource.AbstractSqlTable;
 
-/**
- *
- */
+/** */
 public class ESSourceOperator extends AbstractSqlTable {
 
     private OutputPortObject<TableInfo> outputPortObject;
@@ -46,9 +44,8 @@ public class ESSourceOperator extends AbstractSqlTable {
 
     @Override
     public Optional<OperatorFeature> getOperatorFeature() {
-        OperatorFeature operatorFeature = OperatorFeature.builder()
-                .icon("icon-elasticsearchElasticsearch")
-                .build();
+        OperatorFeature operatorFeature =
+                OperatorFeature.builder().icon("icon-elasticsearchElasticsearch").build();
         return Optional.of(operatorFeature);
     }
 

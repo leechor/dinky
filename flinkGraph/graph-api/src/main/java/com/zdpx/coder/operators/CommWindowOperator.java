@@ -1,59 +1,46 @@
 package com.zdpx.coder.operators;
 
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
+
+import java.util.stream.Collectors;
+
 import com.zdpx.coder.Specifications;
-import com.zdpx.coder.operator.*;
+import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.graph.InputPortObject;
 import com.zdpx.coder.graph.OutputPortObject;
 import com.zdpx.coder.utils.NameHelper;
 import com.zdpx.coder.utils.TemplateUtils;
-import com.zdpx.coder.graph.CheckInformationModel;
-
-import java.util.*;
-import java.util.stream.Collectors;
-import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 
 /**
- * 通过创建视图的形式进行开窗和窗口聚合
- * 支持开开窗方式：
- * TUMBLE    ---> TUMBLE(TABLE data, DESCRIPTOR(timecol), size)
- * HOP       ---> HOP(TABLE data, DESCRIPTOR(timecol), slide, size[, offset])
- * CUMULATE  ---> CUMULATE(TABLE data, DESCRIPTOR(timecol), step, size)
- * <p>
- * 普通聚合：
- * GROUP BY columName
- * <p>
- * 窗口聚合方式：
- * 1 GROUP BY
- * from <windows_open>
- * group by windows_start, window_end ,(OTHER_GROUP);
- * <p>
- * OTHER_GROUP暂不实现
- * 1.1 GROUPING SETS
- * 1.2 CUBE
- * 1.3 级联窗口聚合
- * 1.4 分组聚合
- * 1.5 OVER聚合
+ * 通过创建视图的形式进行开窗和窗口聚合 支持开开窗方式： TUMBLE ---> TUMBLE(TABLE data, DESCRIPTOR(timecol), size) HOP --->
+ * HOP(TABLE data, DESCRIPTOR(timecol), slide, size[, offset]) CUMULATE ---> CUMULATE(TABLE data,
+ * DESCRIPTOR(timecol), step, size)
+ *
+ * <p>普通聚合： GROUP BY columName
+ *
+ * <p>窗口聚合方式： 1 GROUP BY from <windows_open> group by windows_start, window_end ,(OTHER_GROUP);
+ *
+ * <p>OTHER_GROUP暂不实现 1.1 GROUPING SETS 1.2 CUBE 1.3 级联窗口聚合 1.4 分组聚合 1.5 OVER聚合
  */
 public class CommWindowOperator extends Operator {
 
     public static final String TEMPLATE =
             String.format(
-                    "<#import \"%s\" as e>CREATE VIEW ${tableName} AS SELECT <@e.fieldsProcess columns/> " +
-                            "FROM ${inputTableName} <#if options??>/*+ OPTIONS('${options.key}'='${options.val}') */</#if>" +
-                            "<#if where??>WHERE ${where}</#if> " +
-                            "<#if window??> ${window.windowFunction} ( TABLE ${window.table} , DESCRIPTOR(${window.descriptor}), " +
-                            "<#if window.slide??>INTERVAL '${window.slide.timeSpan}' ${window.slide.timeUnit},</#if> " +
-                            "<#if window.step ??>INTERVAL '${window.step.timeSpan}' ${window.step.timeUnit},</#if>" +
-                            "INTERVAL '${window.size.timeSpan}' ${window.size.timeUnit}) " +
-                            "</#if>" +
-                            "<#if group??>GROUP BY" +
-                            "<#if (group.aggregation) == \"group\" > ${group.column} " +
-                            "<#elseif (group.aggregation) == \"windowGroup\"> ${group.windowsStart},${group.windowEnd} " +
-                            "</#if>" +
-                            "</#if>" +
-                            "<#if orderBy??>ORDER BY<#list orderBy as o> `${o.order}` ${o.sort} </#list></#if>" +
-                            "<#if limit?? && (limit?size!=0) >limit <#list limit as l> `${l}` <#sep>,</#sep></#list></#if>"
-                    ,
+                    "<#import \"%s\" as e>CREATE VIEW ${tableName} AS SELECT <@e.fieldsProcess columns/> "
+                            + "FROM ${inputTableName} <#if options??>/*+ OPTIONS('${options.key}'='${options.val}') */</#if>"
+                            + "<#if where??>WHERE ${where}</#if> "
+                            + "<#if window??> ${window.windowFunction} ( TABLE ${window.table} , DESCRIPTOR(${window.descriptor}), "
+                            + "<#if window.slide??>INTERVAL '${window.slide.timeSpan}' ${window.slide.timeUnit},</#if> "
+                            + "<#if window.step ??>INTERVAL '${window.step.timeSpan}' ${window.step.timeUnit},</#if>"
+                            + "INTERVAL '${window.size.timeSpan}' ${window.size.timeUnit}) "
+                            + "</#if>"
+                            + "<#if group??>GROUP BY"
+                            + "<#if (group.aggregation) == \"group\" > ${group.column} "
+                            + "<#elseif (group.aggregation) == \"windowGroup\"> ${group.windowsStart},${group.windowEnd} "
+                            + "</#if>"
+                            + "</#if>"
+                            + "<#if orderBy??>ORDER BY<#list orderBy as o> `${o.order}` ${o.sort} </#list></#if>"
+                            + "<#if limit?? && (limit?size!=0) >limit <#list limit as l> `${l}` <#sep>,</#sep></#list></#if>",
                     Specifications.TEMPLATE_FILE);
 
     private InputPortObject<TableInfo> inputPortObject;
@@ -67,9 +54,7 @@ public class CommWindowOperator extends Operator {
 
     @Override
     public Optional<OperatorFeature> getOperatorFeature() {
-        OperatorFeature operatorFeature = OperatorFeature.builder()
-                .icon("icon-operator")
-                .build();
+        OperatorFeature operatorFeature = OperatorFeature.builder().icon("icon-operator").build();
         return Optional.of(operatorFeature);
     }
 
@@ -91,7 +76,7 @@ public class CommWindowOperator extends Operator {
         if (outputTableName == null || outputTableName.equals("")) {
             outputTableName = NameHelper.generateVariableName("CommWindowFunctionOperator");
         }
-        //算子预览功能
+        // 算子预览功能
         String tableName = TABLE_NAME_DEFAULT;
         List<Column> columns = new ArrayList<>();
         if (inputPortObject.getConnection() != null) {
@@ -101,24 +86,24 @@ public class CommWindowOperator extends Operator {
 
         List<Map<String, Object>> maps = formatProcessing(parameters);
 
-        List<FieldFunction> ffs = Operator.getFieldFunctions(tableName, parameters,columns,maps);
+        List<FieldFunction> ffs = Operator.getFieldFunctions(tableName, parameters, columns, maps);
         Map<String, Object> p = new HashMap<>();
         p.put(TABLE_NAME, outputTableName);
         p.put(COLUMNS, ffs);
         p.put(INPUT_TABLE_NAME, tableName);
         p.put(LIMIT, parameters.get(LIMIT));
         p.put(ID, parameters.get(ID));
-        p.put(CONFIG,maps);
+        p.put(CONFIG, maps);
 
         String where = parameters.get(WHERE).toString();
-        if(!where.equals("")){
+        if (!where.equals("")) {
             p.put(WHERE, where);
         }
 
         @SuppressWarnings("unchecked")
-        Map<String, Object> hints = (Map<String, Object>)parameters.get(HINTS_OPTIONS);
-        if(!hints.get("key").equals("")){
-            p.put(HINTS_OPTIONS,hints);
+        Map<String, Object> hints = (Map<String, Object>) parameters.get(HINTS_OPTIONS);
+        if (!hints.get("key").equals("")) {
+            p.put(HINTS_OPTIONS, hints);
         }
 
         @SuppressWarnings("unchecked")
@@ -140,7 +125,7 @@ public class CommWindowOperator extends Operator {
             Map<String, Object> step = (Map<String, Object>) windowList.get(STEP);
             windowList.putAll(step == null ? new HashMap<>() : step);
 
-            //将 window.table 改为输入表名称
+            // 将 window.table 改为输入表名称
             windowList.put("table", tableName);
             p.put(WINDOW, windowList);
         }
@@ -153,12 +138,7 @@ public class CommWindowOperator extends Operator {
         return p;
     }
 
-    /**
-     * 校验内容：
-     * 输出字段名拼写错误
-     * order、group[] 字段存在
-     * 滚动 滑动 累计窗口descriptor 需要时间属性
-     */
+    /** 校验内容： 输出字段名拼写错误 order、group[] 字段存在 滚动 滑动 累计窗口descriptor 需要时间属性 */
     @Override
     protected void generateCheckInformation(Map<String, Object> map) {
         CheckInformationModel model = new CheckInformationModel();
@@ -174,84 +154,97 @@ public class CommWindowOperator extends Operator {
         List<FieldFunction> columns = (List<FieldFunction>) map.get(COLUMNS);
         @SuppressWarnings("unchecked")
         List<Map<String, String>> config = (List<Map<String, String>>) map.get(CONFIG);
-        List<String> inputName = config.stream().map(item -> item.get(NAME)).collect(Collectors.toList());
+        List<String> inputName =
+                config.stream().map(item -> item.get(NAME)).collect(Collectors.toList());
 
         boolean outPut = true;
 
-        for(FieldFunction column : columns){
-            if(column.getOutName()!=null){
-                for(int i=0;i<inputName.size();i++){
-                    if(column.getOutName().equals(inputName.get(i))){
-                        outPut=false;
+        for (FieldFunction column : columns) {
+            if (column.getOutName() != null) {
+                for (int i = 0; i < inputName.size(); i++) {
+                    if (column.getOutName().equals(inputName.get(i))) {
+                        outPut = false;
                     }
-                    if(i==inputName.size()-1&&outPut){
-                        list.add("算子输入不包含该字段, 未匹配的字段名： "+ column.getOutName());
+                    if (i == inputName.size() - 1 && outPut) {
+                        list.add("算子输入不包含该字段, 未匹配的字段名： " + column.getOutName());
                     }
                 }
             }
         }
 
         @SuppressWarnings("unchecked")
-        Map<String, Object> group = (Map<String, Object>)map.get(GROUP);
+        Map<String, Object> group = (Map<String, Object>) map.get(GROUP);
         List<String> orderColumn = null;
-        if(map.get(ORDER_BY)!=null){
+        if (map.get(ORDER_BY) != null) {
             @SuppressWarnings("unchecked")
-            List<Map<String, Object>> order = (List<Map<String, Object>>)map.get(ORDER_BY);
-            orderColumn = order.stream().map(i -> i.get("order").toString()).collect(Collectors.toList());
+            List<Map<String, Object>> order = (List<Map<String, Object>>) map.get(ORDER_BY);
+            orderColumn =
+                    order.stream().map(i -> i.get("order").toString()).collect(Collectors.toList());
         }
 
-
         boolean groupFlag = true;
-        int orderFlag=0;
+        int orderFlag = 0;
 
-        for(String s:inputName){
-            if(map.get(GROUP)!=null){
-                if(s.equals(map.get(GROUP))&&group.get("aggregation").equals("group")&&group.get(COLUMN).equals(s)){
-                    groupFlag=false;
+        for (String s : inputName) {
+            if (map.get(GROUP) != null) {
+                if (s.equals(map.get(GROUP))
+                        && group.get("aggregation").equals("group")
+                        && group.get(COLUMN).equals(s)) {
+                    groupFlag = false;
                 }
             }
-            if(orderColumn!=null){
-                for(String col:orderColumn){
-                    if(col.equals(s)){
+            if (orderColumn != null) {
+                for (String col : orderColumn) {
+                    if (col.equals(s)) {
                         orderFlag++;
                     }
                 }
             }
         }
 
-        if(map.get(GROUP)!=null&&groupFlag){
+        if (map.get(GROUP) != null && groupFlag) {
             list.add("该算子输入字段中不包含 group 定义字段，请检查字段名称");
         }
-        if(orderColumn!=null&&orderFlag!=orderColumn.size()){
+        if (orderColumn != null && orderFlag != orderColumn.size()) {
             list.add("order by 中存在算子输入未定义的字段，请检查字段名称");
         }
 
-        boolean windowFlag=true;
-        List<Column> inputColumns = ((TableInfo) getInputPorts().get(INPUT_0).getConnection().getFromPort().getPseudoData()).getColumns();
-        List<Column> time = inputColumns.stream().filter(item -> item.getType()!=null&&item.getType().contains("TIME")).collect(Collectors.toList());
-        if(map.get(WINDOW)!=null){
-            if(time.isEmpty()){
+        boolean windowFlag = true;
+        List<Column> inputColumns =
+                ((TableInfo)
+                                getInputPorts()
+                                        .get(INPUT_0)
+                                        .getConnection()
+                                        .getFromPort()
+                                        .getPseudoData())
+                        .getColumns();
+        List<Column> time =
+                inputColumns.stream()
+                        .filter(item -> item.getType() != null && item.getType().contains("TIME"))
+                        .collect(Collectors.toList());
+        if (map.get(WINDOW) != null) {
+            if (time.isEmpty()) {
                 list.add("该算子使用了开窗函数，输入需要包含时间属性字段");
-            }else{
+            } else {
                 @SuppressWarnings("unchecked")
                 Map<String, Object> window = (Map<String, Object>) map.get(WINDOW);
                 String descriptor = window.get("descriptor").toString();
-                for(Column c:time){
-                    if(c.getName().equals(descriptor)&&c.getType().contains("TIME")){
-                        windowFlag=false;
+                for (Column c : time) {
+                    if (c.getName().equals(descriptor) && c.getType().contains("TIME")) {
+                        windowFlag = false;
                     }
                 }
             }
-            if(windowFlag){
+            if (windowFlag) {
                 list.add("该算子使用了开窗函数，descriptor需要指定输入中的时间属性字段");
             }
         }
 
-        if(!list.isEmpty()){
+        if (!list.isEmpty()) {
             model.setColor(RED);
             edge.add(getInputPorts().get(INPUT_0).getConnection().getId());
             model.setEdge(edge);
-            portInformation.put(inputPortObject.getName(),list);
+            portInformation.put(inputPortObject.getName(), list);
             model.setPortInformation(portInformation);
         }
         this.getSceneCode().getGenerateResult().addCheckInformation(model);
@@ -270,5 +263,4 @@ public class CommWindowOperator extends Operator {
                 p.get(TABLE_NAME).toString(),
                 Specifications.convertFieldFunctionToColumns(ffs));
     }
-
 }

@@ -19,7 +19,6 @@
 
 package com.zdpx.service;
 
-import com.zdpx.coder.graph.CheckInformationModel;
 import org.dinky.data.model.Task;
 import org.dinky.mybatis.service.ISuperService;
 
@@ -27,8 +26,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.model.FlowGraph;
-import org.springframework.web.bind.annotation.PathVariable;
 
 /** */
 public interface TaskFlowGraphService extends ISuperService<FlowGraph> {
@@ -45,5 +44,5 @@ public interface TaskFlowGraphService extends ISuperService<FlowGraph> {
 
     void updateTaskFlowGraph(Task task);
 
-    Map<String,Object> generalProcess(Map<String,String> graph);
+    Map<String, Object> generalProcess(Map<String, String> graph);
 }

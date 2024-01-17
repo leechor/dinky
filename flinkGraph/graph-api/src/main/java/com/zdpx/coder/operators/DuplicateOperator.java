@@ -19,6 +19,9 @@
 
 package com.zdpx.coder.operators;
 
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
+import static com.zdpx.coder.utils.TableDataStreamConverter.assembleNewTableInfo;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,12 +33,7 @@ import com.zdpx.coder.operator.Operator;
 import com.zdpx.coder.operator.OperatorFeature;
 import com.zdpx.coder.operator.TableInfo;
 
-import static com.zdpx.coder.utils.TableDataStreamConverter.assembleNewTableInfo;
-import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
-
-/**
- * 用于端口数据复制, 转为多路输出
- */
+/** 用于端口数据复制, 转为多路输出 */
 public class DuplicateOperator extends Operator {
 
     @Override
@@ -44,8 +42,7 @@ public class DuplicateOperator extends Operator {
     }
 
     @Override
-    protected void handleParameters(String parameters) {
-    }
+    protected void handleParameters(String parameters) {}
 
     @Override
     protected Map<String, String> declareUdfFunction() {
@@ -64,15 +61,12 @@ public class DuplicateOperator extends Operator {
 
     @Override
     public Optional<OperatorFeature> getOperatorFeature() {
-        OperatorFeature operatorFeature = OperatorFeature.builder()
-                .icon("icon-shujufubenguanlijikuaisuhuifuxitong")
-                .build();
+        OperatorFeature operatorFeature =
+                OperatorFeature.builder().icon("icon-shujufubenguanlijikuaisuhuifuxitong").build();
         return Optional.of(operatorFeature);
     }
 
-    /**
-     * 校验内容： 无
-     */
+    /** 校验内容： 无 */
     @Override
     protected void generateCheckInformation(Map<String, Object> map) {
         CheckInformationModel model = new CheckInformationModel();
@@ -91,21 +85,24 @@ public class DuplicateOperator extends Operator {
                         .findAny()
                         .orElse(null);
 
-        //从config中获取输出字段,数组的长度只可能是1
+        // 从config中获取输出字段,数组的长度只可能是1
         @SuppressWarnings("unchecked")
-        Map<String, Object> firstParameterMap = ((List<Map<String, Object>>) getFirstParameterMap().get(CONFIG)).get(0);
+        Map<String, Object> firstParameterMap =
+                ((List<Map<String, Object>>) getFirstParameterMap().get(CONFIG)).get(0);
         Map<String, Object> cup = new HashMap<>();
-        for(Map.Entry<String, Object> first : firstParameterMap.entrySet()){
-            cup.put(first.getKey().split(" ")[0],first.getValue());
+        for (Map.Entry<String, Object> first : firstParameterMap.entrySet()) {
+            cup.put(first.getKey().split(" ")[0], first.getValue());
         }
 
         getOutputPorts()
                 .values()
-                .forEach(t -> {
-                    String name = t.getParent().getId()+"&"+t.getName();
-                    @SuppressWarnings("unchecked")
-                    List<Map<String, Object>> o = (List<Map<String, Object>>)cup.get(name);
-                    ((OutputPortObject<TableInfo>) t).setPseudoData(assembleNewTableInfo(pseudoData, o));
-                });
+                .forEach(
+                        t -> {
+                            String name = t.getParent().getId() + "&" + t.getName();
+                            @SuppressWarnings("unchecked")
+                            List<Map<String, Object>> o = (List<Map<String, Object>>) cup.get(name);
+                            ((OutputPortObject<TableInfo>) t)
+                                    .setPseudoData(assembleNewTableInfo(pseudoData, o));
+                        });
     }
 }

@@ -22,8 +22,6 @@ package org.dinky.service.impl;
 import static org.dinky.assertion.Asserts.isNotNull;
 import static org.dinky.assertion.Asserts.isNull;
 
-import com.zdpx.mapper.FlowGraphScriptMapper;
-import com.zdpx.model.FlowGraph;
 import org.dinky.assertion.Asserts;
 import org.dinky.data.dto.CatalogueTaskDTO;
 import org.dinky.data.enums.JobLifeCycle;
@@ -54,6 +52,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.zdpx.mapper.FlowGraphScriptMapper;
+import com.zdpx.model.FlowGraph;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -192,8 +192,8 @@ public class CatalogueServiceImpl extends SuperServiceImpl<CatalogueMapper, Cata
             }
         }
 
-        //删除graph中的数据
-        flowGraphScriptMapper.delete(new QueryWrapper<FlowGraph>().eq("task_id",id));
+        // 删除graph中的数据
+        flowGraphScriptMapper.delete(new QueryWrapper<FlowGraph>().eq("task_id", id));
 
         return errors;
     }

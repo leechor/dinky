@@ -60,8 +60,7 @@ public class StatementServiceImpl extends SuperServiceImpl<StatementMapper, Stat
                 .collect(Collectors.toList());
     }
 
-    public Statement selectById(int id){
+    public Statement selectById(int id) {
         return baseMapper.selectById(id);
     }
-
 }

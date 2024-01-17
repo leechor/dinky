@@ -19,8 +19,6 @@
 
 package org.dinky.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.dinky.alert.AlertPool;
 import org.dinky.alert.AlertResult;
 import org.dinky.data.enums.Status;
@@ -28,10 +26,10 @@ import org.dinky.data.model.AlertInstance;
 import org.dinky.data.result.ProTableResult;
 import org.dinky.data.result.Result;
 import org.dinky.service.AlertInstanceService;
+import org.dinky.utils.I18nMsgUtils;
 
 import java.util.List;
 
-import org.dinky.utils.I18nMsgUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,6 +41,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,7 +51,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/alertInstance")
 @RequiredArgsConstructor
-@Api(value = "AlertInstanceController" , description = "告警实例相关接口")
+@Api(value = "AlertInstanceController", description = "告警实例相关接口")
 public class AlertInstanceController {
 
     private final AlertInstanceService alertInstanceService;
@@ -64,7 +64,7 @@ public class AlertInstanceController {
      * @throws Exception {@link Exception}
      */
     @PutMapping
-    @ApiOperation(value = "保存告警实例" , notes = "保存告警实例")
+    @ApiOperation(value = "保存告警实例", notes = "保存告警实例")
     public Result<Void> saveOrUpdate(@RequestBody AlertInstance alertInstance) throws Exception {
         if (alertInstanceService.saveOrUpdate(alertInstance)) {
             AlertPool.remove(alertInstance.getName());
@@ -81,7 +81,7 @@ public class AlertInstanceController {
      * @return {@link ProTableResult} of {@link AlertInstance}
      */
     @PostMapping
-    @ApiOperation(value = "获取告警实例(分页)" , notes = "获取告警实例(分页)")
+    @ApiOperation(value = "获取告警实例(分页)", notes = "获取告警实例(分页)")
     public ProTableResult<AlertInstance> listAlertInstances(@RequestBody JsonNode para) {
         return alertInstanceService.selectForProTable(para);
     }
@@ -95,7 +95,7 @@ public class AlertInstanceController {
      */
     @DeleteMapping
     @Deprecated
-    @ApiOperation(value = "批量删除告警实例" , notes = "批量删除告警实例")
+    @ApiOperation(value = "批量删除告警实例", notes = "批量删除告警实例")
     public Result<Void> deleteMul(@RequestBody JsonNode para) {
         return alertInstanceService.deleteAlertInstance(para);
     }
@@ -107,7 +107,7 @@ public class AlertInstanceController {
      * @return {@link Result} of {@link Void}
      */
     @DeleteMapping("/delete")
-    @ApiOperation(value = "根据id删除告警实例" , notes = "根据id删除告警实例")
+    @ApiOperation(value = "根据id删除告警实例", notes = "根据id删除告警实例")
     public Result<Void> deleteInstanceById(@RequestParam("id") Integer id) {
         if (alertInstanceService.deleteAlertInstance(id)) {
             return Result.succeed(Status.DELETE_SUCCESS);
@@ -117,7 +117,7 @@ public class AlertInstanceController {
     }
 
     @PutMapping("/enable")
-    @ApiOperation(value = "启用或禁用告警实例" , notes = "启用或禁用告警实例")
+    @ApiOperation(value = "启用或禁用告警实例", notes = "启用或禁用告警实例")
     public Result<Void> enable(@RequestParam("id") Integer id) {
         if (alertInstanceService.enable(id)) {
             return Result.succeed(Status.MODIFY_SUCCESS);
@@ -146,7 +146,7 @@ public class AlertInstanceController {
      * @return {@link Result} of {@link AlertInstance}
      */
     @GetMapping("/listEnabledAll")
-    @ApiOperation(value = "获取所有告警实例(不分页)" , notes = "获取所有告警实例(不分页)")
+    @ApiOperation(value = "获取所有告警实例(不分页)", notes = "获取所有告警实例(不分页)")
     public Result<List<AlertInstance>> listEnabledAll() {
         return Result.succeed(alertInstanceService.listEnabledAll());
     }
@@ -158,7 +158,7 @@ public class AlertInstanceController {
      * @return {@link Result} of {@link Void}
      */
     @PostMapping("/sendTest")
-    @ApiOperation(value = "发送告警测试消息" , notes = "发送告警测试消息")
+    @ApiOperation(value = "发送告警测试消息", notes = "发送告警测试消息")
     public Result<Void> sendTest(@RequestBody AlertInstance alertInstance) {
         AlertResult alertResult = alertInstanceService.testAlert(alertInstance);
         if (alertResult.getSuccess()) {

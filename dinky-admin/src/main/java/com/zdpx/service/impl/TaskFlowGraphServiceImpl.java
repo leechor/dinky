@@ -19,17 +19,6 @@
 
 package com.zdpx.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zdpx.coder.SceneCode;
-import com.zdpx.coder.Specifications;
-import com.zdpx.coder.general.GeneralProcess;
-import com.zdpx.coder.general.impl.GeneralProcessImpl;
-import com.zdpx.coder.graph.CheckInformationModel;
-import com.zdpx.coder.json.preview.OperatorPreviewBuilder;
-import com.zdpx.mapper.CustomerOperatorMapper;
-import com.zdpx.model.CustomerOperator;
 import org.dinky.data.dto.StudioExecuteDTO;
 import org.dinky.data.model.Statement;
 import org.dinky.data.model.Task;
@@ -37,23 +26,34 @@ import org.dinky.data.result.SqlExplainResult;
 import org.dinky.mybatis.service.impl.SuperServiceImpl;
 import org.dinky.service.StatementService;
 import org.dinky.service.TaskService;
+import org.dinky.service.impl.StudioServiceImpl;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.dinky.service.impl.StudioServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zdpx.coder.SceneCode;
 import com.zdpx.coder.SceneCodeBuilder;
+import com.zdpx.coder.Specifications;
+import com.zdpx.coder.general.GeneralProcess;
+import com.zdpx.coder.general.impl.GeneralProcessImpl;
+import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.graph.Scene;
 import com.zdpx.coder.json.ToInternalConvert;
+import com.zdpx.coder.json.preview.OperatorPreviewBuilder;
 import com.zdpx.coder.json.x6.X6ToInternalConvert;
+import com.zdpx.mapper.CustomerOperatorMapper;
 import com.zdpx.mapper.FlowGraphScriptMapper;
+import com.zdpx.model.CustomerOperator;
 import com.zdpx.model.FlowGraph;
 import com.zdpx.service.TaskFlowGraphService;
 
@@ -74,12 +74,17 @@ public class TaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScriptMa
 
     private final CustomerOperatorMapper customerOperatorMapper;
 
-    public TaskFlowGraphServiceImpl(TaskService taskService, StatementService statementService, FlowGraphScriptMapper flowGraphScriptMapper, StudioServiceImpl studioServiceImpl,CustomerOperatorMapper customerOperatorMapper) {
+    public TaskFlowGraphServiceImpl(
+            TaskService taskService,
+            StatementService statementService,
+            FlowGraphScriptMapper flowGraphScriptMapper,
+            StudioServiceImpl studioServiceImpl,
+            CustomerOperatorMapper customerOperatorMapper) {
         this.taskService = taskService;
-        this.statementService=statementService;
+        this.statementService = statementService;
         this.flowGraphScriptMapper = flowGraphScriptMapper;
         this.studioServiceImpl = studioServiceImpl;
-        this.customerOperatorMapper=customerOperatorMapper;
+        this.customerOperatorMapper = customerOperatorMapper;
     }
 
     static ObjectMapper objectMapper = new ObjectMapper();
@@ -97,29 +102,33 @@ public class TaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScriptMa
         task.setStatement(map.get("SQL").toString());
         taskService.saveOrUpdateTask(task);
         @SuppressWarnings("unchecked")
-        List<CheckInformationModel> msg = (List<CheckInformationModel>)map.get("MSG");
+        List<CheckInformationModel> msg = (List<CheckInformationModel>) map.get("MSG");
         return msg;
     }
 
     @Override
     public List<JsonNode> getOperatorConfigurations() {
         List<JsonNode> operatorConfigurations = Scene.getOperatorConfigurations();
-        customerOperatorMapper.selectList(new QueryWrapper<CustomerOperator>().isNull("delete_time")).forEach(item->{
-            ObjectMapper mapper = new ObjectMapper();
-            // 获取自定义节点和自定义组节点所属的结构信息
-            try {
-                String[] split = item.getCode().split("-");
-                String s = split[split.length - 1];
-                // 组节点。原名：group-process ，类名称：ProcessGroupOperator
-                if(s.equals("process")){
-                    s="ProcessGroupOperator";
-                }
-                item.setSpecification(Specifications.readSpecializationFileByClassName(s));
-                operatorConfigurations.add(mapper.readTree(item.toString()));
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        customerOperatorMapper
+                .selectList(new QueryWrapper<CustomerOperator>().isNull("delete_time"))
+                .forEach(
+                        item -> {
+                            ObjectMapper mapper = new ObjectMapper();
+                            // 获取自定义节点和自定义组节点所属的结构信息
+                            try {
+                                String[] split = item.getCode().split("-");
+                                String s = split[split.length - 1];
+                                // 组节点。原名：group-process ，类名称：ProcessGroupOperator
+                                if (s.equals("process")) {
+                                    s = "ProcessGroupOperator";
+                                }
+                                item.setSpecification(
+                                        Specifications.readSpecializationFileByClassName(s));
+                                operatorConfigurations.add(mapper.readTree(item.toString()));
+                            } catch (JsonProcessingException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
         return operatorConfigurations;
     }
 
@@ -138,79 +147,98 @@ public class TaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScriptMa
 
     private Map<String, Object> convertConfigToSource(Task task) {
 
-        //更新表dinky_task_statement
+        // 更新表dinky_task_statement
         Statement statement = new Statement();
         statement.setId(task.getId());
         Statement old = statementService.selectById(task.getId());
-        if(old!=null){
+        if (old != null) {
             statement.setStatement(old.getStatement());
             statementService.updateById(statement);
-        }else{
+        } else {
             statement.setStatement("");
             statementService.insert(statement);
         }
 
-        //更新表zdpx_task_flow_graph
+        // 更新表zdpx_task_flow_graph
         updateTaskFlowGraph(task);
 
         Map<String, Object> checkAndSQL = convertToSql(task.getStatement());
         String sql = checkAndSQL.get("SQL").toString();
 
-        //sql校验
+        // sql校验
         StudioExecuteDTO studio = new StudioExecuteDTO().task2DTO(task);
         studio.setStatement(sql);
         List<SqlExplainResult> sqlExplainResults = studioServiceImpl.explainSql(studio);
 
         @SuppressWarnings("unchecked")
-        List<CheckInformationModel> list = (List<CheckInformationModel>)checkAndSQL.get("MSG");
+        List<CheckInformationModel> list = (List<CheckInformationModel>) checkAndSQL.get("MSG");
 
-        list.stream().filter(c->c.getTableName()!=null).forEach(c->{
-            sqlExplainResults.stream().filter(s->s.getError()!=null).forEach(s->{
-                String error = s.getError();
-                String substring = error.substring(0, error.indexOf("\n"));
-                if (s.getSql().split(" ")[2].contains(c.getTableName())){
-                    c.setSqlErrorMsg(substring);
-                }else if(s.getSql().split(" ")[0].contains(c.getTableName())){//特殊算子 ADD JAR 异常参数添加
-                    c.setSqlErrorMsg(substring);
-                }
-            });
-        });
-
+        list.stream()
+                .filter(c -> c.getTableName() != null)
+                .forEach(
+                        c -> {
+                            sqlExplainResults.stream()
+                                    .filter(s -> s.getError() != null)
+                                    .forEach(
+                                            s -> {
+                                                String error = s.getError();
+                                                String substring =
+                                                        error.substring(0, error.indexOf("\n"));
+                                                if (s.getSql()
+                                                        .split(" ")[2]
+                                                        .contains(c.getTableName())) {
+                                                    c.setSqlErrorMsg(substring);
+                                                } else if (s.getSql()
+                                                        .split(" ")[0]
+                                                        .contains(c.getTableName())) { // 特殊算子
+                                                    // ADD
+                                                    // JAR
+                                                    // 异常参数添加
+                                                    c.setSqlErrorMsg(substring);
+                                                }
+                                            });
+                        });
 
         Map<String, Object> map = new HashMap<>();
-        map.put("SQL",sql);
-        map.put("MSG",list);
+        map.put("SQL", sql);
+        map.put("MSG", list);
         return map;
     }
 
     @Override
-    public void updateTaskFlowGraph(Task task){
+    public void updateTaskFlowGraph(Task task) {
         String flowGraphScript = task.getStatement();
         FlowGraph flowGraph = new FlowGraph();
         flowGraph.setTaskId(task.getId());
         flowGraph.setScript(flowGraphScript);
         FlowGraph oldGraph = this.getOne(new QueryWrapper<FlowGraph>().eq("task_id", task.getId()));
-        if(oldGraph==null){
+        if (oldGraph == null) {
             this.insert(flowGraph);
-        }else{
-            this.update(flowGraph,new QueryWrapper<FlowGraph>().eq("task_id", oldGraph.getTaskId()));
+        } else {
+            this.update(
+                    flowGraph, new QueryWrapper<FlowGraph>().eq("task_id", oldGraph.getTaskId()));
         }
     }
 
     @Override
-    public Map<String,Object> generalProcess(Map<String,String> graph) {
+    public Map<String, Object> generalProcess(Map<String, String> graph) {
 
         GeneralProcess generalProcess = new GeneralProcessImpl();
-        Map<String,Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
 
-        for(Map.Entry<String,String> g:graph.entrySet()){
+        for (Map.Entry<String, String> g : graph.entrySet()) {
             try {
-                Map<String, Map<String, Object>> parametersLocal = objectMapper.readValue(g.getValue(), new TypeReference<Map<String, Map<String, Object>>>() {});
-                switch (g.getKey()){
-                    case "function": //获取函数嵌套结果
-                        map.put(g.getKey(),generalProcess.getFunction(parametersLocal));break;
-                    case "analyse": //自定义算子使用，根据sql分析出输出字段
-                        map.put(g.getKey(),generalProcess.getOutPutColumn(parametersLocal));break;
+                Map<String, Map<String, Object>> parametersLocal =
+                        objectMapper.readValue(
+                                g.getValue(),
+                                new TypeReference<Map<String, Map<String, Object>>>() {});
+                switch (g.getKey()) {
+                    case "function": // 获取函数嵌套结果
+                        map.put(g.getKey(), generalProcess.getFunction(parametersLocal));
+                        break;
+                    case "analyse": // 自定义算子使用，根据sql分析出输出字段
+                        map.put(g.getKey(), generalProcess.getOutPutColumn(parametersLocal));
+                        break;
                     default:
                         return null;
                 }
@@ -240,5 +268,4 @@ public class TaskFlowGraphServiceImpl extends SuperServiceImpl<FlowGraphScriptMa
         su.setUdfFunctionMap(udfAll);
         return su.build();
     }
-
 }

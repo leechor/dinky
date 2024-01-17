@@ -1,10 +1,10 @@
 package com.zdpx.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.zdpx.model.CustomerOperator;
-import org.apache.ibatis.annotations.Mapper;
 import org.dinky.mybatis.mapper.SuperMapper;
 
+import org.apache.ibatis.annotations.Mapper;
+
+import com.zdpx.model.CustomerOperator;
+
 @Mapper
-public interface CustomerOperatorMapper extends SuperMapper<CustomerOperator> {
-}
+public interface CustomerOperatorMapper extends SuperMapper<CustomerOperator> {}

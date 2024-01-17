@@ -19,16 +19,12 @@
 
 package com.zdpx.coder.graph;
 
-import com.zdpx.coder.operator.Identifier;
-import com.zdpx.udf.IUdfDefine;
-import io.debezium.util.Strings;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.flink.table.functions.UserDefinedFunction;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -39,9 +35,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.zdpx.coder.operator.Identifier;
 import com.zdpx.coder.operator.Operator;
 import com.zdpx.coder.utils.InstantiationUtil;
+import com.zdpx.udf.IUdfDefine;
 
+import io.debezium.util.Strings;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -142,9 +141,9 @@ public class Scene implements IScene {
                         t -> {
                             Operator operator = InstantiationUtil.instantiate(t.getValue());
                             try {
-                                ObjectNode result =(ObjectNode) getOperationJsonNode(t, operator);
+                                ObjectNode result = (ObjectNode) getOperationJsonNode(t, operator);
                                 JsonNode portsJsonNode = generateJsonPorts(operator);
-                                result.put("type",operator.getType());
+                                result.put("type", operator.getType());
                                 result.set("ports", portsJsonNode);
                                 return result;
                             } catch (JsonProcessingException e) {
@@ -155,22 +154,24 @@ public class Scene implements IScene {
                 .collect(Collectors.toList());
     }
 
-    private static JsonNode getOperationJsonNode(Map.Entry<String, Class<? extends Operator>> t, Operator operator) throws JsonProcessingException {
+    private static JsonNode getOperationJsonNode(
+            Map.Entry<String, Class<? extends Operator>> t, Operator operator)
+            throws JsonProcessingException {
 
-        String name = Strings.isNullOrEmpty(operator.getName()) ?  t.getKey() : operator.getName();
+        String name = Strings.isNullOrEmpty(operator.getName()) ? t.getKey() : operator.getName();
 
         return mapper.readTree(
-                        String.format(
-                                "{\"name\": \"%s\",%n"
-                                        + "\"code\":\"%s\",%n"
-                                        + "\"feature\": %s,%n"
-                                        + "\"group\":\"%s\",%n"
-                                        + "\"specification\": %s}",
-                                name,
-                                t.getKey(),
-                                mapper.valueToTree(operator.getOperatorFeature().orElse(null)).toString(),
-                                operator.getGroup(),
-                                operator.getSpecification()));
+                String.format(
+                        "{\"name\": \"%s\",%n"
+                                + "\"code\":\"%s\",%n"
+                                + "\"feature\": %s,%n"
+                                + "\"group\":\"%s\",%n"
+                                + "\"specification\": %s}",
+                        name,
+                        t.getKey(),
+                        mapper.valueToTree(operator.getOperatorFeature().orElse(null)).toString(),
+                        operator.getGroup(),
+                        operator.getSpecification()));
     }
 
     private static JsonNode generateJsonPorts(Operator operator) {
@@ -205,18 +206,18 @@ public class Scene implements IScene {
     }
 
     /**
-     * 获取operator的定义, key为{@link Identifier#getCode()} 返回值, 目前为Operator类的全限定名 value为类型定义.
-     * 增加排序规则
+     * 获取operator的定义, key为{@link Identifier#getCode()} 返回值, 目前为Operator类的全限定名 value为类型定义. 增加排序规则
      *
      * @return 返回operator集
      */
     public static Map<String, Class<? extends Operator>> getCodeClassMap(
             Set<Class<? extends Operator>> operators) {
 
-        LinkedHashSet<Class<? extends Operator>> collect = operators.stream()
-                .filter(c -> !Modifier.isAbstract(c.getModifiers()))
-                .sorted(Comparator.comparing(Class::getName, Comparator.reverseOrder()))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+        LinkedHashSet<Class<? extends Operator>> collect =
+                operators.stream()
+                        .filter(c -> !Modifier.isAbstract(c.getModifiers()))
+                        .sorted(Comparator.comparing(Class::getName, Comparator.reverseOrder()))
+                        .collect(Collectors.toCollection(LinkedHashSet::new));
         Map<String, Class<? extends Operator>> map = new LinkedHashMap<>();
         for (Class<? extends Operator> l : collect) {
             map.put(InstantiationUtil.instantiate(l).getCode(), l);

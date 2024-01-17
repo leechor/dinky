@@ -19,13 +19,11 @@
 
 package com.zdpx.coder.code;
 
-import com.zdpx.coder.graph.CheckInformationModel;
-
 import java.util.Map;
 
-/**
- *
- */
+import com.zdpx.coder.graph.CheckInformationModel;
+
+/** */
 public interface CodeBuilder {
 
     void registerUdfFunction(String udfFunctionName, String functionClass);

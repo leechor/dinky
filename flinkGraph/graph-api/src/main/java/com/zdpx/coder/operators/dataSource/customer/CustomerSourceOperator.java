@@ -19,19 +19,17 @@
 
 package com.zdpx.coder.operators.dataSource.customer;
 
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
+
+import java.util.Map;
+import java.util.Optional;
+
 import com.zdpx.coder.graph.OutputPortObject;
 import com.zdpx.coder.operator.OperatorFeature;
 import com.zdpx.coder.operator.TableInfo;
 import com.zdpx.coder.operators.dataSource.AbstractSqlTable;
 
-import java.util.Map;
-import java.util.Optional;
-
-import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
-
-/**
- *
- */
+/** */
 public class CustomerSourceOperator extends AbstractSqlTable {
 
     private OutputPortObject<TableInfo> outputPortObject;
@@ -46,15 +44,13 @@ public class CustomerSourceOperator extends AbstractSqlTable {
 
     @Override
     public Optional<OperatorFeature> getOperatorFeature() {
-        OperatorFeature operatorFeature = OperatorFeature.builder()
-                .icon("icon-tanzichan")
-                .build();
+        OperatorFeature operatorFeature = OperatorFeature.builder().icon("icon-tanzichan").build();
         return Optional.of(operatorFeature);
     }
 
     @Override
     protected void execute(Map<String, Object> dataModel) {
-        processLogic( outputPortObject, dataModel);
+        processLogic(outputPortObject, dataModel);
     }
 
     @Override

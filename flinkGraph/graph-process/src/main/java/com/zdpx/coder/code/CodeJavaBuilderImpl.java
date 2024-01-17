@@ -49,8 +49,7 @@ public class CodeJavaBuilderImpl implements CodeJavaBuilder {
 
     @Override
     public void registerUdfFunction(String udfFunctionName, String functionClass) {
-        ICodeContext
-                .getMain()
+        ICodeContext.getMain()
                 .addStatement(
                         "$L.createTemporarySystemFunction($S, $S)",
                         Specifications.TABLE_ENV,
@@ -62,8 +61,7 @@ public class CodeJavaBuilderImpl implements CodeJavaBuilder {
     public void firstBuild() {
         final Environment environment = ICodeContext.getScene().getEnvironment();
 
-        ICodeContext
-                .getMain()
+        ICodeContext.getMain()
                 .addStatement(
                         "$T $L = $T.getExecutionEnvironment()",
                         Specifications.SEE,
@@ -95,9 +93,7 @@ public class CodeJavaBuilderImpl implements CodeJavaBuilder {
     }
 
     @Override
-    public void addCheckInformation(CheckInformationModel checkInformationModel) {
-
-    }
+    public void addCheckInformation(CheckInformationModel checkInformationModel) {}
 
     @Override
     public void generateJavaFunction(CodeBlock codeBlock) {

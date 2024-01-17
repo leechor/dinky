@@ -19,16 +19,14 @@
 
 package com.zdpx.coder.code;
 
-import com.zdpx.coder.graph.CheckInformationModel;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- *
- */
+import com.zdpx.coder.graph.CheckInformationModel;
+
+/** */
 public class CodeSqlBuilderImpl implements CodeBuilder {
     private final StringBuilder result = new StringBuilder();
     private final Map<String, Object> checkInformation = new HashMap<>();
@@ -44,8 +42,7 @@ public class CodeSqlBuilderImpl implements CodeBuilder {
     }
 
     @Override
-    public void firstBuild() {
-    }
+    public void firstBuild() {}
 
     @Override
     public void generate(String sql) {
@@ -55,11 +52,12 @@ public class CodeSqlBuilderImpl implements CodeBuilder {
         result.append(System.lineSeparator());
     }
 
-    //添加算子的校验信息
+    // 添加算子的校验信息
     @Override
     public void addCheckInformation(CheckInformationModel checkInformationModel) {
         @SuppressWarnings("unchecked")
-        List<CheckInformationModel> list = (List<CheckInformationModel>) checkInformation.get("MSG");
+        List<CheckInformationModel> list =
+                (List<CheckInformationModel>) checkInformation.get("MSG");
         if (list == null) {
             list = new ArrayList<>();
         }
@@ -72,7 +70,7 @@ public class CodeSqlBuilderImpl implements CodeBuilder {
         return result.toString();
     }
 
-    //获取算子的校验信息
+    // 获取算子的校验信息
     @Override
     public Map<String, Object> getCheckInformation() {
         return checkInformation;

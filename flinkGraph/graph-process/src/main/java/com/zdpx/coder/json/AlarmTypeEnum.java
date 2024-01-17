@@ -1,11 +1,8 @@
 package com.zdpx.coder.json;
 
 public enum AlarmTypeEnum {
-
-    SQL("sqlAlarm","sql语句校验错误"),
-    GRAPH("graphAlarm","流程图节点校验错误")
-    ;
-
+    SQL("sqlAlarm", "sql语句校验错误"),
+    GRAPH("graphAlarm", "流程图节点校验错误");
 
     private final String key;
     private final String value;

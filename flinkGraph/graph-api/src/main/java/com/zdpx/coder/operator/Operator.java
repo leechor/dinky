@@ -19,13 +19,12 @@
 
 package com.zdpx.coder.operator;
 
-import com.zdpx.coder.SceneCode;
-import com.zdpx.coder.graph.*;
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.flink.table.functions.UserDefinedFunction;
 
 import java.security.InvalidParameterException;
-import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -41,12 +40,11 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.ValidationMessage;
+import com.zdpx.coder.SceneCode;
 import com.zdpx.coder.Specifications;
 import com.zdpx.coder.utils.JsonSchemaValidator;
 
 import lombok.extern.slf4j.Slf4j;
-
-import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 
 /**
  * 宏算子抽象类
@@ -94,7 +92,7 @@ public abstract class Operator extends Node implements Runnable {
         return reflections.getSubTypesOf(Operator.class);
     }
 
-    //处理两种类型的数据，对象或数组
+    // 处理两种类型的数据，对象或数组
     protected static List<Map<String, Object>> getParameterLists(@Nullable String parametersStr) {
         List<Map<String, Object>> parametersLocal = new ArrayList<>();
 
@@ -103,12 +101,14 @@ public abstract class Operator extends Node implements Runnable {
         }
         try {
             if (!parametersStr.subSequence(0, 1).equals("[")) {
-                parametersLocal.add(objectMapper.readValue(parametersStr, new TypeReference<Map<String, Object>>() {
-                }));
+                parametersLocal.add(
+                        objectMapper.readValue(
+                                parametersStr, new TypeReference<Map<String, Object>>() {}));
 
             } else {
-                parametersLocal = objectMapper.readValue(parametersStr, new TypeReference<List<Map<String, Object>>>() {
-                });
+                parametersLocal =
+                        objectMapper.readValue(
+                                parametersStr, new TypeReference<List<Map<String, Object>>>() {});
             }
 
         } catch (JsonProcessingException e) {
@@ -127,23 +127,25 @@ public abstract class Operator extends Node implements Runnable {
         if (applies()) {
             validParameters();
             generateUdfFunctionByInner();
-            Map<String, Object> map = formatOperatorParameter();//格式化参数信息
-            if(checkOrNot()){
-                generateCheckInformation(map);//生成校验信息相关逻辑
+            Map<String, Object> map = formatOperatorParameter(); // 格式化参数信息
+            if (checkOrNot()) {
+                generateCheckInformation(map); // 生成校验信息相关逻辑
             }
-            execute(map);//生成sql相关逻辑
+            execute(map); // 生成sql相关逻辑
         }
     }
 
-    //预览功能不走算子校验
-    protected boolean checkOrNot(){
-        for(Map.Entry<String, InputPort<? extends PseudoData<?>>> in : getInputPorts().entrySet()){
-            if(in.getValue().getConnection()==null){
+    // 预览功能不走算子校验
+    protected boolean checkOrNot() {
+        for (Map.Entry<String, InputPort<? extends PseudoData<?>>> in :
+                getInputPorts().entrySet()) {
+            if (in.getValue().getConnection() == null) {
                 return false;
             }
         }
-        for(Map.Entry<String, OutputPort<? extends PseudoData<?>>> in : getOutputPorts().entrySet()){
-            if(in.getValue().getConnection()==null){
+        for (Map.Entry<String, OutputPort<? extends PseudoData<?>>> in :
+                getOutputPorts().entrySet()) {
+            if (in.getValue().getConnection() == null) {
                 return false;
             }
         }
@@ -176,29 +178,28 @@ public abstract class Operator extends Node implements Runnable {
         this.getSceneCode().getGenerateResult().generate(sqlStr);
     }
 
-    /**
-     * 校验输入参数是否正确.
-     */
+    /** 校验输入参数是否正确. */
     protected void validParameters() {
-        String[] split = this.getClass().getName().split("\\.");//获取算子名称
+        String[] split = this.getClass().getName().split("\\."); // 获取算子名称
         String parametersString = getParametersString();
         if (jsonSchemaValidator.getSchema() == null) {
-            log.warn("{} operator not parameter validation schema.", split[split.length-1]);
+            log.warn("{} operator not parameter validation schema.", split[split.length - 1]);
             return;
         }
 
         Set<ValidationMessage> validationMessages = jsonSchemaValidator.validate(parametersString);
         if (!CollectionUtils.isEmpty(validationMessages)) {
             for (ValidationMessage validationMessage : validationMessages) {
-                log.error("{} operator parameters error: {}", split[split.length-1], validationMessage);
+                log.error(
+                        "{} operator parameters error: {}",
+                        split[split.length - 1],
+                        validationMessage);
             }
             throw new InvalidParameterException(validationMessages.toString());
         }
     }
 
-    /**
-     * 初始化信息,输出/输入端口应该在该函数中完成注册定义
-     */
+    /** 初始化信息,输出/输入端口应该在该函数中完成注册定义 */
     protected abstract void initialize();
 
     @Override
@@ -222,15 +223,15 @@ public abstract class Operator extends Node implements Runnable {
     protected abstract boolean applies();
 
     protected Map<String, Object> getFirstParameterMap() {
-        List<Map<String, Object>> parameterLists = getParameterLists();//增加config中的字段
+        List<Map<String, Object>> parameterLists = getParameterLists(); // 增加config中的字段
         Map<String, Object> map = new HashMap<>();
         Map<String, Object> p = parameterLists.get(0);
-        if(p.get(SERVICE)!=null){
+        if (p.get(SERVICE) != null) {
             @SuppressWarnings("unchecked")
             Map<String, Object> service = (Map<String, Object>) p.get(SERVICE);
             map.putAll(service);
         }
-        if(p.get(OUTPUT)!=null){
+        if (p.get(OUTPUT) != null) {
             @SuppressWarnings("unchecked")
             Map<String, Object> output = (Map<String, Object>) p.get(OUTPUT);
             map.putAll(output);
@@ -239,19 +240,13 @@ public abstract class Operator extends Node implements Runnable {
         return map;
     }
 
-    /**
-     * 格式化参数信息
-     */
+    /** 格式化参数信息 */
     protected abstract Map<String, Object> formatOperatorParameter();
 
-    /**
-     * 生成校验信息相关逻辑
-     */
+    /** 生成校验信息相关逻辑 */
     protected abstract void generateCheckInformation(Map<String, Object> map);
 
-    /**
-     * 逻辑执行函数
-     */
+    /** 逻辑执行函数 */
     protected abstract void execute(Map<String, Object> result);
 
     /**
@@ -301,19 +296,20 @@ public abstract class Operator extends Node implements Runnable {
         }
 
         parametersLocal.forEach(
-                p -> p.forEach((key, value) -> getParameters().getParameterList().stream()
-                        .filter(pp -> Objects.equals(pp.getKey(), key))
-                        .findAny()
-                        .ifPresent(
-                                pp -> {
-                                    pp.setKey(key);
-                                    pp.setValue(value);
-                                })));
+                p ->
+                        p.forEach(
+                                (key, value) ->
+                                        getParameters().getParameterList().stream()
+                                                .filter(pp -> Objects.equals(pp.getKey(), key))
+                                                .findAny()
+                                                .ifPresent(
+                                                        pp -> {
+                                                            pp.setKey(key);
+                                                            pp.setValue(value);
+                                                        })));
     }
 
-    /**
-     * 设置宏算子参数的校验信息.
-     */
+    /** 设置宏算子参数的校验信息. */
     protected void definePropertySchema() {
         String propertySchema = getSpecification();
         if (Strings.isNullOrEmpty(propertySchema)) {
@@ -330,10 +326,13 @@ public abstract class Operator extends Node implements Runnable {
      * @return 非结构化参数信息
      */
     protected List<Map<String, Object>> getParameterLists() {
-        List<Map<String, Object>> parameterLists = getParameterLists(this.nodeWrapper.getParameters());
+        List<Map<String, Object>> parameterLists =
+                getParameterLists(this.nodeWrapper.getParameters());
         Map<String, Object> map = new HashMap<>();
-        map.put(OperatorSpecializationFieldConfig.CONFIG, getParameterLists(this.nodeWrapper.getConfig()));
-        map.put(OperatorSpecializationFieldConfig.ID, id);//节点校验需要使用
+        map.put(
+                OperatorSpecializationFieldConfig.CONFIG,
+                getParameterLists(this.nodeWrapper.getConfig()));
+        map.put(OperatorSpecializationFieldConfig.ID, id); // 节点校验需要使用
 
         parameterLists.add(map);
         return parameterLists;
@@ -343,9 +342,7 @@ public abstract class Operator extends Node implements Runnable {
         return this.getOperatorWrapper().getParameters();
     }
 
-    /**
-     * 生成内部用户自定义函数(算子)对应的注册代码, 以便在flink sql中对其进行引用调用.
-     */
+    /** 生成内部用户自定义函数(算子)对应的注册代码, 以便在flink sql中对其进行引用调用. */
     private void generateUdfFunctionByInner() {
         Map<String, String> ufs = this.getUserFunctions();
         if (ufs == null || ufs.isEmpty()) {
@@ -378,19 +375,33 @@ public abstract class Operator extends Node implements Runnable {
 
     @SuppressWarnings("unchecked")
     public static List<FieldFunction> getFieldFunctions(
-            String primaryTableName, Map<String, Object> parameters , List<Column> inputColumn, List<Map<String, Object>> inputColumns) {
+            String primaryTableName,
+            Map<String, Object> parameters,
+            List<Column> inputColumn,
+            List<Map<String, Object>> inputColumns) {
         return FieldFunction.analyzeParameters(
-                primaryTableName, (List<Map<String, Object>>) parameters.get(OperatorSpecializationFieldConfig.COLUMNS), true,inputColumn, inputColumns);
+                primaryTableName,
+                (List<Map<String, Object>>)
+                        parameters.get(OperatorSpecializationFieldConfig.COLUMNS),
+                true,
+                inputColumn,
+                inputColumns);
     }
 
     public static Map<String, Object> getJsonAsMap(JsonNode inputs) {
-        return new ObjectMapper().convertValue(inputs, new TypeReference<Map<String, Object>>() {
-        });
+        return new ObjectMapper().convertValue(inputs, new TypeReference<Map<String, Object>>() {});
     }
 
     public static List<Column> getColumnFromFieldFunctions(List<FieldFunction> ffs) {
         return ffs.stream()
-                .map(t -> new Column(getColumnName(t.getOutName() == null ? t.getParameters().get(0).toString() : t.getOutName()), t.getOutType()))
+                .map(
+                        t ->
+                                new Column(
+                                        getColumnName(
+                                                t.getOutName() == null
+                                                        ? t.getParameters().get(0).toString()
+                                                        : t.getOutName()),
+                                        t.getOutType()))
                 .collect(Collectors.toList());
     }
 
@@ -398,23 +409,29 @@ public abstract class Operator extends Node implements Runnable {
         return fullColumnName.substring(fullColumnName.lastIndexOf('.') + 1);
     }
 
-    //处理config中的数据格式
+    // 处理config中的数据格式
     public List<Map<String, Object>> formatProcessing(Map<String, Object> dataModel) {
 
         List<Map<String, Object>> input = new ArrayList<>();
         @SuppressWarnings("unchecked")
-        List<Map<String, List<Map<String, Object>>>> config = (List<Map<String, List<Map<String, Object>>>>) dataModel.get(OperatorSpecializationFieldConfig.CONFIG);
+        List<Map<String, List<Map<String, Object>>>> config =
+                (List<Map<String, List<Map<String, Object>>>>)
+                        dataModel.get(OperatorSpecializationFieldConfig.CONFIG);
         if (config.isEmpty()) {
             return input;
         }
 
-        //从config中获取输入
+        // 从config中获取输入
         for (Map.Entry<String, List<Map<String, Object>>> m2 : config.get(0).entrySet()) {
             String[] split = m2.getKey().split("&");
-            m2.getValue().forEach(l->{
-                l.put(OperatorSpecializationFieldConfig.TABLE_NAME,split[split.length-1]);
-                input.add(l);
-            });
+            m2.getValue()
+                    .forEach(
+                            l -> {
+                                l.put(
+                                        OperatorSpecializationFieldConfig.TABLE_NAME,
+                                        split[split.length - 1]);
+                                input.add(l);
+                            });
         }
         return input;
     }
@@ -457,7 +474,7 @@ public abstract class Operator extends Node implements Runnable {
     @Override
     public int hashCode() {
         return super.hashCode();
-//        return Objects.hash(nodeWrapper);
+        //        return Objects.hash(nodeWrapper);
     }
 
     public Map<String, InputPort<? extends PseudoData<?>>> getInputPorts() {

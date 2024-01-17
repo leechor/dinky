@@ -26,14 +26,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.zdpx.coder.operator.Column;
-import com.zdpx.coder.operator.FieldFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
+import com.zdpx.coder.operator.Column;
+import com.zdpx.coder.operator.FieldFunction;
 
 /**
  * Shared constants for a code generation specification
@@ -101,14 +101,20 @@ public final class Specifications {
     private Specifications() {}
 
     /**
-     * 根据字段的配置, 生成待输出的数据列结构定义, 可用于设置输出端口数据信息
-     * 新增：当字段无别名时，使用输入名称作为输出
+     * 根据字段的配置, 生成待输出的数据列结构定义, 可用于设置输出端口数据信息 新增：当字段无别名时，使用输入名称作为输出
+     *
      * @param ffs 字段配置
      * @return 输出数据定义
      */
     public static List<Column> convertFieldFunctionToColumns(List<FieldFunction> ffs) {
         return ffs.stream()
-                .map(t -> new Column(t.getOutName()==null? t.getFunctionName():t.getOutName(), t.getOutType()))
+                .map(
+                        t ->
+                                new Column(
+                                        t.getOutName() == null
+                                                ? t.getFunctionName()
+                                                : t.getOutName(),
+                                        t.getOutType()))
                 .collect(Collectors.toList());
     }
 

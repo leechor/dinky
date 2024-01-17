@@ -19,8 +19,6 @@
 
 package org.dinky.service.impl;
 
-import com.zdpx.mapper.FlowGraphScriptMapper;
-import com.zdpx.model.FlowGraph;
 import org.dinky.alert.Alert;
 import org.dinky.alert.AlertConfig;
 import org.dinky.alert.AlertMsg;
@@ -150,6 +148,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.zdpx.mapper.FlowGraphScriptMapper;
+import com.zdpx.model.FlowGraph;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
@@ -424,11 +424,12 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
         }
 
         Statement statement = statementService.getById(id);
-        FlowGraph graph = flowGraphScriptMapper.selectOne(new QueryWrapper<FlowGraph>().eq("task_id", id));
+        FlowGraph graph =
+                flowGraphScriptMapper.selectOne(new QueryWrapper<FlowGraph>().eq("task_id", id));
 
         if (statement != null) {
             task.setStatement(statement.getStatement());
-            if(graph!=null){
+            if (graph != null) {
                 task.setGraphJson(graph.getScript());
             }
         }

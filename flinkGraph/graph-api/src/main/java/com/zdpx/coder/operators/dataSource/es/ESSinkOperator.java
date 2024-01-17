@@ -1,19 +1,17 @@
-
 package com.zdpx.coder.operators.dataSource.es;
 
-import com.zdpx.coder.operator.OperatorFeature;
-import com.zdpx.coder.operators.dataSource.AbstractSqlTable;
-import com.zdpx.coder.graph.InputPortObject;
-import lombok.extern.slf4j.Slf4j;
+import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
 
 import java.util.Map;
 import java.util.Optional;
 
-import static com.zdpx.coder.graph.OperatorSpecializationFieldConfig.*;
+import com.zdpx.coder.graph.InputPortObject;
+import com.zdpx.coder.operator.OperatorFeature;
+import com.zdpx.coder.operators.dataSource.AbstractSqlTable;
 
-/**
- *
- */
+import lombok.extern.slf4j.Slf4j;
+
+/** */
 @Slf4j
 public class ESSinkOperator extends AbstractSqlTable {
 
@@ -26,9 +24,8 @@ public class ESSinkOperator extends AbstractSqlTable {
 
     @Override
     public Optional<OperatorFeature> getOperatorFeature() {
-        OperatorFeature operatorFeature = OperatorFeature.builder()
-                .icon("icon-elasticsearchElasticsearch")
-                .build();
+        OperatorFeature operatorFeature =
+                OperatorFeature.builder().icon("icon-elasticsearchElasticsearch").build();
         return Optional.of(operatorFeature);
     }
 

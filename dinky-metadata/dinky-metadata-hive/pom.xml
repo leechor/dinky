@@ -60,34 +60,34 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.4</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.apache.hive</groupId>-->
-<!--            <artifactId>hive-jdbc</artifactId>-->
-<!--            <version>${hive.version}</version>-->
-<!--            &lt;!&ndash;  If you use cdh hive comment out the previous line to open the next line and open the repositories below&ndash;&gt;-->
-<!--            &lt;!&ndash;            <version>2.1.1-cdh6.3.2</version>&ndash;&gt;-->
-<!--            <scope>${scope.runtime}</scope>-->
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <groupId>jdk.tools</groupId>-->
-<!--                    <artifactId>jdk.tools</artifactId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.hive</groupId>-->
-<!--            <artifactId>hive-service</artifactId>-->
-<!--            <version>${hive.version}</version>-->
-<!--            &lt;!&ndash;  If you use cdh hive comment out the previous line to open the next line and open the repositories below  &ndash;&gt;-->
-<!--            &lt;!&ndash;            <version>2.1.1-cdh6.3.2</version>&ndash;&gt;-->
-<!--            <scope>${scope.runtime}</scope>-->
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <groupId>org.apache.hive</groupId>-->
-<!--                    <artifactId>hive-exec</artifactId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.apache.hive</groupId>-->
+        <!--            <artifactId>hive-jdbc</artifactId>-->
+        <!--            <version>${hive.version}</version>-->
+        <!--            &lt;!&ndash;  If you use cdh hive comment out the previous line to open the next line and open the repositories below&ndash;&gt;-->
+        <!--            &lt;!&ndash;            <version>2.1.1-cdh6.3.2</version>&ndash;&gt;-->
+        <!--            <scope>${scope.runtime}</scope>-->
+        <!--            <exclusions>-->
+        <!--                <exclusion>-->
+        <!--                    <groupId>jdk.tools</groupId>-->
+        <!--                    <artifactId>jdk.tools</artifactId>-->
+        <!--                </exclusion>-->
+        <!--            </exclusions>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.apache.hive</groupId>-->
+        <!--            <artifactId>hive-service</artifactId>-->
+        <!--            <version>${hive.version}</version>-->
+        <!--            &lt;!&ndash;  If you use cdh hive comment out the previous line to open the next line and open the repositories below  &ndash;&gt;-->
+        <!--            &lt;!&ndash;            <version>2.1.1-cdh6.3.2</version>&ndash;&gt;-->
+        <!--            <scope>${scope.runtime}</scope>-->
+        <!--            <exclusions>-->
+        <!--                <exclusion>-->
+        <!--                    <groupId>org.apache.hive</groupId>-->
+        <!--                    <artifactId>hive-exec</artifactId>-->
+        <!--                </exclusion>-->
+        <!--            </exclusions>-->
+        <!--        </dependency>-->
 
     </dependencies>
 

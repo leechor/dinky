@@ -19,12 +19,12 @@
 
 package com.zdpx.coder.json.origin;
 
-import com.zdpx.jackson.ResultTypeDeserializer;
-import com.zdpx.jackson.RuntimeExecutionModeDeserializer;
 import org.apache.flink.api.common.RuntimeExecutionMode;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.zdpx.coder.ResultType;
+import com.zdpx.jackson.ResultTypeDeserializer;
+import com.zdpx.jackson.RuntimeExecutionModeDeserializer;
 
 /** */
 public class EnvironmentNode {

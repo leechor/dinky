@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -155,7 +154,10 @@ public class DataBaseController {
 
     @GetMapping("/listEnabledByType/{type}")
     public Result<List<DataBase>> listEnabledByType(@PathVariable String type) {
-        List<DataBase> dataBases = databaseService.listEnabledAll().stream().filter(item->item.getType().compareToIgnoreCase(type)==0).collect(Collectors.toList());
+        List<DataBase> dataBases =
+                databaseService.listEnabledAll().stream()
+                        .filter(item -> item.getType().compareToIgnoreCase(type) == 0)
+                        .collect(Collectors.toList());
         return Result.succeed(dataBases);
     }
 

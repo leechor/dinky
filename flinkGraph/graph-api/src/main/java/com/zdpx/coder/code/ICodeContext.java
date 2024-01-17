@@ -1,10 +1,10 @@
 package com.zdpx.coder.code;
 
+import java.util.Set;
+
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 import com.zdpx.coder.graph.IScene;
-
-import java.util.Set;
 
 public interface ICodeContext {
     // region getter/setter

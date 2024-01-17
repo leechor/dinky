@@ -1,8 +1,8 @@
 package com.zdpx.coder;
 
-import com.zdpx.coder.code.CodeBuilder;
-
 import java.util.Map;
+
+import com.zdpx.coder.code.CodeBuilder;
 
 public interface SceneCode {
     CodeBuilder getGenerateResult();

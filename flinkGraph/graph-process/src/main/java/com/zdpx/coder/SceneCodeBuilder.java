@@ -20,16 +20,15 @@
 package com.zdpx.coder;
 
 import java.io.IOException;
-import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.zdpx.coder.code.CodeBuilder;
 import com.zdpx.coder.code.CodeJavaBuilderImpl;
+import com.zdpx.coder.code.CodeSqlBuilderImpl;
 import com.zdpx.coder.code.ICodeContext;
 import com.zdpx.coder.graph.Scene;
 import com.zdpx.coder.operator.Operator;
-import com.zdpx.coder.code.CodeSqlBuilderImpl;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -95,12 +94,9 @@ public class SceneCodeBuilder implements SceneCode {
         return outputMap;
     }
 
-    /**
-     * 广度优先遍历计算节点, 生成相对应的源码
-     */
+    /** 广度优先遍历计算节点, 生成相对应的源码 */
     private void createOperatorsCode() {
-        List<Operator> sinkOperatorNodes =
-                Scene.getSinkOperatorNodes(this.scene.getProcess());
+        List<Operator> sinkOperatorNodes = Scene.getSinkOperatorNodes(this.scene.getProcess());
         List<Operator> sinks = new ArrayList<>(sinkOperatorNodes);
         Deque<Operator> ops = new ArrayDeque<>();
 
@@ -108,12 +104,11 @@ public class SceneCodeBuilder implements SceneCode {
         ops.stream().distinct().forEach(this::operate);
     }
 
-
     /**
      * 广度优先遍历计算节点, 执行call 函数
      *
      * @param operators 起始节点集
-     * @param call      待执行函数
+     * @param call 待执行函数
      */
     private void bft(Set<Operator> operators, Consumer<Operator> call) {
         if (operators.isEmpty()) {
@@ -158,5 +153,4 @@ public class SceneCodeBuilder implements SceneCode {
     public ICodeContext createCodeContext(Scene scene) {
         return CodeContext.newBuilder(scene.getEnvironment().getName()).scene(scene).build();
     }
-
 }

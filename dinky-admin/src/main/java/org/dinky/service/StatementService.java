@@ -36,5 +36,4 @@ public interface StatementService extends ISuperService<Statement> {
     List<String> getWatchTables(String statement);
 
     Statement selectById(int id);
-
 }

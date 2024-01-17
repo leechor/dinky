@@ -1,15 +1,13 @@
 package com.zdpx.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.zdpx.model.CustomerOperator;
-import com.zdpx.service.CustomerOperatorService;
-import io.swagger.annotations.Api;
-import lombok.extern.slf4j.Slf4j;
 import org.dinky.data.enums.Status;
 import org.dinky.data.result.Result;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import com.zdpx.model.CustomerOperator;
+import com.zdpx.service.CustomerOperatorService;
+
+import io.swagger.annotations.Api;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
@@ -31,16 +29,16 @@ public class CustomerOperatorController {
     @PostMapping("/save")
     public Result<String> saveCustomerOperator(@RequestBody CustomerOperator customerOperator) {
         String str = customerOperatorService.saveByName(customerOperator);
-        if(str!=null){
+        if (str != null) {
             return Result.failed(str);
         }
         return Result.succeed();
     }
 
     @PostMapping("/oldName/{oldName}/newName/{newName}")
-    public Result<String> updateName(@PathVariable String oldName,@PathVariable String newName) {
+    public Result<String> updateName(@PathVariable String oldName, @PathVariable String newName) {
         String str = customerOperatorService.updateName(oldName, newName);
-        if(str!=null){
+        if (str != null) {
             return Result.failed(str);
         }
         return Result.succeed();
@@ -51,5 +49,4 @@ public class CustomerOperatorController {
         customerOperatorService.delete(name);
         return Result.succeed();
     }
-
 }

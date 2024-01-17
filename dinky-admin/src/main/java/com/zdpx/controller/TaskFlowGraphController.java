@@ -19,9 +19,6 @@
 
 package com.zdpx.controller;
 
-import com.zdpx.coder.graph.CheckInformationModel;
-import com.zdpx.coder.operator.FieldFunction;
-import com.zdpx.model.FunctionManagement;
 import org.dinky.data.model.Task;
 import org.dinky.data.result.Result;
 
@@ -32,9 +29,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.zdpx.coder.graph.CheckInformationModel;
+import com.zdpx.coder.operator.FieldFunction;
+import com.zdpx.model.FunctionManagement;
 import com.zdpx.service.TaskFlowGraphService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -45,12 +44,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/zdpx")
 public class TaskFlowGraphController {
 
-    @Autowired
-    private TaskFlowGraphService taskFlowGraphService;
+    @Autowired private TaskFlowGraphService taskFlowGraphService;
 
     @PutMapping
     public Result<List<CheckInformationModel>> submitSql(@RequestBody Task task) {
-        taskFlowGraphService.updateTaskFlowGraph(task);//暂存
+        taskFlowGraphService.updateTaskFlowGraph(task); // 暂存
         List<CheckInformationModel> msg = taskFlowGraphService.saveOrUpdateTask(task);
         if (!msg.isEmpty()) {
             return Result.succeed(msg);
@@ -74,13 +72,13 @@ public class TaskFlowGraphController {
         return Result.succeed(configurations);
     }
 
-    //传入parameters层的信息和需要处理的方法。获取函数嵌套、解析sql
+    // 传入parameters层的信息和需要处理的方法。获取函数嵌套、解析sql
     @PostMapping("/operator/generalProcess")
-    public Result<Map<String,Object> > generalProcess(@RequestBody Map<String,String> graph) {
+    public Result<Map<String, Object>> generalProcess(@RequestBody Map<String, String> graph) {
         return Result.succeed(taskFlowGraphService.generalProcess(graph));
     }
 
-    //全量传入一个算子的所有信息。预览
+    // 全量传入一个算子的所有信息。预览
     @PutMapping("/preview")
     public Result<String> operatorPreview(@RequestBody String graph) {
         String s = taskFlowGraphService.operatorPreview(graph);
@@ -88,17 +86,18 @@ public class TaskFlowGraphController {
     }
 
     @PostMapping("/getFunction")
-    public Result<List<String>> getFunction(@RequestBody Map<String,List<Map<String,Object>>>  columns) {
+    public Result<List<String>> getFunction(
+            @RequestBody Map<String, List<Map<String, Object>>> columns) {
 
         List<String> lists = new ArrayList<>();
 
         List<Map<String, Object>> column = columns.get("columns");
 
-        for(Map<String, Object> c: column){
-            FieldFunction fo = FieldFunction.processFieldConfigure("", c ,false, null);
-            if(fo.getFunctionName()!=null){
+        for (Map<String, Object> c : column) {
+            FieldFunction fo = FieldFunction.processFieldConfigure("", c, false, null);
+            if (fo.getFunctionName() != null) {
                 lists.add(fo.getFunctionName());
-            }else{
+            } else {
                 lists.add(c.get("name").toString());
             }
         }
@@ -107,10 +106,12 @@ public class TaskFlowGraphController {
     }
 
     @GetMapping("/getFillAllByVersion")
-    public Result<List<String>>  getFillAllByVersion(){
+    public Result<List<String>> getFillAllByVersion() {
         FunctionManagement[] values = FunctionManagement.values();
-        List<String> collect = Arrays.stream(values).map(FunctionManagement::getFunctionName).collect(Collectors.toList());
+        List<String> collect =
+                Arrays.stream(values)
+                        .map(FunctionManagement::getFunctionName)
+                        .collect(Collectors.toList());
         return Result.succeed(collect);
     }
-
 }
