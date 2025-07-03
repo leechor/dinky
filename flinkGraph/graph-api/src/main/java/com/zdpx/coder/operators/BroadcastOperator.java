@@ -19,6 +19,12 @@
 
 package com.zdpx.coder.operators;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 
 import javax.lang.model.element.Modifier;
@@ -34,6 +40,12 @@ import com.zdpx.coder.code.CodeJavaBuilder;
 import com.zdpx.coder.graph.DataType;
 import com.zdpx.coder.graph.InputPortObject;
 import com.zdpx.coder.graph.OutputPortObject;
+import com.zdpx.coder.operator.Column;
+import com.zdpx.coder.operator.Operator;
+import com.zdpx.coder.operator.OperatorFeature;
+import com.zdpx.coder.operator.OperatorParameterUtils;
+import com.zdpx.coder.operator.OperatorUtil;
+import com.zdpx.coder.operator.TableInfo;
 import com.zdpx.coder.utils.NameHelper;
 
 import lombok.extern.slf4j.Slf4j;

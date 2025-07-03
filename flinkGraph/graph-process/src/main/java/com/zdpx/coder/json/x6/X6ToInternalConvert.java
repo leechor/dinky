@@ -1,7 +1,22 @@
 package com.zdpx.coder.json.x6;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.zdpx.coder.graph.Connection;
+import com.zdpx.coder.graph.InputPort;
+import com.zdpx.coder.graph.InputPortObject;
+import com.zdpx.coder.graph.Node;
+import com.zdpx.coder.graph.NodeCollection;
+import com.zdpx.coder.graph.NodeWrapper;
+import com.zdpx.coder.graph.OutputPort;
+import com.zdpx.coder.graph.OutputPortObject;
+import com.zdpx.coder.graph.ProcessGroup;
+import com.zdpx.coder.graph.ProcessPackage;
+import com.zdpx.coder.graph.Scene;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

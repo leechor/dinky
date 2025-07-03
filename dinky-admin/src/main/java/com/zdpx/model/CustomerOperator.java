@@ -23,8 +23,10 @@ public class CustomerOperator implements Serializable {
 
     private String feature;
 
+    @TableField("`groups`")
     private String groups;
 
+    @TableField("`type`")
     private String type;
 
     private String ports;

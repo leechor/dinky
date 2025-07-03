@@ -25,10 +25,22 @@ import com.zdpx.coder.Specifications;
 import com.zdpx.coder.graph.CheckInformationModel;
 import com.zdpx.coder.graph.InputPortObject;
 import com.zdpx.coder.graph.OutputPortObject;
+import com.zdpx.coder.operator.Column;
+import com.zdpx.coder.operator.FieldFunction;
+import com.zdpx.coder.operator.Operator;
+import com.zdpx.coder.operator.OperatorFeature;
+import com.zdpx.coder.operator.OperatorUtil;
+import com.zdpx.coder.operator.TableInfo;
 import com.zdpx.coder.utils.NameHelper;
 import com.zdpx.coder.utils.TemplateUtils;
 
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /** config中选中的输入，对columns中的parameters产生影响，再通过columns中的outPutName指定输出，所以config和outPutName没有直接联系 */
 @Slf4j

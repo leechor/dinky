@@ -1132,7 +1132,29 @@ INSERT INTO `dinky_resources` (`id`, `file_name`, `description`, `user_id`, `typ
 
 
 
+DROP TABLE IF EXISTS `zdpx_customer_operator`;
+CREATE TABLE `zdpx_customer_operator` (
+                                          `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id',
+                                          `name` varchar(50) NOT NULL COMMENT 'name',
+                                          `code` varchar(255) NULL DEFAULT 1 COMMENT 'code',
+                                          `feature` varchar(255) NULL COMMENT 'feature',
+                                          `groups` varchar(255) NULL DEFAULT NULL COMMENT 'groups',
+                                          `type` varchar(255) NULL DEFAULT NULL COMMENT 'type',
+                                          `ports` varchar(255) NULL DEFAULT NULL COMMENT 'ports',
+                                          `script` varchar(255) NULL DEFAULT NULL COMMENT 'script',
+                                          `delete_time` datetime(0) NULL DEFAULT NULL COMMENT 'deleteTime',
+                                          PRIMARY KEY (`id`)
+) ENGINE = InnoDB ROW_FORMAT = Dynamic;
 
+DROP TABLE IF EXISTS `zdpx_task_flow_graph`;
+CREATE TABLE `zdpx_task_flow_graph` (
+                                        `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id',
+                                        `task_id` int(11) NOT NULL COMMENT 'name',
+                                        `script` varchar(255) NULL DEFAULT NULL COMMENT 'script',
+                                        `create_time` datetime(0) NULL DEFAULT NULL COMMENT 'create_time',
+                                        `update_time` datetime(0) NULL DEFAULT NULL COMMENT 'update_time',
+                                        PRIMARY KEY (`id`)
+) ENGINE = InnoDB ROW_FORMAT = Dynamic;
 
 
 
